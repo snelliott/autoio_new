@@ -1,0 +1,8 @@
+name: autoparse-env
+
+dependencies:
+    - python
+    - pytest
+    - pytest-cov
+    - flake8
+    - pylint

@@ -25,8 +25,30 @@ def maybe(pattern):
     return r'(?:{:s})?'.format(pattern)
 
 
+def preceded_by(pattern):
+    """ matches if the current position is preceded by the pattern
+
+    :param pattern: an `re` pattern
+    :type pattern: str
+
+    :rtype: str
+    """
+    return r'(?<={:s})'.format(pattern)
+
+
+def not_preceded_by(pattern):
+    """ matches if the current position is not preceded by the pattern
+
+    :param pattern: an `re` pattern
+    :type pattern: str
+
+    :rtype: str
+    """
+    return r'(?<!{:s})'.format(pattern)
+
+
 def followed_by(pattern):
-    """ a non-consuming pattern
+    """ matches if the current position is followed by the pattern
 
     :param pattern: an `re` pattern
     :type pattern: str
@@ -37,7 +59,7 @@ def followed_by(pattern):
 
 
 def not_followed_by(pattern):
-    """ a pattern is not present
+    """ matches if the current position is not followed by the pattern
 
     :param pattern: an `re` pattern
     :type pattern: str

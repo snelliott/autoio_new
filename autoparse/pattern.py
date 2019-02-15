@@ -37,6 +37,8 @@ from ._lib import INTEGER
 from ._lib import FLOAT
 from ._lib import EXPONENTIAL_INTEGER
 from ._lib import EXPONENTIAL_FLOAT
+from ._lib import UNDERSCORE
+from ._lib import VARIABLE_NAME
 
 __all__ = [
     # pattern generators
@@ -76,4 +78,6 @@ __all__ = [
     'FLOAT',
     'EXPONENTIAL_INTEGER',
     'EXPONENTIAL_FLOAT',
+    'UNDERSCORE',
+    'VARIABLE_NAME',
 ]
