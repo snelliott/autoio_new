@@ -44,6 +44,16 @@ def test__remove_empty_lines():
     )
 
 
+def test__is_number():
+    """ test autoparse.find.is_number
+    """
+    assert autoparse.find.is_number(' 5 ') is True
+    assert autoparse.find.is_number(' 1e-5 ') is True
+    assert autoparse.find.is_number(' 1e- 5 ') is False
+    assert autoparse.find.is_number(' .1e-200     \n \t \n ') is True
+
+
 if __name__ == '__main__':
     test__variable_name()
     test__remove_empty_lines()
+    test__is_number()

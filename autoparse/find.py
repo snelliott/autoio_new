@@ -8,6 +8,7 @@ from ._lib import LINE_START as _LINE_START
 from ._lib import NEWLINE as _NEWLINE
 from ._lib import SPACES as _SPACES
 from ._lib import LINESPACES as _LINESPACES
+from ._lib import NUMBER as _NUMBER
 from ._pattern import maybe as _maybe
 
 
@@ -16,6 +17,13 @@ def has_match(pattern, string):
     """
     match = re.search(pattern, string, flags=re.MULTILINE)
     return bool(match)
+
+
+def full_match(pattern, string):
+    """ does this pattern match this *entire* string?
+    """
+    pattern_ = _STRING_START + pattern + _STRING_END
+    return has_match(pattern_, string)
 
 
 def starts_with(pattern, string):
@@ -109,3 +117,10 @@ def replace(pattern, repl, string):
     """ replace pattern matches
     """
     return re.sub(pattern, repl, string, count=0, flags=re.MULTILINE)
+
+
+# data type checkers
+def is_number(string):
+    """ does this string encode a (real) number?
+    """
+    return full_match(_NUMBER, strip_spaces(string))
