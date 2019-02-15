@@ -4,8 +4,11 @@ import re
 from functools import partial
 from ._lib import STRING_START as _STRING_START
 from ._lib import STRING_END as _STRING_END
+from ._lib import LINE_START as _LINE_START
 from ._lib import NEWLINE as _NEWLINE
 from ._lib import SPACES as _SPACES
+from ._lib import LINESPACES as _LINESPACES
+from ._pattern import maybe as _maybe
 
 
 def has_match(pattern, string):
@@ -85,6 +88,13 @@ def remove(pattern, string):
     """ remove pattern matches
     """
     return replace(pattern, '', string)
+
+
+def remove_empty_lines(string):
+    """ remove empty lines from a string
+    """
+    pattern = _LINE_START + _maybe(_LINESPACES) + _NEWLINE
+    return remove(pattern, string)
 
 
 def strip_spaces(string):
