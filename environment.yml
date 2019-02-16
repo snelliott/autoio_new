@@ -1,0 +1,24 @@
+name: elstruct-env
+
+channels:
+    - pacchem
+    - rdkit
+    - openbabel
+    - psi4
+
+dependencies:
+    - python=3
+    - numpy
+    - pyyaml
+    - mako
+    - pytest
+    - pytest-cov
+    - future
+    - flake8
+    - pylint
+    - rdkit::rdkit
+    - openbabel::openbabel
+    - psi4::psi4
+    - pacchem::autoparse
+    - pacchem::autocom
+    - pacchem::automol

@@ -1,0 +1,31 @@
+#! 
+memory 1 GB
+
+
+molecule {
+0 1
+H 
+O  1  rOH       
+C  2    1.400000 1  100.000000
+H  3  rCH        2  105.000000 1  d1        
+H  3  rCH        2  105.000000 1  d2        
+H  3  rCH        2  105.000000 1  d3        
+
+rOH        =   0.900000
+rCH        =   1.100000
+d1         =  60.000000
+d2         = -60.000000
+d3         = 180.000000
+
+}
+
+set basis sto-3g
+set scf_type pk
+set reference rhf
+set mp2_type conv
+
+
+
+
+
+optimize('mp2')
