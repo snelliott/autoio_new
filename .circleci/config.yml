@@ -1,0 +1,26 @@
+jobs:
+    build-debian:
+        docker:
+            - image: continuumio/miniconda3
+        steps:
+            - checkout  # checkout the code
+            - run: 
+                name: Create conda environment
+                command: |
+                    apt-get update --yes
+                    apt-get install --yes libxrender-dev  # needed for rdkit
+                    conda env create -f environment.yml
+            - run:
+                name: Run tests
+                command: |
+                    source activate elstruct-env
+                    python setup.py install
+                    cd tests
+                    pytest -v --cov=elstruct .
+                    flake8 --exit-zero elstruct
+                    pylint --rcfile=../.pylintrc elstruct
+workflows:
+    version: 2
+    build-all:
+        jobs:
+            - build-debian

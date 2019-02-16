@@ -1,0 +1,6 @@
+# cmd: es write opt psi4 rhf-mp2 sto-3g geom.zmat -p
+# exe: /home/avcopan/Documents/repos/auto/elstruct-redraft/es
+Reading in the geometry
+Parsing the geometry comment line for state information
+Calling the input file generator
+Writing the input file
