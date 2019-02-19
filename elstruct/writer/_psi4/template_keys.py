@@ -11,6 +11,7 @@ GEOMETRY = 'geom'
 ZMATRIX_VALUES = 'zmat_vals'
 CHARGE = 'charge'
 MULTIPLICITY = 'mult'
+MOL_OPTIONS = 'mol_options'
 
 # theoretical method
 BASIS = 'basis'

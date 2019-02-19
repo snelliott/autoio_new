@@ -1,6 +1,6 @@
 """ electronic structure interfaces """
-from . import write
-from . import read
+from . import writer
+from . import reader
 
 
-__all__ = ['write', 'read']
+__all__ = ['writer', 'reader']

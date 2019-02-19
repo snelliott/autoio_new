@@ -19,7 +19,7 @@ def call_module_function(prog, module_type, function_template,
 
     :param prog: the program
     :type prog: str
-    :param module_type: which type of module it is (write or read)
+    :param module_type: which type of module it is (writer or reader)
     :type module_type: str
     :param function_template: a function with the desired signature
     :type function_template: function
@@ -46,7 +46,7 @@ def program_modules_with_functions(module_type, function_templates):
 def program_modules_with_function(module_type, function_template):
     """ list the programs implementing a given function
 
-    :param module_type: which type of module it is (write or read)
+    :param module_type: which type of module it is (writer or reader)
     :type module_type: str
     :param function_template: a function with the desired signature
     :type function_template: function
@@ -70,16 +70,16 @@ def import_program_module(prog, module_type):
 
     :param prog: the program name
     :type prog: str
-    :param module_type: which type of module it is (write or read)
+    :param module_type: which type of module it is (writer or reader)
     :type module_type: str
     """
     assert prog in PROGRAM_MODULE_NAME_DCT
-    assert module_type in ('write', 'read')
+    assert module_type in par.MODULES
 
     module_name = PROGRAM_MODULE_NAME_DCT[prog]
 
     # do a relative import using the package name, ie 'from . import _psi4'.
-    # relative imports require a package name in importlib, ie 'elstruc.write'
+    # relative imports require a package name in importlib, ie 'elstruc.writer'
     relative_module_name = '.{:s}'.format(module_name)
     package_name = 'elstruct.{:s}'.format(module_type)
     module = importlib.import_module(relative_module_name, package_name)

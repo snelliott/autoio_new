@@ -7,7 +7,7 @@ channels:
     - psi4
 
 dependencies:
-    - python=3
+    - python
     - numpy
     - pyyaml
     - mako

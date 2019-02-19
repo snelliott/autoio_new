@@ -2,6 +2,14 @@
 """
 
 
+class MODULE():
+    """ elstruct module names """
+    WRITER = 'writer'
+    READER = 'reader'
+
+MODULES = (MODULE.WRITER, MODULE.READER)
+
+
 class BASIS():
     """ electronic structure basis sets """
     STO3G = 'sto-3g'

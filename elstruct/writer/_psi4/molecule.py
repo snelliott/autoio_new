@@ -4,7 +4,7 @@ import automol
 from . import template_keys
 
 
-def fillvalue_dictionary(geom, charge, mult, zmat_var_dct):
+def fillvalue_dictionary(geom, charge, mult, mol_options, zmat_var_dct):
     """ get the template fill values for molecular geometry and state
     """
 
@@ -22,5 +22,6 @@ def fillvalue_dictionary(geom, charge, mult, zmat_var_dct):
         template_keys.ZMATRIX_VALUES: zmat_vals,
         template_keys.CHARGE: charge,
         template_keys.MULTIPLICITY: mult,
+        template_keys.MOL_OPTIONS: mol_options,
     }
     return fill_dct

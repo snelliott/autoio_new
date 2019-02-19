@@ -24,9 +24,14 @@ def basis_list():
     return theory.BASIS_LST
 
 
-def energy_input_string(method, basis, geom, charge, mult,
+def energy_input_string(method, basis, geom, mult,
+                        # molecule options
+                        charge=0, mol_options='',
+                        # machine options
                         memory=1, comment='', machine_options='',
+                        # theory options
                         scf_options='', corr_options='',
+                        # molecule/optimization options
                         zmat_var_dct=None):
     """ energy input string
     """
@@ -37,7 +42,7 @@ def energy_input_string(method, basis, geom, charge, mult,
     fill_dct.update(machine.fillvalue_dictionary(comment, memory,
                                                  machine_options))
     fill_dct.update(molecule.fillvalue_dictionary(geom, charge, mult,
-                                                  zmat_var_dct))
+                                                  mol_options, zmat_var_dct))
     fill_dct.update(theory.fillvalue_dictionary(method, basis, scf_options,
                                                 corr_options))
     fill_dct.update(job.fillvalue_dictionary(job_key))
@@ -45,10 +50,15 @@ def energy_input_string(method, basis, geom, charge, mult,
     return inp_str
 
 
-def optimization_input_string(method, basis, geom, charge, mult,
+def optimization_input_string(method, basis, geom, mult,
+                              # molecule options
+                              charge=0, mol_options='',
+                              # machine options
                               memory=1, comment='', machine_options='',
-                              scf_options='', corr_options='', opt_options='',
-                              zmat_var_dct=None):
+                              # theory options
+                              scf_options='', corr_options='',
+                              # molecule/optimization options
+                              opt_options='', zmat_var_dct=None):
     """ optimization input string
     """
     assert method in method_list()
@@ -58,7 +68,7 @@ def optimization_input_string(method, basis, geom, charge, mult,
     fill_dct.update(machine.fillvalue_dictionary(comment, memory,
                                                  machine_options))
     fill_dct.update(molecule.fillvalue_dictionary(geom, charge, mult,
-                                                  zmat_var_dct))
+                                                  mol_options, zmat_var_dct))
     fill_dct.update(theory.fillvalue_dictionary(method, basis, scf_options,
                                                 corr_options))
     fill_dct.update(job.fillvalue_dictionary(job_key, opt_options))
