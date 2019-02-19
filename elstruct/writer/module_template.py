@@ -1,4 +1,4 @@
-""" empty functions defining the function signatures for each write module
+""" empty functions defining the function signatures for each program module
 """
 
 
@@ -14,7 +14,9 @@ def basis_list():
     raise NotImplementedError
 
 
-def energy_input_string(method, basis, geom, charge, mult,
+def energy_input_string(method, basis, geom, mult,
+                        # molecule options
+                        charge=0, mol_options='',
                         # machine options
                         memory=1, comment='', machine_options='',
                         # theory options
@@ -44,13 +46,17 @@ def energy_input_string(method, basis, geom, charge, mult,
     """
 
     raise NotImplementedError(
-        method, basis, geom, charge, mult,
-        memory, comment, machine_options, corr_options, scf_options,
+        method, basis, geom, mult,
+        charge, mol_options,
+        memory, comment, machine_options,
+        corr_options, scf_options,
         zmat_var_dct
     )
 
 
-def optimization_input_string(method, basis, geom, charge, mult,
+def optimization_input_string(method, basis, geom, mult,
+                              # molecule options
+                              charge=0, mol_options='',
                               # machine options
                               memory=1, comment='', machine_options='',
                               # theory options
@@ -82,7 +88,9 @@ def optimization_input_string(method, basis, geom, charge, mult,
     """
 
     raise NotImplementedError(
-        method, basis, geom, charge, mult,
-        memory, comment, machine_options, corr_options, scf_options,
+        method, basis, geom, mult,
+        charge, mol_options,
+        memory, comment, machine_options,
+        corr_options, scf_options,
         opt_options, zmat_var_dct
     )

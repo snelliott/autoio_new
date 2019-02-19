@@ -5,6 +5,7 @@ ${machine_options}
 
 ##  1. molecule block
 molecule {
+${mol_options}
 ${charge} ${mult}
 ${geom}
 % if zmat_vals != '':
