@@ -10,6 +10,8 @@ from ._lib import SPACES as _SPACES
 from ._lib import LINESPACES as _LINESPACES
 from ._lib import NUMBER as _NUMBER
 from ._pattern import maybe as _maybe
+from ._pattern import capturing as _capturing
+from ._more_patterns import block as _block_pattern
 
 
 def has_match(pattern, string):
@@ -124,3 +126,25 @@ def is_number(string):
     """ does this string encode a (real) number?
     """
     return full_match(_NUMBER, strip_spaces(string))
+
+
+# advanced finders
+def all_blocks(start_pattern, end_pattern, string):
+    """ capture all (non-greedy) blocks bounded by two patterns
+    """
+    pattern = _capturing(_block_pattern(start_pattern, end_pattern))
+    return all_captures(pattern, string)
+
+
+def first_block(start_pattern, end_pattern, string):
+    """ capture the first (non-greedy) block bounded by two patterns
+    """
+    pattern = _capturing(_block_pattern(start_pattern, end_pattern))
+    return first_capture(pattern, string)
+
+
+def last_block(start_pattern, end_pattern, string):
+    """ capture the last (non-greedy) block bounded by two patterns
+    """
+    pattern = _capturing(_block_pattern(start_pattern, end_pattern))
+    return last_capture(pattern, string)
