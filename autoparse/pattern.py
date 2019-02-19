@@ -10,6 +10,7 @@ from ._pattern import one_or_more
 from ._pattern import one_of_these
 from ._pattern import capturing
 from ._pattern import named_capturing
+from ._more_patterns import block
 # pattern constants
 from ._lib import STRING_START
 from ._lib import STRING_END
@@ -51,6 +52,7 @@ __all__ = [
     'one_of_these',
     'capturing',
     'named_capturing',
+    'block',
     # pattern constants
     'STRING_START',
     'STRING_END',

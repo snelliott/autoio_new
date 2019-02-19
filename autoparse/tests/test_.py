@@ -24,6 +24,18 @@ df kkk
 """
 
 
+STRING3 = """start
+    <contents 1>
+end
+start
+    <contents 2>
+end
+start
+    <contents 3>
+end
+"""
+
+
 def test__variable_name():
     """ test autoparse.pattern.VARIABLE_NAME
     """
@@ -53,7 +65,33 @@ def test__is_number():
     assert autoparse.find.is_number(' .1e-200     \n \t \n ') is True
 
 
+def test__first_block():
+    """ test autoparse.find.first_block
+    """
+    assert (autoparse.find.first_block('start', 'end', STRING3) ==
+            'start\n    <contents 1>\nend')
+
+
+def test__last_block():
+    """ test autoparse.find.last_block
+    """
+    assert (autoparse.find.last_block('start', 'end', STRING3) ==
+            'start\n    <contents 3>\nend')
+
+
+def test__all_blocks():
+    """ test autoparse.find.last_block
+    """
+    assert (autoparse.find.all_blocks('start', 'end', STRING3) ==
+            ('start\n    <contents 1>\nend',
+             'start\n    <contents 2>\nend',
+             'start\n    <contents 3>\nend',))
+
+
 if __name__ == '__main__':
     test__variable_name()
     test__remove_empty_lines()
     test__is_number()
+    test__first_block()
+    test__last_block()
+    test__all_blocks()
