@@ -1,6 +1,9 @@
 """ helpers for importing and managing program modules """
 import importlib
-import inspect
+try:
+    from inspect import getfullargspec as _getargspec
+except ImportError:
+    from inspect import getargspec as _getargspec
 from functools import reduce as _reduce
 from . import params as par
 
@@ -55,8 +58,7 @@ def program_modules_with_function(module_type, function_template):
             function = getattr(module, function_template.__name__)
 
             # make sure the signature matches the template
-            assert (inspect.getfullargspec(function) ==
-                    inspect.getfullargspec(function_template))
+            assert _getargspec(function) == _getargspec(function_template)
 
             progs.append(prog)
 
