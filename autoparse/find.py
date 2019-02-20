@@ -18,7 +18,7 @@ def has_match(pattern, string):
     """ does this string have a pattern match?
     """
     match = re.search(pattern, string, flags=re.MULTILINE)
-    return bool(match)
+    return match is not None
 
 
 def full_match(pattern, string):
@@ -147,4 +147,32 @@ def last_block(start_pattern, end_pattern, string):
     """ capture the last (non-greedy) block bounded by two patterns
     """
     pattern = _capturing(_block_pattern(start_pattern, end_pattern))
+    return last_capture(pattern, string)
+
+
+def first_matching_pattern(patterns, string):
+    """ from a series of patterns, return the first one matching the string
+    """
+    pattern = next(filter(partial(has_match, string=string), patterns), None)
+    return pattern
+
+
+def first_matching_pattern_all_captures(patterns, string):
+    """ all captures from the first matching pattern
+    """
+    pattern = first_matching_pattern(patterns, string)
+    return all_captures(pattern, string)
+
+
+def first_matching_pattern_first_capture(patterns, string):
+    """ first capture from the first matching pattern
+    """
+    pattern = first_matching_pattern(patterns, string)
+    return first_capture(pattern, string)
+
+
+def first_matching_pattern_last_capture(patterns, string):
+    """ last capture from the first matching pattern
+    """
+    pattern = first_matching_pattern(patterns, string)
     return last_capture(pattern, string)
