@@ -2,6 +2,18 @@
 """
 
 
+def method_list():
+    """ list of available electronic structure methods
+    """
+    raise NotImplementedError
+
+
+def energy(method, output_string):
+    """ get total energy from output
+    """
+    raise NotImplementedError
+
+
 def optimized_cartesian_geometry(output_string):
     """ get optimized cartesian geometry from output
     """

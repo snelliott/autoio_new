@@ -2,9 +2,9 @@ name: elstruct-env
 
 channels:
     - pacchem
+    - psi4
     - rdkit
     - openbabel
-    - psi4
 
 dependencies:
     - python

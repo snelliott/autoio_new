@@ -15,7 +15,8 @@ MODULE_NAME = par.MODULE.WRITER
 
 def programs():
     """ the list of program modules implementing anything """
-    # check whether they implement the `method_list()` function
+    # check whether they implement the `method_list()` and `basis_list()`
+    # functions
     return pm.program_modules_with_functions(
         MODULE_NAME, [module_template.method_list, module_template.basis_list])
 
@@ -36,29 +37,25 @@ def method_list(prog, *args, **kwargs):
     """ _ """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.method_list,
-        *args, **kwargs
-    )
+        *args, **kwargs)
 
 
 def basis_list(prog, *args, **kwargs):
     """ _ """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.basis_list,
-        *args, **kwargs
-    )
+        *args, **kwargs)
 
 
 def energy_input_string(prog, *args, **kwargs):
     """ _ """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy_input_string,
-        *args, **kwargs
-    )
+        *args, **kwargs)
 
 
 def optimization_input_string(prog, *args, **kwargs):
     """ _ """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.optimization_input_string,
-        *args, **kwargs
-    )
+        *args, **kwargs)

@@ -7,6 +7,7 @@ class MODULE():
     WRITER = 'writer'
     READER = 'reader'
 
+
 MODULES = (MODULE.WRITER, MODULE.READER)
 
 
