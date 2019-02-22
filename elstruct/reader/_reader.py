@@ -12,7 +12,7 @@ from .. import params as par
 MODULE_NAME = par.MODULE.READER
 
 
-# energies
+# energy
 def programs():
     """ programs which at least implement energy readers """
     return pm.program_modules_with_functions(
@@ -34,7 +34,7 @@ def energy(prog, *args, **kwargs):
         *args, **kwargs)
 
 
-# status checkers
+# status
 def ran_successfully(prog, *args, **kwargs):
     """ _ """
     return pm.call_module_function(
@@ -42,31 +42,31 @@ def ran_successfully(prog, *args, **kwargs):
         *args, **kwargs)
 
 
-# cartesian geometry optimizations
-def optimized_cartesian_geometry_programs():
+# optimization
+def optimized_geometry_programs():
     """ _ """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.optimized_cartesian_geometry)
+        MODULE_NAME, module_template.optimized_geometry)
 
 
-def optimized_cartesian_geometry(prog, *args, **kwargs):
+def optimized_geometry(prog, *args, **kwargs):
     """ _ """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.optimized_cartesian_geometry,
+        prog, MODULE_NAME, module_template.optimized_geometry,
         *args, **kwargs
     )
 
 
 # z-matrix geometry optimizations
-def optimized_zmatrix_geometry_programs():
+def optimized_zmatrix_programs():
     """ _ """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.optimized_zmatrix_geometry)
+        MODULE_NAME, module_template.optimized_zmatrix)
 
 
-def optimized_zmatrix_geometry(prog, *args, **kwargs):
+def optimized_zmatrix(prog, *args, **kwargs):
     """ _ """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.optimized_zmatrix_geometry,
+        prog, MODULE_NAME, module_template.optimized_zmatrix,
         *args, **kwargs
     )

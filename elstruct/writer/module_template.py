@@ -14,9 +14,9 @@ def basis_list():
     raise NotImplementedError
 
 
-def energy(method, basis, geom, mult,
+def energy(method, basis, geom, mult, charge,
            # molecule options
-           charge=0, mol_options='',
+           mol_options='',
            # machine options
            memory=1, comment='', machine_options='',
            # theory options
@@ -31,6 +31,12 @@ def energy(method, basis, geom, mult,
     :type basis: str
     :param geom: cartesian or z-matrix internal coordinates
     :type geom: tuple
+    :param mult: spin multiplicity
+    :type mult: int
+    :param charge: molecular charge
+    :type charge: int
+    :param mol_options: options for the molecule block
+    :type mol_options: str
     ;param memory: memory in GB
     :type memory: int
     :param comment: a comment string to be placed at the top of the file
@@ -46,17 +52,17 @@ def energy(method, basis, geom, mult,
     """
 
     raise NotImplementedError(
-        method, basis, geom, mult,
-        charge, mol_options,
+        method, basis, geom, mult, charge,
+        mol_options,
         memory, comment, machine_options,
         corr_options, scf_options,
         zmat_var_dct
     )
 
 
-def optimization(method, basis, geom, mult,
+def optimization(method, basis, geom, mult, charge,
                  # molecule options
-                 charge=0, mol_options='',
+                 mol_options='',
                  # machine options
                  memory=1, comment='', machine_options='',
                  # theory options
@@ -71,7 +77,13 @@ def optimization(method, basis, geom, mult,
     :type basis: str
     :param geom: cartesian or z-matrix internal coordinates
     :type geom: tuple
-    ;param memory: memory in GB
+    :param mult: spin multiplicity
+    :type mult: int
+    :param charge: molecular charge
+    :type charge: int
+    :param mol_options: options for the molecule block
+    :type mol_options: str
+    :param memory: memory in GB
     :type memory: int
     :param comment: a comment string to be placed at the top of the file
     :type comment: str

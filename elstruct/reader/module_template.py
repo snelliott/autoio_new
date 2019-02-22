@@ -16,14 +16,14 @@ def energy(method, output_string):
 
 
 # optimization
-def optimized_cartesian_geometry(output_string):
+def optimized_geometry(output_string):
     """ get optimized cartesian geometry from output
     """
     raise NotImplementedError(output_string)
 
 
-def optimized_zmatrix_geometry(output_string):
-    """ get optimized z-matrix geometry from output
+def optimized_zmatrix(output_string):
+    """ get optimized z-matrix from output
     """
     raise NotImplementedError(output_string)
 
