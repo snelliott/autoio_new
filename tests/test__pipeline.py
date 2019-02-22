@@ -22,7 +22,7 @@ def test__energy():
     mult = 1
     charge = 0
 
-    for prog in elstruct.writer.energy_programs():
+    for prog in elstruct.writer.programs():
         assert prog in elstruct.reader.programs()
         for method in elstruct.writer.method_list(prog):
             print(prog, method)
