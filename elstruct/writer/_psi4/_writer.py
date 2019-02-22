@@ -24,9 +24,9 @@ def basis_list():
     return theory.BASIS_LST
 
 
-def energy(method, basis, geom, mult,
+def energy(method, basis, geom, mult, charge,
            # molecule options
-           charge=0, mol_options='',
+           mol_options='',
            # machine options
            memory=1, comment='', machine_options='',
            # theory options
@@ -50,9 +50,9 @@ def energy(method, basis, geom, mult,
     return inp_str
 
 
-def optimization(method, basis, geom, mult,
+def optimization(method, basis, geom, mult, charge,
                  # molecule options
-                 charge=0, mol_options='',
+                 mol_options='',
                  # machine options
                  memory=1, comment='', machine_options='',
                  # theory options
