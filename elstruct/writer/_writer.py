@@ -21,7 +21,7 @@ def programs():
     return pm.program_modules_with_functions(
         MODULE_NAME, [module_template.method_list,
                       module_template.basis_list,
-                      module_template.energy_input_string])
+                      module_template.energy])
 
 
 def method_list(prog, *args, **kwargs):
@@ -38,10 +38,15 @@ def basis_list(prog, *args, **kwargs):
         *args, **kwargs)
 
 
-def energy_input_string(prog, *args, **kwargs):
+def energy_argument_keys():
+    """ the list of arguments to the energy writer """
+    return pm.function_argument_keys(module_template.energy)
+
+
+def energy(prog, *args, **kwargs):
     """ _ """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.energy_input_string,
+        prog, MODULE_NAME, module_template.energy,
         *args, **kwargs)
 
 
@@ -49,11 +54,16 @@ def energy_input_string(prog, *args, **kwargs):
 def optimization_programs():
     """ the list of program modules implementing optimization input writers """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.optimization_input_string)
+        MODULE_NAME, module_template.optimization)
 
 
-def optimization_input_string(prog, *args, **kwargs):
+def optimization_argument_keys():
+    """ the list of arguments to the optimization writer """
+    return pm.function_argument_keys(module_template.optimization)
+
+
+def optimization(prog, *args, **kwargs):
     """ _ """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.optimization_input_string,
+        prog, MODULE_NAME, module_template.optimization,
         *args, **kwargs)

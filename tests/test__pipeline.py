@@ -22,7 +22,7 @@ def test__energy():
         assert prog in elstruct.reader.programs()
         for method in elstruct.writer.method_list(prog):
             print(prog, method)
-            inp_str = elstruct.writer.energy_input_string(
+            inp_str = elstruct.writer.energy(
                 prog=prog, method=method, basis=basis, geom=geom,
                 mult=mult, charge=charge, scf_options=''
             )
@@ -47,7 +47,7 @@ def test__optimization():
     for prog in elstruct.writer.optimization_programs():
         for method in elstruct.writer.method_list(prog):
             print(prog, method)
-            inp_str = elstruct.writer.optimization_input_string(
+            inp_str = elstruct.writer.optimization(
                 prog=prog, method=method, basis=basis, geom=geom,
                 mult=mult, scf_options='',
                 zmat_var_dct=zmat_var_dct
