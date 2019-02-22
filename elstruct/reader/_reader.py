@@ -12,6 +12,28 @@ from .. import params as par
 MODULE_NAME = par.MODULE.READER
 
 
+# energies
+def programs():
+    """ programs which at least implement energy readers """
+    return pm.program_modules_with_functions(
+        MODULE_NAME, [module_template.method_list,
+                      module_template.energy])
+
+
+def method_list(prog, *args, **kwargs):
+    """ _ """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.method_list,
+        *args, **kwargs)
+
+
+def energy(prog, *args, **kwargs):
+    """ _ """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.energy,
+        *args, **kwargs)
+
+
 # cartesian geometry optimizations
 def optimized_cartesian_geometry_programs():
     """ _ """
