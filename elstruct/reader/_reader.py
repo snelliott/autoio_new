@@ -34,6 +34,14 @@ def energy(prog, *args, **kwargs):
         *args, **kwargs)
 
 
+# status checkers
+def ran_successfully(prog, *args, **kwargs):
+    """ _ """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.ran_successfully,
+        *args, **kwargs)
+
+
 # cartesian geometry optimizations
 def optimized_cartesian_geometry_programs():
     """ _ """
