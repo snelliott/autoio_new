@@ -14,15 +14,15 @@ def basis_list():
     raise NotImplementedError
 
 
-def energy_input_string(method, basis, geom, mult,
-                        # molecule options
-                        charge=0, mol_options='',
-                        # machine options
-                        memory=1, comment='', machine_options='',
-                        # theory options
-                        scf_options='', corr_options='',
-                        # molecule/optimization options
-                        zmat_var_dct=None):
+def energy(method, basis, geom, mult,
+           # molecule options
+           charge=0, mol_options='',
+           # machine options
+           memory=1, comment='', machine_options='',
+           # theory options
+           scf_options='', corr_options='',
+           # molecule/optimization options
+           zmat_var_dct=None):
     """ energy input string
 
     :param method: the electronic structure energy/wavefunction Ansatz
@@ -54,15 +54,15 @@ def energy_input_string(method, basis, geom, mult,
     )
 
 
-def optimization_input_string(method, basis, geom, mult,
-                              # molecule options
-                              charge=0, mol_options='',
-                              # machine options
-                              memory=1, comment='', machine_options='',
-                              # theory options
-                              scf_options='', corr_options='',
-                              # molecule/optimization options
-                              opt_options='', zmat_var_dct=None):
+def optimization(method, basis, geom, mult,
+                 # molecule options
+                 charge=0, mol_options='',
+                 # machine options
+                 memory=1, comment='', machine_options='',
+                 # theory options
+                 scf_options='', corr_options='',
+                 # molecule/optimization options
+                 opt_options='', zmat_var_dct=None):
     """ optimization input string
 
     :param method: the electronic structure energy/wavefunction Ansatz

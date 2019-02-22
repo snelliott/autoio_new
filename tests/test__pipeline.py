@@ -1,14 +1,10 @@
-""" test elstruct.reader.run/write pipelines
+""" test elstruct writer/run/reader pipelines
 """
-import os
-import tempfile
-import subprocess
 import elstruct
-import automol
 
 
-PROGRAM_TEST_COMMAND_DCT = {
-    'psi4': ('psi4',)
+RUN_ARGV_DCT = {
+    'psi4': ['psi4']
 }
 
 
@@ -26,28 +22,15 @@ def test__energy():
         assert prog in elstruct.reader.programs()
         for method in elstruct.writer.method_list(prog):
             print(prog, method)
-            inp_str = elstruct.writer.energy_input_string(
+            inp_str = elstruct.writer.energy(
                 prog=prog, method=method, basis=basis, geom=geom,
                 mult=mult, charge=charge, scf_options=''
             )
 
             # if we have an exectuable test command, try running it
-            if prog in PROGRAM_TEST_COMMAND_DCT:
-                tmp_dir = tempfile.mkdtemp()
-                print(tmp_dir)
-
-                inp_file_path = os.path.join(tmp_dir, 'input.dat')
-                with open(inp_file_path, 'w') as inp_file_obj:
-                    inp_file_obj.write(inp_str)
-
-                argv = list(PROGRAM_TEST_COMMAND_DCT[prog])
-                subprocess.check_call(argv, cwd=tmp_dir)
-
-                out_file_path = os.path.join(tmp_dir, 'output.dat')
-                with open(out_file_path, 'r') as out_file_obj:
-                    out_file_str = out_file_obj.read()
-
-                ene = elstruct.reader.energy(prog, method, out_file_str)
+            if prog in RUN_ARGV_DCT:
+                out_str, _ = elstruct.run(RUN_ARGV_DCT[prog], inp_str)
+                ene = elstruct.reader.energy(prog, method, out_str)
                 print(ene)
 
 
@@ -64,41 +47,30 @@ def test__optimization():
     for prog in elstruct.writer.optimization_programs():
         for method in elstruct.writer.method_list(prog):
             print(prog, method)
-            inp_str = elstruct.writer.optimization_input_string(
+            inp_str = elstruct.writer.optimization(
                 prog=prog, method=method, basis=basis, geom=geom,
                 mult=mult, scf_options='',
                 zmat_var_dct=zmat_var_dct
             )
 
             # if we have an exectuable test command, try running it
-            if prog in PROGRAM_TEST_COMMAND_DCT:
-                tmp_dir = tempfile.mkdtemp()
-                print(tmp_dir)
+            if prog in RUN_ARGV_DCT:
+                out_str, _ = elstruct.run(RUN_ARGV_DCT[prog], inp_str)
 
-                inp_file_path = os.path.join(tmp_dir, 'input.dat')
-                with open(inp_file_path, 'w') as inp_file_obj:
-                    inp_file_obj.write(inp_str)
-
-                argv = list(PROGRAM_TEST_COMMAND_DCT[prog])
-                subprocess.check_call(argv, cwd=tmp_dir)
-
-                out_file_path = os.path.join(tmp_dir, 'output.dat')
-                with open(out_file_path, 'r') as out_file_obj:
-                    out_file_str = out_file_obj.read()
+                ene = elstruct.reader.energy(prog, method, out_str)
 
                 zmat_geom, zmat_var_dct = (
-                    elstruct.reader.optimized_zmatrix_geometry(
-                        prog, out_file_str))
-                print(zmat_geom)
-                print(zmat_var_dct)
+                    elstruct.reader.optimized_zmatrix_geometry(prog, out_str))
 
                 cart_geom = elstruct.reader.optimized_cartesian_geometry(
-                    prog, out_file_str)
-                print(cart_geom)
+                    prog, out_str)
 
-                assert automol.geom.is_valid(cart_geom)
+                print(ene)
+                print(zmat_geom)
+                print(zmat_var_dct)
+                print(cart_geom)
 
 
 if __name__ == '__main__':
-    # test__optimization()
-    test__energy()
+    # test__energy()
+    test__optimization()
