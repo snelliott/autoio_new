@@ -3,8 +3,8 @@
 import elstruct
 
 
-RUN_ARGV_DCT = {
-    'psi4': ['psi4']
+SCRIPT_STR_DCT = {
+    'psi4': "#!/usr/bin/env bash\npsi4"
 }
 
 
@@ -27,9 +27,9 @@ def test__energy():
                 mult=mult, charge=charge, scf_options=''
             )
 
-            # if we have an exectuable test command, try running it
-            if prog in RUN_ARGV_DCT:
-                out_str, _ = elstruct.run(RUN_ARGV_DCT[prog], inp_str)
+            # if we have a run script, try running it
+            if prog in SCRIPT_STR_DCT:
+                out_str, _ = elstruct.run(SCRIPT_STR_DCT[prog], inp_str)
                 ene = elstruct.reader.energy(prog, method, out_str)
                 print(ene)
 
@@ -53,9 +53,9 @@ def test__optimization():
                 zmat_var_dct=zmat_var_dct
             )
 
-            # if we have an exectuable test command, try running it
-            if prog in RUN_ARGV_DCT:
-                out_str, _ = elstruct.run(RUN_ARGV_DCT[prog], inp_str)
+            # if we have a run script, try running it
+            if prog in SCRIPT_STR_DCT:
+                out_str, _ = elstruct.run(SCRIPT_STR_DCT[prog], inp_str)
 
                 ene = elstruct.reader.energy(prog, method, out_str)
 
