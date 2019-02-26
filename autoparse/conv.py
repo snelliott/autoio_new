@@ -2,67 +2,59 @@
 """
 
 
-def single(capture, dtype):
+def single(capture, func):
     """ convert a single-capture to another datatype
 
     :param capture: a single-capture return value
     :type capture: str or None
-    :param dtype: a data type (int, float)
-    :type dtype: type
+    :param func: a string converter
+    :type func: callable
     """
-    assert isinstance(dtype, type)
-
     ret = capture
     if capture:
-        ret = dtype(capture) if capture else capture
+        ret = func(capture) if capture else capture
     return ret
 
 
-def multi(mcapture, dtypes):
+def multi(mcapture, funcs):
     """ convert a multi-capture to another datatype
 
     :param mcapture: a multi-capture return value
     :type mcapture: tuple[str] or None
-    :param dtypes: a sequence of data types (int, float)
-    :type dtypes: tuple[type]
+    :param funcs: a sequence of string converters
+    :type funcs: tuple[callable]
     """
-    assert all(isinstance(dtype, type) for dtype in dtypes)
 
     ret = mcapture
     if mcapture:
-        assert len(mcapture) == len(dtypes)
-        ret = tuple(dtype(capture) for capture, dtype in
-                    zip(mcapture, dtypes))
+        assert len(mcapture) == len(funcs)
+        ret = tuple(func(capture) for capture, func in zip(mcapture, funcs))
     return ret
 
 
-def singles(captures, dtype):
+def singles(captures, func):
     """ convert a sequence of single-captures to another datatype
 
     :param captures: a sequence of single-capture return values
     :type captures: tuple[str]
-    :param dtype: a data type (int, float)
-    :type dtype: type
+    :param func: a string converter
+    :type func: callable
     """
-    assert isinstance(dtype, type)
-
     ret = captures
     if captures:
-        ret = tuple(map(dtype, captures)) if captures else captures
+        ret = tuple(map(func, captures)) if captures else captures
     return ret
 
 
-def multis(mcaptures, dtypes):
+def multis(mcaptures, funcs):
     """ convert a sequence of multi-captures to another datatype
 
     :param mcaptures: a sequence of multi-capture return values
     :type mcaptures: tuple[tuple[str]]
-    :param dtypes: a sequence of data types (int, float)
-    :type dtypes: tuple[type]
+    :param funcs: a sequence of string converters
+    :type funcs: tuple[callable]
     """
-    assert all(isinstance(dtype, type) for dtype in dtypes)
-
     ret = mcaptures
     if mcaptures:
-        ret = tuple(multi(captures, dtypes) for captures in mcaptures)
+        ret = tuple(multi(captures, funcs) for captures in mcaptures)
     return ret
