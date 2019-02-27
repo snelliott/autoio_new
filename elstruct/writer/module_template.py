@@ -20,16 +20,14 @@ def energy(method, basis, geom, mult, charge,
            # machine options
            memory=1, comment='', machine_options='',
            # theory options
-           scf_options='', corr_options='',
-           # molecule/optimization options
-           zmat_var_dct=None):
+           scf_options='', corr_options=''):
     """ energy input string
 
     :param method: the electronic structure energy/wavefunction Ansatz
     :type method: str
     :param basis: the basis set
     :type basis: str
-    :param geom: cartesian or z-matrix internal coordinates
+    :param geom: cartesian or z-matrix geometry
     :type geom: tuple
     :param mult: spin multiplicity
     :type mult: int
@@ -47,8 +45,6 @@ def energy(method, basis, geom, mult, charge,
     :type scf_options: str
     :param corr_options: correlation method directives
     :type corr_options: str
-    :param zmat_var_dct: a dictionary of z-matrix variable names, keyed by
-        zero-index coordinates; something like this {(0, 1, 3, 4): 'd1', ...};
     """
 
     raise NotImplementedError(
@@ -56,7 +52,6 @@ def energy(method, basis, geom, mult, charge,
         mol_options,
         memory, comment, machine_options,
         corr_options, scf_options,
-        zmat_var_dct
     )
 
 
@@ -68,14 +63,14 @@ def optimization(method, basis, geom, mult, charge,
                  # theory options
                  scf_options='', corr_options='',
                  # molecule/optimization options
-                 opt_options='', zmat_var_dct=None):
+                 opt_options=''):
     """ optimization input string
 
     :param method: the electronic structure energy/wavefunction Ansatz
     :type method: str
     :param basis: the basis set
     :type basis: str
-    :param geom: cartesian or z-matrix internal coordinates
+    :param geom: cartesian or z-matrix geometry
     :type geom: tuple
     :param mult: spin multiplicity
     :type mult: int
@@ -95,8 +90,6 @@ def optimization(method, basis, geom, mult, charge,
     :type corr_options: str
     :param opt_options: geometry optimization routine directives
     :type opt_options: str
-    :param zmat_var_dct: a dictionary of z-matrix variable names, keyed by
-        zero-index coordinates; something like this {(0, 1, 3, 4): 'd1', ...};
     """
 
     raise NotImplementedError(
@@ -104,5 +97,5 @@ def optimization(method, basis, geom, mult, charge,
         charge, mol_options,
         memory, comment, machine_options,
         corr_options, scf_options,
-        opt_options, zmat_var_dct
+        opt_options,
     )

@@ -15,8 +15,10 @@ __all__ = [
     'programs',
     'method_list',
     'basis_list',
+    'energy_argument_keys',
     'energy',
     # optimizations
     'optimization_programs',
+    'optimization_argument_keys',
     'optimization',
 ]

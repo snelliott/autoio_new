@@ -30,9 +30,7 @@ def energy(method, basis, geom, mult, charge,
            # machine options
            memory=1, comment='', machine_options='',
            # theory options
-           scf_options='', corr_options='',
-           # molecule/optimization options
-           zmat_var_dct=None):
+           scf_options='', corr_options=''):
     """ energy input string
     """
     assert method in method_list()
@@ -42,7 +40,7 @@ def energy(method, basis, geom, mult, charge,
     fill_dct.update(machine.fillvalue_dictionary(comment, memory,
                                                  machine_options))
     fill_dct.update(molecule.fillvalue_dictionary(geom, charge, mult,
-                                                  mol_options, zmat_var_dct))
+                                                  mol_options))
     fill_dct.update(theory.fillvalue_dictionary(method, basis, scf_options,
                                                 corr_options))
     fill_dct.update(job.fillvalue_dictionary(job_key))
@@ -58,7 +56,7 @@ def optimization(method, basis, geom, mult, charge,
                  # theory options
                  scf_options='', corr_options='',
                  # molecule/optimization options
-                 opt_options='', zmat_var_dct=None):
+                 opt_options=''):
     """ optimization input string
     """
     assert method in method_list()
@@ -68,7 +66,7 @@ def optimization(method, basis, geom, mult, charge,
     fill_dct.update(machine.fillvalue_dictionary(comment, memory,
                                                  machine_options))
     fill_dct.update(molecule.fillvalue_dictionary(geom, charge, mult,
-                                                  mol_options, zmat_var_dct))
+                                                  mol_options))
     fill_dct.update(theory.fillvalue_dictionary(method, basis, scf_options,
                                                 corr_options))
     fill_dct.update(job.fillvalue_dictionary(job_key, opt_options))

@@ -12,7 +12,7 @@ def _rhf_energy(output_string):
         app.capturing(app.FLOAT)
     ])
     cap = apf.last_capture(pattern, output_string)
-    val = apc.single(cap, dtype=float)
+    val = apc.single(cap, func=float)
     return val
 
 
@@ -22,7 +22,7 @@ def _uhf_energy(output_string):
         app.capturing(app.FLOAT)
     ])
     cap = apf.last_capture(pattern, output_string)
-    val = apc.single(cap, dtype=float)
+    val = apc.single(cap, func=float)
     return val
 
 
@@ -32,7 +32,7 @@ def _rohf_energy(output_string):
         app.capturing(app.FLOAT)
     ])
     cap = apf.last_capture(pattern, output_string)
-    val = apc.single(cap, dtype=float)
+    val = apc.single(cap, func=float)
     return val
 
 
@@ -43,7 +43,7 @@ def _mp2_energy(output_string):
         app.capturing(app.FLOAT)
     ])
     cap = apf.last_capture(pattern, output_string)
-    val = apc.single(cap, dtype=float)
+    val = apc.single(cap, func=float)
     return val
 
 
