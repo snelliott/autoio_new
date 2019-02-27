@@ -21,4 +21,4 @@ dependencies:
     - psi4::psi4
     - pacchem::autoparse
     - pacchem::autocom
-    - pacchem::automol
+    - pacchem::autochem

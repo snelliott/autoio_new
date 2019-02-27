@@ -4,22 +4,20 @@ import automol
 from . import template_keys
 
 
-def fillvalue_dictionary(geom, charge, mult, mol_options, zmat_var_dct):
+def fillvalue_dictionary(geom, charge, mult, mol_options):
     """ get the template fill values for molecular geometry and state
     """
 
     if automol.geom.is_valid(geom):
         geom_str = automol.geom.string(geom)
-        zmat_vals = ''
+        zmat_setval_str = ''
     else:
-        zmat_var_dct = {} if zmat_var_dct is None else zmat_var_dct
-        geom_str = automol.zmatrix.zmat_string_matrix_block(geom, zmat_var_dct)
-        zmat_vals = automol.zmatrix.zmat_string_variable_block(geom,
-                                                               zmat_var_dct)
+        geom_str = automol.zmatrix.matrix_block_string(geom)
+        zmat_setval_str = automol.zmatrix.setval_block_string(geom)
 
     fill_dct = {
         template_keys.GEOMETRY: geom_str,
-        template_keys.ZMATRIX_VALUES: zmat_vals,
+        template_keys.ZMATRIX_VALUES: zmat_setval_str,
         template_keys.CHARGE: charge,
         template_keys.MULTIPLICITY: mult,
         template_keys.MOL_OPTIONS: mol_options,
