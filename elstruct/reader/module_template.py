@@ -4,32 +4,27 @@
 
 # energy
 def method_list():
-    """ list of available electronic structure methods
-    """
+    """ _ """
     raise NotImplementedError
 
 
 def energy(method, output_string):
-    """ get total energy from output
-    """
+    """ _ """
     raise NotImplementedError
 
 
 # optimization
 def optimized_geometry(output_string):
-    """ get optimized cartesian geometry from output
-    """
+    """ _ """
     raise NotImplementedError(output_string)
 
 
 def optimized_zmatrix(output_string):
-    """ get optimized z-matrix from output
-    """
+    """ _ """
     raise NotImplementedError(output_string)
 
 
 # status
-def ran_successfully(output_string):
-    """ did this job run successfully?
-    """
+def has_normal_exit_message(output_string):
+    """ _ """
     raise NotImplementedError(output_string)

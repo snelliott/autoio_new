@@ -30,7 +30,7 @@ def run(script_str, input_str,
         with open(output_name, 'r') as output_obj:
             output_str = output_obj.read()
 
-    return output_str, tmp_dir
+    return output_str
 
 
 class _EnterDirectory():
