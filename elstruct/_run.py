@@ -3,6 +3,7 @@
 import os
 import tempfile
 import subprocess
+import warnings
 
 
 def run(script_str, input_str,
@@ -24,7 +25,14 @@ def run(script_str, input_str,
             input_obj.write(input_str)
 
         # call the electronic structure program
-        subprocess.check_call([shell_exe, script_name])
+        try:
+            subprocess.check_call([shell_exe, script_name])
+        except subprocess.CalledProcessError as err:
+            # as long as the program wrote an output, continue with a warning
+            if os.path.isfile(output_name):
+                warnings.warn("elstruct run failed in {}".format(tmp_dir))
+            else:
+                raise err
 
         # read the output string from the run directory
         with open(output_name, 'r') as output_obj:
