@@ -30,8 +30,12 @@ def test__energy():
 
             # if we have a run script, try running it
             if prog in SCRIPT_STR_DCT:
-                out_str, _ = elstruct.run(SCRIPT_STR_DCT[prog], inp_str)
+                out_str = elstruct.run(SCRIPT_STR_DCT[prog], inp_str)
+
+                assert elstruct.reader.has_normal_exit_message(prog, out_str)
+
                 ene = elstruct.reader.energy(prog, method, out_str)
+
                 print(ene)
 
 
@@ -56,7 +60,9 @@ def test__optimization():
 
             # if we have a run script, try running it
             if prog in SCRIPT_STR_DCT:
-                out_str, _ = elstruct.run(SCRIPT_STR_DCT[prog], inp_str)
+                out_str = elstruct.run(SCRIPT_STR_DCT[prog], inp_str)
+
+                assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
                 ene = elstruct.reader.energy(prog, method, out_str)
 

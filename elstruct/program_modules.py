@@ -13,16 +13,6 @@ PROGRAM_MODULE_NAME_DCT = {
 }
 
 
-def function_argument_keys(function):
-    """ return keys to the required and optional arguments of a function
-    """
-    argspec = _getargspec(function)
-    ndefault = len(argspec.defaults) if argspec.defaults is not None else 0
-    req_arg_key_lst = tuple(argspec.args[:-ndefault])
-    opt_arg_key_lst = tuple(argspec.args[-ndefault:])
-    return req_arg_key_lst, opt_arg_key_lst
-
-
 def call_module_function(prog, module_type, function_template,
                          *args, **kwargs):
     """ call the module implementation of a given function
