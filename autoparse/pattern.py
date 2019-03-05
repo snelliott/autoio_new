@@ -24,6 +24,10 @@ from ._lib import SPACES
 from ._lib import LINESPACE
 from ._lib import LINESPACES
 from ._lib import NONSPACE
+from ._lib import MAYBE_LINESPACES
+from ._lib import PADDED_LINE_START
+from ._lib import PADDED_LINE_END
+from ._lib import PADDED_NEWLINE
 from ._lib import UPPERCASE_LETTER
 from ._lib import LOWERCASE_LETTER
 from ._lib import PLUS
@@ -66,6 +70,10 @@ __all__ = [
     'LINESPACE',
     'LINESPACES',
     'NONSPACE',
+    'MAYBE_LINESPACES',
+    'PADDED_LINE_START',
+    'PADDED_LINE_END',
+    'PADDED_NEWLINE',
     'UPPERCASE_LETTER',
     'LOWERCASE_LETTER',
     'PLUS',
