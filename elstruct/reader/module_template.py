@@ -13,6 +13,18 @@ def energy(method, output_string):
     raise NotImplementedError
 
 
+# gradient
+def gradient(output_string):
+    """ _ """
+    raise NotImplementedError
+
+
+# hessian
+def hessian(output_string):
+    """ _ """
+    raise NotImplementedError
+
+
 # optimization
 def optimized_geometry(output_string):
     """ _ """

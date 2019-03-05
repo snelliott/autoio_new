@@ -65,4 +65,6 @@ class JOB():
     """ The type of job
     """
     ENERGY = 'energy'
+    GRADIENT = 'gradient'
+    HESSIAN = 'hessian'
     OPTIMIZATION = 'optimization'

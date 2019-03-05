@@ -43,7 +43,55 @@ def energy(method, basis, geom, mult, charge,
                                                   mol_options))
     fill_dct.update(theory.fillvalue_dictionary(method, basis, scf_options,
                                                 corr_options))
-    fill_dct.update(job.fillvalue_dictionary(job_key))
+    fill_dct.update(job.fillvalue_dictionary(method, job_key))
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
+
+
+def gradient(method, basis, geom, mult, charge,
+             # molecule options
+             mol_options='',
+             # machine options
+             memory=1, comment='', machine_options='',
+             # theory options
+             scf_options='', corr_options=''):
+    """ gradient input string
+    """
+    assert method in method_list()
+    job_key = par.JOB.GRADIENT
+
+    fill_dct = {}
+    fill_dct.update(machine.fillvalue_dictionary(comment, memory,
+                                                 machine_options))
+    fill_dct.update(molecule.fillvalue_dictionary(geom, charge, mult,
+                                                  mol_options))
+    fill_dct.update(theory.fillvalue_dictionary(method, basis, scf_options,
+                                                corr_options))
+    fill_dct.update(job.fillvalue_dictionary(method, job_key))
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
+
+
+def hessian(method, basis, geom, mult, charge,
+            # molecule options
+            mol_options='',
+            # machine options
+            memory=1, comment='', machine_options='',
+            # theory options
+            scf_options='', corr_options=''):
+    """ hessian input string
+    """
+    assert method in method_list()
+    job_key = par.JOB.HESSIAN
+
+    fill_dct = {}
+    fill_dct.update(machine.fillvalue_dictionary(comment, memory,
+                                                 machine_options))
+    fill_dct.update(molecule.fillvalue_dictionary(geom, charge, mult,
+                                                  mol_options))
+    fill_dct.update(theory.fillvalue_dictionary(method, basis, scf_options,
+                                                corr_options))
+    fill_dct.update(job.fillvalue_dictionary(method, job_key))
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
 
@@ -69,6 +117,7 @@ def optimization(method, basis, geom, mult, charge,
                                                   mol_options))
     fill_dct.update(theory.fillvalue_dictionary(method, basis, scf_options,
                                                 corr_options))
-    fill_dct.update(job.fillvalue_dictionary(job_key, opt_options))
+    fill_dct.update(job.fillvalue_dictionary(method, job_key,
+                                             job_options=opt_options))
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str

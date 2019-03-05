@@ -10,10 +10,12 @@ def run(script_str, input_str,
         shell_exe='bash',
         script_name='run.sh',
         input_name='input.dat',
-        output_name='output.dat'):
+        output_name='output.dat',
+        return_path=False):
     """ run the program in a temporary directory and return the output
     """
     tmp_dir = tempfile.mkdtemp()
+    print(tmp_dir)
 
     with _EnterDirectory(tmp_dir):
         # write the submit script to the run directory
@@ -38,12 +40,13 @@ def run(script_str, input_str,
         with open(output_name, 'r') as output_obj:
             output_str = output_obj.read()
 
-    return output_str
+    return output_str if not return_path else (output_str, tmp_dir)
 
 
 class _EnterDirectory():
 
     def __init__(self, directory):
+        assert os.path.isdir(directory)
         self.directory = directory
         self.working_directory = os.getcwd()
 

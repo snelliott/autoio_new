@@ -61,6 +61,72 @@ def energy_(prog, method):
     return functools.partial(energy, prog, method)
 
 
+# gradient
+def gradient_programs():
+    """ list of program modules implementing gradient readers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.gradient)
+
+
+def gradient(prog, output_string):
+    """ read gradient from the output string
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.gradient,
+        # *args
+        output_string)
+
+
+def gradient_(prog):
+    """ read gradient from the output string (callable)
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param method: electronic structure method
+    :type method: str
+    """
+    return functools.partial(gradient, prog)
+
+
+# hessian
+def hessian_programs():
+    """ list of program modules implementing hessian readers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.hessian)
+
+
+def hessian(prog, output_string):
+    """ read hessian from the output string
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.hessian,
+        # *args
+        output_string)
+
+
+def hessian_(prog):
+    """ read hessian from the output string (callable)
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param method: electronic structure method
+    :type method: str
+    """
+    return functools.partial(hessian, prog)
+
+
 # optimization
 def optimized_geometry_programs():
     """ list of program modules implementing optimized geometry readers

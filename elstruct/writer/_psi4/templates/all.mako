@@ -26,7 +26,22 @@ ${opt_options}
 % endif
 
 % if corr_method == '':
-${job_function}('scf')
+_, wfn = ${job_function}('scf', return_wfn=True, ${job_function_args})
 % else:
-${job_function}('${corr_method}')
+_, wfn = ${job_function}('${corr_method}', return_wfn=True, ${job_function_args})
+% endif
+
+% if job_function == 'gradient':
+grad = wfn.gradient()
+grad.name = 'Gradient'
+grad.print_out()
+% endif
+
+% if job_function == 'hessian':
+grad = wfn.gradient()
+grad.name = 'Gradient'
+grad.print_out()
+hess = wfn.hessian()
+hess.name = 'Hessian'
+hess.print_out()
 % endif

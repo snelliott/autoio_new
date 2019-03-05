@@ -110,6 +110,150 @@ def energy_(prog, method, basis, mult, charge,
         scf_options=scf_options, corr_options=corr_options)
 
 
+# gradient input writers
+def gradient_programs():
+    """ list of program modules implementing gradient input writers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.gradient)
+
+
+def gradient(prog, method, basis, geom, mult, charge,
+             # molecule options
+             mol_options='',
+             # machine options
+             memory=1, comment='', machine_options='',
+             # theory options
+             scf_options='', corr_options=''):
+    """ gradient input string
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param method: electronic structure method
+    :type method: str
+    :param basis: basis set
+    :type basis: str
+    :param geom: cartesian or z-matrix geometry
+    :type geom: tuple
+    :param mult: spin multiplicity
+    :type mult: int
+    :param charge: molecular charge
+    :type charge: int
+    :param mol_options: options for the molecule block
+    :type mol_options: str
+    ;param memory: memory in GB
+    :type memory: int
+    :param comment: a comment string to be placed at the top of the file
+    :type comment: str
+    :param machine_options: machine directives (num procs, num threads, etc.)
+    :type machine_options: str
+    :param scf_options: scf method directives
+    :type scf_options: str
+    :param corr_options: correlation method directives
+    :type corr_options: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.gradient,
+        # *args
+        method, basis, geom, mult, charge,
+        # **kwargs
+        mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options)
+
+
+def gradient_(prog, method, basis, mult, charge,
+              # molecule options
+              mol_options='',
+              # machine options
+              memory=1, comment='', machine_options='',
+              # theory options
+              scf_options='', corr_options=''):
+    """ callable gradient input writer, as a function of `geom`
+    """
+    return functools.partial(
+        gradient,
+        # *args (before geom)
+        prog, method, basis,
+        # *kwargs (after geom)
+        mult=mult, charge=charge, mol_options=mol_options,
+        memory=memory, comment=comment,
+        machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options)
+
+
+# hessian input writers
+def hessian_programs():
+    """ list of program modules implementing hessian input writers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.hessian)
+
+
+def hessian(prog, method, basis, geom, mult, charge,
+            # molecule options
+            mol_options='',
+            # machine options
+            memory=1, comment='', machine_options='',
+            # theory options
+            scf_options='', corr_options=''):
+    """ hessian input string
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param method: electronic structure method
+    :type method: str
+    :param basis: basis set
+    :type basis: str
+    :param geom: cartesian or z-matrix geometry
+    :type geom: tuple
+    :param mult: spin multiplicity
+    :type mult: int
+    :param charge: molecular charge
+    :type charge: int
+    :param mol_options: options for the molecule block
+    :type mol_options: str
+    ;param memory: memory in GB
+    :type memory: int
+    :param comment: a comment string to be placed at the top of the file
+    :type comment: str
+    :param machine_options: machine directives (num procs, num threads, etc.)
+    :type machine_options: str
+    :param scf_options: scf method directives
+    :type scf_options: str
+    :param corr_options: correlation method directives
+    :type corr_options: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.hessian,
+        # *args
+        method, basis, geom, mult, charge,
+        # **kwargs
+        mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options)
+
+
+def hessian_(prog, method, basis, mult, charge,
+             # molecule options
+             mol_options='',
+             # machine options
+             memory=1, comment='', machine_options='',
+             # theory options
+             scf_options='', corr_options=''):
+    """ callable hessian input writer, as a function of `geom`
+    """
+    return functools.partial(
+        hessian,
+        # *args (before geom)
+        prog, method, basis,
+        # *kwargs (after geom)
+        mult=mult, charge=charge, mol_options=mol_options,
+        memory=memory, comment=comment,
+        machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options)
+
+
 # optimization input writers
 def optimization_programs():
     """ list of program modules implementing optimization input writers

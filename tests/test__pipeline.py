@@ -25,7 +25,7 @@ def test__energy():
             print(prog, method)
             inp_str = elstruct.writer.energy(
                 prog=prog, method=method, basis=basis, geom=geom,
-                mult=mult, charge=charge, scf_options=''
+                mult=mult, charge=charge, scf_options='',
             )
 
             # if we have a run script, try running it
@@ -37,6 +37,77 @@ def test__energy():
                 ene = elstruct.reader.energy(prog, method, out_str)
 
                 print(ene)
+
+
+def test__gradient():
+    """ test elstruct gradient writes and reads
+    """
+    basis = 'sto-3g'
+    geom = (('O', (0., 0., 0.)),
+            ('H', (0., 2., 2.)),
+            ('H', (0., 2., -2.)))
+    mult = 1
+    charge = 0
+
+    for prog in elstruct.writer.gradient_programs():
+        assert prog in elstruct.reader.gradient_programs()
+        for method in elstruct.writer.method_list(prog):
+            print()
+            print(prog, method)
+            inp_str = elstruct.writer.gradient(
+                prog=prog, method=method, basis=basis, geom=geom,
+                mult=mult, charge=charge, scf_options=''
+            )
+
+            # if we have a run script, try running it
+            if prog in SCRIPT_STR_DCT:
+                out_str, tmp_dir = elstruct.run(SCRIPT_STR_DCT[prog], inp_str,
+                                                return_path=True)
+
+                print(tmp_dir)
+                assert elstruct.reader.has_normal_exit_message(prog, out_str)
+
+                ene = elstruct.reader.energy(prog, method, out_str)
+                grad = elstruct.reader.gradient(prog, out_str)
+
+                print(ene)
+                print(grad)
+
+
+def test__hessian():
+    """ test elstruct hessian writes and reads
+    """
+    basis = 'sto-3g'
+    geom = (('O', (0., 0., 0.)),
+            ('H', (0., 2., 2.)),
+            ('H', (0., 2., -2.)))
+    mult = 1
+    charge = 0
+
+    for prog in elstruct.writer.hessian_programs():
+        for method in elstruct.writer.method_list(prog):
+            print()
+            print(prog, method)
+            inp_str = elstruct.writer.hessian(
+                prog=prog, method=method, basis=basis, geom=geom,
+                mult=mult, charge=charge, scf_options='',
+            )
+
+            # if we have a run script, try running it
+            if prog in SCRIPT_STR_DCT:
+                out_str, tmp_dir = elstruct.run(SCRIPT_STR_DCT[prog], inp_str,
+                                                return_path=True)
+
+                print(tmp_dir)
+                assert elstruct.reader.has_normal_exit_message(prog, out_str)
+
+                ene = elstruct.reader.energy(prog, method, out_str)
+                grad = elstruct.reader.gradient(prog, out_str)
+                hess = elstruct.reader.hessian(prog, out_str)
+
+                print(ene)
+                print(grad)
+                print(hess)
 
 
 def test__optimization():
@@ -77,4 +148,6 @@ def test__optimization():
 
 if __name__ == '__main__':
     # test__energy()
+    # test__gradient()
+    # test__hessian()
     test__optimization()
