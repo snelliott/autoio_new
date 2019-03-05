@@ -50,6 +50,15 @@ BAD_XYZ_LINE_PATTERN = autoparse.pattern.LINESPACES.join([
 ])
 
 
+def test__first_capture():
+    """ test autoparse.find.first_capture
+    """
+    cap = autoparse.find.first_capture('(cl)', XYZ_STRING)
+    assert cap is None
+    cap = autoparse.find.first_capture('(cl)', XYZ_STRING, case=False)
+    assert cap == 'Cl'
+
+
 def test__variable_name():
     """ test autoparse.pattern.VARIABLE_NAME
     """
@@ -224,3 +233,4 @@ if __name__ == '__main__':
     test__singles()
     test__multi()
     test__multis()
+    test__first_capture()

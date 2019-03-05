@@ -14,72 +14,72 @@ from ._pattern import capturing as _capturing
 from ._more_patterns import block as _block_pattern
 
 
-def has_match(pattern, string):
+def has_match(pattern, string, case=True):
     """ does this string have a pattern match?
     """
-    match = re.search(pattern, string, flags=re.MULTILINE)
+    match = _re_search(pattern, string, case=case)
     return match is not None
 
 
-def full_match(pattern, string):
+def full_match(pattern, string, case=True):
     """ does this pattern match this *entire* string?
     """
     pattern_ = _STRING_START + pattern + _STRING_END
-    return has_match(pattern_, string)
+    return has_match(pattern_, string, case=case)
 
 
-def starts_with(pattern, string):
+def starts_with(pattern, string, case=True):
     """ does the string start with this pattern
     """
     start_pattern = _STRING_START + pattern
-    return has_match(start_pattern, string)
+    return has_match(start_pattern, string, case=case)
 
 
-def ends_with(pattern, string):
+def ends_with(pattern, string, case=True):
     """ does the string end with this pattern
     """
     end_pattern = pattern + _STRING_END
-    return has_match(end_pattern, string)
+    return has_match(end_pattern, string, case=case)
 
 
-def matcher(pattern):
+def matcher(pattern, case=True):
     """ return a boolean matching function
     """
-    return partial(has_match, pattern)
+    return partial(has_match, pattern, case=case)
 
 
-def all_captures(pattern, string):
+def all_captures(pattern, string, case=True):
     """ capture(s) for all matches of a capturing pattern
     """
-    return tuple(re.findall(pattern, string, flags=re.MULTILINE))
+    return tuple(_re_findall(pattern, string, case=case))
 
 
-def first_capture(pattern, string):
+def first_capture(pattern, string, case=True):
     """ capture(s) from first match for a capturing pattern
     """
-    match = re.search(pattern, string, flags=re.MULTILINE)
+    match = _re_search(pattern, string, case=case)
     return (match.group(1) if match and len(match.groups()) == 1 else
             match.groups() if match else None)
 
 
-def last_capture(pattern, string):
+def last_capture(pattern, string, case=True):
     """ capture(s) from first match for a capturing pattern
     """
-    caps_lst = all_captures(pattern, string)
+    caps_lst = all_captures(pattern, string, case=case)
     return caps_lst[-1] if caps_lst else None
 
 
-def first_named_capture(pattern, string):
+def first_named_capture(pattern, string, case=True):
     """ capture dictionary from first match for a pattern with named captures
     """
-    match = re.search(pattern, string, flags=re.MULTILINE)
+    match = _re_search(pattern, string, case=case)
     return match.groupdict() if match and match.groupdict() else None
 
 
-def split(pattern, string):
+def split(pattern, string, case=True):
     """ split string at matches
     """
-    return tuple(re.split(pattern, string, maxsplit=0, flags=re.MULTILINE))
+    return tuple(_re_split(pattern, string, case=case))
 
 
 def split_words(string):
@@ -94,10 +94,10 @@ def split_lines(string):
     return split(_NEWLINE, string)
 
 
-def remove(pattern, string):
+def remove(pattern, string, case=True):
     """ remove pattern matches
     """
-    return replace(pattern, '', string)
+    return replace(pattern, '', string, case=case)
 
 
 def remove_empty_lines(string):
@@ -112,13 +112,14 @@ def strip_spaces(string):
     """
     lspaces = _STRING_START + _SPACES
     rspaces = _SPACES + _STRING_END
-    return remove(lspaces, remove(rspaces, string))
+    rstrip_string = remove(rspaces, string)
+    return remove(lspaces, rstrip_string)
 
 
-def replace(pattern, repl, string):
+def replace(pattern, repl, string, case=True):
     """ replace pattern matches
     """
-    return re.sub(pattern, repl, string, count=0, flags=re.MULTILINE)
+    return _re_sub(pattern, repl, string, case=case)
 
 
 # data type checkers
@@ -129,50 +130,83 @@ def is_number(string):
 
 
 # advanced finders
-def all_blocks(start_pattern, end_pattern, string):
+def all_blocks(start_pattern, end_pattern, string, case=True):
     """ capture all (non-greedy) blocks bounded by two patterns
     """
     pattern = _capturing(_block_pattern(start_pattern, end_pattern))
-    return all_captures(pattern, string)
+    return all_captures(pattern, string, case=case)
 
 
-def first_block(start_pattern, end_pattern, string):
+def first_block(start_pattern, end_pattern, string, case=True):
     """ capture the first (non-greedy) block bounded by two patterns
     """
     pattern = _capturing(_block_pattern(start_pattern, end_pattern))
-    return first_capture(pattern, string)
+    return first_capture(pattern, string, case=case)
 
 
-def last_block(start_pattern, end_pattern, string):
+def last_block(start_pattern, end_pattern, string, case=True):
     """ capture the last (non-greedy) block bounded by two patterns
     """
     pattern = _capturing(_block_pattern(start_pattern, end_pattern))
-    return last_capture(pattern, string)
+    return last_capture(pattern, string, case=case)
 
 
-def first_matching_pattern(patterns, string):
+def first_matching_pattern(patterns, string, case=True):
     """ from a series of patterns, return the first one matching the string
     """
-    pattern = next(filter(partial(has_match, string=string), patterns), None)
+    _has_match = partial(has_match, string=string,
+                         case=case)
+    pattern = next(filter(_has_match, patterns), None)
     return pattern
 
 
-def first_matching_pattern_all_captures(patterns, string):
+def first_matching_pattern_all_captures(patterns, string, case=True):
     """ all captures from the first matching pattern
     """
-    pattern = first_matching_pattern(patterns, string)
-    return all_captures(pattern, string)
+    pattern = first_matching_pattern(patterns, string,
+                                     case=case)
+    return all_captures(pattern, string, case=case)
 
 
-def first_matching_pattern_first_capture(patterns, string):
+def first_matching_pattern_first_capture(patterns, string,
+                                         case=True):
     """ first capture from the first matching pattern
     """
-    pattern = first_matching_pattern(patterns, string)
-    return first_capture(pattern, string)
+    pattern = first_matching_pattern(patterns, string,
+                                     case=case)
+    return first_capture(pattern, string, case=case)
 
 
-def first_matching_pattern_last_capture(patterns, string):
+def first_matching_pattern_last_capture(patterns, string, case=True):
     """ last capture from the first matching pattern
     """
-    pattern = first_matching_pattern(patterns, string)
-    return last_capture(pattern, string)
+    pattern = first_matching_pattern(patterns, string,
+                                     case=case)
+    return last_capture(pattern, string, case=case)
+
+
+def _re_search(pattern, string, case=True):
+    flags = _re_flags(case=case)
+    return re.search(pattern, string, flags=flags)
+
+
+def _re_findall(pattern, string, case=True):
+    flags = _re_flags(case=case)
+    return re.findall(pattern, string, flags=flags)
+
+
+def _re_split(pattern, string, case=True):
+    flags = _re_flags(case=case)
+    return re.split(pattern, string, maxsplit=0, flags=flags)
+
+
+def _re_sub(pattern, repl, string, case=True):
+    flags = _re_flags(case=case)
+    return re.sub(pattern, repl, string, count=0, flags=flags)
+
+
+def _re_flags(case=True):
+    flags = re.MULTILINE
+    if not case:
+        flags |= re.IGNORECASE
+    return flags
