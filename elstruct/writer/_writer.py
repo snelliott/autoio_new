@@ -6,7 +6,6 @@ signature are checked before calling the function. The resulting function
 signatures are exactly those in module_template.py with `prog` inserted as the
 first required argument.
 """
-import functools
 from . import module_template
 from .. import program_modules as pm
 from .. import params as par
@@ -90,26 +89,6 @@ def energy(prog, method, basis, geom, mult, charge,
         scf_options=scf_options, corr_options=corr_options)
 
 
-def energy_(prog, method, basis, mult, charge,
-            # molecule options
-            mol_options=(),
-            # machine options
-            memory=1, comment='', machine_options=(),
-            # theory options
-            scf_options=(), corr_options=()):
-    """ callable energy input writer, as a function of `geom`
-    """
-    return functools.partial(
-        energy,
-        # *args (before geom)
-        prog, method, basis,
-        # *kwargs (after geom)
-        mult=mult, charge=charge, mol_options=mol_options,
-        memory=memory, comment=comment,
-        machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options)
-
-
 # gradient input writers
 def gradient_programs():
     """ list of program modules implementing gradient input writers
@@ -162,26 +141,6 @@ def gradient(prog, method, basis, geom, mult, charge,
         scf_options=scf_options, corr_options=corr_options)
 
 
-def gradient_(prog, method, basis, mult, charge,
-              # molecule options
-              mol_options=(),
-              # machine options
-              memory=1, comment='', machine_options=(),
-              # theory options
-              scf_options=(), corr_options=()):
-    """ callable gradient input writer, as a function of `geom`
-    """
-    return functools.partial(
-        gradient,
-        # *args (before geom)
-        prog, method, basis,
-        # *kwargs (after geom)
-        mult=mult, charge=charge, mol_options=mol_options,
-        memory=memory, comment=comment,
-        machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options)
-
-
 # hessian input writers
 def hessian_programs():
     """ list of program modules implementing hessian input writers
@@ -231,26 +190,6 @@ def hessian(prog, method, basis, geom, mult, charge,
         # **kwargs
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options)
-
-
-def hessian_(prog, method, basis, mult, charge,
-             # molecule options
-             mol_options=(),
-             # machine options
-             memory=1, comment='', machine_options=(),
-             # theory options
-             scf_options=(), corr_options=()):
-    """ callable hessian input writer, as a function of `geom`
-    """
-    return functools.partial(
-        hessian,
-        # *args (before geom)
-        prog, method, basis,
-        # *kwargs (after geom)
-        mult=mult, charge=charge, mol_options=mol_options,
-        memory=memory, comment=comment,
-        machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options)
 
 
@@ -307,28 +246,5 @@ def optimization(prog, method, basis, geom, mult, charge,
         # **kwargs
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
-        opt_options=opt_options)
-
-
-def optimization_(prog, method, basis, mult, charge,
-                  # molecule options
-                  mol_options=(),
-                  # machine options
-                  memory=1, comment='', machine_options=(),
-                  # theory options
-                  scf_options=(), corr_options=(),
-                  # molecule/optimization options
-                  opt_options=()):
-    """ callable optimization input writer, as a function of `geom`
-    """
-    return functools.partial(
-        optimization,
-        # *args (before geom)
-        prog, method, basis,
-        # *kwargs (after geom)
-        mult=mult, charge=charge, mol_options=mol_options,
-        memory=memory, comment=comment,
-        machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
         opt_options=opt_options)
