@@ -43,14 +43,14 @@ def fillvalue_dictionary(method, basis, scf_options, corr_options):
                        if corr_method is not None else '')
 
     # make sure we aren't setting corr_options for an SCF job
-    if corr_method_val == '':
-        assert corr_options == ''
+    if corr_method is None:
+        assert corr_options == ()
 
     fill_dct = {
         template_keys.BASIS: BASIS_DCT[basis],
         template_keys.SCF_METHOD: SCF_METHOD_DCT[scf_method],
         template_keys.CORR_METHOD: corr_method_val,
-        template_keys.SCF_OPTIONS: scf_options,
-        template_keys.CORR_OPTIONS: corr_options,
+        template_keys.SCF_OPTIONS: '\n'.join(scf_options),
+        template_keys.CORR_OPTIONS: '\n'.join(corr_options),
     }
     return fill_dct

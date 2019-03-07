@@ -3,13 +3,15 @@
 import os
 import tempfile
 import subprocess
+import warnings
 
 
 def run(script_str, input_str,
         shell_exe='bash',
         script_name='run.sh',
         input_name='input.dat',
-        output_name='output.dat'):
+        output_name='output.dat',
+        return_path=False):
     """ run the program in a temporary directory and return the output
     """
     tmp_dir = tempfile.mkdtemp()
@@ -24,18 +26,26 @@ def run(script_str, input_str,
             input_obj.write(input_str)
 
         # call the electronic structure program
-        subprocess.check_call([shell_exe, script_name])
+        try:
+            subprocess.check_call([shell_exe, script_name])
+        except subprocess.CalledProcessError as err:
+            # as long as the program wrote an output, continue with a warning
+            if os.path.isfile(output_name):
+                warnings.warn("elstruct run failed in {}".format(tmp_dir))
+            else:
+                raise err
 
         # read the output string from the run directory
         with open(output_name, 'r') as output_obj:
             output_str = output_obj.read()
 
-    return output_str
+    return output_str if not return_path else (output_str, tmp_dir)
 
 
 class _EnterDirectory():
 
     def __init__(self, directory):
+        assert os.path.isdir(directory)
         self.directory = directory
         self.working_directory = os.getcwd()
 

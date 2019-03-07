@@ -13,18 +13,40 @@ def energy(method, output_string):
     raise NotImplementedError
 
 
+# gradient
+def gradient(output_string):
+    """ _ """
+    raise NotImplementedError
+
+
+# hessian
+def hessian(output_string):
+    """ _ """
+    raise NotImplementedError
+
+
 # optimization
-def optimized_geometry(output_string):
+def opt_geometry(output_string):
     """ _ """
     raise NotImplementedError(output_string)
 
 
-def optimized_zmatrix(output_string):
+def opt_zmatrix(output_string):
     """ _ """
     raise NotImplementedError(output_string)
 
 
 # status
 def has_normal_exit_message(output_string):
+    """ _ """
+    raise NotImplementedError(output_string)
+
+
+def has_scf_nonconvergence_message(output_string):
+    """ _ """
+    raise NotImplementedError(output_string)
+
+
+def has_opt_nonconvergence_message(output_string):
     """ _ """
     raise NotImplementedError(output_string)
