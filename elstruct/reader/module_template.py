@@ -26,17 +26,27 @@ def hessian(output_string):
 
 
 # optimization
-def optimized_geometry(output_string):
+def opt_geometry(output_string):
     """ _ """
     raise NotImplementedError(output_string)
 
 
-def optimized_zmatrix(output_string):
+def opt_zmatrix(output_string):
     """ _ """
     raise NotImplementedError(output_string)
 
 
 # status
 def has_normal_exit_message(output_string):
+    """ _ """
+    raise NotImplementedError(output_string)
+
+
+def has_scf_nonconvergence_message(output_string):
+    """ _ """
+    raise NotImplementedError(output_string)
+
+
+def has_opt_nonconvergence_message(output_string):
     """ _ """
     raise NotImplementedError(output_string)

@@ -13,15 +13,19 @@ from ._reader import hessian_programs
 from ._reader import hessian
 from ._reader import hessian_
 # optimization
-from ._reader import optimized_geometry_programs
-from ._reader import optimized_geometry
-from ._reader import optimized_geometry_
-from ._reader import optimized_zmatrix_programs
-from ._reader import optimized_zmatrix
-from ._reader import optimized_zmatrix_
+from ._reader import opt_geometry_programs
+from ._reader import opt_geometry
+from ._reader import opt_geometry_
+from ._reader import opt_zmatrix_programs
+from ._reader import opt_zmatrix
+from ._reader import opt_zmatrix_
 # status
 from ._reader import has_normal_exit_message
 from ._reader import has_normal_exit_message_
+from ._reader import has_scf_nonconvergence_message
+from ._reader import has_scf_nonconvergence_message_
+from ._reader import has_opt_nonconvergence_message
+from ._reader import has_opt_nonconvergence_message_
 
 __all__ = [
     # energy
@@ -38,13 +42,17 @@ __all__ = [
     'hessian',
     'hessian_',
     # optimization
-    'optimized_geometry_programs',
-    'optimized_geometry',
-    'optimized_geometry_',
-    'optimized_zmatrix_programs',
-    'optimized_zmatrix',
-    'optimized_zmatrix_',
+    'opt_geometry_programs',
+    'opt_geometry',
+    'opt_geometry_',
+    'opt_zmatrix_programs',
+    'opt_zmatrix',
+    'opt_zmatrix_',
     # status
     'has_normal_exit_message',
     'has_normal_exit_message_',
+    'has_scf_nonconvergence_message',
+    'has_scf_nonconvergence_message_',
+    'has_opt_nonconvergence_message',
+    'has_opt_nonconvergence_message_',
 ]

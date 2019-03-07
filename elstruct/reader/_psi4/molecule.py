@@ -5,7 +5,7 @@ import autoparse.find as apf
 import automol
 
 
-def optimized_geometry(output_string):
+def opt_geometry(output_string):
     """ get optimized cartesian geometry from output
     """
     # idetify block of output string where optimized geometry is located
@@ -17,7 +17,7 @@ def optimized_geometry(output_string):
     return geom
 
 
-def optimized_zmatrix(output_string):
+def opt_zmatrix(output_string):
     """ get optimized z-matrix geometry from output
     """
     # idetify block of output string where optimized geometry is located

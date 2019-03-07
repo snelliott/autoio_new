@@ -15,7 +15,6 @@ def run(script_str, input_str,
     """ run the program in a temporary directory and return the output
     """
     tmp_dir = tempfile.mkdtemp()
-    print(tmp_dir)
 
     with _EnterDirectory(tmp_dir):
         # write the submit script to the run directory

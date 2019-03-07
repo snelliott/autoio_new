@@ -29,7 +29,7 @@ def fillvalue_dictionary(method, job_key, job_options=None):
 
     if job_options is not None:
         assert job_key in JOB_OPTIONS_KEY_DCT
-        fill_dct[JOB_OPTIONS_KEY_DCT[job_key]] = job_options
+        fill_dct[JOB_OPTIONS_KEY_DCT[job_key]] = '\n'.join(job_options)
 
     return fill_dct
 

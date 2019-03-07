@@ -1,5 +1,6 @@
 """ test elstruct writer/run/reader pipelines
 """
+import pytest
 import elstruct
 
 
@@ -25,18 +26,37 @@ def test__energy():
             print(prog, method)
             inp_str = elstruct.writer.energy(
                 prog=prog, method=method, basis=basis, geom=geom,
-                mult=mult, charge=charge, scf_options='',
+                mult=mult, charge=charge, scf_options=(),
             )
 
             # if we have a run script, try running it
             if prog in SCRIPT_STR_DCT:
                 out_str = elstruct.run(SCRIPT_STR_DCT[prog], inp_str)
 
-                assert elstruct.reader.has_normal_exit_message(prog, out_str)
+                assert elstruct.reader.has_normal_exit_message(
+                    prog, out_str)
 
                 ene = elstruct.reader.energy(prog, method, out_str)
 
                 print(ene)
+
+                # also check that the convergence error shows up on a failure
+                assert not elstruct.reader.has_scf_nonconvergence_message(
+                    prog, out_str)
+                inp_str = elstruct.writer.energy(
+                    prog=prog, method=method, basis=basis, geom=geom,
+                    mult=mult, charge=charge, scf_options=(
+                        'set scf maxiter 2',
+                    ),
+                )
+
+                with pytest.warns(UserWarning):
+                    out_str = elstruct.run(SCRIPT_STR_DCT[prog], inp_str)
+
+                assert not elstruct.reader.has_normal_exit_message(
+                    prog, out_str)
+                assert elstruct.reader.has_scf_nonconvergence_message(
+                    prog, out_str)
 
 
 def test__gradient():
@@ -56,7 +76,7 @@ def test__gradient():
             print(prog, method)
             inp_str = elstruct.writer.gradient(
                 prog=prog, method=method, basis=basis, geom=geom,
-                mult=mult, charge=charge, scf_options=''
+                mult=mult, charge=charge, scf_options=()
             )
 
             # if we have a run script, try running it
@@ -90,7 +110,7 @@ def test__hessian():
             print(prog, method)
             inp_str = elstruct.writer.hessian(
                 prog=prog, method=method, basis=basis, geom=geom,
-                mult=mult, charge=charge, scf_options='',
+                mult=mult, charge=charge, scf_options=(),
             )
 
             # if we have a run script, try running it
@@ -126,28 +146,50 @@ def test__optimization():
             print(prog, method)
             inp_str = elstruct.writer.optimization(
                 prog=prog, method=method, basis=basis, geom=geom,
-                mult=mult, charge=charge, scf_options='',
+                mult=mult, charge=charge, scf_options=(),
             )
 
             # if we have a run script, try running it
             if prog in SCRIPT_STR_DCT:
-                out_str = elstruct.run(SCRIPT_STR_DCT[prog], inp_str)
+                out_str, tmp_dir = elstruct.run(SCRIPT_STR_DCT[prog], inp_str,
+                                                return_path=True)
 
                 assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
                 ene = elstruct.reader.energy(prog, method, out_str)
 
-                zma = elstruct.reader.optimized_zmatrix(prog, out_str)
+                zma = elstruct.reader.opt_zmatrix(prog, out_str)
 
-                geo = elstruct.reader.optimized_geometry(prog, out_str)
+                geo = elstruct.reader.opt_geometry(prog, out_str)
 
+                print(tmp_dir)
                 print(ene)
                 print(zma)
                 print(geo)
 
+                # also check that the convergence error shows up on a failure
+                assert not elstruct.reader.has_opt_nonconvergence_message(
+                    prog, out_str)
+                inp_str = elstruct.writer.optimization(
+                    prog=prog, method=method, basis=basis, geom=geom,
+                    mult=mult, charge=charge, opt_options=(
+                        'set geom_maxiter 2',
+                    ),
+                )
+
+                with pytest.warns(UserWarning):
+                    out_str, tmp_dir = elstruct.run(SCRIPT_STR_DCT[prog],
+                                                    inp_str, return_path=True)
+
+                print(tmp_dir)
+                assert not elstruct.reader.has_normal_exit_message(
+                    prog, out_str)
+                assert elstruct.reader.has_opt_nonconvergence_message(
+                    prog, out_str)
+
 
 if __name__ == '__main__':
-    # test__energy()
     # test__gradient()
     # test__hessian()
+    # test__energy()
     test__optimization()

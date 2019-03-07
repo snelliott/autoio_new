@@ -128,14 +128,14 @@ def hessian_(prog):
 
 
 # optimization
-def optimized_geometry_programs():
+def opt_geometry_programs():
     """ list of program modules implementing optimized geometry readers
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.optimized_geometry)
+        MODULE_NAME, module_template.opt_geometry)
 
 
-def optimized_geometry(prog, output_string):
+def opt_geometry(prog, output_string):
     """ read optimized geometry from the output string
 
     :param prog: electronic structure program to use as a backend
@@ -144,29 +144,29 @@ def optimized_geometry(prog, output_string):
     :type output_string: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.optimized_geometry,
+        prog, MODULE_NAME, module_template.opt_geometry,
         # *args
         output_string)
 
 
-def optimized_geometry_(prog):
+def opt_geometry_(prog):
     """ read optimized geometry from the output string (callable)
 
     :param prog: electronic structure program to use as a backend
     :type prog: str
     """
-    return functools.partial(optimized_geometry, prog)
+    return functools.partial(opt_geometry, prog)
 
 
 # z-matrix geometry optimizations
-def optimized_zmatrix_programs():
+def opt_zmatrix_programs():
     """ list of program modules implementing optimized zmatrix readers
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.optimized_zmatrix)
+        MODULE_NAME, module_template.opt_zmatrix)
 
 
-def optimized_zmatrix(prog, output_string):
+def opt_zmatrix(prog, output_string):
     """ read optimized zmatrix from the output string
 
     :param prog: electronic structure program to use as a backend
@@ -175,18 +175,18 @@ def optimized_zmatrix(prog, output_string):
     :type output_string: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.optimized_zmatrix,
+        prog, MODULE_NAME, module_template.opt_zmatrix,
         # *args
         output_string)
 
 
-def optimized_zmatrix_(prog):
+def opt_zmatrix_(prog):
     """ read optimized zmatrix from the output string (callable)
 
     :param prog: electronic structure program to use as a backend
     :type prog: str
     """
-    return functools.partial(optimized_zmatrix, prog)
+    return functools.partial(opt_zmatrix, prog)
 
 
 # status
@@ -211,3 +211,50 @@ def has_normal_exit_message_(prog):
     :type prog: str
     """
     return functools.partial(has_normal_exit_message, prog)
+
+
+def has_scf_nonconvergence_message(prog, output_string):
+    """ does this output string have an SCF non-convergence message?
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.has_scf_nonconvergence_message,
+        # *args
+        output_string)
+
+
+def has_scf_nonconvergence_message_(prog):
+    """ does this output string have an optimization non-convergence message?
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    """
+    return functools.partial(has_scf_nonconvergence_message, prog)
+
+
+def has_opt_nonconvergence_message(prog, output_string):
+    """ does this output string have an optimization non-convergence message?
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.has_opt_nonconvergence_message,
+        # *args
+        output_string)
+
+
+def has_opt_nonconvergence_message_(prog):
+    """ does this output string have an optimization non-convergence message?
+    (callable)
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    """
+    return functools.partial(has_opt_nonconvergence_message, prog)

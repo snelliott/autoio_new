@@ -48,11 +48,11 @@ def basis_list(prog):
 
 def energy(prog, method, basis, geom, mult, charge,
            # molecule options
-           mol_options='',
+           mol_options=(),
            # machine options
-           memory=1, comment='', machine_options='',
+           memory=1, comment='', machine_options=(),
            # theory options
-           scf_options='', corr_options=''):
+           scf_options=(), corr_options=()):
     """ energy input string
 
     :param prog: electronic structure program to use as a backend
@@ -68,17 +68,17 @@ def energy(prog, method, basis, geom, mult, charge,
     :param charge: molecular charge
     :type charge: int
     :param mol_options: options for the molecule block
-    :type mol_options: str
+    :type mol_options: tuple[str]
     ;param memory: memory in GB
     :type memory: int
     :param comment: a comment string to be placed at the top of the file
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: str
+    :type machine_options: tuple[str]
     :param scf_options: scf method directives
-    :type scf_options: str
+    :type scf_options: tuple[str]
     :param corr_options: correlation method directives
-    :type corr_options: str
+    :type corr_options: tuple[str]
     """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
@@ -92,11 +92,11 @@ def energy(prog, method, basis, geom, mult, charge,
 
 def energy_(prog, method, basis, mult, charge,
             # molecule options
-            mol_options='',
+            mol_options=(),
             # machine options
-            memory=1, comment='', machine_options='',
+            memory=1, comment='', machine_options=(),
             # theory options
-            scf_options='', corr_options=''):
+            scf_options=(), corr_options=()):
     """ callable energy input writer, as a function of `geom`
     """
     return functools.partial(
@@ -120,11 +120,11 @@ def gradient_programs():
 
 def gradient(prog, method, basis, geom, mult, charge,
              # molecule options
-             mol_options='',
+             mol_options=(),
              # machine options
-             memory=1, comment='', machine_options='',
+             memory=1, comment='', machine_options=(),
              # theory options
-             scf_options='', corr_options=''):
+             scf_options=(), corr_options=()):
     """ gradient input string
 
     :param prog: electronic structure program to use as a backend
@@ -140,17 +140,17 @@ def gradient(prog, method, basis, geom, mult, charge,
     :param charge: molecular charge
     :type charge: int
     :param mol_options: options for the molecule block
-    :type mol_options: str
+    :type mol_options: tuple[str]
     ;param memory: memory in GB
     :type memory: int
     :param comment: a comment string to be placed at the top of the file
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: str
+    :type machine_options: tuple[str]
     :param scf_options: scf method directives
-    :type scf_options: str
+    :type scf_options: tuple[str]
     :param corr_options: correlation method directives
-    :type corr_options: str
+    :type corr_options: tuple[str]
     """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.gradient,
@@ -164,11 +164,11 @@ def gradient(prog, method, basis, geom, mult, charge,
 
 def gradient_(prog, method, basis, mult, charge,
               # molecule options
-              mol_options='',
+              mol_options=(),
               # machine options
-              memory=1, comment='', machine_options='',
+              memory=1, comment='', machine_options=(),
               # theory options
-              scf_options='', corr_options=''):
+              scf_options=(), corr_options=()):
     """ callable gradient input writer, as a function of `geom`
     """
     return functools.partial(
@@ -192,11 +192,11 @@ def hessian_programs():
 
 def hessian(prog, method, basis, geom, mult, charge,
             # molecule options
-            mol_options='',
+            mol_options=(),
             # machine options
-            memory=1, comment='', machine_options='',
+            memory=1, comment='', machine_options=(),
             # theory options
-            scf_options='', corr_options=''):
+            scf_options=(), corr_options=()):
     """ hessian input string
 
     :param prog: electronic structure program to use as a backend
@@ -212,17 +212,17 @@ def hessian(prog, method, basis, geom, mult, charge,
     :param charge: molecular charge
     :type charge: int
     :param mol_options: options for the molecule block
-    :type mol_options: str
+    :type mol_options: tuple[str]
     ;param memory: memory in GB
     :type memory: int
     :param comment: a comment string to be placed at the top of the file
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: str
+    :type machine_options: tuple[str]
     :param scf_options: scf method directives
-    :type scf_options: str
+    :type scf_options: tuple[str]
     :param corr_options: correlation method directives
-    :type corr_options: str
+    :type corr_options: tuple[str]
     """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.hessian,
@@ -236,11 +236,11 @@ def hessian(prog, method, basis, geom, mult, charge,
 
 def hessian_(prog, method, basis, mult, charge,
              # molecule options
-             mol_options='',
+             mol_options=(),
              # machine options
-             memory=1, comment='', machine_options='',
+             memory=1, comment='', machine_options=(),
              # theory options
-             scf_options='', corr_options=''):
+             scf_options=(), corr_options=()):
     """ callable hessian input writer, as a function of `geom`
     """
     return functools.partial(
@@ -264,13 +264,13 @@ def optimization_programs():
 
 def optimization(prog, method, basis, geom, mult, charge,
                  # molecule options
-                 mol_options='',
+                 mol_options=(),
                  # machine options
-                 memory=1, comment='', machine_options='',
+                 memory=1, comment='', machine_options=(),
                  # theory options
-                 scf_options='', corr_options='',
+                 scf_options=(), corr_options=(),
                  # molecule/optimization options
-                 opt_options=''):
+                 opt_options=()):
     """ optimization input string
 
     :param prog: electronic structure program to use as a backend
@@ -286,19 +286,19 @@ def optimization(prog, method, basis, geom, mult, charge,
     :param charge: molecular charge
     :type charge: int
     :param mol_options: options for the molecule block
-    :type mol_options: str
+    :type mol_options: tuple[str]
     ;param memory: memory in GB
     :type memory: int
     :param comment: a comment string to be placed at the top of the file
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: str
+    :type machine_options: tuple[str]
     :param scf_options: scf method directives
-    :type scf_options: str
+    :type scf_options: tuple[str]
     :param corr_options: correlation method directives
-    :type corr_options: str
+    :type corr_options: tuple[str]
     :param opt_options: geometry optimization routine directives
-    :type opt_options: str
+    :type opt_options: tuple[str]
     """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.optimization,
@@ -313,13 +313,13 @@ def optimization(prog, method, basis, geom, mult, charge,
 
 def optimization_(prog, method, basis, mult, charge,
                   # molecule options
-                  mol_options='',
+                  mol_options=(),
                   # machine options
-                  memory=1, comment='', machine_options='',
+                  memory=1, comment='', machine_options=(),
                   # theory options
-                  scf_options='', corr_options='',
+                  scf_options=(), corr_options=(),
                   # molecule/optimization options
-                  opt_options=''):
+                  opt_options=()):
     """ callable optimization input writer, as a function of `geom`
     """
     return functools.partial(

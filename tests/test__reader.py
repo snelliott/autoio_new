@@ -16,20 +16,20 @@ def test__method_list():
         assert reader.method_list(prog)  # make sure it isn't empty
 
 
-def test__optimized_geometry_programs():
-    """ test elstruct.reader.optimized_geometry_programs
+def test__opt_geometry_programs():
+    """ test elstruct.reader.opt_geometry_programs
     """
-    assert reader.optimized_geometry_programs() == ('psi4',)
+    assert reader.opt_geometry_programs() == ('psi4',)
 
 
-def test__optimized_zmatrix_programs():
-    """ test elstruct.reader.optimized_zmatrix_programs
+def test__opt_zmatrix_programs():
+    """ test elstruct.reader.opt_zmatrix_programs
     """
-    assert reader.optimized_zmatrix_programs() == ('psi4',)
+    assert reader.opt_zmatrix_programs() == ('psi4',)
 
 
 if __name__ == '__main__':
     test__programs()
     test__method_list()
-    test__optimized_geometry_programs()
-    test__optimized_zmatrix_programs()
+    test__opt_geometry_programs()
+    test__opt_zmatrix_programs()

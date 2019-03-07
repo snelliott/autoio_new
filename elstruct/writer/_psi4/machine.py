@@ -9,6 +9,6 @@ def fillvalue_dictionary(comment, memory, machine_options):
     fill_dct = {
         template_keys.COMMENT: comment,
         template_keys.MEMORY: memory,
-        template_keys.MACHINE_OPTIONS: machine_options,
+        template_keys.MACHINE_OPTIONS: '\n'.join(machine_options),
     }
     return fill_dct

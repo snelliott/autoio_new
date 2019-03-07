@@ -20,6 +20,6 @@ def fillvalue_dictionary(geom, charge, mult, mol_options):
         template_keys.ZMATRIX_VALUES: zmat_setval_str,
         template_keys.CHARGE: charge,
         template_keys.MULTIPLICITY: mult,
-        template_keys.MOL_OPTIONS: mol_options,
+        template_keys.MOL_OPTIONS: '\n'.join(mol_options),
     }
     return fill_dct
