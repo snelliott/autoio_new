@@ -42,11 +42,11 @@ def has_normal_exit_message(output_string):
     raise NotImplementedError(output_string)
 
 
-def has_scf_nonconvergence_message(output_string):
+def error_list():
     """ _ """
-    raise NotImplementedError(output_string)
+    raise NotImplementedError()
 
 
-def has_opt_nonconvergence_message(output_string):
+def has_error_message(error, output_string):
     """ _ """
-    raise NotImplementedError(output_string)
+    raise NotImplementedError(error, output_string)

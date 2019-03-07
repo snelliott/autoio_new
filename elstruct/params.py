@@ -68,3 +68,22 @@ class JOB():
     GRADIENT = 'gradient'
     HESSIAN = 'hessian'
     OPTIMIZATION = 'optimization'
+
+
+class ERROR():
+    """ Job errors
+    """
+    SCF_NOCONV = 'scf_noconv'
+    OPT_NOCONV = 'opt_noconv'
+
+
+class OPTION():
+    """ Writer options
+    """
+    class SCF():
+        """ SCF options """
+        KEY = 'scf_options'
+
+    class OPT():
+        """ optimization options """
+        KEY = 'opt_options'

@@ -48,7 +48,7 @@ def _mp2_energy(output_string):
 
 
 # a dictionary of functions for reading the energy from the output, by method
-ENERGY_FINDERS = {
+ENERGY_READER_DCT = {
     par.METHOD.RHF: _rhf_energy,
     par.METHOD.UHF: _uhf_energy,
     par.METHOD.ROHF: _rohf_energy,
@@ -61,13 +61,13 @@ ENERGY_FINDERS = {
 def method_list():
     """ list of available electronic structure methods
     """
-    return tuple(sorted(ENERGY_FINDERS.keys()))
+    return tuple(sorted(ENERGY_READER_DCT.keys()))
 
 
 def energy(method, output_string):
     """ get total energy from output
     """
     assert method in method_list()
-    # get the appropriate finder and call it
-    energy_finder = ENERGY_FINDERS[method]
-    return energy_finder(output_string)
+    # get the appropriate reader and call it
+    energy_reader = ENERGY_READER_DCT[method]
+    return energy_reader(output_string)

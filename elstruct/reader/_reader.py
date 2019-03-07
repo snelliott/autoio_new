@@ -152,29 +152,27 @@ def has_normal_exit_message(prog, output_string):
         output_string)
 
 
-def has_scf_nonconvergence_message(prog, output_string):
-    """ does this output string have an SCF non-convergence message?
+def error_list(prog):
+    """ list of errors that be identified from the output file
+
+    :param prog: the electronic structure program to use as a backend
+    :type prog: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.error_list)
+
+
+def has_error_message(prog, error, output_string):
+    """ does this output string have an error message?
 
     :param prog: electronic structure program to use as a backend
     :type prog: str
+    :param error: a key indicating the type of error message
+    :type error: str
     :param output_string: the program output string
     :type output_string: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.has_scf_nonconvergence_message,
+        prog, MODULE_NAME, module_template.has_error_message,
         # *args
-        output_string)
-
-
-def has_opt_nonconvergence_message(prog, output_string):
-    """ does this output string have an optimization non-convergence message?
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
-    """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.has_opt_nonconvergence_message,
-        # *args
-        output_string)
+        error, output_string)

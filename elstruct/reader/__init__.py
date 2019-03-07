@@ -16,8 +16,8 @@ from ._reader import opt_zmatrix_programs
 from ._reader import opt_zmatrix
 # status
 from ._reader import has_normal_exit_message
-from ._reader import has_scf_nonconvergence_message
-from ._reader import has_opt_nonconvergence_message
+from ._reader import error_list
+from ._reader import has_error_message
 
 __all__ = [
     # energy
@@ -37,6 +37,6 @@ __all__ = [
     'opt_zmatrix',
     # status
     'has_normal_exit_message',
-    'has_scf_nonconvergence_message',
-    'has_opt_nonconvergence_message',
+    'error_list',
+    'has_error_message',
 ]
