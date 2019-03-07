@@ -5,7 +5,6 @@ function that matches one in the module template -- both the function name and
 signature are checked. The resulting function signatures are exactly those in
 module_template.py with `prog` inserted as the first argument.
 """
-import functools
 from . import module_template
 from .. import program_modules as pm
 from .. import params as par
@@ -50,17 +49,6 @@ def energy(prog, method, output_string):
         method, output_string)
 
 
-def energy_(prog, method):
-    """ read energy from the output string (callable)
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param method: electronic structure method
-    :type method: str
-    """
-    return functools.partial(energy, prog, method)
-
-
 # gradient
 def gradient_programs():
     """ list of program modules implementing gradient readers
@@ -81,17 +69,6 @@ def gradient(prog, output_string):
         prog, MODULE_NAME, module_template.gradient,
         # *args
         output_string)
-
-
-def gradient_(prog):
-    """ read gradient from the output string (callable)
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param method: electronic structure method
-    :type method: str
-    """
-    return functools.partial(gradient, prog)
 
 
 # hessian
@@ -116,17 +93,6 @@ def hessian(prog, output_string):
         output_string)
 
 
-def hessian_(prog):
-    """ read hessian from the output string (callable)
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param method: electronic structure method
-    :type method: str
-    """
-    return functools.partial(hessian, prog)
-
-
 # optimization
 def opt_geometry_programs():
     """ list of program modules implementing optimized geometry readers
@@ -147,15 +113,6 @@ def opt_geometry(prog, output_string):
         prog, MODULE_NAME, module_template.opt_geometry,
         # *args
         output_string)
-
-
-def opt_geometry_(prog):
-    """ read optimized geometry from the output string (callable)
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    return functools.partial(opt_geometry, prog)
 
 
 # z-matrix geometry optimizations
@@ -180,15 +137,6 @@ def opt_zmatrix(prog, output_string):
         output_string)
 
 
-def opt_zmatrix_(prog):
-    """ read optimized zmatrix from the output string (callable)
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    return functools.partial(opt_zmatrix, prog)
-
-
 # status
 def has_normal_exit_message(prog, output_string):
     """ does this output string have a normal exit message?
@@ -204,57 +152,27 @@ def has_normal_exit_message(prog, output_string):
         output_string)
 
 
-def has_normal_exit_message_(prog):
-    """ does this output string have a normal exit message? (callable)
+def error_list(prog):
+    """ list of errors that be identified from the output file
 
-    :param prog: electronic structure program to use as a backend
+    :param prog: the electronic structure program to use as a backend
     :type prog: str
     """
-    return functools.partial(has_normal_exit_message, prog)
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.error_list)
 
 
-def has_scf_nonconvergence_message(prog, output_string):
-    """ does this output string have an SCF non-convergence message?
+def has_error_message(prog, error, output_string):
+    """ does this output string have an error message?
 
     :param prog: electronic structure program to use as a backend
     :type prog: str
+    :param error: a key indicating the type of error message
+    :type error: str
     :param output_string: the program output string
     :type output_string: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.has_scf_nonconvergence_message,
+        prog, MODULE_NAME, module_template.has_error_message,
         # *args
-        output_string)
-
-
-def has_scf_nonconvergence_message_(prog):
-    """ does this output string have an optimization non-convergence message?
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    return functools.partial(has_scf_nonconvergence_message, prog)
-
-
-def has_opt_nonconvergence_message(prog, output_string):
-    """ does this output string have an optimization non-convergence message?
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
-    """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.has_opt_nonconvergence_message,
-        # *args
-        output_string)
-
-
-def has_opt_nonconvergence_message_(prog):
-    """ does this output string have an optimization non-convergence message?
-    (callable)
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    return functools.partial(has_opt_nonconvergence_message, prog)
+        error, output_string)

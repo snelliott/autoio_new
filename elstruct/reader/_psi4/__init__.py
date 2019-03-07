@@ -6,8 +6,8 @@ from .surface import hessian
 from .molecule import opt_geometry
 from .molecule import opt_zmatrix
 from .status import has_normal_exit_message
-from .status import has_scf_nonconvergence_message
-from .status import has_opt_nonconvergence_message
+from .status import error_list
+from .status import has_error_message
 
 __all__ = [
     'method_list',
@@ -17,6 +17,6 @@ __all__ = [
     'opt_geometry',
     'opt_zmatrix',
     'has_normal_exit_message',
-    'has_scf_nonconvergence_message',
-    'has_opt_nonconvergence_message',
+    'error_list',
+    'has_error_message',
 ]
