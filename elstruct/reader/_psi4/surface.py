@@ -56,7 +56,9 @@ def hessian(output_string):
 
     hess = numpy.concatenate(hess_blocks, axis=1)
 
+    # make sure we ended up with a square symmetric matrix
     assert hess.ndim == 2 and hess.shape[0] == hess.shape[1]
+    assert numpy.allclose(hess, hess.T)
 
     return tuple(map(tuple, hess))
 

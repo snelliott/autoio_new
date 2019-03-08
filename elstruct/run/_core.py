@@ -2,7 +2,6 @@
 """
 import os
 import stat
-import tempfile
 import subprocess
 import warnings
 
@@ -11,7 +10,7 @@ INPUT_NAME = 'input.dat'
 OUTPUT_NAME = 'output.dat'
 
 
-def direct(script_str, input_writer,
+def direct(script_str, run_dir, input_writer,
            prog, method, basis, geom, mult, charge, **kwargs):
     """ generate an input file from arguments and run it directly
 
@@ -19,18 +18,16 @@ def direct(script_str, input_writer,
     :rtype: (str, str, str)
     """
     input_str = input_writer(prog, method, basis, geom, mult, charge, **kwargs)
-    output_str, run_dir = from_input_string(script_str, input_str)
-    return (input_str, output_str, run_dir)
+    output_str = from_input_string(script_str, run_dir, input_str)
+    return input_str, output_str
 
 
-def from_input_string(script_str, input_str):
+def from_input_string(script_str, run_dir, input_str):
     """ run the program in a temporary directory and return the output
 
     :returns: the output string and the run directory
     :rtype: (str, str)
     """
-    run_dir = tempfile.mkdtemp()
-
     with _EnterDirectory(run_dir):
         # write the submit script to the run directory
         with open(SCRIPT_NAME, 'w') as script_obj:
@@ -58,7 +55,7 @@ def from_input_string(script_str, input_str):
         with open(OUTPUT_NAME, 'r') as output_obj:
             output_str = output_obj.read()
 
-    return (output_str, run_dir)
+    return output_str
 
 
 class _EnterDirectory():
