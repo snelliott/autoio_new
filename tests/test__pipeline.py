@@ -1,5 +1,6 @@
 """ test elstruct writer/run/reader pipelines
 """
+import tempfile
 import pytest
 import elstruct
 
@@ -24,41 +25,43 @@ def test__energy():
         for method in elstruct.writer.method_list(prog):
             print()
             print(prog, method)
-            inp_str = elstruct.writer.energy(
-                prog=prog, method=method, basis=basis, geom=geom,
-                mult=mult, charge=charge, scf_options=(),
+
+            # for programs with no run test, at lest make sure we can generate
+            # an input file
+            _ = elstruct.writer.energy(
+                prog, method, basis, geom,
+                mult, charge, scf_options=(),
             )
 
             # if we have a run script, try running it
             if prog in SCRIPT_STR_DCT:
                 script_str = SCRIPT_STR_DCT[prog]
-                inp_str, out_str, tmp_dir = elstruct.run.direct(
-                    script_str, elstruct.writer.energy,
-                    prog=prog, method=method, basis=basis, geom=geom,
-                    mult=mult, charge=charge, scf_options=()
+                run_dir = tempfile.mkdtemp()
+                _, out_str = elstruct.run.direct(
+                    script_str, run_dir, elstruct.writer.energy,
+                    prog, method, basis, geom, mult, charge
                 )
 
-                assert elstruct.reader.has_normal_exit_message(
-                    prog, out_str)
+                assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
                 ene = elstruct.reader.energy(prog, method, out_str)
 
-                print(tmp_dir)
+                print(run_dir)
                 print(ene)
 
                 # also check that the convergence error shows up on a failure
                 assert not elstruct.reader.has_error_message(
                     prog, elstruct.ERROR.SCF_NOCONV, out_str)
-                inp_str = elstruct.writer.energy(
-                    prog=prog, method=method, basis=basis, geom=geom,
-                    mult=mult, charge=charge, scf_options=(
-                        'set scf maxiter 2',
-                    ),
-                )
 
+                run_dir = tempfile.mkdtemp()
                 with pytest.warns(UserWarning):
-                    out_str, tmp_dir = elstruct.run.from_input_string(
-                        script_str, inp_str)
+                    _, out_str = elstruct.run.direct(
+                        script_str, run_dir, elstruct.writer.energy,
+                        prog, method, basis, geom, mult, charge,
+                        scf_options=(
+                            'set scf maxiter 2',
+                        )
+                    )
 
                 assert not elstruct.reader.has_normal_exit_message(
                     prog, out_str)
@@ -81,18 +84,23 @@ def test__gradient():
         for method in elstruct.writer.method_list(prog):
             print()
             print(prog, method)
-            inp_str = elstruct.writer.gradient(
-                prog=prog, method=method, basis=basis, geom=geom,
-                mult=mult, charge=charge, scf_options=()
+
+            # for programs with no run test, at lest make sure we can generate
+            # an input file
+            _ = elstruct.writer.gradient(
+                prog, method, basis, geom,
+                mult, charge, scf_options=(),
             )
 
             # if we have a run script, try running it
             if prog in SCRIPT_STR_DCT:
                 script_str = SCRIPT_STR_DCT[prog]
-                out_str, tmp_dir = elstruct.run.from_input_string(
-                    script_str, inp_str)
+                run_dir = tempfile.mkdtemp()
+                _, out_str = elstruct.run.direct(
+                    script_str, run_dir, elstruct.writer.gradient,
+                    prog, method, basis, geom, mult, charge
+                )
 
-                print(tmp_dir)
                 assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
                 ene = elstruct.reader.energy(prog, method, out_str)
@@ -116,18 +124,22 @@ def test__hessian():
         for method in elstruct.writer.method_list(prog):
             print()
             print(prog, method)
-            inp_str = elstruct.writer.hessian(
-                prog=prog, method=method, basis=basis, geom=geom,
-                mult=mult, charge=charge, scf_options=(),
+
+            # for programs with no run test, at lest make sure we can generate
+            # an input file
+            _ = elstruct.writer.hessian(
+                prog, method, basis, geom, mult, charge
             )
 
             # if we have a run script, try running it
             if prog in SCRIPT_STR_DCT:
                 script_str = SCRIPT_STR_DCT[prog]
-                out_str, tmp_dir = elstruct.run.from_input_string(
-                    script_str, inp_str)
+                run_dir = tempfile.mkdtemp()
+                _, out_str = elstruct.run.direct(
+                    script_str, run_dir, elstruct.writer.hessian,
+                    prog, method, basis, geom, mult, charge
+                )
 
-                print(tmp_dir)
                 assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
                 ene = elstruct.reader.energy(prog, method, out_str)
@@ -152,27 +164,31 @@ def test__optimization():
 
     for prog in elstruct.writer.optimization_programs():
         for method in elstruct.writer.method_list(prog):
+            print()
             print(prog, method)
-            inp_str = elstruct.writer.optimization(
-                prog=prog, method=method, basis=basis, geom=geom,
-                mult=mult, charge=charge, scf_options=(),
+
+            # for programs with no run test, at lest make sure we can generate
+            # an input file
+            _ = elstruct.writer.optimization(
+                prog, method, basis, geom, mult, charge, opt_options=(),
             )
 
             # if we have a run script, try running it
             if prog in SCRIPT_STR_DCT:
                 script_str = SCRIPT_STR_DCT[prog]
-                out_str, tmp_dir = elstruct.run.from_input_string(
-                    script_str, inp_str)
+                run_dir = tempfile.mkdtemp()
+                _, out_str = elstruct.run.direct(
+                    script_str, run_dir, elstruct.writer.optimization,
+                    prog, method, basis, geom, mult, charge, opt_options=()
+                )
 
                 assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
                 ene = elstruct.reader.energy(prog, method, out_str)
-
                 zma = elstruct.reader.opt_zmatrix(prog, out_str)
-
                 geo = elstruct.reader.opt_geometry(prog, out_str)
 
-                print(tmp_dir)
+                print(run_dir)
                 print(ene)
                 print(zma)
                 print(geo)
@@ -180,18 +196,18 @@ def test__optimization():
                 # also check that the convergence error shows up on a failure
                 assert not elstruct.reader.has_error_message(
                     prog, elstruct.ERROR.OPT_NOCONV, out_str)
-                inp_str = elstruct.writer.optimization(
-                    prog=prog, method=method, basis=basis, geom=geom,
-                    mult=mult, charge=charge, opt_options=(
-                        'set geom_maxiter 2',
-                    ),
-                )
 
                 with pytest.warns(UserWarning):
-                    out_str, tmp_dir = elstruct.run.from_input_string(
-                        script_str, inp_str)
+                    run_dir = tempfile.mkdtemp()
+                    _, out_str = elstruct.run.direct(
+                        script_str, run_dir, elstruct.writer.optimization,
+                        prog, method, basis, geom, mult, charge,
+                        opt_options=(
+                            'set geom_maxiter 2',
+                        )
+                    )
 
-                print(tmp_dir)
+                print(run_dir)
                 assert not elstruct.reader.has_normal_exit_message(
                     prog, out_str)
                 assert elstruct.reader.has_error_message(
@@ -229,10 +245,13 @@ def test__run__robust():
     for prog in elstruct.writer.optimization_programs():
         if prog in SCRIPT_STR_DCT:
             script_str = SCRIPT_STR_DCT[prog]
-            _, out_str, run_dir = elstruct.run.robust(
-                script_str, input_writer,
+            run_dir = tempfile.mkdtemp()
+            _, out_str = elstruct.run.robust(
+                script_str, run_dir, input_writer,
                 prog, method, basis, geom, mult, charge,
-                errors=errors, options_mat=options_mat, **kwargs)
+                errors=errors, options_mat=options_mat, **kwargs
+            )
+
             assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
             ene = elstruct.reader.energy(prog, method, out_str)
@@ -243,8 +262,9 @@ def test__run__robust():
 
 
 if __name__ == '__main__':
+    # test__energy()
+    # test__energy()
     # test__gradient()
     # test__hessian()
     # test__optimization()
-    # test__energy()
     test__run__robust()
