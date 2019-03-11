@@ -13,6 +13,9 @@ jobs:
                 name: Run tests
                 command: |
                     source activate autoparse-env
+                    # temporary fix
+                    conda install -c conda-forge pylint>=2.3
+                    # temporary fix
                     python setup.py install
                     cd autoparse
                     pytest -v --cov=autoparse --pyargs autoparse

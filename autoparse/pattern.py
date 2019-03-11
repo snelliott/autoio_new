@@ -10,6 +10,10 @@ from ._pattern import one_or_more
 from ._pattern import one_of_these
 from ._pattern import capturing
 from ._pattern import named_capturing
+from ._pattern import series
+from ._more_patterns import lpadded
+from ._more_patterns import rpadded
+from ._more_patterns import padded
 from ._more_patterns import block
 # pattern constants
 from ._lib import STRING_START
@@ -24,17 +28,15 @@ from ._lib import SPACES
 from ._lib import LINESPACE
 from ._lib import LINESPACES
 from ._lib import NONSPACE
-from ._lib import MAYBE_LINESPACES
-from ._lib import PADDED_LINE_START
-from ._lib import PADDED_LINE_END
-from ._lib import PADDED_NEWLINE
 from ._lib import UPPERCASE_LETTER
 from ._lib import LOWERCASE_LETTER
 from ._lib import PLUS
 from ._lib import MINUS
 from ._lib import PERIOD
+from ._lib import UNDERSCORE
 from ._lib import LETTER
 from ._lib import DIGIT
+from ._lib import URLSAFE_CHAR
 from ._lib import SIGN
 from ._lib import UNSIGNED_INTEGER
 from ._lib import UNSIGNED_FLOAT
@@ -42,7 +44,6 @@ from ._lib import INTEGER
 from ._lib import FLOAT
 from ._lib import EXPONENTIAL_INTEGER
 from ._lib import EXPONENTIAL_FLOAT
-from ._lib import UNDERSCORE
 from ._lib import VARIABLE_NAME
 
 __all__ = [
@@ -56,6 +57,10 @@ __all__ = [
     'one_of_these',
     'capturing',
     'named_capturing',
+    'series',
+    'lpadded',
+    'rpadded',
+    'padded',
     'block',
     # pattern constants
     'STRING_START',
@@ -70,17 +75,15 @@ __all__ = [
     'LINESPACE',
     'LINESPACES',
     'NONSPACE',
-    'MAYBE_LINESPACES',
-    'PADDED_LINE_START',
-    'PADDED_LINE_END',
-    'PADDED_NEWLINE',
     'UPPERCASE_LETTER',
     'LOWERCASE_LETTER',
     'PLUS',
     'MINUS',
     'PERIOD',
+    'UNDERSCORE',
     'LETTER',
     'DIGIT',
+    'URLSAFE_CHAR',
     'SIGN',
     'UNSIGNED_INTEGER',
     'UNSIGNED_FLOAT',
@@ -88,6 +91,5 @@ __all__ = [
     'FLOAT',
     'EXPONENTIAL_INTEGER',
     'EXPONENTIAL_FLOAT',
-    'UNDERSCORE',
     'VARIABLE_NAME',
 ]
