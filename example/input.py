@@ -10,7 +10,8 @@ RUN_DIR = tempfile.mkdtemp()
 
 INP_STR, OUT_STR = elstruct.run.robust(
     # required arguments
-    script_str="#!/usr/bin/env bash\npsi4 >> stdout.log &> stderr.log",
+    script_str="#!/usr/bin/env bash\n"
+               "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log",
     run_dir=RUN_DIR,
     input_writer=elstruct.writer.optimization,
     prog=PROG,

@@ -6,8 +6,8 @@ import subprocess
 import warnings
 
 SCRIPT_NAME = 'run.sh'
-INPUT_NAME = 'input.dat'
-OUTPUT_NAME = 'output.dat'
+INPUT_NAME = 'run.inp'
+OUTPUT_NAME = 'run.out'
 
 
 def direct(script_str, run_dir, input_writer,

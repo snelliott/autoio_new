@@ -1,19 +1,19 @@
-""" hessian readers
+""" gradient and hessian readers
 """
 import numpy
 import autoparse.pattern as app
 import autoparse.find as apf
 
 ARRAY_BLOCK_HEAD_PATTERN = (
-    app.PADDED_NEWLINE +
+    app.padded(app.NEWLINE) +
     app.series(app.UNSIGNED_INTEGER, app.LINESPACES) +
-    app.PADDED_NEWLINE
+    app.padded(app.NEWLINE)
 )
 ARRAY_LINE_PATTERN = (
-    app.PADDED_LINE_START + app.UNSIGNED_INTEGER + app.LINESPACES +
+    app.LINE_START + app.padded(app.UNSIGNED_INTEGER) +
     app.series(app.FLOAT, app.LINESPACES)
 )
-ARRAY_BLOCK_PATTERN = app.series(ARRAY_LINE_PATTERN, app.PADDED_NEWLINE)
+ARRAY_BLOCK_PATTERN = app.series(ARRAY_LINE_PATTERN, app.padded(app.NEWLINE))
 
 
 def gradient(output_string):
@@ -42,7 +42,8 @@ def hessian(output_string):
         app.escape('## Total Hessian'),
         app.escape('## Hessian')])
     end_pattern = app.escape('***')
-    block_capturing_pattern = (ARRAY_BLOCK_HEAD_PATTERN + app.PADDED_NEWLINE +
+    block_capturing_pattern = (ARRAY_BLOCK_HEAD_PATTERN +
+                               app.padded(app.NEWLINE) +
                                app.capturing(ARRAY_BLOCK_PATTERN))
 
     wide_block_str = apf.last_block(start_pattern, end_pattern, output_string,
