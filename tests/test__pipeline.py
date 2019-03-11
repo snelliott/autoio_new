@@ -6,7 +6,8 @@ import elstruct
 
 
 SCRIPT_STR_DCT = {
-    'psi4': "#!/usr/bin/env bash\npsi4 >> stdout.log &> stderr.log"
+    'psi4': "#!/usr/bin/env bash\n"
+            "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log",
 }
 
 
@@ -265,6 +266,6 @@ if __name__ == '__main__':
     # test__energy()
     # test__energy()
     # test__gradient()
-    # test__hessian()
     # test__optimization()
-    test__run__robust()
+    # test__run__robust()
+    test__hessian()

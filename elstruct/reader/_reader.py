@@ -5,6 +5,7 @@ function that matches one in the module template -- both the function name and
 signature are checked. The resulting function signatures are exactly those in
 module_template.py with `prog` inserted as the first argument.
 """
+import functools
 from . import module_template
 from .. import program_modules as pm
 from .. import params as par
@@ -49,6 +50,16 @@ def energy(prog, method, output_string):
         method, output_string)
 
 
+def energy_(prog, method):
+    """ read energy from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param method: electronic structure method
+    :type method: str
+    """
+    return functools.partial(energy, prog, method)
+
+
 # gradient
 def gradient_programs():
     """ list of program modules implementing gradient readers
@@ -69,6 +80,16 @@ def gradient(prog, output_string):
         prog, MODULE_NAME, module_template.gradient,
         # *args
         output_string)
+
+
+def gradient_(prog):
+    """ read gradient from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param method: electronic structure method
+    :type method: str
+    """
+    return functools.partial(gradient, prog)
 
 
 # hessian
@@ -93,6 +114,16 @@ def hessian(prog, output_string):
         output_string)
 
 
+def hessian_(prog):
+    """ read hessian from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param method: electronic structure method
+    :type method: str
+    """
+    return functools.partial(hessian, prog)
+
+
 # optimization
 def opt_geometry_programs():
     """ list of program modules implementing optimized geometry readers
@@ -115,6 +146,14 @@ def opt_geometry(prog, output_string):
         output_string)
 
 
+def opt_geometry_(prog):
+    """ read optimized geometry from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    """
+    return functools.partial(opt_geometry, prog)
+
+
 # z-matrix geometry optimizations
 def opt_zmatrix_programs():
     """ list of program modules implementing optimized zmatrix readers
@@ -135,6 +174,14 @@ def opt_zmatrix(prog, output_string):
         prog, MODULE_NAME, module_template.opt_zmatrix,
         # *args
         output_string)
+
+
+def opt_zmatrix_(prog):
+    """ read optimized zmatrix from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    """
+    return functools.partial(opt_zmatrix, prog)
 
 
 # status

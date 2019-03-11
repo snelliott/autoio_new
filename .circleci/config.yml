@@ -14,6 +14,9 @@ jobs:
                 name: Run tests
                 command: |
                     source activate elstruct-env
+                    # temporary fix
+                    conda install -c conda-forge pylint>=2.3
+                    # temporary fix
                     python setup.py install
                     cd tests
                     pytest -v --cov=elstruct .
