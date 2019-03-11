@@ -2,6 +2,25 @@
 """
 from ._pattern import zero_or_more as _zero_or_more
 from ._lib import WILDCARD as _WILDCARD
+from ._lib import LINESPACE as _LINESPACE
+
+
+def lpadded(pattern):
+    """ a pattern allowing optional linespaces to the left
+    """
+    return _zero_or_more(_LINESPACE) + pattern
+
+
+def rpadded(pattern):
+    """ a pattern allowing optional linespaces to the right
+    """
+    return pattern + _zero_or_more(_LINESPACE)
+
+
+def padded(pattern):
+    """ a pattern allowing optional linespaces to the right
+    """
+    return _zero_or_more(_LINESPACE) + pattern + _zero_or_more(_LINESPACE)
 
 
 def block(start_pattern, end_pattern):

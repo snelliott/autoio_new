@@ -130,3 +130,16 @@ def named_capturing(pattern, name):
     :rtype: str
     """
     return r'(?P<{:s}>{:s})'.format(name, pattern)
+
+
+def series(pattern, sep_pattern):
+    """ repeated patters with an intervening separator pattern
+
+    :param pattern: an `re` pattern
+    :type pattern: str
+    :param sep_pattern: an `re` pattern
+    :type sep_pattern: str
+
+    :rtype: str
+    """
+    return pattern + zero_or_more(sep_pattern + pattern)

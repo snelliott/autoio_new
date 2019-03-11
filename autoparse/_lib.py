@@ -22,19 +22,16 @@ LINESPACE = r'[ \t]'     # non-newline space
 LINESPACES = one_or_more(LINESPACE)
 NONSPACE = r'\S'         # any non-space character
 
-MAYBE_LINESPACES = zero_or_more(LINESPACE)
-PADDED_LINE_START = LINE_START + MAYBE_LINESPACES
-PADDED_LINE_END = MAYBE_LINESPACES + LINE_END
-PADDED_NEWLINE = MAYBE_LINESPACES + NEWLINE + MAYBE_LINESPACES
-
 UPPERCASE_LETTER = r'[A-Z]'
 LOWERCASE_LETTER = r'[a-z]'
 LETTER = r'[A-Za-z]'
-
 DIGIT = r'[0-9]'
+MINUS = escape('-')
+UNDERSCORE = escape('_')
+# characters for urlsafe encoding with the `base64` standard library
+URLSAFE_CHAR = one_of_these([LETTER, DIGIT, MINUS, UNDERSCORE])
 
 PLUS = escape('+')
-MINUS = escape('-')
 SIGN = one_of_these([PLUS, MINUS])
 UNSIGNED_INTEGER = one_or_more(DIGIT)
 INTEGER = maybe(SIGN) + UNSIGNED_INTEGER
