@@ -71,7 +71,7 @@ def optimization(method, basis, geom, mult, charge,
                  # theory options
                  scf_options=(), corr_options=(),
                  # molecule/optimization options
-                 opt_options=()):
+                 frozen_coordinates=None, opt_options=()):
     """ _ """
 
     raise NotImplementedError(
@@ -79,5 +79,5 @@ def optimization(method, basis, geom, mult, charge,
         charge, mol_options,
         memory, comment, machine_options,
         corr_options, scf_options,
-        opt_options,
+        frozen_coordinates, opt_options,
     )

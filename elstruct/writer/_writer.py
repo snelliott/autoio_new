@@ -209,7 +209,7 @@ def optimization(prog, method, basis, geom, mult, charge,
                  # theory options
                  scf_options=(), corr_options=(),
                  # molecule/optimization options
-                 opt_options=()):
+                 frozen_coordinates=None, opt_options=()):
     """ optimization input string
 
     :param prog: electronic structure program to use as a backend
@@ -236,6 +236,9 @@ def optimization(prog, method, basis, geom, mult, charge,
     :type scf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
+    :param frozen_coordinates: only with z-matrix geometries; list of
+        coordinate names to freeze
+    :type fozen_coordinates: tuple[str]
     :param opt_options: geometry optimization routine directives
     :type opt_options: tuple[str]
     """
@@ -247,4 +250,4 @@ def optimization(prog, method, basis, geom, mult, charge,
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
-        opt_options=opt_options)
+        frozen_coordinates=frozen_coordinates, opt_options=opt_options)
