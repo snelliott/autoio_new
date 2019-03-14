@@ -25,4 +25,4 @@ JOB_FUNCTION = 'job_function'
 JOB_FUNCTION_ARGS = 'job_function_args'
 
 # set if job function is 'optimize'
-OPT_OPTIONS = 'opt_option'
+OPT_OPTIONS = 'opt_options'

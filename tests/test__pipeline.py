@@ -2,6 +2,8 @@
 """
 import tempfile
 import pytest
+import numpy
+import automol
 import elstruct
 
 
@@ -215,6 +217,56 @@ def test__optimization():
                     prog, elstruct.ERROR.OPT_NOCONV, out_str)
 
 
+def test__optimization_freeze_coordinates():
+    """ test elstruct optimization writes/reads with frozen coordinates
+    """
+    method = 'rhf'
+    basis = 'sto-3g'
+    geom = ((('O', (None, None, None), (None, None, None)),
+             ('O', (0, None, None), ('R1', None, None)),
+             ('H', (0, 1, None), ('R2', 'A2', None)),
+             ('H', (1, 0, 2), ('R2', 'A2', 'D3'))),
+            {'R1': 2.74776, 'R2': 1.84451, 'A2': 1.68900, 'D3': 2.25788})
+    mult = 1
+    charge = 0
+    frz_coo_names = ('R2', 'A2', 'D3')
+    ref_frz_vals = (1.84451, 1.68900, 2.25788)
+
+    for prog in elstruct.writer.optimization_programs():
+        print()
+        print(prog)
+
+        # for programs with no run test, at lest make sure we can generate
+        # an input file
+        _ = elstruct.writer.optimization(
+            prog, method, basis, geom, mult, charge, opt_options=(),
+        )
+
+        # if we have a run script, try running it
+        if prog in SCRIPT_STR_DCT:
+            script_str = SCRIPT_STR_DCT[prog]
+            run_dir = tempfile.mkdtemp()
+            _, out_str = elstruct.run.direct(
+                script_str, run_dir, elstruct.writer.optimization,
+                prog, method, basis, geom, mult, charge, opt_options=(),
+                frozen_coordinates=frz_coo_names,
+            )
+
+            assert elstruct.reader.has_normal_exit_message(prog, out_str)
+
+            ene = elstruct.reader.energy(prog, method, out_str)
+            zma = elstruct.reader.opt_zmatrix(prog, out_str)
+
+            print(run_dir)
+            print(ene)
+            print(zma)
+
+            # check that the frozen coordinates didn't change
+            val_dct = automol.zmatrix.values(zma)
+            frz_vals = tuple(map(val_dct.__getitem__, frz_coo_names))
+            assert numpy.allclose(frz_vals, ref_frz_vals)
+
+
 def test__run__robust():
     """ test elstruct.run.robust
     """
@@ -263,9 +315,9 @@ def test__run__robust():
 
 
 if __name__ == '__main__':
-    # test__energy()
+    # test__run__robust()
     # test__energy()
     # test__gradient()
+    # test__hessian()
     # test__optimization()
-    # test__run__robust()
-    test__hessian()
+    test__optimization_freeze_coordinates()
