@@ -5,22 +5,22 @@ from ._lib import WILDCARD as _WILDCARD
 from ._lib import LINESPACE as _LINESPACE
 
 
-def lpadded(pattern):
+def lpadded(pattern, fill_pattern=_LINESPACE):
     """ a pattern allowing optional linespaces to the left
     """
-    return _zero_or_more(_LINESPACE) + pattern
+    return _zero_or_more(fill_pattern) + pattern
 
 
-def rpadded(pattern):
+def rpadded(pattern, fill_pattern=_LINESPACE):
     """ a pattern allowing optional linespaces to the right
     """
-    return pattern + _zero_or_more(_LINESPACE)
+    return pattern + _zero_or_more(fill_pattern)
 
 
-def padded(pattern):
+def padded(pattern, fill_pattern=_LINESPACE):
     """ a pattern allowing optional linespaces to the right
     """
-    return _zero_or_more(_LINESPACE) + pattern + _zero_or_more(_LINESPACE)
+    return _zero_or_more(fill_pattern) + pattern + _zero_or_more(fill_pattern)
 
 
 def block(start_pattern, end_pattern):
