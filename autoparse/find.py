@@ -10,8 +10,6 @@ from ._lib import SPACES as _SPACES
 from ._lib import LINESPACES as _LINESPACES
 from ._lib import NUMBER as _NUMBER
 from ._pattern import maybe as _maybe
-from ._pattern import capturing as _capturing
-from ._more_patterns import block as _block_pattern
 
 
 def has_match(pattern, string, case=True):
@@ -130,27 +128,6 @@ def is_number(string):
 
 
 # advanced finders
-def all_blocks(start_pattern, end_pattern, string, case=True):
-    """ capture all (non-greedy) blocks bounded by two patterns
-    """
-    pattern = _capturing(_block_pattern(start_pattern, end_pattern))
-    return all_captures(pattern, string, case=case)
-
-
-def first_block(start_pattern, end_pattern, string, case=True):
-    """ capture the first (non-greedy) block bounded by two patterns
-    """
-    pattern = _capturing(_block_pattern(start_pattern, end_pattern))
-    return first_capture(pattern, string, case=case)
-
-
-def last_block(start_pattern, end_pattern, string, case=True):
-    """ capture the last (non-greedy) block bounded by two patterns
-    """
-    pattern = _capturing(_block_pattern(start_pattern, end_pattern))
-    return last_capture(pattern, string, case=case)
-
-
 def first_matching_pattern(patterns, string, case=True):
     """ from a series of patterns, return the first one matching the string
     """

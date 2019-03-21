@@ -14,7 +14,6 @@ from ._pattern import series
 from ._more_patterns import lpadded
 from ._more_patterns import rpadded
 from ._more_patterns import padded
-from ._more_patterns import block
 # pattern constants
 from ._lib import STRING_START
 from ._lib import STRING_END
@@ -23,6 +22,7 @@ from ._lib import LINE_END
 from ._lib import WILDCARD
 from ._lib import NEWLINE
 from ._lib import NONNEWLINE
+from ._lib import LINE
 from ._lib import SPACE
 from ._lib import SPACES
 from ._lib import LINESPACE
@@ -61,7 +61,6 @@ __all__ = [
     'lpadded',
     'rpadded',
     'padded',
-    'block',
     # pattern constants
     'STRING_START',
     'STRING_END',
@@ -70,6 +69,7 @@ __all__ = [
     'WILDCARD',
     'NEWLINE',
     'NONNEWLINE',
+    'LINE',
     'SPACE',
     'SPACES',
     'LINESPACE',
