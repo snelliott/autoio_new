@@ -44,6 +44,8 @@ from ._lib import INTEGER
 from ._lib import FLOAT
 from ._lib import EXPONENTIAL_INTEGER
 from ._lib import EXPONENTIAL_FLOAT
+from ._lib import EXPONENTIAL_INTEGER_D
+from ._lib import EXPONENTIAL_FLOAT_D
 from ._lib import VARIABLE_NAME
 
 __all__ = [
@@ -91,5 +93,7 @@ __all__ = [
     'FLOAT',
     'EXPONENTIAL_INTEGER',
     'EXPONENTIAL_FLOAT',
+    'EXPONENTIAL_INTEGER_D',
+    'EXPONENTIAL_FLOAT_D',
     'VARIABLE_NAME',
 ]
