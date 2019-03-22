@@ -1,20 +1,11 @@
 """ psi4 writer module """
 import os
 import automol
-from ... import template
-from ... import params as par
-from . import template_keys
-from . import machine
-from . import theory
-from . import molecule
-
-PSI4_JOB_FUNCTION_DCT = {
-    par.JOB.ENERGY: 'energy',
-    par.JOB.GRADIENT: 'gradient',
-    par.JOB.HESSIAN: 'hessian',
-    par.JOB.OPTIMIZATION: 'optimize',
-}
-
+import elstruct.par
+import elstruct.option
+from elstruct import template
+from elstruct import pclass
+from elstruct.writer._psi4 import par
 
 # set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -24,31 +15,16 @@ TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 def method_list():
     """ list of available electronic structure methods
     """
-    return theory.METHOD_LST
+    return par.METHODS
 
 
 def basis_list():
     """ list of available electronic structure basis sets
     """
-    return theory.BASIS_LST
+    return par.BASES
 
 
-def _fillvalue_dictionary(method, basis, geom, mult, charge, mol_options,
-                          memory, comment, machine_options, scf_options,
-                          corr_options):
-    """ fill-values for non job-specific options
-    """
-    fill_dct = {}
-    fill_dct.update(machine.fillvalue_dictionary(comment, memory,
-                                                 machine_options))
-    fill_dct.update(molecule.fillvalue_dictionary(geom, charge, mult,
-                                                  mol_options))
-    fill_dct.update(theory.fillvalue_dictionary(method, basis, scf_options,
-                                                corr_options))
-    return fill_dct
-
-
-def energy(method, basis, geom, mult, charge,
+def energy(method, basis, geom, mult, charge, orb_restricted,
            # molecule options
            mol_options=(),
            # machine options
@@ -57,26 +33,18 @@ def energy(method, basis, geom, mult, charge,
            scf_options=(), corr_options=()):
     """ energy input string
     """
-    assert method in method_list()
-    job_key = par.JOB.ENERGY
-
-    # non job-specific arguments
+    job_key = par.JobKey.ENERGY
     fill_dct = _fillvalue_dictionary(
-        method, basis, geom, mult, charge, mol_options,
-        memory, comment, machine_options, scf_options,
-        corr_options)
-
-    # job-specific arguments
-    fill_dct.update({
-        template_keys.JOB_FUNCTION: PSI4_JOB_FUNCTION_DCT[job_key],
-        template_keys.JOB_FUNCTION_ARGS: '',
-    })
-
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options,
+    )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
 
 
-def gradient(method, basis, geom, mult, charge,
+def gradient(method, basis, geom, mult, charge, orb_restricted,
              # molecule options
              mol_options=(),
              # machine options
@@ -85,26 +53,18 @@ def gradient(method, basis, geom, mult, charge,
              scf_options=(), corr_options=()):
     """ gradient input string
     """
-    assert method in method_list()
-    job_key = par.JOB.GRADIENT
-
-    # non job-specific arguments
+    job_key = par.JobKey.GRADIENT
     fill_dct = _fillvalue_dictionary(
-        method, basis, geom, mult, charge, mol_options,
-        memory, comment, machine_options, scf_options,
-        corr_options)
-
-    # job-specific arguments
-    fill_dct.update({
-        template_keys.JOB_FUNCTION: PSI4_JOB_FUNCTION_DCT[job_key],
-        template_keys.JOB_FUNCTION_ARGS: '',
-    })
-
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options,
+    )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
 
 
-def hessian(method, basis, geom, mult, charge,
+def hessian(method, basis, geom, mult, charge, orb_restricted,
             # molecule options
             mol_options=(),
             # machine options
@@ -113,34 +73,18 @@ def hessian(method, basis, geom, mult, charge,
             scf_options=(), corr_options=()):
     """ hessian input string
     """
-    assert method in method_list()
-    job_key = par.JOB.HESSIAN
-
-    # non job-specific arguments
+    job_key = par.JobKey.HESSIAN
     fill_dct = _fillvalue_dictionary(
-        method, basis, geom, mult, charge, mol_options,
-        memory, comment, machine_options, scf_options,
-        corr_options)
-
-    # job-specific arguments
-    scf_method, corr_method = par.METHOD.split_name(method)
-    job_function_args = ''
-    # # for these cases we have to call hessian(..., dertype=1) for some reason
-    if scf_method == par.METHOD.UHF:
-        job_function_args = 'dertype=1'
-    elif scf_method == par.METHOD.ROHF and corr_method is None:
-        job_function_args = 'dertype=1'
-
-    fill_dct.update({
-        template_keys.JOB_FUNCTION: PSI4_JOB_FUNCTION_DCT[job_key],
-        template_keys.JOB_FUNCTION_ARGS: job_function_args,
-    })
-
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options,
+    )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
 
 
-def optimization(method, basis, geom, mult, charge,
+def optimization(method, basis, geom, mult, charge, orb_restricted,
                  # molecule options
                  mol_options=(),
                  # machine options
@@ -151,57 +95,140 @@ def optimization(method, basis, geom, mult, charge,
                  frozen_coordinates=None, opt_options=()):
     """ optimization input string
     """
-    assert method in method_list()
-    job_key = par.JOB.OPTIMIZATION
-
-    # non job-specific arguments
+    job_key = par.JobKey.OPTIMIZATION
     fill_dct = _fillvalue_dictionary(
-        method, basis, geom, mult, charge, mol_options,
-        memory, comment, machine_options, scf_options,
-        corr_options)
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options,
+        frozen_coordinates=frozen_coordinates, opt_options=opt_options,
+    )
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
 
-    # job-specific arguments
 
-    # # frozen coordinates
-    freeze_option_fmt = """
-set optking {{
-  frozen_distance = ("
-    {:s}
-  ")
-  frozen_bend = ("
-    {:s}
-  ")
-  frozen_dihedral = ("
-    {:s}
-  ")
-}}
-"""
+# helper functions
+def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
+                          orb_restricted, mol_options, memory, comment,
+                          machine_options, scf_options, corr_options,
+                          frozen_coordinates=None, opt_options=()):
+    method = method.lower()
+    basis = basis.lower()
+    assert method in par.METHODS
+    assert basis in par.BASES
 
-    if frozen_coordinates is not None:
-        assert automol.zmatrix.is_valid(geom)
+    frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (
+        _frozen_coordinate_strings(geom, frozen_coordinates))
+
+    reference = _reference(method, mult, orb_restricted)
+    geom_str, zmat_val_str = _geometry_strings(geom)
+
+    if method in pclass.values(elstruct.par.Method.Corr):
+        assert not corr_options
+
+    scf_options = _evaluate_options(scf_options)
+    opt_options = _evaluate_options(opt_options)
+
+    fill_dct = {
+        par.TemplateKey.COMMENT: comment,
+        par.TemplateKey.MEMORY: memory,
+        par.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
+        par.TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
+        par.TemplateKey.CHARGE: charge,
+        par.TemplateKey.MULT: mult,
+        par.TemplateKey.GEOM: geom_str,
+        par.TemplateKey.ZMAT_VALS: zmat_val_str,
+        par.TemplateKey.BASIS: par.PSI4_BASIS_DCT[basis],
+        par.TemplateKey.METHOD: par.PSI4_METHOD_DCT[method],
+        par.TemplateKey.REFERENCE: reference,
+        par.TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
+        par.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
+        par.TemplateKey.JOB_KEY: job_key,
+        par.TemplateKey.OPT_OPTIONS: '\n'.join(opt_options),
+        par.TemplateKey.FROZEN_DIS_STRS: frozen_dis_strs,
+        par.TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
+        par.TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
+    }
+    return fill_dct
+
+
+def _evaluate_options(options):
+    options = list(options)
+    for idx, option in enumerate(options):
+        if elstruct.option.is_valid(option):
+            name = elstruct.option.name(option)
+            assert name in par.OPTION_NAMES
+            options[idx] = par.PSI4_OPTION_EVAL_DCT[name](option)
+    return tuple(options)
+
+
+def _geometry_strings(geom):
+    if automol.geom.is_valid(geom):
+        geom_str = automol.geom.string(geom)
+        zmat_val_str = ''
+    elif automol.zmatrix.is_valid(geom):
+        geom_str = automol.zmatrix.matrix_block_string(geom)
+        zmat_val_str = automol.zmatrix.setval_block_string(geom)
+    else:
+        raise ValueError("Invalid geometry value:\n{}".format(geom))
+
+    return geom_str, zmat_val_str
+
+
+def _frozen_coordinate_strings(geom, frozen_coordinates):
+    if frozen_coordinates is None:
+        dis_strs = ang_strs = dih_strs = ()
+    else:
         coo_dct = automol.zmatrix.coordinates(geom, one_indexed=True)
         assert all(coo_name in coo_dct for coo_name in frozen_coordinates)
 
-        def _coordinate_string(coo_names):
+        def _coordinate_strings(coo_names):
             frz_coo_names = [coo_name for coo_name in frozen_coordinates
                              if coo_name in coo_names]
-            frz_coo_str = '\n    '.join(' '.join(map(str, coo_keys))
-                                        for frz_coo_name in frz_coo_names
-                                        for coo_keys in coo_dct[frz_coo_name])
-            return frz_coo_str
+            frz_coo_strs = tuple(' '.join(map(str, coo_keys))
+                                 for frz_coo_name in frz_coo_names
+                                 for coo_keys in coo_dct[frz_coo_name])
+            return frz_coo_strs
 
-        dis_str = _coordinate_string(automol.zmatrix.distance_names(geom))
-        ang_str = _coordinate_string(automol.zmatrix.angle_names(geom))
-        dih_str = _coordinate_string(automol.zmatrix.dihedral_names(geom))
-        freeze_option_str = freeze_option_fmt.format(dis_str, ang_str, dih_str)
-        opt_options += (freeze_option_str,)
+        dis_strs = _coordinate_strings(automol.zmatrix.distance_names(geom))
+        ang_strs = _coordinate_strings(automol.zmatrix.angle_names(geom))
+        dih_strs = _coordinate_strings(automol.zmatrix.dihedral_names(geom))
+    return dis_strs, ang_strs, dih_strs
 
-    opt_options_str = '\n'.join(opt_options)
-    fill_dct.update({
-        template_keys.JOB_FUNCTION: PSI4_JOB_FUNCTION_DCT[job_key],
-        template_keys.JOB_FUNCTION_ARGS: '',
-        template_keys.OPT_OPTIONS: opt_options_str,
-    })
 
-    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
-    return inp_str
+def _reference(method, mult, orb_restricted):
+    method = method.lower()
+
+    if orb_restricted is False and mult == 1:
+        raise NotImplementedError
+
+    if method in pclass.values(elstruct.par.Method.Dft):
+        if orb_restricted:
+            assert mult == 1
+        reference = (par.Psi4Reference.RKS if mult == 1 else
+                     par.Psi4Reference.UKS)
+    else:
+        reference = (par.Psi4Reference.RHF if mult == 1 else
+                     (par.Psi4Reference.ROHF if orb_restricted else
+                      par.Psi4Reference.UHF))
+    return reference
+
+
+if __name__ == '__main__':
+    METHOD = 'hf'
+    BASIS = 'sto-3g'
+    GEOM = ((('O', (None, None, None), (None, None, None)),
+             ('O', (0, None, None), ('R1', None, None)),
+             ('H', (0, 1, None), ('R2', 'A2', None)),
+             ('H', (1, 0, 2), ('R2', 'A2', 'D3'))),
+            {'R1': 2.74776, 'R2': 1.84451, 'A2': 1.68900, 'D3': 2.25788})
+    MULT = 1
+    CHARGE = 0
+    ORB_RESTRICTED = True
+    FROZEN_COORDINATES = ('A2', 'D3',)
+    INP_STR = optimization(METHOD, BASIS, GEOM, MULT, CHARGE, ORB_RESTRICTED,
+                           frozen_coordinates=FROZEN_COORDINATES)
+    print(INP_STR)
+
+    with open('input.dat', 'w') as inp_obj:
+        inp_obj.write(INP_STR)

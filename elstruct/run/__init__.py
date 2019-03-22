@@ -1,8 +1,8 @@
 """ elstruct running module
 """
-from ._core import from_input_string
-from ._core import direct
-from ._robust import robust
+from elstruct.run._core import from_input_string
+from elstruct.run._core import direct
+from elstruct.run._robust import robust
 
 __all__ = [
     'from_input_string',

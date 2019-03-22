@@ -2,13 +2,13 @@
 """
 import os
 import warnings
-from ..reader import has_error_message as _has_error_message
-from . import optsmat
-from ._core import direct as _direct
+from elstruct.reader import has_error_message as _has_error_message
+from elstruct.run import optsmat
+from elstruct.run._core import direct as _direct
 
 
 def robust(script_str, run_dir, input_writer,
-           prog, method, basis, geom, mult, charge,
+           prog, method, basis, geom, mult, charge, orb_restricted,
            errors, options_mat,
            **kwargs):
     """ try several sets of options to generate an output file
@@ -32,7 +32,8 @@ def robust(script_str, run_dir, input_writer,
             warnings.simplefilter('ignore')
             input_str, output_str = _direct(
                 script_str, try_dir_path, input_writer,
-                prog, method, basis, geom, mult, charge, **kwargs_dct
+                prog, method, basis, geom, mult, charge, orb_restricted,
+                **kwargs_dct
             )
 
         error_vals = [

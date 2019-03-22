@@ -2,7 +2,7 @@
 """
 import autoparse.pattern as rep
 import autoparse.find as ref
-from ... import params as par
+from elstruct import par
 
 
 def has_normal_exit_message(output_string):
@@ -28,8 +28,8 @@ def _has_opt_nonconvergence_error_message(output_string):
 
 
 ERROR_READER_DCT = {
-    par.ERROR.SCF_NOCONV: _has_scf_nonconvergence_error_message,
-    par.ERROR.OPT_NOCONV: _has_opt_nonconvergence_error_message,
+    par.Error.SCF_NOCONV: _has_scf_nonconvergence_error_message,
+    par.Error.OPT_NOCONV: _has_opt_nonconvergence_error_message,
 }
 
 

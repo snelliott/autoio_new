@@ -12,7 +12,7 @@ def basis_list():
     raise NotImplementedError
 
 
-def energy(method, basis, geom, mult, charge,
+def energy(method, basis, geom, mult, charge, orb_restricted,
            # molecule options
            mol_options=(),
            # machine options
@@ -29,7 +29,7 @@ def energy(method, basis, geom, mult, charge,
     )
 
 
-def gradient(method, basis, geom, mult, charge,
+def gradient(method, basis, geom, mult, charge, orb_restricted,
              # molecule options
              mol_options=(),
              # machine options
@@ -46,7 +46,7 @@ def gradient(method, basis, geom, mult, charge,
     )
 
 
-def hessian(method, basis, geom, mult, charge,
+def hessian(method, basis, geom, mult, charge, orb_restricted,
             # molecule options
             mol_options=(),
             # machine options
@@ -63,7 +63,7 @@ def hessian(method, basis, geom, mult, charge,
     )
 
 
-def optimization(method, basis, geom, mult, charge,
+def optimization(method, basis, geom, mult, charge, orb_restricted,
                  # molecule options
                  mol_options=(),
                  # machine options

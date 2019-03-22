@@ -11,13 +11,14 @@ OUTPUT_NAME = 'run.out'
 
 
 def direct(script_str, run_dir, input_writer,
-           prog, method, basis, geom, mult, charge, **kwargs):
+           prog, method, basis, geom, mult, charge, orb_restricted, **kwargs):
     """ generate an input file from arguments and run it directly
 
     :returns: the input string, the output string, and the run directory
     :rtype: (str, str, str)
     """
-    input_str = input_writer(prog, method, basis, geom, mult, charge, **kwargs)
+    input_str = input_writer(prog, method, basis, geom, mult, charge,
+                             orb_restricted, **kwargs)
     output_str = from_input_string(script_str, run_dir, input_str)
     return input_str, output_str
 
