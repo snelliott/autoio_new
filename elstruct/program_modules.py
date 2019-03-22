@@ -5,37 +5,39 @@ try:
 except ImportError:
     from inspect import getargspec as _getargspec
 from functools import reduce as _reduce
-from . import params as par
+from elstruct import par
+from elstruct import pclass
 
 
-PROGRAM_MODULE_NAME_DCT = {
-    par.PROGRAM.PSI4: '_psi4',
-}
+def module_name(prog):
+    """ get the module name for a program
+    """
+    return '_{}'.format(prog)
 
 
-def call_module_function(prog, module_type, function_template,
+def call_module_function(prog, typ, function_template,
                          *args, **kwargs):
     """ call the module implementation of a given function
 
     :param prog: the program
     :type prog: str
-    :param module_type: which type of module it is (writer or reader)
-    :type module_type: str
+    :param typ: which type of module it is (writer or reader)
+    :type typ: str
     :param function_template: a function with the desired signature
     :type function_template: function
     """
-    assert prog in program_modules_with_function(module_type,
+    assert prog in program_modules_with_function(typ,
                                                  function_template)
 
-    module = import_program_module(prog, module_type)
+    module = import_program_module(prog, typ)
     function = getattr(module, function_template.__name__)
     return function(*args, **kwargs)
 
 
-def program_modules_with_functions(module_type, function_templates):
+def program_modules_with_functions(typ, function_templates):
     """ list the programs implementing a given set of functions
     """
-    prog_lsts = [program_modules_with_function(module_type, function_template)
+    prog_lsts = [program_modules_with_function(typ, function_template)
                  for function_template in function_templates]
 
     # get the intersection of all of them
@@ -43,17 +45,17 @@ def program_modules_with_functions(module_type, function_templates):
     return tuple(sorted(progs))
 
 
-def program_modules_with_function(module_type, function_template):
+def program_modules_with_function(typ, function_template):
     """ list the programs implementing a given function
 
-    :param module_type: which type of module it is (writer or reader)
-    :type module_type: str
+    :param typ: which type of module it is (writer or reader)
+    :type typ: str
     :param function_template: a function with the desired signature
     :type function_template: function
     """
     progs = []
-    for prog in PROGRAM_MODULE_NAME_DCT:
-        module = import_program_module(prog, module_type)
+    for prog in pclass.values(par.Program):
+        module = import_program_module(prog, typ)
         if hasattr(module, function_template.__name__):
             function = getattr(module, function_template.__name__)
 
@@ -65,22 +67,17 @@ def program_modules_with_function(module_type, function_template):
     return tuple(sorted(progs))
 
 
-def import_program_module(prog, module_type):
+def import_program_module(prog, typ):
     """ import the module for a program by name
 
     :param prog: the program name
     :type prog: str
-    :param module_type: which type of module it is (writer or reader)
-    :type module_type: str
+    :param typ: which type of module it is (writer or reader)
+    :type typ: str
     """
-    assert prog in PROGRAM_MODULE_NAME_DCT
-    assert module_type in par.MODULES
+    assert prog in pclass.values(par.Program)
+    assert typ in pclass.values(par.Module)
 
-    module_name = PROGRAM_MODULE_NAME_DCT[prog]
-
-    # do a relative import using the package name, ie 'from . import _psi4'.
-    # relative imports require a package name in importlib, ie 'elstruc.writer'
-    relative_module_name = '.{:s}'.format(module_name)
-    package_name = 'elstruct.{:s}'.format(module_type)
-    module = importlib.import_module(relative_module_name, package_name)
+    name = module_name(prog)
+    module = importlib.import_module('elstruct.{:s}.{:s}'.format(typ, name))
     return module

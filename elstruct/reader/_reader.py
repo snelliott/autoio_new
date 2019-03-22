@@ -6,11 +6,11 @@ signature are checked. The resulting function signatures are exactly those in
 module_template.py with `prog` inserted as the first argument.
 """
 import functools
-from . import module_template
-from .. import program_modules as pm
-from .. import params as par
+from elstruct import program_modules as pm
+from elstruct import par
+from elstruct.reader import module_template
 
-MODULE_NAME = par.MODULE.READER
+MODULE_NAME = par.Module.READER
 
 
 # energy
@@ -34,30 +34,36 @@ def method_list(prog):
         prog, MODULE_NAME, module_template.method_list)
 
 
-def energy(prog, method, output_string):
+def energy(prog, method, orb_restricted, output_string):
     """ read energy from the output string
 
     :param prog: electronic structure program to use as a backend
     :type prog: str
     :param method: electronic structure method
     :type method: str
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     :param output_string: the program output string
     :type output_string: str
     """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
         # *args
-        method, output_string)
+        method, orb_restricted, output_string)
 
 
-def energy_(prog, method):
+def energy_(prog, method, orb_restricted):
     """ read energy from the output string (callable)
     :param prog: electronic structure program to use as a backend
     :type prog: str
     :param method: electronic structure method
     :type method: str
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     """
-    return functools.partial(energy, prog, method)
+    func = functools.partial(energy, prog, method, orb_restricted)
+    func.__name__ = '_energy_'
+    return func
 
 
 # gradient
@@ -89,7 +95,9 @@ def gradient_(prog):
     :param method: electronic structure method
     :type method: str
     """
-    return functools.partial(gradient, prog)
+    func = functools.partial(gradient, prog)
+    func.__name__ = '_gradient_'
+    return func
 
 
 # hessian
@@ -121,7 +129,9 @@ def hessian_(prog):
     :param method: electronic structure method
     :type method: str
     """
-    return functools.partial(hessian, prog)
+    func = functools.partial(hessian, prog)
+    func.__name__ = '_hessian_'
+    return func
 
 
 # optimization
@@ -151,7 +161,9 @@ def opt_geometry_(prog):
     :param prog: electronic structure program to use as a backend
     :type prog: str
     """
-    return functools.partial(opt_geometry, prog)
+    func = functools.partial(opt_geometry, prog)
+    func.__name__ = '_opt_geometry_'
+    return func
 
 
 # z-matrix geometry optimizations
@@ -181,7 +193,9 @@ def opt_zmatrix_(prog):
     :param prog: electronic structure program to use as a backend
     :type prog: str
     """
-    return functools.partial(opt_zmatrix, prog)
+    func = functools.partial(opt_zmatrix, prog)
+    func.__name__ = '_opt_zmatrix_'
+    return func
 
 
 # status

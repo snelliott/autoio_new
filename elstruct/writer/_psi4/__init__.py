@@ -1,10 +1,10 @@
 """ psi4 input writing module """
-from ._writer import method_list
-from ._writer import basis_list
-from ._writer import energy
-from ._writer import gradient
-from ._writer import hessian
-from ._writer import optimization
+from elstruct.writer._psi4._writer import method_list
+from elstruct.writer._psi4._writer import basis_list
+from elstruct.writer._psi4._writer import energy
+from elstruct.writer._psi4._writer import gradient
+from elstruct.writer._psi4._writer import hessian
+from elstruct.writer._psi4._writer import optimization
 
 __all__ = [
     'method_list',

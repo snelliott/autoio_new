@@ -1,18 +1,18 @@
 """ input writing module """
 # energy
-from ._writer import programs
-from ._writer import method_list
-from ._writer import basis_list
-from ._writer import energy
+from elstruct.writer._writer import programs
+from elstruct.writer._writer import method_list
+from elstruct.writer._writer import basis_list
+from elstruct.writer._writer import energy
 # gradient
-from ._writer import gradient_programs
-from ._writer import gradient
+from elstruct.writer._writer import gradient_programs
+from elstruct.writer._writer import gradient
 # hessian
-from ._writer import hessian_programs
-from ._writer import hessian
+from elstruct.writer._writer import hessian_programs
+from elstruct.writer._writer import hessian
 # optimization
-from ._writer import optimization_programs
-from ._writer import optimization
+from elstruct.writer._writer import optimization_programs
+from elstruct.writer._writer import optimization
 
 __all__ = [
     # energies

@@ -2,11 +2,14 @@
 """
 import tempfile
 import elstruct
+from elstruct import option, Option
 
 PROG = 'psi4'
-METHOD = 'rhf-mp2'
+METHOD = 'mp2'
+ORB_RESTRICTED = True
 BASIS = 'sto-3g'
 RUN_DIR = tempfile.mkdtemp()
+print(RUN_DIR)
 
 INP_STR, OUT_STR = elstruct.run.robust(
     # required arguments
@@ -23,28 +26,30 @@ INP_STR, OUT_STR = elstruct.run.robust(
           {'R1': 2.0, 'R2': 1.5, 'A2': 1.5}),
     mult=1,
     charge=0,
+    orb_restricted=ORB_RESTRICTED,
     errors=[
-        elstruct.ERROR.SCF_NOCONV,
-        elstruct.ERROR.OPT_NOCONV,
+        elstruct.Error.SCF_NOCONV,
+        elstruct.Error.OPT_NOCONV,
     ],
     options_mat=[
-        [{elstruct.OPTION.SCF.KEY: ('set scf guess huckel',)},
-         {elstruct.OPTION.SCF.KEY: ('set scf guess gwh',)},
-         {elstruct.OPTION.SCF.KEY: ('set scf diis true',
-                                    'set scf guess sad',)}],
-        [{elstruct.OPTION.OPT.KEY: ('set opt_coordinates cartesian',)},
-         {elstruct.OPTION.OPT.KEY: ('set opt_coordinates internal',)}]
+        [{'scf_options': (Option.Scf.Guess.CORE,)},
+         {'scf_options': (Option.Scf.Guess.HUCKEL,)},
+         {'scf_options': (option.specify(Option.Scf.DIIS_, True),
+                          Option.Scf.Guess.HUCKEL,)}],
+        [{'opt_options': (Option.Opt.Coord.CARTESIAN,)},
+         {'opt_options': (Option.Opt.Coord.ZMATRIX,)},
+         {'opt_options': (Option.Opt.Coord.REDUNDANT,)}]
     ],
     # optional_arguments
     comment='<testing comment line>',
-    scf_options=('set scf diis false', 'set scf maxiter 15'),
-    opt_options=('set geom_maxiter 10',),
+    scf_options=(option.specify(Option.Scf.DIIS_, False),
+                 option.specify(Option.Scf.MAXITER_, 15),),
+    opt_options=(option.specify(Option.Opt.MAXITER_, 10),),
 )
 
-ENE = elstruct.reader.energy(PROG, METHOD, OUT_STR)
+ENE = elstruct.reader.energy(PROG, METHOD, ORB_RESTRICTED, OUT_STR)
 ZMA = elstruct.reader.opt_zmatrix(PROG, OUT_STR)
 
 print(INP_STR)
-print(RUN_DIR)
 print(ENE)
 print(ZMA)

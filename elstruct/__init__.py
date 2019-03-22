@@ -1,15 +1,17 @@
 """ electronic structure interfaces """
-from . import writer
-from . import reader
-from . import run
-from .params import ERROR
-from .params import OPTION
+from elstruct import writer
+from elstruct import reader
+from elstruct import run
+from elstruct import option
+from elstruct.par import Error
+from elstruct.par import Option
 
 
 __all__ = [
     'writer',
     'reader',
     'run',
-    'ERROR',
-    'OPTION',
+    'option',
+    'Error',
+    'Option',
 ]

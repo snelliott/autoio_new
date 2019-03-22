@@ -8,22 +8,26 @@ import automol
 def opt_geometry(output_string):
     """ get optimized cartesian geometry from output
     """
-    # idetify block of output string where optimized geometry is located
-    start_pattern = app.escape('Final (previous) structure:')
-    end_pattern = app.escape('Saving final (previous) structure')
-    geom_block_str = apf.last_block(start_pattern, end_pattern, output_string)
-    # parse the geometry from the block using automol
-    geom = automol.geom.from_string(geom_block_str, strict=False)
-    return geom
+    head_pattern = app.padded(app.escape('Final (previous) structure:'),
+                              app.NONNEWLINE)
+    pattern = app.NEWLINE.join([
+        head_pattern, app.LINE,
+        automol.readers.geom.block_pattern()
+    ])
+    geo_str = apf.last_capture(pattern, output_string)
+    geo = automol.readers.geom.from_string(geo_str, strict=False)
+    return geo
 
 
 def opt_zmatrix(output_string):
     """ get optimized z-matrix geometry from output
     """
-    # idetify block of output string where optimized geometry is located
-    start_pattern = app.escape('Geometry (in Angstrom),')
-    end_pattern = app.escape('***')
-    # parse the geometry from the block using automol
-    geom_block_strs = apf.all_blocks(start_pattern, end_pattern, output_string)
-    zmat = automol.zmatrix.from_zmat_string(geom_block_strs[-1])
-    return zmat
+    head_pattern = app.rpadded(app.escape('Geometry (in Angstrom),'),
+                               app.NONNEWLINE)
+    pattern = app.NEWLINE.join([
+        head_pattern, app.LINE,
+        automol.readers.zmatrix.block_pattern()
+    ])
+    zma_str = apf.last_capture(app.capturing(pattern), output_string)
+    zma = automol.readers.zmatrix.from_string(zma_str)
+    return zma

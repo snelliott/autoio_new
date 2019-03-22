@@ -6,11 +6,11 @@ signature are checked before calling the function. The resulting function
 signatures are exactly those in module_template.py with `prog` inserted as the
 first required argument.
 """
-from . import module_template
-from .. import program_modules as pm
-from .. import params as par
+from elstruct import program_modules as pm
+from elstruct import par
+from elstruct.writer import module_template
 
-MODULE_NAME = par.MODULE.WRITER
+MODULE_NAME = par.Module.WRITER
 
 
 # energy input writers
@@ -45,7 +45,7 @@ def basis_list(prog):
         prog, MODULE_NAME, module_template.basis_list)
 
 
-def energy(prog, method, basis, geom, mult, charge,
+def energy(prog, method, basis, geom, mult, charge, orb_restricted,
            # molecule options
            mol_options=(),
            # machine options
@@ -66,6 +66,8 @@ def energy(prog, method, basis, geom, mult, charge,
     :type mult: int
     :param charge: molecular charge
     :type charge: int
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -82,7 +84,7 @@ def energy(prog, method, basis, geom, mult, charge,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
         # *args
-        method, basis, geom, mult, charge,
+        method, basis, geom, mult, charge, orb_restricted,
         # **kwargs
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
@@ -97,7 +99,7 @@ def gradient_programs():
         MODULE_NAME, module_template.gradient)
 
 
-def gradient(prog, method, basis, geom, mult, charge,
+def gradient(prog, method, basis, geom, mult, charge, orb_restricted,
              # molecule options
              mol_options=(),
              # machine options
@@ -118,6 +120,8 @@ def gradient(prog, method, basis, geom, mult, charge,
     :type mult: int
     :param charge: molecular charge
     :type charge: int
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -134,7 +138,7 @@ def gradient(prog, method, basis, geom, mult, charge,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.gradient,
         # *args
-        method, basis, geom, mult, charge,
+        method, basis, geom, mult, charge, orb_restricted,
         # **kwargs
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
@@ -149,7 +153,7 @@ def hessian_programs():
         MODULE_NAME, module_template.hessian)
 
 
-def hessian(prog, method, basis, geom, mult, charge,
+def hessian(prog, method, basis, geom, mult, charge, orb_restricted,
             # molecule options
             mol_options=(),
             # machine options
@@ -170,6 +174,8 @@ def hessian(prog, method, basis, geom, mult, charge,
     :type mult: int
     :param charge: molecular charge
     :type charge: int
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -186,7 +192,7 @@ def hessian(prog, method, basis, geom, mult, charge,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.hessian,
         # *args
-        method, basis, geom, mult, charge,
+        method, basis, geom, mult, charge, orb_restricted,
         # **kwargs
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
@@ -201,7 +207,7 @@ def optimization_programs():
         MODULE_NAME, module_template.optimization)
 
 
-def optimization(prog, method, basis, geom, mult, charge,
+def optimization(prog, method, basis, geom, mult, charge, orb_restricted,
                  # molecule options
                  mol_options=(),
                  # machine options
@@ -224,6 +230,8 @@ def optimization(prog, method, basis, geom, mult, charge,
     :type mult: int
     :param charge: molecular charge
     :type charge: int
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -245,7 +253,7 @@ def optimization(prog, method, basis, geom, mult, charge,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.optimization,
         # *args
-        method, basis, geom, mult, charge,
+        method, basis, geom, mult, charge, orb_restricted,
         # **kwargs
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
