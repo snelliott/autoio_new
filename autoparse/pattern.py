@@ -22,6 +22,7 @@ from ._lib import LINE_END
 from ._lib import WILDCARD
 from ._lib import NEWLINE
 from ._lib import NONNEWLINE
+from ._lib import LINE_FILL
 from ._lib import LINE
 from ._lib import SPACE
 from ._lib import SPACES
@@ -71,6 +72,7 @@ __all__ = [
     'WILDCARD',
     'NEWLINE',
     'NONNEWLINE',
+    'LINE_FILL',
     'LINE',
     'SPACE',
     'SPACES',

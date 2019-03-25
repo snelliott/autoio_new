@@ -16,7 +16,8 @@ WILDCARD = r'[\s\S]'    # literally any character, including spaces
 NEWLINE = r'\n'
 NONNEWLINE = r'[^\n]'
 
-LINE = LINE_START + zero_or_more(NONNEWLINE) + LINE_END
+LINE_FILL = zero_or_more(NONNEWLINE)
+LINE = LINE_START + LINE_FILL + LINE_END
 
 SPACE = r'\s'            # space, possibly newline
 SPACES = one_or_more(SPACE)

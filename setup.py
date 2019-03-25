@@ -4,6 +4,6 @@ from distutils.core import setup
 
 
 setup(name="autoparse",
-      version="0.1.7",
+      version="0.1.8",
       packages=["autoparse",
                 "autoparse.tests"])
