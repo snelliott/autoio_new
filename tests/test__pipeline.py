@@ -29,8 +29,7 @@ def test__energy():
     for prog in elstruct.writer.programs():
         for method in elstruct.writer.method_list(prog):
             for mult, charge in zip(mult_vals, charge_vals):
-                if (mult != 1 and method not in
-                        elstruct.pclass.values(elstruct.par.Method.Dft)):
+                if mult != 1 and not elstruct.par.Method.is_dft(method):
                     orb_restricted_vals = [False, True]
                 else:
                     orb_restricted_vals = [None]
@@ -68,8 +67,7 @@ def test__gradient():
     for prog in elstruct.writer.programs():
         for method in elstruct.writer.method_list(prog):
             for mult, charge in zip(mult_vals, charge_vals):
-                if (mult != 1 and method not in
-                        elstruct.pclass.values(elstruct.par.Method.Dft)):
+                if mult != 1 and not elstruct.par.Method.is_dft(method):
                     orb_restricted_vals = [False, True]
                 else:
                     orb_restricted_vals = [None]
@@ -103,8 +101,7 @@ def test__hessian():
     for prog in elstruct.writer.programs():
         for method in elstruct.writer.method_list(prog):
             for mult, charge in zip(mult_vals, charge_vals):
-                if (mult != 1 and method not in
-                        elstruct.pclass.values(elstruct.par.Method.Dft)):
+                if mult != 1 and not elstruct.par.Method.is_dft(method):
                     orb_restricted_vals = [False, True]
                 else:
                     orb_restricted_vals = [None]
