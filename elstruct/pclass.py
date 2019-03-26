@@ -9,7 +9,7 @@ def values(cls):
     """
     assert inspect.isclass(cls)
     vals = tuple(val for val in _public_attributes(cls)
-                 if isinstance(val, str))
+                 if not inspect.isclass(val))
     return vals
 
 
@@ -18,12 +18,12 @@ def all_values(cls):
     """
     assert inspect.isclass(cls)
     vals = tuple(itertools.chain(*(
-        [val] if isinstance(val, str) else all_values(val)
-        for val in _public_attributes(cls) if isinstance(val, (str, type)))))
+        [val] if not inspect.isclass(val) else all_values(val)
+        for val in _public_attributes(cls))))
     return vals
 
 
 def _public_attributes(cls):
     return tuple(val for name, val in
                  inspect.getmembers(cls, lambda x: not inspect.isroutine(x))
-                 if not name.startswith('_'))
+                 if not name.startswith('_') and not inspect.isfunction(val))

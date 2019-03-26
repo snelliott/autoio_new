@@ -3,6 +3,12 @@
 from elstruct import option
 
 
+class Program():
+    """ Programs to be called """
+    PSI4 = 'psi4'
+    G09 = 'g09'
+
+
 class Module():
     """ elstruct module names """
     WRITER = 'writer'
@@ -44,12 +50,6 @@ class Method():
         MP2 = 'mp2'
 
 
-class Program():
-    """ Programs to be called """
-    PSI4 = 'psi4'
-    # G09 = 'gaussian09'
-
-
 class Job():
     """ The type of job
     """
@@ -71,7 +71,7 @@ class Option():
     """
 
     class Scf():
-        """ scf_options """
+        """ SCF options (passed to `scf_options`) """
         MAXITER_ = option.create('scf_maxiter', ['num'])
         DIIS_ = option.create('scf_diis', ['bool'])
 
@@ -81,7 +81,7 @@ class Option():
             HUCKEL = option.create('scf_guess_huckel')
 
     class Opt():
-        """ opt_options """
+        """ optimization options (passed to `job_options`) """
         MAXITER_ = option.create('opt_maxiter', ['num'])
 
         class Coord():

@@ -36,18 +36,18 @@ INP_STR, OUT_STR = elstruct.run.robust(
          {'scf_options': (Option.Scf.Guess.HUCKEL,)},
          {'scf_options': (option.specify(Option.Scf.DIIS_, True),
                           Option.Scf.Guess.HUCKEL,)}],
-        [{'opt_options': (Option.Opt.Coord.CARTESIAN,)},
-         {'opt_options': (Option.Opt.Coord.ZMATRIX,)},
-         {'opt_options': (Option.Opt.Coord.REDUNDANT,)}]
+        [{'job_options': (Option.Opt.Coord.CARTESIAN,)},
+         {'job_options': (Option.Opt.Coord.ZMATRIX,)},
+         {'job_options': (Option.Opt.Coord.REDUNDANT,)}]
     ],
     # optional_arguments
     comment='<testing comment line>',
     scf_options=(option.specify(Option.Scf.DIIS_, False),
                  option.specify(Option.Scf.MAXITER_, 15),),
-    opt_options=(option.specify(Option.Opt.MAXITER_, 10),),
+    job_options=(option.specify(Option.Opt.MAXITER_, 10),),
 )
 
-ENE = elstruct.reader.energy(PROG, METHOD, ORB_RESTRICTED, OUT_STR)
+ENE = elstruct.reader.energy(PROG, METHOD, OUT_STR)
 ZMA = elstruct.reader.opt_zmatrix(PROG, OUT_STR)
 
 print(INP_STR)

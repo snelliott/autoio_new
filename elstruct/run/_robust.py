@@ -8,7 +8,7 @@ from elstruct.run._core import direct as _direct
 
 
 def robust(script_str, run_dir, input_writer,
-           prog, method, basis, geom, mult, charge, orb_restricted,
+           prog, method, basis, geom, mult, charge,
            errors, options_mat,
            **kwargs):
     """ try several sets of options to generate an output file
@@ -32,7 +32,7 @@ def robust(script_str, run_dir, input_writer,
             warnings.simplefilter('ignore')
             input_str, output_str = _direct(
                 script_str, try_dir_path, input_writer,
-                prog, method, basis, geom, mult, charge, orb_restricted,
+                prog, method, basis, geom, mult, charge,
                 **kwargs_dct
             )
 

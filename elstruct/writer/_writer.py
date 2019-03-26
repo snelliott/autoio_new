@@ -45,13 +45,13 @@ def basis_list(prog):
         prog, MODULE_NAME, module_template.basis_list)
 
 
-def energy(prog, method, basis, geom, mult, charge, orb_restricted,
+def energy(prog, method, basis, geom, mult, charge,
            # molecule options
            mol_options=(),
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           scf_options=(), corr_options=()):
+           orb_restricted=None, scf_options=(), corr_options=()):
     """ energy input string
 
     :param prog: electronic structure program to use as a backend
@@ -66,8 +66,6 @@ def energy(prog, method, basis, geom, mult, charge, orb_restricted,
     :type mult: int
     :param charge: molecular charge
     :type charge: int
-    :param orb_restricted: whether the SCF orbitals are spin-restricted
-    :type orb_restricted: bool
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -76,6 +74,8 @@ def energy(prog, method, basis, geom, mult, charge, orb_restricted,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param corr_options: correlation method directives
@@ -84,10 +84,10 @@ def energy(prog, method, basis, geom, mult, charge, orb_restricted,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
         # *args
-        method, basis, geom, mult, charge, orb_restricted,
+        method, basis, geom, mult, charge,
         # **kwargs
-        mol_options=mol_options,
-        memory=memory, comment=comment, machine_options=machine_options,
+        mol_options=mol_options, memory=memory, comment=comment,
+        machine_options=machine_options, orb_restricted=orb_restricted,
         scf_options=scf_options, corr_options=corr_options)
 
 
@@ -99,13 +99,15 @@ def gradient_programs():
         MODULE_NAME, module_template.gradient)
 
 
-def gradient(prog, method, basis, geom, mult, charge, orb_restricted,
+def gradient(prog, method, basis, geom, mult, charge,
              # molecule options
              mol_options=(),
              # machine options
              memory=1, comment='', machine_options=(),
              # theory options
-             scf_options=(), corr_options=()):
+             orb_restricted=None, scf_options=(), corr_options=(),
+             # job options
+             job_options=()):
     """ gradient input string
 
     :param prog: electronic structure program to use as a backend
@@ -120,8 +122,6 @@ def gradient(prog, method, basis, geom, mult, charge, orb_restricted,
     :type mult: int
     :param charge: molecular charge
     :type charge: int
-    :param orb_restricted: whether the SCF orbitals are spin-restricted
-    :type orb_restricted: bool
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -130,6 +130,8 @@ def gradient(prog, method, basis, geom, mult, charge, orb_restricted,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param corr_options: correlation method directives
@@ -138,11 +140,12 @@ def gradient(prog, method, basis, geom, mult, charge, orb_restricted,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.gradient,
         # *args
-        method, basis, geom, mult, charge, orb_restricted,
+        method, basis, geom, mult, charge,
         # **kwargs
-        mol_options=mol_options,
-        memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options)
+        mol_options=mol_options, memory=memory, comment=comment,
+        machine_options=machine_options, orb_restricted=orb_restricted,
+        scf_options=scf_options, corr_options=corr_options,
+        job_options=job_options)
 
 
 # hessian input writers
@@ -153,13 +156,15 @@ def hessian_programs():
         MODULE_NAME, module_template.hessian)
 
 
-def hessian(prog, method, basis, geom, mult, charge, orb_restricted,
+def hessian(prog, method, basis, geom, mult, charge,
             # molecule options
             mol_options=(),
             # machine options
             memory=1, comment='', machine_options=(),
             # theory options
-            scf_options=(), corr_options=()):
+            orb_restricted=None, scf_options=(), corr_options=(),
+            # job options
+            job_options=()):
     """ hessian input string
 
     :param prog: electronic structure program to use as a backend
@@ -174,8 +179,6 @@ def hessian(prog, method, basis, geom, mult, charge, orb_restricted,
     :type mult: int
     :param charge: molecular charge
     :type charge: int
-    :param orb_restricted: whether the SCF orbitals are spin-restricted
-    :type orb_restricted: bool
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -184,6 +187,8 @@ def hessian(prog, method, basis, geom, mult, charge, orb_restricted,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param corr_options: correlation method directives
@@ -192,11 +197,12 @@ def hessian(prog, method, basis, geom, mult, charge, orb_restricted,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.hessian,
         # *args
-        method, basis, geom, mult, charge, orb_restricted,
+        method, basis, geom, mult, charge,
         # **kwargs
-        mol_options=mol_options,
-        memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options)
+        mol_options=mol_options, memory=memory, comment=comment,
+        machine_options=machine_options, orb_restricted=orb_restricted,
+        scf_options=scf_options, corr_options=corr_options,
+        job_options=job_options)
 
 
 # optimization input writers
@@ -207,15 +213,15 @@ def optimization_programs():
         MODULE_NAME, module_template.optimization)
 
 
-def optimization(prog, method, basis, geom, mult, charge, orb_restricted,
+def optimization(prog, method, basis, geom, mult, charge,
                  # molecule options
                  mol_options=(),
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 scf_options=(), corr_options=(),
-                 # molecule/optimization options
-                 frozen_coordinates=None, opt_options=()):
+                 orb_restricted=None, scf_options=(), corr_options=(),
+                 # job options
+                 job_options=(), frozen_coordinates=()):
     """ optimization input string
 
     :param prog: electronic structure program to use as a backend
@@ -230,8 +236,6 @@ def optimization(prog, method, basis, geom, mult, charge, orb_restricted,
     :type mult: int
     :param charge: molecular charge
     :type charge: int
-    :param orb_restricted: whether the SCF orbitals are spin-restricted
-    :type orb_restricted: bool
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -240,22 +244,24 @@ def optimization(prog, method, basis, geom, mult, charge, orb_restricted,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
+    :param orb_restricted: whether the SCF orbitals are spin-restricted
+    :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
+    :param job_options: geometry optimization routine directives
+    :type job_options: tuple[str]
     :param frozen_coordinates: only with z-matrix geometries; list of
         coordinate names to freeze
     :type fozen_coordinates: tuple[str]
-    :param opt_options: geometry optimization routine directives
-    :type opt_options: tuple[str]
     """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.optimization,
         # *args
-        method, basis, geom, mult, charge, orb_restricted,
+        method, basis, geom, mult, charge,
         # **kwargs
-        mol_options=mol_options,
-        memory=memory, comment=comment, machine_options=machine_options,
+        mol_options=mol_options, memory=memory, comment=comment,
+        machine_options=machine_options, orb_restricted=orb_restricted,
         scf_options=scf_options, corr_options=corr_options,
-        frozen_coordinates=frozen_coordinates, opt_options=opt_options)
+        job_options=job_options, frozen_coordinates=frozen_coordinates)
