@@ -35,8 +35,8 @@ ${scf_options}
 % if corr_options:
 ${corr_options}
 % endif
-% if opt_options:
-${opt_options}
+% if job_options:
+${job_options}
 % endif
 ## 3. job options block
 % if job_key == 'energy':

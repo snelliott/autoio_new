@@ -6,7 +6,7 @@ from elstruct import reader
 def test__programs():
     """ test elstruct.reader.programs
     """
-    assert reader.programs() == ('psi4',)
+    assert set(reader.programs()) == {'psi4', 'g09'}
 
 
 def test__method_list():
@@ -19,13 +19,13 @@ def test__method_list():
 def test__opt_geometry_programs():
     """ test elstruct.reader.opt_geometry_programs
     """
-    assert reader.opt_geometry_programs() == ('psi4',)
+    assert set(reader.opt_geometry_programs()) == {'psi4', 'g09'}
 
 
 def test__opt_zmatrix_programs():
     """ test elstruct.reader.opt_zmatrix_programs
     """
-    assert reader.opt_zmatrix_programs() == ('psi4',)
+    assert set(reader.opt_zmatrix_programs()) == {'psi4', 'g09'}
 
 
 if __name__ == '__main__':

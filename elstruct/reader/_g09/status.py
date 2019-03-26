@@ -8,22 +8,27 @@ import elstruct.par
 def has_normal_exit_message(output_string):
     """ does this output string have a normal exit message?
     """
-    pattern = app.escape('*** Psi4 exiting successfully.')
+    pattern = app.escape('Normal termination of Gaussian 09')
     return apf.has_match(pattern, output_string, case=False)
 
 
 def _has_scf_nonconvergence_error_message(output_string):
     """ does this output string have an SCF non-convergence message?
     """
-    pattern = app.escape('PsiException: Could not converge SCF iterations')
+    pattern = app.padded(app.NEWLINE).join([
+        app.escape('Convergence criterion not met.'),
+        app.escape('SCF Done:')
+    ])
     return apf.has_match(pattern, output_string, case=False)
 
 
 def _has_opt_nonconvergence_error_message(output_string):
     """ does this output string have an optimization non-convergence message?
     """
-    pattern = app.escape('PsiException: Could not converge geometry '
-                         'optimization')
+    pattern = app.padded(app.NEWLINE).join([
+        app.escape('Optimization stopped.'),
+        app.escape('-- Number of steps exceeded,')
+    ])
     return apf.has_match(pattern, output_string, case=False)
 
 

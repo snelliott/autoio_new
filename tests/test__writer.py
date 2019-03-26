@@ -6,7 +6,7 @@ from elstruct import writer
 def test__programs():
     """ test writer.programs
     """
-    assert writer.programs() == ('psi4',)
+    assert set(writer.programs()) == {'psi4', 'g09'}
 
 
 def test__method_list():
@@ -30,7 +30,7 @@ def test__basis_list():
 def test__optimization_programs():
     """ test writer.optimization_programs
     """
-    assert writer.optimization_programs() == ('psi4',)
+    assert set(writer.optimization_programs()) == {'psi4', 'g09'}
 
 
 if __name__ == '__main__':

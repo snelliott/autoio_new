@@ -9,23 +9,11 @@ import elstruct.par
 def _hf_energy(output_string):
     pattern = app.LINESPACES.join([
         app.one_of_these([
-            app.escape('@RHF Final Energy:'),
-            app.escape('@ROHF Final Energy:'),
-            app.escape('@UHF Final Energy:'),
+            app.escape('E(RHF)'),
+            app.escape('E(UHF)'),
+            app.escape('E(ROHF)'),
         ]),
-        app.capturing(app.FLOAT)
-    ])
-    cap = apf.last_capture(pattern, output_string, case=False)
-    val = apc.single(cap, func=float)
-    return val
-
-
-def _dft_energy(output_string):
-    pattern = app.LINESPACES.join([
-        app.one_of_these([
-            app.escape('@RKS Final Energy:'),
-            app.escape('@UKS Final Energy:'),
-        ]),
+        app.escape('='),
         app.capturing(app.FLOAT)
     ])
     cap = apf.last_capture(pattern, output_string, case=False)
@@ -35,19 +23,38 @@ def _dft_energy(output_string):
 
 def _mp2_energy(output_string):
     pattern = app.LINESPACES.join([
-        app.escape('MP2 Total Energy (a.u.)'),
-        app.escape(':'),
-        app.capturing(app.FLOAT)
+        app.escape('EUMP2'),
+        app.escape('='),
+        app.capturing(app.EXPONENTIAL_FLOAT_D),
     ])
     cap = apf.last_capture(pattern, output_string, case=False)
+    cap = apf.replace('d', 'e', cap, case=False)
     val = apc.single(cap, func=float)
     return val
+
+
+def _dft_energy_(func_name):
+
+    def _dft_energy(output_string):
+        pattern = app.LINESPACES.join([
+            app.one_of_these([
+                app.escape('E(R{})'.format(func_name)),
+                app.escape('E(U{})'.format(func_name)),
+            ]),
+            app.escape('='),
+            app.capturing(app.FLOAT)
+        ])
+        cap = apf.last_capture(pattern, output_string, case=False)
+        val = apc.single(cap, func=float)
+        return val
+
+    return _dft_energy
 
 
 # a dictionary of functions for reading the energy from the output, by method
 ENERGY_READER_DCT = {
     elstruct.par.Method.HF: _hf_energy,
-    elstruct.par.Method.Dft.B3LYP: _dft_energy,
+    elstruct.par.Method.Dft.B3LYP: _dft_energy_('b3lyp'),
     elstruct.par.Method.Corr.MP2: _mp2_energy,
 }
 
@@ -61,6 +68,7 @@ def method_list():
 def energy(method, output_string):
     """ get total energy from output
     """
+    method = method.lower()
     assert method in method_list()
     # get the appropriate reader and call it
     energy_reader = ENERGY_READER_DCT[method]

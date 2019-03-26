@@ -3,7 +3,7 @@
 import elstruct.par
 import elstruct.option
 
-# method/basis, with maps to Psi4 names
+# method/basis lists, with maps to psi4 names
 PSI4_METHOD_DCT = {
     elstruct.par.Method.HF: 'hf',
     elstruct.par.Method.Dft.B3LYP: 'b3lyp',
@@ -79,7 +79,7 @@ class TemplateKey():
     CORR_OPTIONS = 'corr_options'
     METHOD = 'method'
     JOB_KEY = 'job_key'
-    OPT_OPTIONS = 'opt_options'
+    JOB_OPTIONS = 'job_options'
     FROZEN_DIS_STRS = 'frozen_dis_strs'
     FROZEN_ANG_STRS = 'frozen_ang_strs'
     FROZEN_DIH_STRS = 'frozen_dih_strs'

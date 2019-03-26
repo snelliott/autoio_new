@@ -34,34 +34,30 @@ def method_list(prog):
         prog, MODULE_NAME, module_template.method_list)
 
 
-def energy(prog, method, orb_restricted, output_string):
+def energy(prog, method, output_string):
     """ read energy from the output string
 
     :param prog: electronic structure program to use as a backend
     :type prog: str
     :param method: electronic structure method
     :type method: str
-    :param orb_restricted: whether the SCF orbitals are spin-restricted
-    :type orb_restricted: bool
     :param output_string: the program output string
     :type output_string: str
     """
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
         # *args
-        method, orb_restricted, output_string)
+        method, output_string)
 
 
-def energy_(prog, method, orb_restricted):
+def energy_(prog, method):
     """ read energy from the output string (callable)
     :param prog: electronic structure program to use as a backend
     :type prog: str
     :param method: electronic structure method
     :type method: str
-    :param orb_restricted: whether the SCF orbitals are spin-restricted
-    :type orb_restricted: bool
     """
-    func = functools.partial(energy, prog, method, orb_restricted)
+    func = functools.partial(energy, prog, method)
     func.__name__ = '_energy_'
     return func
 

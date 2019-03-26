@@ -1,11 +1,11 @@
-""" psi4 writer module """
+""" g09 writer module """
 import os
 import automol
 import elstruct.par
 import elstruct.option
 from elstruct import template
 from elstruct import pclass
-from elstruct.writer._psi4 import par
+from elstruct.writer._g09 import par
 
 # set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -107,7 +107,7 @@ def optimization(method, basis, geom, mult, charge,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
-        frozen_coordinates=frozen_coordinates, job_options=job_options,
+        job_options=job_options, frozen_coordinates=frozen_coordinates,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -123,76 +123,72 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     assert method in par.METHODS
     assert basis in par.BASES
 
-    frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (
-        _frozen_coordinate_strings(geom, frozen_coordinates))
-
     reference = _reference(method, mult, orb_restricted)
-    geom_str, zmat_val_str = _geometry_strings(geom)
+    geom_str, zmat_var_val_str, zmat_const_val_str = _geometry_strings(
+        geom, frozen_coordinates)
 
     if method in pclass.values(elstruct.par.Method.Corr):
         assert not corr_options
 
+    if (reference == par.G09Reference.ROHF and
+            job_key in (par.JobKey.GRADIENT, par.JobKey.HESSIAN)):
+        job_options = list(job_options)
+        job_options.insert(0, 'EnOnly')
+
+    g09_method = par.G09_METHOD_DCT[method]
+    g09_basis = par.G09_BASIS_DCT[basis]
+
+    # in the case of Hartree-Fock, swap the method for the reference name
+    if method == elstruct.par.Method.HF:
+        g09_method = reference
+        reference = ''
+
+    scf_guess_options, scf_options = _intercept_scf_guess_option(scf_options)
+    scf_guess_options = _evaluate_options(scf_guess_options)
     scf_options = _evaluate_options(scf_options)
     job_options = _evaluate_options(job_options)
 
-    psi4_method = par.PSI4_METHOD_DCT[method]
-    psi4_basis = par.PSI4_BASIS_DCT[basis]
-
     fill_dct = {
-        par.TemplateKey.COMMENT: comment,
         par.TemplateKey.MEMORY: memory,
-        par.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        par.TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
+        par.TemplateKey.MACHINE_OPTIONS: ','.join(machine_options),
+        par.TemplateKey.REFERENCE: reference,
+        par.TemplateKey.METHOD: g09_method,
+        par.TemplateKey.BASIS: g09_basis,
+        par.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        par.TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
+        par.TemplateKey.MOL_OPTIONS: ','.join(mol_options),
+        par.TemplateKey.COMMENT: comment,
         par.TemplateKey.CHARGE: charge,
         par.TemplateKey.MULT: mult,
         par.TemplateKey.GEOM: geom_str,
-        par.TemplateKey.ZMAT_VALS: zmat_val_str,
-        par.TemplateKey.BASIS: psi4_basis,
-        par.TemplateKey.METHOD: psi4_method,
-        par.TemplateKey.REFERENCE: reference,
-        par.TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
-        par.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
+        par.TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
+        par.TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
         par.TemplateKey.JOB_KEY: job_key,
-        par.TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
-        par.TemplateKey.FROZEN_DIS_STRS: frozen_dis_strs,
-        par.TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
-        par.TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
+        par.TemplateKey.JOB_OPTIONS: ','.join(job_options),
     }
     return fill_dct
 
 
-def _geometry_strings(geom):
+def _geometry_strings(geom, frozen_coordinates):
     if automol.geom.is_valid(geom):
         geom_str = automol.geom.string(geom)
-        zmat_val_str = ''
+        zmat_var_val_str = ''
+        zmat_const_val_str = ''
     elif automol.zmatrix.is_valid(geom):
         geom_str = automol.zmatrix.matrix_block_string(geom)
-        zmat_val_str = automol.zmatrix.setval_block_string(geom)
+        val_dct = automol.zmatrix.values(geom, angstrom=True, degree=True)
+        var_val_dct = {key: val for key, val in val_dct.items()
+                       if key not in frozen_coordinates}
+        const_val_dct = {key: val for key, val in val_dct.items()
+                         if key in frozen_coordinates}
+        zmat_var_val_str = automol.writers.zmatrix.setval_block_string(
+            var_val_dct, setval_sign=' ').strip()
+        zmat_const_val_str = automol.writers.zmatrix.setval_block_string(
+            const_val_dct, setval_sign=' ').strip()
     else:
         raise ValueError("Invalid geometry value:\n{}".format(geom))
 
-    return geom_str, zmat_val_str
-
-
-def _frozen_coordinate_strings(geom, frozen_coordinates):
-    if not frozen_coordinates:
-        dis_strs = ang_strs = dih_strs = ()
-    else:
-        coo_dct = automol.zmatrix.coordinates(geom, one_indexed=True)
-        assert all(coo_name in coo_dct for coo_name in frozen_coordinates)
-
-        def _coordinate_strings(coo_names):
-            frz_coo_names = [coo_name for coo_name in frozen_coordinates
-                             if coo_name in coo_names]
-            frz_coo_strs = tuple(' '.join(map(str, coo_keys))
-                                 for frz_coo_name in frz_coo_names
-                                 for coo_keys in coo_dct[frz_coo_name])
-            return frz_coo_strs
-
-        dis_strs = _coordinate_strings(automol.zmatrix.distance_names(geom))
-        ang_strs = _coordinate_strings(automol.zmatrix.angle_names(geom))
-        dih_strs = _coordinate_strings(automol.zmatrix.dihedral_names(geom))
-    return dis_strs, ang_strs, dih_strs
+    return geom_str, zmat_var_val_str, zmat_const_val_str
 
 
 def _reference(method, mult, orb_restricted):
@@ -207,20 +203,31 @@ def _reference(method, mult, orb_restricted):
         raise NotImplementedError
 
     if is_dft:
-        reference = (par.Psi4Reference.RKS if mult == 1 else
-                     par.Psi4Reference.UKS)
+        reference = ''
     else:
-        reference = (par.Psi4Reference.RHF if mult == 1 else
-                     (par.Psi4Reference.ROHF if orb_restricted else
-                      par.Psi4Reference.UHF))
+        reference = (par.G09Reference.RHF if mult == 1 else
+                     (par.G09Reference.ROHF if orb_restricted else
+                      par.G09Reference.UHF))
     return reference
 
 
-def _evaluate_options(options):
-    options = list(options)
-    for idx, option in enumerate(options):
-        if elstruct.option.is_valid(option):
-            name = elstruct.option.name(option)
+def _intercept_scf_guess_option(scf_opts):
+    guess_opts = []
+    ret_scf_opts = []
+    for opt in scf_opts:
+        if (elstruct.option.is_valid(opt) and opt in
+                pclass.values(elstruct.par.Option.Scf.Guess)):
+            guess_opts.append(opt)
+        else:
+            ret_scf_opts.append(opt)
+    return guess_opts, ret_scf_opts
+
+
+def _evaluate_options(opts):
+    opts = list(opts)
+    for idx, opt in enumerate(opts):
+        if elstruct.option.is_valid(opt):
+            name = elstruct.option.name(opt)
             assert name in par.OPTION_NAMES
-            options[idx] = par.PSI4_OPTION_EVAL_DCT[name](option)
-    return tuple(options)
+            opts[idx] = par.G09_OPTION_EVAL_DCT[name](opt)
+    return tuple(opts)

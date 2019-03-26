@@ -8,7 +8,7 @@ def method_list():
     raise NotImplementedError
 
 
-def energy(method, orb_restricted, output_string):
+def energy(method, output_string):
     """ _ """
     raise NotImplementedError
 
