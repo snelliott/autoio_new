@@ -140,11 +140,11 @@ def test__single():
         autoparse.pattern.capturing(autoparse.pattern.UNSIGNED_INTEGER),
     ])
     cap = autoparse.find.first_capture(bad_mult_pattern, XYZ_STRING)
-    val = autoparse.conv.single(cap, func=int)
+    val = autoparse.cast(cap)
     assert val is None
 
     mcap = autoparse.find.first_capture(mult_pattern, XYZ_STRING)
-    mval = autoparse.conv.single(mcap, func=int)
+    mval = autoparse.cast(mcap)
     assert mval == 1
 
 
@@ -153,7 +153,7 @@ def test__singles():
     """
     pattern = autoparse.pattern.capturing(autoparse.pattern.FLOAT)
     caps = autoparse.find.all_captures(pattern, XYZ_STRING)
-    vals = autoparse.conv.singles(caps, func=float)
+    vals = autoparse.cast(caps)
     assert vals == (
         1.584823, -0.748487, -0.427122, 0.61922, 0.190166, -0.271639,
         -0.635731, -0.183914, -0.180364, -1.602333, 0.736678, -0.026051,
@@ -165,11 +165,11 @@ def test__multi():
     """ test conv.multi
     """
     mcap = autoparse.find.first_capture(XYZ_LINE_PATTERN, XYZ_STRING)
-    mval = autoparse.conv.multi(mcap, funcs=(str, float, float, float))
+    mval = autoparse.cast(mcap)
     assert mval == ('F', 1.584823, -0.748487, -0.427122)
 
     mcap = autoparse.find.first_capture(BAD_XYZ_LINE_PATTERN, XYZ_STRING)
-    mval = autoparse.conv.multi(mcap, funcs=(str, float, float, float))
+    mval = autoparse.cast(mcap)
     assert mval is None
 
 
@@ -177,7 +177,7 @@ def test__multis():
     """ test conv.multis
     """
     mcaps = autoparse.find.all_captures(XYZ_LINE_PATTERN, XYZ_STRING)
-    mvals = autoparse.conv.multis(mcaps, funcs=(str, float, float, float))
+    mvals = autoparse.cast(mcaps)
     assert mvals == (('F', 1.584823, -0.748487, -0.427122),
                      ('C', 0.61922, 0.190166, -0.271639),
                      ('C', -0.635731, -0.183914, -0.180364),

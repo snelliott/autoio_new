@@ -2,6 +2,6 @@
 """
 from . import pattern
 from . import find
-from . import conv
+from ._conv import cast
 
-__all__ = ['pattern', 'find', 'conv']
+__all__ = ['pattern', 'find', 'cast']
