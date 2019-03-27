@@ -1,8 +1,8 @@
 """ molecular geometry and structure readers
 """
+from autoparse import cast as _cast
 import autoparse.pattern as app
 import autoparse.find as apf
-import autoparse.conv as apc
 import phycon.elements as pce
 import automol
 
@@ -26,8 +26,7 @@ def opt_geometry(output_string):
     geo_str = apf.last_capture(block_ptt_, output_string)
 
     mcaps = apf.all_captures(geom_line_ptt_, geo_str)
-    nums, xcomps, ycomps, zcomps = zip(
-        *apc.multis(mcaps, funcs=(int, float, float, float)))
+    nums, xcomps, ycomps, zcomps = zip(*_cast(mcaps))
     syms = tuple(map(pce.symbol, nums))
     xyzs = tuple(zip(xcomps, ycomps, zcomps))
     geo = automol.constructors.geom.from_data(syms, xyzs, angstrom=True)
@@ -61,7 +60,7 @@ def opt_zmatrix(output_string):
         app.LINE, app.LINE, app.LINE, app.capturing(setv_block_ptt)])
     setv_str = apf.last_capture(setv_block_ptt_, output_string)
     caps = apf.all_captures(setv_term_ptt_, setv_str)
-    val_dct = dict(apc.multis(caps, (str, float)))
+    val_dct = dict(_cast(caps))
 
     # call the automol constructor
     zma = automol.constructors.zmatrix.from_data(

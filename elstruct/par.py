@@ -1,5 +1,6 @@
 """ elstruct parameters
 """
+from elstruct import pclass
 from elstruct import option
 
 
@@ -48,6 +49,14 @@ class Method():
     class Corr():
         """ correlated method names """
         MP2 = 'mp2'
+
+    @classmethod
+    def is_dft(cls, method):
+        """ is this a DFT method?
+        """
+        method = method.lower()
+        assert method in pclass.all_values(cls)
+        return method in pclass.all_values(cls.Dft)
 
 
 class Job():
