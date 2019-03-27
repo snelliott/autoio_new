@@ -1,8 +1,8 @@
 """ electronic energy readers
 """
+from autoparse import cast as _cast
 import autoparse.pattern as app
 import autoparse.find as apf
-import autoparse.conv as apc
 import elstruct.par
 
 
@@ -16,7 +16,7 @@ def _hf_energy(output_string):
         app.capturing(app.FLOAT)
     ])
     cap = apf.last_capture(pattern, output_string, case=False)
-    val = apc.single(cap, func=float)
+    val = _cast(cap)
     return val
 
 
@@ -29,7 +29,7 @@ def _dft_energy(output_string):
         app.capturing(app.FLOAT)
     ])
     cap = apf.last_capture(pattern, output_string, case=False)
-    val = apc.single(cap, func=float)
+    val = _cast(cap)
     return val
 
 
@@ -40,7 +40,7 @@ def _mp2_energy(output_string):
         app.capturing(app.FLOAT)
     ])
     cap = apf.last_capture(pattern, output_string, case=False)
-    val = apc.single(cap, func=float)
+    val = _cast(cap)
     return val
 
 

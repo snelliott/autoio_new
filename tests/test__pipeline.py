@@ -11,9 +11,14 @@ SCRIPT_DCT = {
     'psi4': "#!/usr/bin/env bash\n"
             "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log",
     'g09': None,
-    # 'g09': "#!/usr/bin/env bash\n"
-    #        "g09 run.inp run.out >> stdout.log &> stderr.log",
 }
+
+# SCRIPT_DCT = {
+#     'psi4': "#!/usr/bin/env bash\n"
+#             "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log",
+#     'g09': "#!/usr/bin/env bash\n"
+#            "g09 run.inp run.out >> stdout.log &> stderr.log",
+# }
 
 
 def test__energy():
