@@ -2,6 +2,7 @@ name: autoparse-env
 
 dependencies:
     - python
+    - numpy
     - pytest
     - pytest-cov
     - flake8
