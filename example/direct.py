@@ -1,14 +1,17 @@
 """ elstruct input
 """
 import tempfile
+import numpy
 import automol
 import elstruct
-# from elstruct import option, Option
 
 PROG = 'g09'
 SCRIPT_STR = ("#!/usr/bin/env bash\n"
               "g09 run.inp run.out")
-METHOD = 'b3lyp'
+# PROG = 'psi4'
+# SCRIPT_STR = ("#!/usr/bin/env bash\n"
+#               "psi4 -i run.inp -o run.out")
+METHOD = 'hf'
 ORB_RESTRICTED = True
 BASIS = 'sto-3g'
 GEOM = ((('O', (None, None, None), (None, None, None)),
@@ -18,7 +21,6 @@ GEOM = ((('O', (None, None, None), (None, None, None)),
 GEOM = automol.zmatrix.geometry(GEOM)
 RUN_DIR = tempfile.mkdtemp()
 print(RUN_DIR)
-print(GEOM)
 
 INP_STR, OUT_STR = elstruct.run.direct(
     # required arguments
@@ -35,10 +37,13 @@ INP_STR, OUT_STR = elstruct.run.direct(
 )
 
 ENE = elstruct.reader.energy(PROG, METHOD, OUT_STR)
+HESS = elstruct.reader.hessian(PROG, OUT_STR)
 # ZMA = elstruct.reader.opt_zmatrix(PROG, OUT_STR)
 
 print(INP_STR)
 with open('output.dat', 'w') as out_obj:
     out_obj.write(OUT_STR)
+
 print(ENE)
+print(numpy.array(HESS))
 # print(ZMA)
