@@ -1,47 +1,35 @@
 """ electronic energy readers
 """
-from autoparse import cast as _cast
+import autoparser as apr
 import autoparse.pattern as app
-import autoparse.find as apf
 import elstruct.par
 
 
 def _hf_energy(output_string):
-    pattern = app.LINESPACES.join([
-        app.one_of_these([
+    ene = apr.energy.read(
+        output_string,
+        start_ptt=app.one_of_these([
             app.escape('@RHF Final Energy:'),
             app.escape('@ROHF Final Energy:'),
-            app.escape('@UHF Final Energy:'),
-        ]),
-        app.capturing(app.FLOAT)
-    ])
-    cap = apf.last_capture(pattern, output_string, case=False)
-    val = _cast(cap)
-    return val
+            app.escape('@UHF Final Energy:')]))
+    return ene
 
 
 def _dft_energy(output_string):
-    pattern = app.LINESPACES.join([
-        app.one_of_these([
+    ene = apr.energy.read(
+        output_string,
+        start_ptt=app.one_of_these([
             app.escape('@RKS Final Energy:'),
-            app.escape('@UKS Final Energy:'),
-        ]),
-        app.capturing(app.FLOAT)
-    ])
-    cap = apf.last_capture(pattern, output_string, case=False)
-    val = _cast(cap)
-    return val
+            app.escape('@UKS Final Energy:')]))
+    return ene
 
 
 def _mp2_energy(output_string):
-    pattern = app.LINESPACES.join([
-        app.escape('MP2 Total Energy (a.u.)'),
-        app.escape(':'),
-        app.capturing(app.FLOAT)
-    ])
-    cap = apf.last_capture(pattern, output_string, case=False)
-    val = _cast(cap)
-    return val
+    ene = apr.energy.read(
+        output_string,
+        start_ptt=app.LINESPACES.join([
+            '', app.escape('MP2 Total Energy (a.u.)'), app.escape(':')]))
+    return ene
 
 
 # a dictionary of functions for reading the energy from the output, by method

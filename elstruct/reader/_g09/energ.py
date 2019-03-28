@@ -1,5 +1,6 @@
 """ electronic energy readers
 """
+import autoparser as apr
 from autoparse import cast as _cast
 import autoparse.pattern as app
 import autoparse.find as apf
@@ -7,46 +8,34 @@ import elstruct.par
 
 
 def _hf_energy(output_string):
-    pattern = app.LINESPACES.join([
+    ene = apr.energy.read(
+        output_string,
         app.one_of_these([
-            app.escape('E(RHF)'),
-            app.escape('E(UHF)'),
-            app.escape('E(ROHF)'),
-        ]),
-        app.escape('='),
-        app.capturing(app.FLOAT)
-    ])
-    cap = apf.last_capture(pattern, output_string, case=False)
-    val = _cast(cap)
-    return val
+            app.escape('E(RHF) ='),
+            app.escape('E(UHF) ='),
+            app.escape('E(ROHF) =')]))
+    return ene
 
 
 def _mp2_energy(output_string):
-    pattern = app.LINESPACES.join([
-        app.escape('EUMP2'),
-        app.escape('='),
-        app.capturing(app.EXPONENTIAL_FLOAT_D),
-    ])
-    cap = apf.last_capture(pattern, output_string, case=False)
-    cap = apf.replace('d', 'e', cap, case=False)
-    val = _cast(cap)
-    return val
+    ene_d_str = apr.energy.read(
+        output_string,
+        app.escape('EUMP2 = '),
+        val_ptt=app.EXPONENTIAL_FLOAT_D)
+    ene = _cast(apf.replace('d', 'e', ene_d_str, case=False))
+    return ene
 
 
 def _dft_energy_(func_name):
 
     def _dft_energy(output_string):
-        pattern = app.LINESPACES.join([
+        ene = apr.energy.read(
+            output_string,
             app.one_of_these([
-                app.escape('E(R{})'.format(func_name)),
-                app.escape('E(U{})'.format(func_name)),
-            ]),
-            app.escape('='),
-            app.capturing(app.FLOAT)
-        ])
-        cap = apf.last_capture(pattern, output_string, case=False)
-        val = _cast(cap)
-        return val
+                app.escape('E(R{}) ='.format(func_name)),
+                app.escape('E(U{}) ='.format(func_name))]),
+            case=False)  # this is the default, but as a reminder
+        return ene
 
     return _dft_energy
 

@@ -276,6 +276,6 @@ def _test_pipeline(script_str, prog, method, writer, readers,
 if __name__ == '__main__':
     # test__energy()
     # test__gradient()
-    # test__hessian()
-    test__optimization()
+    test__hessian()
+    # test__optimization()
     # test__run__robust()
