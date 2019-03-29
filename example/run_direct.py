@@ -1,8 +1,6 @@
-""" elstruct input
+""" elstruct direct run
 """
 import tempfile
-import numpy
-import automol
 import elstruct
 
 PROG = 'g09'
@@ -18,7 +16,6 @@ GEOM = ((('O', (None, None, None), (None, None, None)),
          ('H', (0, None, None), ('R1', None, None)),
          ('H', (0, 1, None), ('R2', 'A2', None))),
         {'R1': 2.0, 'R2': 1.5, 'A2': 1.5})
-GEOM = automol.zmatrix.geometry(GEOM)
 RUN_DIR = tempfile.mkdtemp()
 print(RUN_DIR)
 
@@ -26,7 +23,7 @@ INP_STR, OUT_STR = elstruct.run.direct(
     # required arguments
     script_str=SCRIPT_STR,
     run_dir=RUN_DIR,
-    input_writer=elstruct.writer.hessian,
+    input_writer=elstruct.writer.optimization,
     prog=PROG,
     method=METHOD,
     basis=BASIS,
@@ -37,13 +34,11 @@ INP_STR, OUT_STR = elstruct.run.direct(
 )
 
 ENE = elstruct.reader.energy(PROG, METHOD, OUT_STR)
-HESS = elstruct.reader.hessian(PROG, OUT_STR)
-# ZMA = elstruct.reader.opt_zmatrix(PROG, OUT_STR)
+ZMA = elstruct.reader.opt_zmatrix(PROG, OUT_STR)
 
 print(INP_STR)
 with open('output.dat', 'w') as out_obj:
     out_obj.write(OUT_STR)
 
 print(ENE)
-print(numpy.array(HESS))
-# print(ZMA)
+print(ZMA)
