@@ -7,8 +7,9 @@ from elstruct import option
 # method/basis lists, with maps to gaussian names
 G09_METHOD_DCT = {
     elstruct.par.Method.HF: 'hf',
-    elstruct.par.Method.Dft.B3LYP: 'b3lyp',
     elstruct.par.Method.Corr.MP2: 'mp2',
+    elstruct.par.Method.Dft.B3LYP: 'b3lyp',
+    elstruct.par.Method.Dft.WB97XD: 'wb97xd',
 }
 METHODS = tuple(sorted(G09_METHOD_DCT.keys()))
 

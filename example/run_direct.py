@@ -19,7 +19,7 @@ GEOM = ((('O', (None, None, None), (None, None, None)),
 RUN_DIR = tempfile.mkdtemp()
 print(RUN_DIR)
 
-INP_STR, OUT_STR = elstruct.run.direct(
+INP_STR, OUT_STR = elstruct.run.robust(
     # required arguments
     script_str=SCRIPT_STR,
     run_dir=RUN_DIR,

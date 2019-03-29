@@ -42,13 +42,15 @@ INP_STR, OUT_STR = elstruct.run.robust(
              elstruct.option.specify(elstruct.Option.Scf.DIIS_, True),
              elstruct.Option.Scf.Guess.HUCKEL,)}],
         [{'job_options': (elstruct.Option.Opt.Coord.ZMATRIX,)},
-         {'job_options': (elstruct.Option.Opt.Coord.REDUNDANT,)}]
+         {'job_options': (
+             elstruct.option.specify(elstruct.Option.Opt.MAXITER_, 10),
+             elstruct.Option.Opt.Coord.ZMATRIX,)}],
     ],
     scf_options=(
         elstruct.option.specify(elstruct.Option.Scf.DIIS_, False),
         elstruct.option.specify(elstruct.Option.Scf.MAXITER_, 10),),
     job_options=(
-        elstruct.option.specify(elstruct.Option.Scf.MAXITER_, 10),),
+        elstruct.option.specify(elstruct.Option.Opt.MAXITER_, 2),),
 )
 
 ENE = elstruct.reader.energy(PROG, METHOD, OUT_STR)

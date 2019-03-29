@@ -35,8 +35,9 @@ def _mp2_energy(output_string):
 # a dictionary of functions for reading the energy from the output, by method
 ENERGY_READER_DCT = {
     elstruct.par.Method.HF: _hf_energy,
-    elstruct.par.Method.Dft.B3LYP: _dft_energy,
     elstruct.par.Method.Corr.MP2: _mp2_energy,
+    elstruct.par.Method.Dft.B3LYP: _dft_energy,
+    elstruct.par.Method.Dft.WB97XD: _dft_energy,
 }
 
 

@@ -45,6 +45,7 @@ class Method():
     class Dft():
         """ DFT method names """
         B3LYP = 'b3lyp'
+        WB97XD = 'wb97xd'
 
     class Corr():
         """ correlated method names """
