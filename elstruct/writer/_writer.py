@@ -81,6 +81,9 @@ def energy(prog, method, basis, geom, mult, charge,
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     """
+    prog = prog.lower()
+    method = method.lower()
+    basis = basis.lower()
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
         # *args
@@ -137,6 +140,9 @@ def gradient(prog, method, basis, geom, mult, charge,
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     """
+    prog = prog.lower()
+    method = method.lower()
+    basis = basis.lower()
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.gradient,
         # *args
@@ -194,6 +200,9 @@ def hessian(prog, method, basis, geom, mult, charge,
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     """
+    prog = prog.lower()
+    method = method.lower()
+    basis = basis.lower()
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.hessian,
         # *args
@@ -256,6 +265,9 @@ def optimization(prog, method, basis, geom, mult, charge,
         coordinate names to freeze
     :type fozen_coordinates: tuple[str]
     """
+    prog = prog.lower()
+    method = method.lower()
+    basis = basis.lower()
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.optimization,
         # *args

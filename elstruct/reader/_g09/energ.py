@@ -58,7 +58,6 @@ def method_list():
 def energy(method, output_string):
     """ get total energy from output
     """
-    method = method.lower()
     assert method in method_list()
     # get the appropriate reader and call it
     energy_reader = ENERGY_READER_DCT[method]
