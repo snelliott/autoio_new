@@ -36,7 +36,7 @@ def opt_zmatrix(output_string):
     val_dct = apr.zmatrix.setval.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
-            app.escape('!   Optimized Parameters   !'),
+            app.padded('Optimized Parameters', app.NONNEWLINE),
             app.LINE, app.LINE, app.LINE, app.LINE, '']),
         entry_sep_ptt='',
         entry_start_ptt=app.escape('!'),

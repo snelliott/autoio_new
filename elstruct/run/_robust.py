@@ -2,6 +2,7 @@
 """
 import os
 import warnings
+from elstruct.reader import has_normal_exit_message as _has_normal_exit_message
 from elstruct.reader import has_error_message as _has_error_message
 from elstruct.run import optsmat
 from elstruct.run._core import direct as _direct
@@ -9,7 +10,7 @@ from elstruct.run._core import direct as _direct
 
 def robust(script_str, run_dir, input_writer,
            prog, method, basis, geom, mult, charge,
-           errors, options_mat,
+           errors=(), options_mat=(),
            **kwargs):
     """ try several sets of options to generate an output file
 
@@ -19,10 +20,9 @@ def robust(script_str, run_dir, input_writer,
     assert len(errors) == len(options_mat)
 
     try_idx = 0
+    kwargs_dct = dict(kwargs)
     while not optsmat.is_exhausted(options_mat):
-        kwargs_dct = optsmat.updated_kwargs(kwargs, options_mat)
-
-        try_dir_name = 'try{:d}'.format(try_idx+1)
+        try_dir_name = 'try{:d}'.format(try_idx)
         try_dir_path = os.path.join(run_dir, try_dir_name)
         assert not os.path.exists(try_dir_path)
         os.mkdir(try_dir_path)
@@ -45,9 +45,11 @@ def robust(script_str, run_dir, input_writer,
         try_idx += 1
         row_idx = error_vals.index(True)
         options_mat = optsmat.advance(row_idx, options_mat)
+        kwargs_dct = optsmat.updated_kwargs(kwargs, options_mat)
 
-    if any(error_vals):
-        raise RuntimeError("robust run failed; last run was in {}"
-                           .format(run_dir))
+    if any(error_vals) or not _has_normal_exit_message(prog, output_str):
+        warnings.resetwarnings()
+        warnings.warn("elstruct robust run failed; last run was in {}"
+                      .format(run_dir))
 
     return input_str, output_str
