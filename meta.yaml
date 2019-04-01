@@ -9,9 +9,6 @@ source:
 requirements:
     build:
         - python
-    test:
-        commands:
-            - pytest -v --pyargs elstruct
     run:
         - python
         - numpy
@@ -26,5 +23,4 @@ requirements:
         - openbabel::openbabel
         - psi4::psi4
         - pacchem::autoparse
-        - pacchem::autocom
         - pacchem::autochem
