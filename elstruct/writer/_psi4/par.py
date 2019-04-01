@@ -7,8 +7,8 @@ import elstruct.option
 PSI4_METHOD_DCT = {
     elstruct.par.Method.HF: 'hf',
     elstruct.par.Method.Corr.MP2: 'mp2',
-    elstruct.par.Method.Dft.B3LYP: 'b3lyp',
-    elstruct.par.Method.Dft.WB97XD: 'wb97x-d',
+    elstruct.par.Method.Dft.B3LYP: 'B3LYP',
+    elstruct.par.Method.Dft.WB97XD: 'WB97X-D',
 }
 METHODS = tuple(sorted(PSI4_METHOD_DCT.keys()))
 

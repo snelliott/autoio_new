@@ -44,6 +44,8 @@ def energy(prog, method, output_string):
     :param output_string: the program output string
     :type output_string: str
     """
+    prog = prog.lower()
+    method = method.lower()
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
         # *args
@@ -88,8 +90,6 @@ def gradient_(prog):
     """ read gradient from the output string (callable)
     :param prog: electronic structure program to use as a backend
     :type prog: str
-    :param method: electronic structure method
-    :type method: str
     """
     func = functools.partial(gradient, prog)
     func.__name__ = '_gradient_'
@@ -122,8 +122,6 @@ def hessian_(prog):
     """ read hessian from the output string (callable)
     :param prog: electronic structure program to use as a backend
     :type prog: str
-    :param method: electronic structure method
-    :type method: str
     """
     func = functools.partial(hessian, prog)
     func.__name__ = '_hessian_'

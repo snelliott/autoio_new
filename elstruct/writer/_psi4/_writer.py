@@ -118,8 +118,6 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options, scf_options, corr_options,
                           job_options=(), frozen_coordinates=()):
-    method = method.lower()
-    basis = basis.lower()
     assert method in par.METHODS
     assert basis in par.BASES
 
@@ -196,7 +194,6 @@ def _frozen_coordinate_strings(geom, frozen_coordinates):
 
 
 def _reference(method, mult, orb_restricted):
-    method = method.lower()
     is_dft = method in pclass.values(elstruct.par.Method.Dft)
 
     # for now, orbital restriction is really only for open-shell hartree-fock

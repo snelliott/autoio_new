@@ -37,6 +37,12 @@ class Basis():
             """ augmented Dunning basis sets """
             D = 'aug-cc-pvdz'
 
+    @staticmethod
+    def standard_case(basis):
+        """ return the basis with standard capitalization
+        """
+        return basis.lower()
+
 
 class Method():
     """ electronic structure methods """
@@ -55,9 +61,15 @@ class Method():
     def is_dft(cls, method):
         """ is this a DFT method?
         """
-        method = method.lower()
+        method = cls.standard_case(method)
         assert method in pclass.all_values(cls)
         return method in pclass.all_values(cls.Dft)
+
+    @staticmethod
+    def standard_case(method):
+        """ return the method with standard capitalization
+        """
+        return method.lower()
 
 
 class Job():
