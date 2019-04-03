@@ -30,6 +30,7 @@ def opt_zmatrix(output_string):
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Symbolic Z-matrix:'), app.LINE, '']),
+        entry_end_ptt=app.maybe(app.UNSIGNED_INTEGER),
         last=False)
 
     # read the values from the end of the output

@@ -3,9 +3,9 @@
 ${machine_options}
 ## 1. theoretical method block
 % if reference:
-#N ${reference} ${method}/${basis}
+#P ${reference} ${method}/${basis}
 % else:
-#N ${method}/${basis}
+#P ${method}/${basis}
 % endif
 % if reference != 'rohf' and method != 'rohf':
 # SCF=(xqc)

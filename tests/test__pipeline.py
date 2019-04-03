@@ -130,18 +130,22 @@ def test__hessian():
 def test__optimization():
     """ test elstruct optimization writes and reads
     """
-    method = 'hf'
     basis = 'sto-3g'
-    geom = ((('O', (None, None, None), (None, None, None)),
+    geom = ((('C', (None, None, None), (None, None, None)),
              ('O', (0, None, None), ('R1', None, None)),
              ('H', (0, 1, None), ('R2', 'A2', None)),
-             ('H', (1, 0, 2), ('R2', 'A2', 'D3'))),
-            {'R1': 2.7, 'R2': 1.8, 'A2': 1.6, 'D3': 2.2})
+             ('H', (0, 1, 2), ('R3', 'A3', 'D3')),
+             ('H', (0, 1, 2), ('R4', 'A4', 'D4')),
+             ('H', (1, 0, 2), ('R5', 'A5', 'D5'))),
+            {'R1': 2.6, 'R2': 2.0, 'A2': 1.9,
+             'R3': 2.0, 'A3': 1.9, 'D3': 2.1,
+             'R4': 2.0, 'A4': 1.9, 'D4': 4.1,
+             'R5': 1.8, 'A5': 1.8, 'D5': 5.2})
     mult = 1
     charge = 0
     orb_restricted = True
-    frozen_coordinates = ('R2', 'A2', 'D3',)
-    ref_frozen_values = (1.8, 1.6, 2.2,)
+    frozen_coordinates = ('R5', 'A5', 'D3')
+    ref_frozen_values = (1.8, 1.8, 2.1)
     for prog in elstruct.writer.optimization_programs():
         for method in elstruct.writer.method_list(prog):
             script_str = SCRIPT_DCT[prog]
@@ -171,8 +175,10 @@ def test__optimization():
                 # check that the frozen coordinates didn't change
                 zma = vals[-1]
                 val_dct = automol.zmatrix.values(zma)
-                frozen_values = tuple(map(val_dct.__getitem__, frozen_coordinates))
-                assert numpy.allclose(frozen_values, ref_frozen_values, rtol=1e-4)
+                frozen_values = tuple(
+                    map(val_dct.__getitem__, frozen_coordinates))
+                assert numpy.allclose(
+                    frozen_values, ref_frozen_values, rtol=1e-4)
 
 
 def test__run__robust():
@@ -279,6 +285,6 @@ def _test_pipeline(script_str, prog, method, writer, readers,
 if __name__ == '__main__':
     # test__energy()
     # test__gradient()
-    # test__hessian()
-    test__optimization()
+    test__hessian()
+    # test__optimization()
     # test__run__robust()
