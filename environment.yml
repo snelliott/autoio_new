@@ -1,4 +1,4 @@
-name: autoparse-env
+name: autostring-env
 
 dependencies:
     - python

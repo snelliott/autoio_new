@@ -1,12 +1,12 @@
-""" test the autoparser module
+""" test the autoread module
 """
 import numpy
-import autoparser
+import autoread
 import autoparse.pattern as app
 
 
 def test__energy():
-    """ test autoparser.energy
+    """ test autoread.energy
     """
     string = (' @RKS Final Energy:  -149.44268093948725\n'
               '\n'
@@ -17,19 +17,19 @@ def test__energy():
               ' Two-Electron Energy =       108.0155180600336564\n'
               ' Total Energy =             -149.4426809394872464\n')
 
-    ene = autoparser.energy.read(string, app.escape('@RKS Final Energy:'))
+    ene = autoread.energy.read(string, app.escape('@RKS Final Energy:'))
     assert ene == -149.44268093948725
 
     string = (' No special actions if energy rises.\n'
               ' SCF Done: E(RB3LYP) =  -149.442473330  A.U. after 9 cycles\n'
               '           NFock=  9 Conv=0.14D-08     -V/T= 2.0124\n'
               ' QCSCF skips out because SCF is already converged.\n')
-    ene = autoparser.energy.read(string, app.escape('E(RB3LYP) ='))
+    ene = autoread.energy.read(string, app.escape('E(RB3LYP) ='))
     assert ene == -149.442473330
 
 
 def test__geom():
-    """ test autoparser.geom
+    """ test autoread.geom
     """
     string = ('                  Standard orientation:\n'
               ' --------------------------------------------------------\n'
@@ -42,7 +42,7 @@ def test__geom():
               '      4       1       0   -0.876174  -0.838634   0.368421\n'
               ' --------------------------------------------------------\n')
 
-    nums, xyzs = autoparser.geom.read(
+    nums, xyzs = autoread.geom.read(
         string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Standard orientation:'),
@@ -64,7 +64,7 @@ def test__geom():
               '     H    -0.8761735478   0.8179459165  -0.3899064740\n'
               '     H     0.8761735478  -0.8179459165  -0.3899064740\n')
 
-    syms, xyzs = autoparser.geom.read(
+    syms, xyzs = autoread.geom.read(
         string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Final (previous) structure:'), app.LINE, '']))
@@ -77,7 +77,7 @@ def test__geom():
 
 
 def test__matrix():
-    """ test autoparser.matrix
+    """ test autoread.matrix
     """
     # gaussian gradient
     string = (' ***** Axes restored to original set *****\n'
@@ -91,7 +91,7 @@ def test__matrix():
               ' ------------------------------------------------------------\n'
               ' Cartesian Forces:  Max     0.061240635 RMS     0.027012111\n')
 
-    mat = autoparser.matrix.read(
+    mat = autoread.matrix.read(
         string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded(app.escape('Forces (Hartrees/Bohr)'), app.NONNEWLINE),
@@ -123,7 +123,7 @@ def test__matrix():
               '   Eigenvalues ---  0.06664  0.66895  3.25121\n')
 
     comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
-    mat = autoparser.matrix.read(
+    mat = autoread.matrix.read(
         string,
         start_ptt=(app.escape('The second derivative matrix:') +
                    app.lpadded(app.NEWLINE)),
@@ -158,7 +158,7 @@ def test__matrix():
               '    2     0.000    -0.749    -0.488\n'
               '    3    -0.000     0.749    -0.488\n')
 
-    mat = autoparser.matrix.read(
+    mat = autoread.matrix.read(
         string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('## Gradient (Symmetry 0) ##'),
@@ -197,7 +197,7 @@ def test__matrix():
               '  8  -0.263   0.000   0.494   0.279\n'
               '  9   0.947   0.000   0.292   0.137\n')
 
-    mat = autoparser.matrix.read(
+    mat = autoread.matrix.read(
         string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('## Hessian (Symmetry 0) ##'), app.LINE, '']),

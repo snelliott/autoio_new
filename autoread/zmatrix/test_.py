@@ -1,11 +1,11 @@
-""" test the autoparser.zmatrix module
+""" test the autoread.zmatrix module
 """
-import autoparser
+import autoread
 import autoparse.pattern as app
 
 
 def test_():
-    """ test autoparser.zmatrix
+    """ test autoread.zmatrix
     """
     string = ('  Geometry (in Angstrom), charge = 0, multiplicity = 1:\n'
               '\n'
@@ -19,7 +19,7 @@ def test_():
               '  R1    =  1.4470582953\n'
               '  R2    =  0.9760730000\n')
 
-    syms, key_mat, name_mat, val_dct = autoparser.zmatrix.read(
+    syms, key_mat, name_mat, val_dct = autoread.zmatrix.read(
         string,
         start_ptt=(app.padded(app.escape('Geometry (in Angstrom),'),
                               app.NONNEWLINE)
@@ -49,7 +49,7 @@ def test_():
               'R4  = 2.06458   A4  = 108.982   D4  = 240.404        \n'
               'R5  = 1.83748   A5  = 107.091   D5  = 299.596        \n')
 
-    syms, key_mat, name_mat, val_dct = autoparser.zmatrix.read(
+    syms, key_mat, name_mat, val_dct = autoread.zmatrix.read(
         string,
         mat_entry_start_ptt=',',
         mat_entry_sep_ptt=',',
@@ -75,7 +75,7 @@ def test_():
 
 
 def test__matrix():
-    """ test autoparser.zmatrix.matrix
+    """ test autoread.zmatrix.matrix
     """
     string = (' comment:\n'
               ' --------\n'
@@ -91,7 +91,7 @@ def test__matrix():
               ' R2     0.97607\n'
               ' A2     96.77257\n'
               ' D3     129.367\n')
-    syms, key_mat, name_mat = autoparser.zmatrix.matrix.read(
+    syms, key_mat, name_mat = autoread.zmatrix.matrix.read(
         string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Symbolic Z-matrix:'), app.LINE, '']))
@@ -123,7 +123,7 @@ def test__matrix():
         app.escape('('), app.UNSIGNED_INTEGER, app.escape(')'),
         app.maybe(app.UNSIGNED_INTEGER)])
 
-    syms, key_mat, name_mat = autoparser.zmatrix.matrix.read(
+    syms, key_mat, name_mat = autoread.zmatrix.matrix.read(
         string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Z-MATRIX (ANGSTROMS AND DEGREES)'),
@@ -149,14 +149,14 @@ def test__matrix():
 
 
 def test__setval():
-    """ test autoparser.zmatrix.setval
+    """ test autoread.zmatrix.setval
     """
     string = ('    A2        =   96.7725720000\n'
               '    D3        =  129.3669950000\n'
               '    R1        =    1.4470582953\n'
               '    R2        =    0.9760730000\n')
 
-    val_dct = autoparser.zmatrix.setval.read(string)
+    val_dct = autoread.zmatrix.setval.read(string)
 
     assert val_dct == {
         'A2': 96.772572, 'D3': 129.366995, 'R1': 1.4470582953, 'R2': 0.976073}
@@ -178,7 +178,7 @@ def test__setval():
         app.escape('!   Optimized Parameters   !'),
         app.LINE, app.LINE, app.LINE, app.LINE, ''])
 
-    val_dct = autoparser.zmatrix.setval.read(
+    val_dct = autoread.zmatrix.setval.read(
         string,
         start_ptt=start_ptt,
         entry_sep_ptt='',
@@ -193,7 +193,7 @@ def test__setval():
               'R2  = 1.84451   A2  = 96.7726  \n'
               'R3  = 1.84451   A3  = 96.7726   D3  = 129.367        \n')
 
-    val_dct = autoparser.zmatrix.setval.read(
+    val_dct = autoread.zmatrix.setval.read(
         string,
         sep_ptt=app.one_of_these(['', app.NEWLINE]))
 
