@@ -16,19 +16,38 @@ def read(string,
          sym_ptt=SYM_PATTERN,
          key_ptt=KEY_PATTERN,
          name_ptt=NAME_PATTERN,
+         entry_start_ptt=None,
          entry_sep_ptt=ENTRY_SEP_PATTERN,
+         entry_end_ptt=None,
+         line_start_ptt=None,
+         line_end_ptt=None,
          last=True,
          case=False):
     """ read matrix from a string
     """
     line_ptts_ = [
-        line_pattern(num, app.capturing(sym_ptt), app.capturing(key_ptt),
-                     app.capturing(name_ptt), entry_sep_ptt)
+        line_pattern(
+            num,
+            sym_ptt=app.capturing(sym_ptt),
+            key_ptt=app.capturing(key_ptt),
+            name_ptt=app.capturing(name_ptt),
+            entry_start_ptt=entry_start_ptt,
+            entry_sep_ptt=entry_sep_ptt,
+            entry_end_ptt=entry_end_ptt,
+            start_ptt=line_start_ptt,
+            end_ptt=line_end_ptt,
+        )
         for num in range(4)]
 
     block_ptt_ = app.capturing(block_pattern(
-        sym_ptt=sym_ptt, key_ptt=key_ptt, name_ptt=name_ptt,
-        entry_sep_ptt=entry_sep_ptt))
+        sym_ptt=sym_ptt,
+        key_ptt=key_ptt,
+        name_ptt=name_ptt,
+        entry_start_ptt=entry_start_ptt,
+        entry_sep_ptt=entry_sep_ptt,
+        entry_end_ptt=entry_end_ptt,
+        line_start_ptt=line_start_ptt,
+        line_end_ptt=line_end_ptt))
 
     block_ptt_ = block_ptt_ if start_ptt is None else start_ptt + block_ptt_
 
@@ -60,18 +79,33 @@ def read(string,
 def block_pattern(sym_ptt=SYM_PATTERN,
                   key_ptt=KEY_PATTERN,
                   name_ptt=NAME_PATTERN,
-                  entry_sep_ptt=ENTRY_SEP_PATTERN):
+                  entry_start_ptt=None,
+                  entry_sep_ptt=ENTRY_SEP_PATTERN,
+                  entry_end_ptt=None,
+                  line_start_ptt=None,
+                  line_end_ptt=None):
     """ matrix pattern (assumes more than one atom)
     """
-    line_ptts = [line_pattern(num, sym_ptt, key_ptt, name_ptt, entry_sep_ptt)
-                 for num in range(4)]
+    line_ptts = [
+        line_pattern(
+            num,
+            sym_ptt=sym_ptt,
+            key_ptt=key_ptt,
+            name_ptt=name_ptt,
+            entry_start_ptt=entry_start_ptt,
+            entry_sep_ptt=entry_sep_ptt,
+            entry_end_ptt=entry_end_ptt,
+            start_ptt=line_start_ptt,
+            end_ptt=line_end_ptt,
+        )
+        for num in range(4)]
 
-    block_end_ptt = app.series(line_ptts[3], app.NEWLINE)
+    block_end_ptt = app.series(line_ptts[3], app.padded(app.NEWLINE))
 
     block_ptt = app.one_of_these([
-        app.NEWLINE.join(line_ptts[:3] + [block_end_ptt]),
-        app.NEWLINE.join(line_ptts[:3]),
-        app.NEWLINE.join(line_ptts[:2]),
+        app.padded(app.NEWLINE).join(line_ptts[:3] + [block_end_ptt]),
+        app.padded(app.NEWLINE).join(line_ptts[:3]),
+        app.padded(app.NEWLINE).join(line_ptts[:2]),
     ])
     return block_ptt
 
@@ -80,9 +114,42 @@ def line_pattern(num,
                  sym_ptt=SYM_PATTERN,
                  key_ptt=KEY_PATTERN,
                  name_ptt=NAME_PATTERN,
-                 entry_sep_ptt=ENTRY_SEP_PATTERN):
+                 entry_start_ptt=None,
+                 entry_sep_ptt=ENTRY_SEP_PATTERN,
+                 entry_end_ptt=None,
+                 start_ptt=None,
+                 end_ptt=None):
     """ matrix line pattern
     """
     assert num in range(0, 4)
-    return app.LINE_START + app.padded(app.padded(entry_sep_ptt).join(
-        [sym_ptt] + num * [key_ptt, name_ptt]))
+    entry_ptt = entry_pattern(
+        key_ptt=key_ptt,
+        name_ptt=name_ptt,
+        start_ptt=entry_start_ptt,
+        sep_ptt=entry_sep_ptt,
+        end_ptt=entry_end_ptt)
+
+    parts = (
+        [app.LINE_START] +
+        ([] if start_ptt is None else [start_ptt]) +
+        [sym_ptt] + num * [entry_ptt] +
+        ([] if end_ptt is None else [end_ptt])
+    )
+    ptt = app.PADDING.join(parts)
+    return ptt
+
+
+def entry_pattern(key_ptt=KEY_PATTERN,
+                  name_ptt=NAME_PATTERN,
+                  start_ptt=None,
+                  sep_ptt=ENTRY_SEP_PATTERN,
+                  end_ptt=None):
+    """ matrix entry pattern
+    """
+    parts = (
+        ([] if start_ptt is None else [start_ptt]) +
+        [key_ptt, sep_ptt, name_ptt] +
+        ([] if end_ptt is None else [end_ptt])
+    )
+    ptt = app.PADDING.join(parts)
+    return ptt

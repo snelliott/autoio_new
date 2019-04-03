@@ -51,7 +51,8 @@ def test_():
 
     syms, key_mat, name_mat, val_dct = autoparser.zmatrix.read(
         string,
-        mat_entry_sep_ptt=app.padded(','),
+        mat_entry_start_ptt=',',
+        mat_entry_sep_ptt=',',
         setv_sep_ptt=app.padded(app.one_of_these(['', app.NEWLINE])))
 
     assert syms == ('C', 'O', 'H', 'H', 'H', 'H')
@@ -104,6 +105,43 @@ def test__matrix():
                         ('R1', None, None),
                         ('R2', 'A2', None),
                         ('R2', 'A2', 'D3'))
+
+    string = (' -----------------------------------------------------------\n'
+              '              Z-MATRIX (ANGSTROMS AND DEGREES)\n'
+              '    nt   At 1      Lengt    2      Alph           Bet      J\n'
+              ' -----------------------------------------------------------\n'
+              '  1   1  C\n'
+              '  2   2  O  1  1.454832( 1)\n'
+              '  3   3  H  1  1.093067( 2)  2 111.219( 6)\n'
+              '  4   4  H  1  1.090938( 3)  2 106.548( 7) 3 118.980( 10)  0\n'
+              '  5   5  H  1  1.093052( 4)  2 111.241( 8) 3 238.017( 11)  0\n'
+              '  6   6  O  2  1.360181( 5)  1 108.248( 9) 3  60.990( 12)  0\n'
+              ' -----------------------------------------------------------')
+
+    line_start_ptt = app.LINESPACES.join(2 * [app.UNSIGNED_INTEGER])
+    entry_end_ptt = app.PADDING.join([
+        app.escape('('), app.UNSIGNED_INTEGER, app.escape(')'),
+        app.maybe(app.UNSIGNED_INTEGER)])
+
+    syms, key_mat, name_mat = autoparser.zmatrix.matrix.read(
+        string,
+        name_ptt=app.FLOAT,
+        line_start_ptt=line_start_ptt,
+        entry_end_ptt=entry_end_ptt)
+
+    assert syms == ('C', 'O', 'H', 'H', 'H', 'O')
+    assert key_mat == ((None, None, None),
+                       (1, None, None),
+                       (1, 2, None),
+                       (1, 2, 3),
+                       (1, 2, 3),
+                       (2, 1, 3))
+    assert name_mat == ((None, None, None),
+                        (1.454832, None, None),
+                        (1.093067, 111.219, None),
+                        (1.090938, 106.548, 118.98),
+                        (1.093052, 111.241, 238.017),
+                        (1.360181, 108.248, 60.99))
 
 
 def test__setval():
@@ -161,6 +199,6 @@ def test__setval():
 
 
 if __name__ == '__main__':
-    # test__matrix()
     # test__setval()
-    test_()
+    # test_()
+    test__matrix()
