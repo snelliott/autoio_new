@@ -125,6 +125,9 @@ def test__matrix():
 
     syms, key_mat, name_mat = autoparser.zmatrix.matrix.read(
         string,
+        start_ptt=app.padded(app.NEWLINE).join([
+            app.escape('Z-MATRIX (ANGSTROMS AND DEGREES)'),
+            app.LINE, app.LINE, '']),
         name_ptt=app.FLOAT,
         line_start_ptt=line_start_ptt,
         entry_end_ptt=entry_end_ptt)
@@ -142,6 +145,7 @@ def test__matrix():
                         (1.090938, 106.548, 118.98),
                         (1.093052, 111.241, 238.017),
                         (1.360181, 108.248, 60.99))
+    print(name_mat)
 
 
 def test__setval():

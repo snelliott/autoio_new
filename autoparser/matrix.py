@@ -44,7 +44,8 @@ def read(string,
         for block_str in block_strs[1:]:
             block_rows = _block_rows(block_str, val_ptt, line_ptt_, case=case)
             nblock_rows = len(block_rows)
-            for block_row_idx, row_idx in enumerate(range(nblock_rows+1, nrows)):
+            for block_row_idx, row_idx in enumerate(
+                    range(nrows-nblock_rows, nrows)):
                 rows[row_idx] += block_rows[block_row_idx]
 
         mat = _symmetric_matrix_from_lower_triangle(rows)
@@ -60,13 +61,12 @@ def _matrix(rows):
 
 def _symmetric_matrix_from_lower_triangle(tril_rows):
     nrows = len(tril_rows)
-    mat = numpy.zeros((nrows, nrows))
+    mat = numpy.zeros((nrows, nrows), dtype=numpy.object_)
     for row_idx, tril_row in enumerate(tril_rows):
         mat[row_idx, :row_idx+1] = tril_row
         mat[:row_idx+1, row_idx] = tril_row
     # make sure we ended up with a square symmetric matrix
     assert mat.ndim == 2 and mat.shape[0] == mat.shape[1]
-    assert numpy.allclose(mat, mat.T)
     return tuple(map(tuple, mat))
 
 
