@@ -36,6 +36,20 @@ def read(string,
     return syms, xyzs
 
 
+def read_xyz(string, sym_ptt=SYM_PATTERN, val_ptt=VALUE_PATTERN):
+    """ read geometry from a .xyz string
+    """
+    lines = string.splitlines()
+    try:
+        natms = int(lines[0])
+    except ValueError:
+        raise ValueError('Invalid xyz string')
+
+    geo_str = '\n'.join(lines[2:natms+2])
+    syms, xyzs = read(geo_str, sym_ptt=sym_ptt, val_ptt=val_ptt)
+    return syms, xyzs
+
+
 def block_pattern(sym_ptt=SYM_PATTERN,
                   val_ptt=VALUE_PATTERN,
                   line_sep_ptt=None,
