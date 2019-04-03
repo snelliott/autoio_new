@@ -28,6 +28,7 @@ from ._lib import SPACE
 from ._lib import SPACES
 from ._lib import LINESPACE
 from ._lib import LINESPACES
+from ._lib import PADDING
 from ._lib import NONSPACE
 from ._lib import UPPERCASE_LETTER
 from ._lib import LOWERCASE_LETTER
@@ -78,6 +79,7 @@ __all__ = [
     'SPACES',
     'LINESPACE',
     'LINESPACES',
+    'PADDING',
     'NONSPACE',
     'UPPERCASE_LETTER',
     'LOWERCASE_LETTER',

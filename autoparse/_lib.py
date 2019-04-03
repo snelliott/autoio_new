@@ -23,6 +23,7 @@ SPACE = r'\s'            # space, possibly newline
 SPACES = one_or_more(SPACE)
 LINESPACE = r'[ \t]'     # non-newline space
 LINESPACES = one_or_more(LINESPACE)
+PADDING = zero_or_more(LINESPACE)
 NONSPACE = r'\S'         # any non-space character
 
 UPPERCASE_LETTER = r'[A-Z]'
