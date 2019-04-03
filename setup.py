@@ -1,11 +1,11 @@
-""" Install autoparse
+""" Install autostring
 """
 from distutils.core import setup
 
 
-setup(name="autoparse",
-      version="0.1.12",
+setup(name="autostring",
+      version="0.1.0",
       packages=["autoparse",
                 "autoparse.tests",
-                "autoparser",
-                "autoparser.zmatrix"])
+                "autoread",
+                "autoread.zmatrix"])

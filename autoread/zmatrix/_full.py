@@ -2,10 +2,10 @@
 """
 import autoparse.find as apf
 import autoparse.pattern as app
-from autoparser.zmatrix.matrix import read as _matrix_read
-from autoparser.zmatrix.setval import read as _setval_read
-from autoparser.zmatrix.matrix import block_pattern as _matrix_block_pattern
-from autoparser.zmatrix.setval import block_pattern as _setval_block_pattern
+from autoread.zmatrix.matrix import read as _matrix_read
+from autoread.zmatrix.setval import read as _setval_read
+from autoread.zmatrix.matrix import block_pattern as _matrix_block_pattern
+from autoread.zmatrix.setval import block_pattern as _setval_block_pattern
 
 SYM_PATTERN = app.LETTER + app.maybe(app.LETTER)
 KEY_PATTERN = app.UNSIGNED_INTEGER
