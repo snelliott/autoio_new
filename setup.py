@@ -8,4 +8,5 @@ setup(name="autostring",
       packages=["autoparse",
                 "autoparse.tests",
                 "autoread",
-                "autoread.zmatrix"])
+                "autoread.zmatrix",
+                "autowrite"])

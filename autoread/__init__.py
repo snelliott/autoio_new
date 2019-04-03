@@ -1,4 +1,4 @@
-""" parsers for specific types of data
+""" flexibly read data from a string
 """
 from autoread import energy
 from autoread import geom
