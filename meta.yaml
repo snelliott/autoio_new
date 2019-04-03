@@ -1,7 +1,7 @@
 # cmd: conda build . -c pacchem -c psi4 -c rdkit -c openbabel
 package:
     name: elstruct
-    version: "0.2.1"
+    version: "0.2.2"
 
 source:
     path: .
@@ -22,5 +22,5 @@ requirements:
         - rdkit::rdkit
         - openbabel::openbabel
         - psi4::psi4
-        - pacchem::autoparse
+        - pacchem::autostring
         - pacchem::autochem

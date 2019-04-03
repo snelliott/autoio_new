@@ -1,6 +1,7 @@
 """ g09 writer module """
 import os
 import automol
+import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
@@ -179,9 +180,9 @@ def _geometry_strings(geom, frozen_coordinates):
                        if key not in frozen_coordinates}
         const_val_dct = {key: val for key, val in val_dct.items()
                          if key in frozen_coordinates}
-        zmat_var_val_str = automol.writers.zmatrix.setval_block_string(
+        zmat_var_val_str = aw.zmatrix.setval_block(
             var_val_dct, setval_sign=' ').strip()
-        zmat_const_val_str = automol.writers.zmatrix.setval_block_string(
+        zmat_const_val_str = aw.zmatrix.setval_block(
             const_val_dct, setval_sign=' ').strip()
     else:
         raise ValueError("Invalid geometry value:\n{}".format(geom))

@@ -1,7 +1,7 @@
 """ gradient and hessian readers
 """
 import numpy
-import autoparser as apr
+import autoread as ar
 import autoparse.pattern as app
 
 
@@ -9,7 +9,7 @@ def gradient(output_string):
     """ get gradient from output
     """
     comp_ptt = app.UNSIGNED_INTEGER
-    grad = apr.matrix.read(
+    grad = ar.matrix.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('## Gradient (Symmetry 0) ##'),
@@ -23,7 +23,7 @@ def hessian(output_string):
     """ get hessian from output
     """
     comp_ptt = app.UNSIGNED_INTEGER
-    hess = apr.matrix.read(
+    hess = ar.matrix.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('## Hessian (Symmetry 0) ##'), app.LINE, '']),

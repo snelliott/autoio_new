@@ -1,12 +1,12 @@
 """ electronic energy readers
 """
-import autoparser as apr
+import autoread as ar
 import autoparse.pattern as app
 import elstruct.par
 
 
 def _hf_energy(output_string):
-    ene = apr.energy.read(
+    ene = ar.energy.read(
         output_string,
         start_ptt=app.one_of_these([
             app.escape('@RHF Final Energy:'),
@@ -16,7 +16,7 @@ def _hf_energy(output_string):
 
 
 def _dft_energy(output_string):
-    ene = apr.energy.read(
+    ene = ar.energy.read(
         output_string,
         start_ptt=app.one_of_these([
             app.escape('@RKS Final Energy:'),
@@ -25,7 +25,7 @@ def _dft_energy(output_string):
 
 
 def _mp2_energy(output_string):
-    ene = apr.energy.read(
+    ene = ar.energy.read(
         output_string,
         start_ptt=app.LINESPACES.join([
             '', app.escape('MP2 Total Energy (a.u.)'), app.escape(':')]))
