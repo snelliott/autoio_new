@@ -1,7 +1,7 @@
 """ gradient and hessian readers
 """
 import numpy
-import autoparser as apr
+import autoread as ar
 from autoparse import cast as _cast
 import autoparse.pattern as app
 import autoparse.find as apf
@@ -10,7 +10,7 @@ import autoparse.find as apf
 def gradient(output_string):
     """ read gradient from the output string
     """
-    grad = apr.matrix.read(
+    grad = ar.matrix.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded(app.escape('Forces (Hartrees/Bohr)'), app.NONNEWLINE),
@@ -25,7 +25,7 @@ def hessian(output_string):
     """
     try:
         comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
-        mat = apr.matrix.read(
+        mat = ar.matrix.read(
             output_string,
             start_ptt=(app.escape('The second derivative matrix:') +
                        app.lpadded(app.NEWLINE)),
@@ -35,7 +35,7 @@ def hessian(output_string):
             tril=True)
     except TypeError:
         comp_ptt = app.UNSIGNED_INTEGER
-        mat = apr.matrix.read(
+        mat = ar.matrix.read(
             output_string,
             val_ptt=app.EXPONENTIAL_FLOAT_D,
             start_ptt=(

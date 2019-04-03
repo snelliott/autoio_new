@@ -1,6 +1,6 @@
 """ electronic energy readers
 """
-import autoparser as apr
+import autoread as ar
 from autoparse import cast as _cast
 import autoparse.pattern as app
 import autoparse.find as apf
@@ -8,7 +8,7 @@ import elstruct.par
 
 
 def _hf_energy(output_string):
-    ene = apr.energy.read(
+    ene = ar.energy.read(
         output_string,
         app.one_of_these([
             app.escape('E(RHF) ='),
@@ -18,7 +18,7 @@ def _hf_energy(output_string):
 
 
 def _mp2_energy(output_string):
-    ene_d_str = apr.energy.read(
+    ene_d_str = ar.energy.read(
         output_string,
         app.escape('EUMP2 = '),
         val_ptt=app.EXPONENTIAL_FLOAT_D)
@@ -29,7 +29,7 @@ def _mp2_energy(output_string):
 def _dft_energy_(func_name):
 
     def _dft_energy(output_string):
-        ene = apr.energy.read(
+        ene = ar.energy.read(
             output_string,
             app.one_of_these([
                 app.escape('E(R{}) ='.format(func_name)),

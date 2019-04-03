@@ -1,6 +1,6 @@
 """ molecular geometry and structure readers
 """
-import autoparser as apr
+import autoread as ar
 import autoparse.pattern as app
 import phycon.elements as pce
 import automol
@@ -9,7 +9,7 @@ import automol
 def opt_geometry(output_string):
     """ get optimized geometry from output
     """
-    nums, xyzs = apr.geom.read(
+    nums, xyzs = ar.geom.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Standard orientation:'),
@@ -26,7 +26,7 @@ def opt_zmatrix(output_string):
     """ get optimized z-matrix geometry from output
     """
     # read the matrix from the beginning of the output
-    syms, key_mat, name_mat = apr.zmatrix.matrix.read(
+    syms, key_mat, name_mat = ar.zmatrix.matrix.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Symbolic Z-matrix:'), app.LINE, '']),
@@ -34,7 +34,7 @@ def opt_zmatrix(output_string):
         last=False)
 
     # read the values from the end of the output
-    val_dct = apr.zmatrix.setval.read(
+    val_dct = ar.zmatrix.setval.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded('Optimized Parameters', app.NONNEWLINE),

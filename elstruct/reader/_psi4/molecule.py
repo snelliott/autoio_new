@@ -1,6 +1,6 @@
 """ molecular geometry and structure readers
 """
-import autoparser as apr
+import autoread as ar
 import autoparse.pattern as app
 import automol
 
@@ -8,7 +8,7 @@ import automol
 def opt_geometry(output_string):
     """ get optimized cartesian geometry from output
     """
-    syms, xyzs = apr.geom.read(
+    syms, xyzs = ar.geom.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Final (previous) structure:'), app.LINE, '']))
@@ -21,7 +21,7 @@ def opt_zmatrix(output_string):
     """ get optimized z-matrix geometry from output
     """
     # read the matrix and the values from the output
-    syms, key_mat, name_mat, val_dct = apr.zmatrix.read(
+    syms, key_mat, name_mat, val_dct = ar.zmatrix.read(
         output_string,
         start_ptt=(
             app.padded(app.escape('Geometry (in Angstrom),'), app.NONNEWLINE) +
