@@ -22,5 +22,5 @@ requirements:
         - rdkit::rdkit
         - openbabel::openbabel
         - psi4::psi4
-        - pacchem::autostring
+        - pacchem::autoparse
         - pacchem::autochem
