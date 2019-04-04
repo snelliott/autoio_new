@@ -1,5 +1,4 @@
 [MASTER]
 disable=
     too-many-locals,
-    too-many-arguments,
-    duplicate-code
+    too-many-arguments
