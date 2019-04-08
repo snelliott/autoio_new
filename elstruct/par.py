@@ -52,6 +52,8 @@ class Method():
         """ DFT method names """
         B3LYP = 'b3lyp'
         WB97XD = 'wb97xd'
+        M062X = 'm062x'
+        B2PLYPD3 = 'b2plypd3'
 
     class Corr():
         """ correlated method names """

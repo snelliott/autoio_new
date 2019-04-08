@@ -127,7 +127,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     reference = _reference(method, mult, orb_restricted)
     geom_str, zmat_val_str = _geometry_strings(geom)
 
-    if method in pclass.values(elstruct.par.Method.Corr):
+    if method not in pclass.values(elstruct.par.Method.Corr):
         assert not corr_options
 
     scf_options = _evaluate_options(scf_options)
@@ -194,6 +194,7 @@ def _frozen_coordinate_strings(geom, frozen_coordinates):
 
 
 def _reference(method, mult, orb_restricted):
+    orb_restricted = (mult == 1) if orb_restricted is None else orb_restricted
     is_dft = method in pclass.values(elstruct.par.Method.Dft)
 
     # for now, orbital restriction is really only for open-shell hartree-fock

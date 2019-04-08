@@ -10,6 +10,8 @@ G09_METHOD_DCT = {
     elstruct.par.Method.Corr.MP2: 'mp2',
     elstruct.par.Method.Dft.B3LYP: 'b3lyp',
     elstruct.par.Method.Dft.WB97XD: 'wb97xd',
+    elstruct.par.Method.Dft.M062X: 'm062x',
+    elstruct.par.Method.Dft.B2PLYPD3: 'b2plypd3',
 }
 METHODS = tuple(sorted(G09_METHOD_DCT.keys()))
 
