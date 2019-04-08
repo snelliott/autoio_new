@@ -191,6 +191,7 @@ def _geometry_strings(geom, frozen_coordinates):
 
 
 def _reference(method, mult, orb_restricted):
+    orb_restricted = (mult == 1) if orb_restricted is None else orb_restricted
     is_dft = method in pclass.values(elstruct.par.Method.Dft)
 
     # for now, orbital restriction is really only for open-shell hartree-fock
