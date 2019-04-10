@@ -49,11 +49,11 @@ grad = wfn.gradient()
 grad.name = 'Gradient'
 grad.print_out()
 % elif job_key == 'hessian' and method == 'hf' and reference == 'rohf':
-_, wfn = hessian('${method}', return_wfn=True, dertype=1)
+_, wfn = frequency('${method}', return_wfn=True, dertype=1)
 % elif job_key == 'hessian' and method == 'hf' and reference == 'uhf':
-_, wfn = hessian('${method}', return_wfn=True, dertype=1)
+_, wfn = frequency('${method}', return_wfn=True, dertype=1)
 % elif job_key == 'hessian':
-_, wfn = hessian('${method}', return_wfn=True)
+_, wfn = frequency('${method}', return_wfn=True)
 % endif
 % if job_key == 'hessian':
 hess = wfn.hessian()
