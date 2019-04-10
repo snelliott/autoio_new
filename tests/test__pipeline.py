@@ -6,11 +6,11 @@ import numpy
 import automol
 import elstruct
 
-
 SCRIPT_DCT = {
     'psi4': "#!/usr/bin/env bash\n"
             "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log",
     'g09': None,
+    'molpro': None,
 }
 
 # SCRIPT_DCT = {
@@ -18,13 +18,15 @@ SCRIPT_DCT = {
 #             "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log",
 #     'g09': "#!/usr/bin/env bash\n"
 #            "g09 run.inp run.out >> stdout.log &> stderr.log",
+#     'molpro': "#!/usr/bin/env bash\n"
+#               "molpro run.inp -o run.out >> stdout.log &> stderr.log",
 # }
 
 
 def test__energy():
     """ test the energy pipeline
     """
-    basis = 'sto-3g'
+    basis = '6-31g'
     geom = (('O', (0.0, 0.0, -0.110)),
             ('H', (0.0, -1.635, 0.876)),
             ('H', (-0.0, 1.635, 0.876)))
@@ -32,14 +34,12 @@ def test__energy():
     charge_vals = [0, 1]
 
     for prog in elstruct.writer.programs():
-        for method in elstruct.writer.method_list(prog):
+        for method in elstruct.program_methods(prog):
             for mult, charge in zip(mult_vals, charge_vals):
-                if mult != 1 and not elstruct.par.Method.is_dft(method):
-                    orb_restricted_vals = [False, True]
-                else:
-                    orb_restricted_vals = [None]
+                for orb_restricted in (
+                        elstruct.program_method_orbital_restrictions(
+                            prog, method, open_shell=(mult != 1))):
 
-                for orb_restricted in orb_restricted_vals:
                     vals = _test_pipeline(
                         script_str=SCRIPT_DCT[prog],
                         prog=prog,
@@ -69,15 +69,18 @@ def test__gradient():
     mult_vals = [1, 2]
     charge_vals = [0, 1]
 
-    for prog in elstruct.writer.programs():
-        for method in elstruct.writer.method_list(prog):
-            for mult, charge in zip(mult_vals, charge_vals):
-                if mult != 1 and not elstruct.par.Method.is_dft(method):
-                    orb_restricted_vals = [False, True]
-                else:
-                    orb_restricted_vals = [None]
+    for prog in elstruct.writer.gradient_programs():
+        methods = list(elstruct.program_nondft_methods(prog))
+        dft_methods = list(elstruct.program_dft_methods(prog))
+        if dft_methods:
+            methods.append(numpy.random.choice(dft_methods))
 
-                for orb_restricted in orb_restricted_vals:
+        for method in methods:
+            for mult, charge in zip(mult_vals, charge_vals):
+                for orb_restricted in (
+                        elstruct.program_method_orbital_restrictions(
+                            prog, method, open_shell=(mult != 1))):
+
                     vals = _test_pipeline(
                         script_str=SCRIPT_DCT[prog],
                         prog=prog,
@@ -103,15 +106,18 @@ def test__hessian():
     mult_vals = [1, 2]
     charge_vals = [0, 1]
 
-    for prog in elstruct.writer.programs():
-        for method in elstruct.writer.method_list(prog):
-            for mult, charge in zip(mult_vals, charge_vals):
-                if mult != 1 and not elstruct.par.Method.is_dft(method):
-                    orb_restricted_vals = [False, True]
-                else:
-                    orb_restricted_vals = [None]
+    for prog in elstruct.writer.hessian_programs():
+        methods = list(elstruct.program_nondft_methods(prog))
+        dft_methods = list(elstruct.program_dft_methods(prog))
+        if dft_methods:
+            methods.append(numpy.random.choice(dft_methods))
 
-                for orb_restricted in orb_restricted_vals:
+        for method in methods:
+            for mult, charge in zip(mult_vals, charge_vals):
+                for orb_restricted in (
+                        elstruct.program_method_orbital_restrictions(
+                            prog, method, open_shell=(mult != 1))):
+
                     vals = _test_pipeline(
                         script_str=SCRIPT_DCT[prog],
                         prog=prog,
@@ -147,7 +153,12 @@ def test__optimization():
     frozen_coordinates = ('R5', 'A5', 'D3')
     ref_frozen_values = (1.8, 1.8, 2.1)
     for prog in elstruct.writer.optimization_programs():
-        for method in elstruct.writer.method_list(prog):
+        methods = list(elstruct.program_nondft_methods(prog))
+        dft_methods = list(elstruct.program_dft_methods(prog))
+        if dft_methods:
+            methods.append(numpy.random.choice(dft_methods))
+
+        for method in methods:
             script_str = SCRIPT_DCT[prog]
 
             vals = _test_pipeline(
@@ -283,8 +294,8 @@ def _test_pipeline(script_str, prog, method, writer, readers,
 
 
 if __name__ == '__main__':
-    test__energy()
+    # test__energy()
     # test__gradient()
     # test__hessian()
-    # test__optimization()
+    test__optimization()
     # test__run__robust()

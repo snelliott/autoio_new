@@ -8,21 +8,51 @@ from elstruct import template
 from elstruct import pclass
 from elstruct.writer._g09 import par
 
+PROG = elstruct.par.Program.G09
+
 # set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 
-def method_list():
-    """ list of available electronic structure methods
-    """
-    return par.METHODS
+# mako template keys
+class G09Reference():
+    """ _ """
+    RHF = 'rhf'
+    UHF = 'uhf'
+    ROHF = 'rohf'
 
 
-def basis_list():
-    """ list of available electronic structure basis sets
-    """
-    return par.BASES
+class JobKey():
+    """ _ """
+    ENERGY = 'energy'
+    OPTIMIZATION = 'optimization'
+    GRADIENT = 'gradient'
+    HESSIAN = 'hessian'
+
+
+class TemplateKey():
+    """ mako template keys """
+    # machine
+    MEMORY = 'memory'
+    MACHINE_OPTIONS = 'machine_options'
+    # theoretical method
+    REFERENCE = 'reference'
+    METHOD = 'method'
+    BASIS = 'basis'
+    SCF_OPTIONS = 'scf_options'
+    SCF_GUESS_OPTIONS = 'scf_guess_options'
+    # molecule / state
+    MOL_OPTIONS = 'mol_options'
+    COMMENT = 'comment'
+    CHARGE = 'charge'
+    MULT = 'mult'
+    GEOM = 'geom'
+    ZMAT_VAR_VALS = 'zmat_var_vals'
+    ZMAT_CONST_VALS = 'zmat_const_vals'
+    # job
+    JOB_KEY = 'job_key'
+    JOB_OPTIONS = 'job_options'
 
 
 def energy(method, basis, geom, mult, charge,
@@ -34,7 +64,7 @@ def energy(method, basis, geom, mult, charge,
            orb_restricted=None, scf_options=(), corr_options=()):
     """ energy input string
     """
-    job_key = par.JobKey.ENERGY
+    job_key = JobKey.ENERGY
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
@@ -56,7 +86,7 @@ def gradient(method, basis, geom, mult, charge,
              job_options=()):
     """ gradient input string
     """
-    job_key = par.JobKey.GRADIENT
+    job_key = JobKey.GRADIENT
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
@@ -79,7 +109,7 @@ def hessian(method, basis, geom, mult, charge,
             job_options=()):
     """ hessian input string
     """
-    job_key = par.JobKey.HESSIAN
+    job_key = JobKey.HESSIAN
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
@@ -102,7 +132,7 @@ def optimization(method, basis, geom, mult, charge,
                  job_options=(), frozen_coordinates=()):
     """ optimization input string
     """
-    job_key = par.JobKey.OPTIMIZATION
+    job_key = JobKey.OPTIMIZATION
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
@@ -119,26 +149,24 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options, scf_options, corr_options,
                           job_options=(), frozen_coordinates=()):
-    assert method in par.METHODS
-    assert basis in par.BASES
 
     reference = _reference(method, mult, orb_restricted)
     geom_str, zmat_var_val_str, zmat_const_val_str = _geometry_strings(
         geom, frozen_coordinates)
 
-    if method in pclass.values(elstruct.par.Method.Corr):
+    if elstruct.par.Method.is_correlated(method):
         assert not corr_options
 
-    if (reference == par.G09Reference.ROHF and
-            job_key in (par.JobKey.GRADIENT, par.JobKey.HESSIAN)):
+    if (reference == G09Reference.ROHF and
+            job_key in (JobKey.GRADIENT, JobKey.HESSIAN)):
         job_options = list(job_options)
         job_options.insert(0, 'EnOnly')
 
-    g09_method = par.G09_METHOD_DCT[method]
-    g09_basis = par.G09_BASIS_DCT[basis]
+    g09_method = elstruct.par.program_method_name(PROG, method)
+    g09_basis = elstruct.par.program_basis_name(PROG, basis)
 
     # in the case of Hartree-Fock, swap the method for the reference name
-    if method == elstruct.par.Method.HF:
+    if method == elstruct.par.Method.HF[0]:
         g09_method = reference
         reference = ''
 
@@ -148,22 +176,22 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     job_options = _evaluate_options(job_options)
 
     fill_dct = {
-        par.TemplateKey.MEMORY: memory,
-        par.TemplateKey.MACHINE_OPTIONS: ','.join(machine_options),
-        par.TemplateKey.REFERENCE: reference,
-        par.TemplateKey.METHOD: g09_method,
-        par.TemplateKey.BASIS: g09_basis,
-        par.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
-        par.TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
-        par.TemplateKey.MOL_OPTIONS: ','.join(mol_options),
-        par.TemplateKey.COMMENT: comment,
-        par.TemplateKey.CHARGE: charge,
-        par.TemplateKey.MULT: mult,
-        par.TemplateKey.GEOM: geom_str,
-        par.TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
-        par.TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
-        par.TemplateKey.JOB_KEY: job_key,
-        par.TemplateKey.JOB_OPTIONS: ','.join(job_options),
+        TemplateKey.MEMORY: memory,
+        TemplateKey.MACHINE_OPTIONS: ','.join(machine_options),
+        TemplateKey.REFERENCE: reference,
+        TemplateKey.METHOD: g09_method,
+        TemplateKey.BASIS: g09_basis,
+        TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
+        TemplateKey.MOL_OPTIONS: ','.join(mol_options),
+        TemplateKey.COMMENT: comment,
+        TemplateKey.CHARGE: charge,
+        TemplateKey.MULT: mult,
+        TemplateKey.GEOM: geom_str,
+        TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
+        TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
+        TemplateKey.JOB_KEY: job_key,
+        TemplateKey.JOB_OPTIONS: ','.join(job_options),
     }
     return fill_dct
 
@@ -191,22 +219,13 @@ def _geometry_strings(geom, frozen_coordinates):
 
 
 def _reference(method, mult, orb_restricted):
-    orb_restricted = (mult == 1) if orb_restricted is None else orb_restricted
-    is_dft = method in pclass.values(elstruct.par.Method.Dft)
-
-    # for now, orbital restriction is really only for open-shell hartree-fock
-    if orb_restricted is False and mult == 1:
-        raise NotImplementedError
-
-    if orb_restricted is True and mult != 1 and is_dft:
-        raise NotImplementedError
-
-    if is_dft:
+    if elstruct.par.Method.is_dft(method):
         reference = ''
+    elif mult != 1:
+        reference = G09Reference.ROHF if orb_restricted else G09Reference.UHF
     else:
-        reference = (par.G09Reference.RHF if mult == 1 else
-                     (par.G09Reference.ROHF if orb_restricted else
-                      par.G09Reference.UHF))
+        assert mult == 1 and orb_restricted is True
+        reference = G09Reference.RHF
     return reference
 
 

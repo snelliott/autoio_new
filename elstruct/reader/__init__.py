@@ -1,7 +1,7 @@
 """ output reading module """
 # energy
 from elstruct.reader._reader import programs
-from elstruct.reader._reader import method_list
+from elstruct.reader._reader import methods
 from elstruct.reader._reader import energy
 from elstruct.reader._reader import energy_
 # gradient
@@ -27,7 +27,7 @@ from elstruct.reader._reader import has_error_message
 __all__ = [
     # energy
     'programs',
-    'method_list',
+    'methods',
     'energy',
     'energy_',
     # gradient

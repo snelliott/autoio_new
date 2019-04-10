@@ -2,16 +2,6 @@
 """
 
 
-def method_list():
-    """ _ """
-    raise NotImplementedError
-
-
-def basis_list():
-    """ _ """
-    raise NotImplementedError
-
-
 def energy(method, basis, geom, mult, charge,
            # molecule options
            mol_options=(),

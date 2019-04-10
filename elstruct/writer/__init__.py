@@ -1,8 +1,8 @@
 """ input writing module """
 # energy
 from elstruct.writer._writer import programs
-from elstruct.writer._writer import method_list
-from elstruct.writer._writer import basis_list
+from elstruct.writer._writer import methods
+from elstruct.writer._writer import bases
 from elstruct.writer._writer import energy
 # gradient
 from elstruct.writer._writer import gradient_programs
@@ -17,8 +17,8 @@ from elstruct.writer._writer import optimization
 __all__ = [
     # energies
     'programs',
-    'method_list',
-    'basis_list',
+    'methods',
+    'bases',
     'energy',
     # gradient
     'gradient_programs',

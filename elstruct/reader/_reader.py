@@ -20,18 +20,16 @@ def programs():
     (must at least implement an energy reader)
     """
     return pm.program_modules_with_functions(
-        MODULE_NAME, [module_template.method_list,
-                      module_template.energy])
+        MODULE_NAME, [module_template.energy])
 
 
-def method_list(prog):
+def methods(prog):
     """ list of available electronic structure methods
 
     :param prog: the electronic structure program to use as a backend
     :type prog: str
     """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.method_list)
+    return par.program_methods(prog)
 
 
 def energy(prog, method, output_string):
