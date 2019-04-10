@@ -6,14 +6,7 @@ from elstruct import reader
 def test__programs():
     """ test elstruct.reader.programs
     """
-    assert set(reader.programs()) == {'psi4', 'g09'}
-
-
-def test__method_list():
-    """ test elstruct.reader.method_list
-    """
-    for prog in reader.programs():
-        assert reader.method_list(prog)  # make sure it isn't empty
+    assert set(reader.programs()) == {'psi4', 'g09', 'molpro'}
 
 
 def test__opt_geometry_programs():
@@ -30,6 +23,5 @@ def test__opt_zmatrix_programs():
 
 if __name__ == '__main__':
     test__programs()
-    test__method_list()
     test__opt_geometry_programs()
     test__opt_zmatrix_programs()

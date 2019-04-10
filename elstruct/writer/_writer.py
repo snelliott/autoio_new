@@ -20,29 +20,38 @@ def programs():
     (must at least implement an energy writer)
     """
     return pm.program_modules_with_functions(
-        MODULE_NAME, [module_template.method_list,
-                      module_template.basis_list,
-                      module_template.energy])
+        MODULE_NAME, [module_template.energy])
 
 
-def method_list(prog):
+def methods(prog):
     """ list of available electronic structure methods
 
     :param prog: the electronic structure program to use as a backend
     :type prog: str
     """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.method_list)
+    return par.program_methods(prog)
 
 
-def basis_list(prog):
+def bases(prog):
     """ list of available electronic structure basis sets
 
     :param prog: the electronic structure program to use as a backend
     :type prog: str
     """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.basis_list)
+    return par.program_bases(prog)
+
+
+def method_orbital_restrictions(prog, method, open_shell):
+    """ list of available orbital restrictions for a given method
+
+    :param prog: the electronic structure program to use as a backend
+    :type prog: str
+    :param method: electronic structure method
+    :type method: str
+    :param open_shell: whether or not the target is open-shell
+    :type open_shell: bool
+    """
+    return par.program_method_orbital_restrictions(prog, method, open_shell)
 
 
 def energy(prog, method, basis, geom, mult, charge,
@@ -81,9 +90,9 @@ def energy(prog, method, basis, geom, mult, charge,
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     """
-    prog = prog.lower()
-    method = method.lower()
-    basis = basis.lower()
+    prog, method, basis, orb_restricted = _process_theory_specifications(
+        prog, method, basis, mult, orb_restricted)
+
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
         # *args
@@ -140,9 +149,9 @@ def gradient(prog, method, basis, geom, mult, charge,
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     """
-    prog = prog.lower()
-    method = method.lower()
-    basis = basis.lower()
+    prog, method, basis, orb_restricted = _process_theory_specifications(
+        prog, method, basis, mult, orb_restricted)
+
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.gradient,
         # *args
@@ -200,9 +209,9 @@ def hessian(prog, method, basis, geom, mult, charge,
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     """
-    prog = prog.lower()
-    method = method.lower()
-    basis = basis.lower()
+    prog, method, basis, orb_restricted = _process_theory_specifications(
+        prog, method, basis, mult, orb_restricted)
+
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.hessian,
         # *args
@@ -265,9 +274,9 @@ def optimization(prog, method, basis, geom, mult, charge,
         coordinate names to freeze
     :type fozen_coordinates: tuple[str]
     """
-    prog = prog.lower()
-    method = method.lower()
-    basis = basis.lower()
+    prog, method, basis, orb_restricted = _process_theory_specifications(
+        prog, method, basis, mult, orb_restricted)
+
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.optimization,
         # *args
@@ -277,3 +286,19 @@ def optimization(prog, method, basis, geom, mult, charge,
         machine_options=machine_options, orb_restricted=orb_restricted,
         scf_options=scf_options, corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates)
+
+
+def _process_theory_specifications(prog, method, basis, mult, orb_restricted):
+    assert par.is_program(prog)
+    assert par.is_program_method(prog, method)
+    assert par.is_program_basis(prog, basis)
+    open_shell = (mult != 1)
+    orb_restricted = (orb_restricted if orb_restricted is not None else
+                      not open_shell)
+    assert par.is_program_method_orbital_restriction(
+        prog, method, open_shell, orb_restricted)
+
+    prog = par.standard_case(prog)
+    method = par.standard_case(method)
+    basis = par.standard_case(basis)
+    return prog, method, basis, orb_restricted

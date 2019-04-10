@@ -1,10 +1,13 @@
 ## 0. machine options block
 ***,${comment}
 memory,${memory_mw},m
+%if machine_options:
 ${machine_options}
-
+%endif
 ## 1. molecule block
+%if mol_options:
 ${mol_options}
+%endif
 angstrom
 geometry = {
 ${geom}
@@ -19,3 +22,7 @@ basis=${basis}
 %if corr_method:
 {${corr_method},${scf_options}}
 %endif
+%if job_key == 'optimization':
+{optg,${job_options}}
+%endif
+status,all,crash

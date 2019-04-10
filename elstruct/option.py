@@ -55,7 +55,7 @@ def is_valueless(osp_):
     """
     assert is_valid(osp_)
     val_str = _value_string(osp_)
-    return not yaml.load(val_str)
+    return not yaml.load(val_str, Loader=yaml.FullLoader)
 
 
 def is_template(osp_):
@@ -79,7 +79,7 @@ def values(osp):
     """
     assert (not is_template(osp)) or is_valueless(osp)
     val_str = _value_string(osp)
-    return tuple(yaml.load(val_str))
+    return tuple(yaml.load(val_str, Loader=yaml.FullLoader))
 
 
 def _value_string(osp_):

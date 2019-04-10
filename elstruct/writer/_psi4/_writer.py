@@ -4,24 +4,53 @@ import automol
 import elstruct.par
 import elstruct.option
 from elstruct import template
-from elstruct import pclass
 from elstruct.writer._psi4 import par
+
+PROG = elstruct.par.Program.PSI4
 
 # set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 
-def method_list():
-    """ list of available electronic structure methods
-    """
-    return par.METHODS
+# mako template keys
+class Psi4Reference():
+    """ _ """
+    RHF = 'rhf'
+    UHF = 'uhf'
+    ROHF = 'rohf'
+    RKS = 'rks'
+    UKS = 'uks'
 
 
-def basis_list():
-    """ list of available electronic structure basis sets
-    """
-    return par.BASES
+class JobKey():
+    """ _ """
+    ENERGY = 'energy'
+    OPTIMIZATION = 'optimization'
+    GRADIENT = 'gradient'
+    HESSIAN = 'hessian'
+
+
+class TemplateKey():
+    """ mako template keys """
+    JOB_KEY = 'job_key'
+    COMMENT = 'comment'
+    MEMORY = 'memory'
+    MACHINE_OPTIONS = 'machine_options'
+    MOL_OPTIONS = 'mol_options'
+    CHARGE = 'charge'
+    MULT = 'mult'
+    GEOM = 'geom'
+    ZMAT_VALS = 'zmat_vals'
+    BASIS = 'basis'
+    REFERENCE = 'reference'
+    SCF_OPTIONS = 'scf_options'
+    CORR_OPTIONS = 'corr_options'
+    METHOD = 'method'
+    JOB_OPTIONS = 'job_options'
+    FROZEN_DIS_STRS = 'frozen_dis_strs'
+    FROZEN_ANG_STRS = 'frozen_ang_strs'
+    FROZEN_DIH_STRS = 'frozen_dih_strs'
 
 
 def energy(method, basis, geom, mult, charge,
@@ -33,7 +62,7 @@ def energy(method, basis, geom, mult, charge,
            orb_restricted=None, scf_options=(), corr_options=()):
     """ energy input string
     """
-    job_key = par.JobKey.ENERGY
+    job_key = JobKey.ENERGY
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
@@ -55,7 +84,7 @@ def gradient(method, basis, geom, mult, charge,
              job_options=()):
     """ gradient input string
     """
-    job_key = par.JobKey.GRADIENT
+    job_key = JobKey.GRADIENT
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
@@ -78,7 +107,7 @@ def hessian(method, basis, geom, mult, charge,
             job_options=()):
     """ hessian input string
     """
-    job_key = par.JobKey.HESSIAN
+    job_key = JobKey.HESSIAN
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
@@ -101,7 +130,7 @@ def optimization(method, basis, geom, mult, charge,
                  job_options=(), frozen_coordinates=()):
     """ optimization input string
     """
-    job_key = par.JobKey.OPTIMIZATION
+    job_key = JobKey.OPTIMIZATION
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
@@ -118,8 +147,6 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options, scf_options, corr_options,
                           job_options=(), frozen_coordinates=()):
-    assert method in par.METHODS
-    assert basis in par.BASES
 
     frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (
         _frozen_coordinate_strings(geom, frozen_coordinates))
@@ -127,34 +154,34 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     reference = _reference(method, mult, orb_restricted)
     geom_str, zmat_val_str = _geometry_strings(geom)
 
-    if method not in pclass.values(elstruct.par.Method.Corr):
+    if not elstruct.par.Method.is_correlated(method):
         assert not corr_options
 
     scf_options = _evaluate_options(scf_options)
     job_options = _evaluate_options(job_options)
 
-    psi4_method = par.PSI4_METHOD_DCT[method]
-    psi4_basis = par.PSI4_BASIS_DCT[basis]
+    psi4_method = elstruct.par.program_method_name(PROG, method)
+    psi4_basis = elstruct.par.program_basis_name(PROG, basis)
 
     fill_dct = {
-        par.TemplateKey.COMMENT: comment,
-        par.TemplateKey.MEMORY: memory,
-        par.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        par.TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
-        par.TemplateKey.CHARGE: charge,
-        par.TemplateKey.MULT: mult,
-        par.TemplateKey.GEOM: geom_str,
-        par.TemplateKey.ZMAT_VALS: zmat_val_str,
-        par.TemplateKey.BASIS: psi4_basis,
-        par.TemplateKey.METHOD: psi4_method,
-        par.TemplateKey.REFERENCE: reference,
-        par.TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
-        par.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
-        par.TemplateKey.JOB_KEY: job_key,
-        par.TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
-        par.TemplateKey.FROZEN_DIS_STRS: frozen_dis_strs,
-        par.TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
-        par.TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
+        TemplateKey.COMMENT: comment,
+        TemplateKey.MEMORY: memory,
+        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
+        TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
+        TemplateKey.CHARGE: charge,
+        TemplateKey.MULT: mult,
+        TemplateKey.GEOM: geom_str,
+        TemplateKey.ZMAT_VALS: zmat_val_str,
+        TemplateKey.BASIS: psi4_basis,
+        TemplateKey.METHOD: psi4_method,
+        TemplateKey.REFERENCE: reference,
+        TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
+        TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
+        TemplateKey.JOB_KEY: job_key,
+        TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
+        TemplateKey.FROZEN_DIS_STRS: frozen_dis_strs,
+        TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
+        TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
     }
     return fill_dct
 
@@ -187,30 +214,26 @@ def _frozen_coordinate_strings(geom, frozen_coordinates):
                                  for coo_keys in coo_dct[frz_coo_name])
             return frz_coo_strs
 
-        dis_strs = _coordinate_strings(automol.zmatrix.distance_names(geom))
-        ang_strs = _coordinate_strings(automol.zmatrix.angle_names(geom))
-        dih_strs = _coordinate_strings(automol.zmatrix.dihedral_names(geom))
+        dis_strs = _coordinate_strings(
+            automol.zmatrix.distance_names(geom))
+        ang_strs = _coordinate_strings(
+            automol.zmatrix.central_angle_names(geom))
+        dih_strs = _coordinate_strings(
+            automol.zmatrix.dihedral_angle_names(geom))
     return dis_strs, ang_strs, dih_strs
 
 
 def _reference(method, mult, orb_restricted):
-    orb_restricted = (mult == 1) if orb_restricted is None else orb_restricted
-    is_dft = method in pclass.values(elstruct.par.Method.Dft)
-
-    # for now, orbital restriction is really only for open-shell hartree-fock
-    if orb_restricted is False and mult == 1:
-        raise NotImplementedError
-
-    if orb_restricted is True and mult != 1 and is_dft:
-        raise NotImplementedError
-
-    if is_dft:
-        reference = (par.Psi4Reference.RKS if mult == 1 else
-                     par.Psi4Reference.UKS)
+    if elstruct.par.Method.is_dft(method):
+        reference = (Psi4Reference.RKS if orb_restricted else
+                     Psi4Reference.UKS)
+    elif mult != 1:
+        reference = (Psi4Reference.ROHF if orb_restricted else
+                     Psi4Reference.UHF)
     else:
-        reference = (par.Psi4Reference.RHF if mult == 1 else
-                     (par.Psi4Reference.ROHF if orb_restricted else
-                      par.Psi4Reference.UHF))
+        assert mult == 1 and orb_restricted is True
+        reference = Psi4Reference.RHF
+
     return reference
 
 

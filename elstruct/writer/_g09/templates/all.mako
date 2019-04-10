@@ -21,8 +21,10 @@ ${machine_options}
 # POpt=(${job_options})
 % elif job_key == 'gradient':
 # Force=(${job_options})
+## ^ ensure the the hessian is always printed
 % elif job_key == 'hessian':
 # Freq=(${job_options})
+# IOp(7/33=1)
 % endif
 ## 3. molecule block
 % if mol_options != '':
