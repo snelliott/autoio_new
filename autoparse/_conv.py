@@ -1,6 +1,9 @@
 """ convert string captures to various datatypes
 """
-import collections.abc
+try:
+    from collections.abc import Sequence as _Sequence
+except ImportError:
+    from collections import Sequence as _Sequence
 
 
 def cast(seq):
@@ -21,7 +24,7 @@ def _is_string(obj):
 
 
 def _is_sequence(obj):
-    return isinstance(obj, collections.abc.Sequence)
+    return isinstance(obj, _Sequence)
 
 
 def _cast_string(string):
