@@ -9,7 +9,10 @@ opts_mat = a list of `optn_row`s for each error
 note: options (`opts_dct`) are a subset of keyword arguments (`kwargs_dct`)
 """
 import itertools
-from collections.abc import Sequence as _Sequence
+try:
+    from collections.abc import Sequence as _Sequence
+except ImportError:
+    from collections import Sequence as _Sequence
 
 
 def is_exhausted(opts_mat):
