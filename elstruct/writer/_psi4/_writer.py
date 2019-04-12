@@ -1,6 +1,7 @@
 """ psi4 writer module """
 import os
 import automol
+import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
@@ -191,8 +192,14 @@ def _geometry_strings(geom):
         geom_str = automol.geom.string(geom)
         zmat_val_str = ''
     elif automol.zmatrix.is_valid(geom):
-        geom_str = automol.zmatrix.matrix_block_string(geom)
-        zmat_val_str = automol.zmatrix.setval_block_string(geom)
+        zma = geom
+        syms = automol.zmatrix.symbols(zma)
+        key_mat = automol.zmatrix.key_matrix(zma, one_indexed=True)
+        name_mat = automol.zmatrix.name_matrix(zma)
+        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
+
+        geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)
+        zmat_val_str = aw.zmatrix.setval_block(val_dct)
     else:
         raise ValueError("Invalid geometry value:\n{}".format(geom))
 

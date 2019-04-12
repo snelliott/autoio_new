@@ -199,23 +199,29 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
 def _geometry_strings(geom, frozen_coordinates):
     if automol.geom.is_valid(geom):
         geom_str = automol.geom.string(geom)
-        zmat_var_val_str = ''
-        zmat_const_val_str = ''
+        zmat_vval_str = ''
+        zmat_cval_str = ''
     elif automol.zmatrix.is_valid(geom):
-        geom_str = automol.zmatrix.matrix_block_string(geom)
-        val_dct = automol.zmatrix.values(geom, angstrom=True, degree=True)
-        var_val_dct = {key: val for key, val in val_dct.items()
-                       if key not in frozen_coordinates}
-        const_val_dct = {key: val for key, val in val_dct.items()
-                         if key in frozen_coordinates}
-        zmat_var_val_str = aw.zmatrix.setval_block(
-            var_val_dct, setval_sign=' ').strip()
-        zmat_const_val_str = aw.zmatrix.setval_block(
-            const_val_dct, setval_sign=' ').strip()
+        zma = geom
+        syms = automol.zmatrix.symbols(zma)
+        key_mat = automol.zmatrix.key_matrix(zma, one_indexed=True)
+        name_mat = automol.zmatrix.name_matrix(zma)
+        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
+        geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)
+
+        vval_dct = {key: val for key, val in val_dct.items()
+                    if key not in frozen_coordinates}
+        cval_dct = {key: val for key, val in val_dct.items()
+                    if key in frozen_coordinates}
+
+        zmat_vval_str = aw.zmatrix.setval_block(
+            vval_dct, setval_sign=' ').strip()
+        zmat_cval_str = aw.zmatrix.setval_block(
+            cval_dct, setval_sign=' ').strip()
     else:
         raise ValueError("Invalid geometry value:\n{}".format(geom))
 
-    return geom_str, zmat_var_val_str, zmat_const_val_str
+    return geom_str, zmat_vval_str, zmat_cval_str
 
 
 def _reference(method, mult, orb_restricted):
