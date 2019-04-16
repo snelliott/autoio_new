@@ -194,7 +194,7 @@ def _geometry_strings(geom):
     elif automol.zmatrix.is_valid(geom):
         zma = geom
         syms = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, one_indexed=True)
+        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
         name_mat = automol.zmatrix.name_matrix(zma)
         val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
 
@@ -210,7 +210,7 @@ def _frozen_coordinate_strings(geom, frozen_coordinates):
     if not frozen_coordinates:
         dis_strs = ang_strs = dih_strs = ()
     else:
-        coo_dct = automol.zmatrix.coordinates(geom, one_indexed=True)
+        coo_dct = automol.zmatrix.coordinates(geom, shift=1)
         assert all(coo_name in coo_dct for coo_name in frozen_coordinates)
 
         def _coordinate_strings(coo_names):

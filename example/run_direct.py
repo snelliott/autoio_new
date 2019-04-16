@@ -29,13 +29,13 @@ INP_STR, OUT_STR = elstruct.run.direct(
     # required arguments
     script_str=SCRIPT_STR,
     run_dir=RUN_DIR,
-    input_writer=elstruct.writer.energy,
+    input_writer=elstruct.writer.optimization,
     prog=PROG,
     method=METHOD,
     basis=BASIS,
     geom=GEOM,
-    mult=1,
-    charge=0,
+    mult=2,
+    charge=1,
     orb_restricted=ORB_RESTRICTED,
 )
 

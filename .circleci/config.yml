@@ -11,7 +11,7 @@ jobs:
                     apt-get install --yes libxrender-dev  # needed for rdkit
                     conda env create -f environment.yml
             - run:
-                name: Run tests
+                name: Test elstruct
                 command: |
                     source activate elstruct-env
                     # temporary fix
@@ -22,6 +22,14 @@ jobs:
                     pytest -v --cov=elstruct .
                     flake8 --exit-zero elstruct
                     pylint --rcfile=../.pylintrc elstruct
+            - run:
+                name: Test elcarro
+                command: |
+                    source activate elstruct-env
+                    cd elcarro
+                    pytest -v --cov=elcarro --pyargs elcarro
+                    flake8 --exit-zero elcarro
+                    pylint --rcfile=../.pylintrc elcarro
 workflows:
     version: 2
     build-all:

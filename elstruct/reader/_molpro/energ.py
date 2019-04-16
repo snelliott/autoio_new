@@ -23,7 +23,7 @@ def _ccsd_energy(output_string):
     ene = ar.energy.read(
         output_string,
         app.one_of_these([
-            app.escape('!CCSD total energy'),
+            app.escape('!CCSD total energy') + app.maybe(':'),
             app.escape('!RHF-UCCSD energy'),
         ]))
     return ene
