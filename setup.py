@@ -4,7 +4,7 @@ from distutils.core import setup
 
 
 setup(name="elstruct",
-      version="0.2.7",
+      version="0.2.8",
       packages=["elstruct",
                 "elstruct.writer",
                 "elstruct.reader",
