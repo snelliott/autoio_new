@@ -17,7 +17,15 @@ def has_normal_exit_message(output_string):
 def _has_scf_nonconvergence_error_message(output_string):
     """ does this output string have an SCF non-convergence message?
     """
-    pattern = app.escape('No convergence')
+    pattern = app.escape('No convergence') + app.not_followed_by(
+        app.padded('in max. number of iterations'))
+    return apf.has_match(pattern, output_string, case=False)
+
+
+def _has_opt_nonconvergence_error_message(output_string):
+    """ does this output string have an optimization non-convergence message?
+    """
+    pattern = app.escape('No convergence in max. number of iterations')
     return apf.has_match(pattern, output_string, case=False)
 
 
@@ -42,5 +50,7 @@ def has_error_message(error, output_string):
 
 
 if __name__ == '__main__':
-    print(has_normal_exit_message(open('output.dat').read()))
-    print(has_normal_exit_message(open('good_output.dat').read()))
+    print(_has_scf_nonconvergence_error_message(open('run.out2').read()),
+          flush=True)
+    print(_has_scf_nonconvergence_error_message(open('run.out1').read()),
+          flush=True)

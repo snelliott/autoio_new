@@ -273,13 +273,13 @@ def _test_pipeline(script_str, prog, method, writer, readers,
             read_vals.append(val)
 
         if error is not None:
+            run_dir = tempfile.mkdtemp()
+            print(run_dir, '(error run)')
             assert not elstruct.reader.has_error_message(prog, error,
                                                          out_str)
 
-            run_dir = tempfile.mkdtemp()
             err_kwargs = kwargs.copy()
             err_kwargs.update(error_kwargs)
-            print(run_dir, '(error run)')
             with pytest.warns(UserWarning):
                 _, err_out_str = elstruct.run.robust(
                     script_str, run_dir, writer,
@@ -294,8 +294,8 @@ def _test_pipeline(script_str, prog, method, writer, readers,
 
 
 if __name__ == '__main__':
-    # test__energy()
+    test__energy()
     # test__gradient()
-    test__hessian()
+    # test__hessian()
     # test__optimization()
     # test__run__robust()

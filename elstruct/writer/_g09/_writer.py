@@ -204,7 +204,7 @@ def _geometry_strings(geom, frozen_coordinates):
     elif automol.zmatrix.is_valid(geom):
         zma = geom
         syms = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, one_indexed=True)
+        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
         name_mat = automol.zmatrix.name_matrix(zma)
         val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
         geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)

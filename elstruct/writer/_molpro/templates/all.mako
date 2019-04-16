@@ -24,5 +24,8 @@ basis=${basis}
 %endif
 %if job_key == 'optimization':
 {optg,${job_options}}
+status
 %endif
+%if job_key == 'energy':
 status,all,crash
+%endif
