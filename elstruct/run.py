@@ -10,7 +10,7 @@ INPUT_NAME = 'run.inp'
 OUTPUT_NAME = 'run.out'
 
 
-def direct(script_str, run_dir, input_writer,
+def direct(input_writer, script_str, run_dir,
            prog, method, basis, geom, mult, charge, **kwargs):
     """ generate an input file from arguments and run it directly
 

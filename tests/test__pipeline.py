@@ -192,62 +192,6 @@ def test__optimization():
                     frozen_values, ref_frozen_values, rtol=1e-4)
 
 
-def test__run__robust():
-    """ test elstruct.run.robust
-    """
-    input_writer = elstruct.writer.optimization
-    method = 'hf'
-    basis = 'sto-3g'
-    geom = ((('O', (None, None, None), (None, None, None)),
-             ('H', (0, None, None), ('R1', None, None)),
-             ('H', (0, 1, None), ('R2', 'A2', None))),
-            {'R1': 1.83114, 'R2': 1.83115, 'A2': 1.81475845})
-    mult = 1
-    charge = 0
-    kwargs = {'comment': '<testing comment line>',
-              'scf_options': (
-                  elstruct.option.specify(elstruct.Option.Scf.DIIS_, False),
-                  elstruct.option.specify(elstruct.Option.Scf.MAXITER_, 10),),
-              'job_options': (
-                  elstruct.option.specify(elstruct.Option.Opt.MAXITER_, 2),)}
-    errors = [
-        elstruct.Error.SCF_NOCONV,
-        elstruct.Error.OPT_NOCONV,
-    ]
-    options_mat = [
-        [{'scf_options': (elstruct.Option.Scf.Guess.CORE,)},
-         {'scf_options': (elstruct.Option.Scf.Guess.HUCKEL,)},
-         {'scf_options': (
-             elstruct.option.specify(elstruct.Option.Scf.DIIS_, True),
-             elstruct.Option.Scf.Guess.HUCKEL,)}],
-        [{'job_options': (elstruct.Option.Opt.Coord.ZMATRIX,)},
-         {'job_options': (
-             elstruct.option.specify(elstruct.Option.Opt.MAXITER_, 10),
-             elstruct.Option.Opt.Coord.ZMATRIX,)}],
-    ]
-
-    for prog in elstruct.writer.optimization_programs():
-        print()
-        print(prog, method)
-        if prog in SCRIPT_DCT:
-            script_str = SCRIPT_DCT[prog]
-            if script_str is not None:
-                run_dir = tempfile.mkdtemp()
-                print(run_dir)
-                _, out_str = elstruct.run.robust(
-                    script_str, run_dir, input_writer,
-                    prog, method, basis, geom, mult, charge,
-                    errors=errors, options_mat=options_mat, **kwargs
-                )
-
-                assert elstruct.reader.has_normal_exit_message(prog, out_str)
-
-                ene = elstruct.reader.energy(prog, method, out_str)
-                zma = elstruct.reader.opt_zmatrix(prog, out_str)
-                print(ene)
-                print(zma)
-
-
 def _test_pipeline(script_str, prog, method, writer, readers,
                    args, kwargs, error=None, error_kwargs=None):
     read_vals = []
@@ -260,8 +204,8 @@ def _test_pipeline(script_str, prog, method, writer, readers,
         script_str = SCRIPT_DCT[prog]
         run_dir = tempfile.mkdtemp()
         print(run_dir)
-        _, out_str = elstruct.run.robust(
-            script_str, run_dir, writer,
+        _, out_str = elstruct.run.direct(
+            writer, script_str, run_dir,
             prog, method, *args, **kwargs
         )
 
@@ -281,8 +225,8 @@ def _test_pipeline(script_str, prog, method, writer, readers,
             err_kwargs = kwargs.copy()
             err_kwargs.update(error_kwargs)
             with pytest.warns(UserWarning):
-                _, err_out_str = elstruct.run.robust(
-                    script_str, run_dir, writer,
+                _, err_out_str = elstruct.run.direct(
+                    writer, script_str, run_dir,
                     prog, method, *args, **err_kwargs
                 )
 
@@ -298,4 +242,3 @@ if __name__ == '__main__':
     # test__gradient()
     # test__hessian()
     # test__optimization()
-    # test__run__robust()
