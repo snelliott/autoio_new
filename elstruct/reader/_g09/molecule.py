@@ -30,7 +30,7 @@ def opt_zmatrix(output_string):
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Symbolic Z-matrix:'), app.LINE, '']),
-        entry_end_ptt=app.maybe(app.UNSIGNED_INTEGER),
+        line_end_ptt=app.maybe(app.UNSIGNED_INTEGER),
         last=False)
 
     # read the values from the end of the output
@@ -50,3 +50,8 @@ def opt_zmatrix(output_string):
         syms, key_mat, name_mat, val_dct,
         one_indexed=True, angstrom=True, degree=True)
     return zma
+
+
+if __name__ == '__main__':
+    ZMA = opt_zmatrix(open('run.out').read())
+    print(automol.zmatrix.string(ZMA))
