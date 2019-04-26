@@ -18,6 +18,9 @@ jobs:
                     # temporary fix
                     python setup.py install
                     cd autoparse
+                    pytest -v --cov=autoparse --pyargs autoparse
+                    flake8 --exit-zero autoparse
+                    pylint autoparse
 workflows:
     version: 2
     build-all:
