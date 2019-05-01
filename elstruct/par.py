@@ -101,23 +101,29 @@ class Method():
         #                  (True,), (True,))})
 
     @classmethod
-    def is_dft(cls, name):
-        """ is this a DFT method?
+    def contains(cls, name):
+        """ does this parametr class contain this value?
         """
         name = standard_case(name)
         names = [row[0] for row in pclass.all_values(cls)]
+        return name in names
+
+    @classmethod
+    def is_dft(cls, name):
+        """ is this a DFT method?
+        """
+        assert cls.contains(name)
+        name = standard_case(name)
         dft_names = [row[0] for row in pclass.all_values(cls.Dft)]
-        assert name in names
         return name in dft_names
 
     @classmethod
     def is_correlated(cls, name):
         """ is this a DFT method?
         """
+        assert cls.contains(name)
         name = standard_case(name)
-        names = [row[0] for row in pclass.all_values(cls)]
         corr_names = [row[0] for row in pclass.all_values(cls.Corr)]
-        assert name in names
         return name in corr_names
 
 
@@ -235,6 +241,14 @@ class Basis():
             D = ('aug-cc-pvdz', {Program.PSI4: None,
                                  Program.G09: None,
                                  Program.MOLPRO: None})
+
+    @classmethod
+    def contains(cls, name):
+        """ does this parametr class contain this value?
+        """
+        name = standard_case(name)
+        names = [row[0] for row in pclass.all_values(cls)]
+        return name in names
 
 
 def program_bases(prog):

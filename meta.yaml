@@ -1,7 +1,7 @@
 # cmd: conda build . -c pacchem -c psi4 -c rdkit -c openbabel
 package:
     name: elstruct
-    version: "0.2.8"
+    version: "0.2.9"
 
 source:
     path: .
