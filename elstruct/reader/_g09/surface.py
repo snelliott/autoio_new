@@ -51,7 +51,3 @@ def hessian(output_string):
 
     mat = tuple(map(tuple, mat))
     return mat
-
-
-if __name__ == '__main__':
-    print(hessian(open('run.out').read()))

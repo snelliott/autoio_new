@@ -50,8 +50,3 @@ def opt_zmatrix(output_string):
         syms, key_mat, name_mat, val_dct,
         one_indexed=True, angstrom=True, degree=True)
     return zma
-
-
-if __name__ == '__main__':
-    ZMA = opt_zmatrix(open('run.out').read())
-    print(automol.zmatrix.string(ZMA))
