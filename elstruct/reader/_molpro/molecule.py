@@ -17,7 +17,3 @@ def opt_geometry(output_string):
         line_sep_ptt=app.FLOAT,)
     geo = automol.constructors.geom.from_data(syms, xyzs, angstrom=True)
     return geo
-
-
-if __name__ == '__main__':
-    print(opt_geometry(open('output.dat').read()))

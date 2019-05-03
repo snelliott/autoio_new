@@ -150,28 +150,3 @@ def _evaluate_options(opts):
             assert name in par.OPTION_NAMES
             opts[idx] = par.MOLPRO_OPTION_EVAL_DCT[name](opt)
     return tuple(opts)
-
-
-if __name__ == '__main__':
-    from elstruct import Option
-
-    METHOD = 'hf'
-    BASIS = 'sto-3g'
-    GEOM = (('O', (0.0, 0.0, -0.110)),
-            ('H', (0.0, -1.635, 0.876)),
-            ('H', (-0.0, 1.635, 0.876)))
-    CHARGE = 0
-    MULT = 1
-
-    INP_STR = energy(
-        method=METHOD,
-        basis=BASIS,
-        geom=GEOM,
-        mult=MULT,
-        charge=CHARGE,
-        scf_options=[
-            elstruct.option.specify(Option.Scf.MAXITER_, 20),
-            elstruct.option.specify(Option.Scf.DIIS_, False)])
-
-    with open('input.dat', 'w') as inp_file:
-        inp_file.write(INP_STR)

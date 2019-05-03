@@ -47,10 +47,3 @@ def has_error_message(error, output_string):
     # get the appropriate reader and call it
     error_reader = ERROR_READER_DCT[error]
     return error_reader(output_string)
-
-
-if __name__ == '__main__':
-    print(_has_scf_nonconvergence_error_message(open('run.out2').read()),
-          flush=True)
-    print(_has_scf_nonconvergence_error_message(open('run.out1').read()),
-          flush=True)

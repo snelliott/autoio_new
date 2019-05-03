@@ -102,7 +102,7 @@ class Method():
 
     @classmethod
     def contains(cls, name):
-        """ does this parametr class contain this value?
+        """ does this parameter class contain this value?
         """
         name = standard_case(name)
         names = [row[0] for row in pclass.all_values(cls)]
@@ -244,7 +244,7 @@ class Basis():
 
     @classmethod
     def contains(cls, name):
-        """ does this parametr class contain this value?
+        """ does this parameter class contain this value?
         """
         name = standard_case(name)
         names = [row[0] for row in pclass.all_values(cls)]
@@ -285,6 +285,14 @@ class Job():
     GRADIENT = 'gradient'
     HESSIAN = 'hessian'
     OPTIMIZATION = 'optimization'
+
+    @classmethod
+    def contains(cls, name):
+        """ does this parameter class contain this value?
+        """
+        name = standard_case(name)
+        names = [row for row in pclass.all_values(cls)]
+        return name in names
 
 
 class Error():
