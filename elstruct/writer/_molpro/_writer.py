@@ -46,7 +46,7 @@ class TemplateKey():
     JOB_OPTIONS = 'job_options'
 
 
-def energy(method, basis, geom, mult, charge,
+def energy(geom, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options
@@ -67,7 +67,7 @@ def energy(method, basis, geom, mult, charge,
     return inp_str
 
 
-def optimization(method, basis, geom, mult, charge,
+def optimization(geom, charge, mult, method, basis,
                  # molecule options
                  mol_options=(),
                  # machine options

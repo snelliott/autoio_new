@@ -42,13 +42,11 @@ def test__energy():
 
                     vals = _test_pipeline(
                         script_str=SCRIPT_DCT[prog],
-                        prog=prog,
-                        method=method,
                         writer=elstruct.writer.energy,
                         readers=(
                             elstruct.reader.energy_(prog, method),
                         ),
-                        args=(basis, geom, mult, charge),
+                        args=(geom, charge, mult, method, basis, prog),
                         kwargs={'orb_restricted': orb_restricted},
                         error=elstruct.Error.SCF_NOCONV,
                         error_kwargs={'scf_options': [
@@ -83,14 +81,12 @@ def test__gradient():
 
                     vals = _test_pipeline(
                         script_str=SCRIPT_DCT[prog],
-                        prog=prog,
-                        method=method,
                         writer=elstruct.writer.gradient,
                         readers=(
                             elstruct.reader.energy_(prog, method),
                             elstruct.reader.gradient_(prog),
                         ),
-                        args=(basis, geom, mult, charge),
+                        args=(geom, charge, mult, method, basis, prog),
                         kwargs={'orb_restricted': orb_restricted},
                     )
                     print(vals)
@@ -120,14 +116,12 @@ def test__hessian():
 
                     vals = _test_pipeline(
                         script_str=SCRIPT_DCT[prog],
-                        prog=prog,
-                        method=method,
                         writer=elstruct.writer.hessian,
                         readers=(
                             elstruct.reader.energy_(prog, method),
                             elstruct.reader.hessian_(prog),
                         ),
-                        args=(basis, geom, mult, charge),
+                        args=(geom, charge, mult, method, basis, prog),
                         kwargs={'orb_restricted': orb_restricted},
                     )
                     print(vals)
@@ -163,15 +157,13 @@ def test__optimization():
 
             vals = _test_pipeline(
                 script_str=script_str,
-                prog=prog,
-                method=method,
                 writer=elstruct.writer.optimization,
                 readers=(
                     elstruct.reader.energy_(prog, method),
                     elstruct.reader.opt_geometry_(prog),
                     elstruct.reader.opt_zmatrix_(prog),
                 ),
-                args=(basis, geom, mult, charge),
+                args=(geom, charge, mult, method, basis, prog),
                 kwargs={'orb_restricted': orb_restricted,
                         'frozen_coordinates':  frozen_coordinates},
                 error=elstruct.Error.OPT_NOCONV,
@@ -192,22 +184,21 @@ def test__optimization():
                     frozen_values, ref_frozen_values, rtol=1e-4)
 
 
-def _test_pipeline(script_str, prog, method, writer, readers,
+def _test_pipeline(script_str, writer, readers,
                    args, kwargs, error=None, error_kwargs=None):
     read_vals = []
     print()
-    print(prog, method, writer.__name__)
+    print(args[1:], writer.__name__)
+    prog = args[-1]
     # for programs with no run test, at lest make sure we can generate
     # an input file
-    _ = writer(prog, method, *args, **kwargs)
+    _ = writer(*args, **kwargs)
     if script_str is not None:
         script_str = SCRIPT_DCT[prog]
         run_dir = tempfile.mkdtemp()
         print(run_dir)
         _, out_str = elstruct.run.direct(
-            writer, script_str, run_dir,
-            prog, method, *args, **kwargs
-        )
+            writer, script_str, run_dir, *args, **kwargs)
 
         assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
@@ -226,9 +217,7 @@ def _test_pipeline(script_str, prog, method, writer, readers,
             err_kwargs.update(error_kwargs)
             with pytest.warns(UserWarning):
                 _, err_out_str = elstruct.run.direct(
-                    writer, script_str, run_dir,
-                    prog, method, *args, **err_kwargs
-                )
+                    writer, script_str, run_dir, *args, **err_kwargs)
 
             assert not elstruct.reader.has_normal_exit_message(
                 prog, err_out_str)

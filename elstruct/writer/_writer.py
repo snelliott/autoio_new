@@ -54,7 +54,7 @@ def method_orbital_restrictions(prog, method, open_shell):
     return par.program_method_orbital_restrictions(prog, method, open_shell)
 
 
-def energy(prog, method, basis, geom, mult, charge,
+def energy(geom, charge, mult, method, basis, prog,
            # molecule options
            mol_options=(),
            # machine options
@@ -63,18 +63,18 @@ def energy(prog, method, basis, geom, mult, charge,
            orb_restricted=None, scf_options=(), corr_options=()):
     """ energy input string
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
+    :param geom: cartesian or z-matrix geometry
+    :type geom: tuple
+    :param charge: molecular charge
+    :type charge: int
+    :param mult: spin multiplicity
+    :type mult: int
     :param method: electronic structure method
     :type method: str
     :param basis: basis set
     :type basis: str
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param mult: spin multiplicity
-    :type mult: int
-    :param charge: molecular charge
-    :type charge: int
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -96,7 +96,7 @@ def energy(prog, method, basis, geom, mult, charge,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
         # *args
-        method, basis, geom, mult, charge,
+        geom, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
@@ -111,7 +111,7 @@ def gradient_programs():
         MODULE_NAME, module_template.gradient)
 
 
-def gradient(prog, method, basis, geom, mult, charge,
+def gradient(geom, charge, mult, method, basis, prog,
              # molecule options
              mol_options=(),
              # machine options
@@ -122,18 +122,18 @@ def gradient(prog, method, basis, geom, mult, charge,
              job_options=()):
     """ gradient input string
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
+    :param geom: cartesian or z-matrix geometry
+    :type geom: tuple
+    :param charge: molecular charge
+    :type charge: int
+    :param mult: spin multiplicity
+    :type mult: int
     :param method: electronic structure method
     :type method: str
     :param basis: basis set
     :type basis: str
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param mult: spin multiplicity
-    :type mult: int
-    :param charge: molecular charge
-    :type charge: int
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -155,7 +155,7 @@ def gradient(prog, method, basis, geom, mult, charge,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.gradient,
         # *args
-        method, basis, geom, mult, charge,
+        geom, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
@@ -171,7 +171,7 @@ def hessian_programs():
         MODULE_NAME, module_template.hessian)
 
 
-def hessian(prog, method, basis, geom, mult, charge,
+def hessian(geom, charge, mult, method, basis, prog,
             # molecule options
             mol_options=(),
             # machine options
@@ -182,18 +182,18 @@ def hessian(prog, method, basis, geom, mult, charge,
             job_options=()):
     """ hessian input string
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
+    :param geom: cartesian or z-matrix geometry
+    :type geom: tuple
+    :param charge: molecular charge
+    :type charge: int
+    :param mult: spin multiplicity
+    :type mult: int
     :param method: electronic structure method
     :type method: str
     :param basis: basis set
     :type basis: str
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param mult: spin multiplicity
-    :type mult: int
-    :param charge: molecular charge
-    :type charge: int
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -215,7 +215,7 @@ def hessian(prog, method, basis, geom, mult, charge,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.hessian,
         # *args
-        method, basis, geom, mult, charge,
+        geom, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
@@ -231,7 +231,7 @@ def optimization_programs():
         MODULE_NAME, module_template.optimization)
 
 
-def optimization(prog, method, basis, geom, mult, charge,
+def optimization(geom, charge, mult, method, basis, prog,
                  # molecule options
                  mol_options=(),
                  # machine options
@@ -242,18 +242,18 @@ def optimization(prog, method, basis, geom, mult, charge,
                  job_options=(), frozen_coordinates=()):
     """ optimization input string
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
+    :param geom: cartesian or z-matrix geometry
+    :type geom: tuple
+    :param charge: molecular charge
+    :type charge: int
+    :param mult: spin multiplicity
+    :type mult: int
     :param method: electronic structure method
     :type method: str
     :param basis: basis set
     :type basis: str
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param mult: spin multiplicity
-    :type mult: int
-    :param charge: molecular charge
-    :type charge: int
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
     :param mol_options: options for the molecule block
     :type mol_options: tuple[str]
     ;param memory: memory in GB
@@ -280,7 +280,7 @@ def optimization(prog, method, basis, geom, mult, charge,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.optimization,
         # *args
-        method, basis, geom, mult, charge,
+        geom, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
