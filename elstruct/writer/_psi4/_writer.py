@@ -54,7 +54,7 @@ class TemplateKey():
     FROZEN_DIH_STRS = 'frozen_dih_strs'
 
 
-def energy(method, basis, geom, mult, charge,
+def energy(geom, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options
@@ -74,7 +74,7 @@ def energy(method, basis, geom, mult, charge,
     return inp_str
 
 
-def gradient(method, basis, geom, mult, charge,
+def gradient(geom, charge, mult, method, basis,
              # molecule options
              mol_options=(),
              # machine options
@@ -97,7 +97,7 @@ def gradient(method, basis, geom, mult, charge,
     return inp_str
 
 
-def hessian(method, basis, geom, mult, charge,
+def hessian(geom, charge, mult, method, basis,
             # molecule options
             mol_options=(),
             # machine options
@@ -120,7 +120,7 @@ def hessian(method, basis, geom, mult, charge,
     return inp_str
 
 
-def optimization(method, basis, geom, mult, charge,
+def optimization(geom, charge, mult, method, basis,
                  # molecule options
                  mol_options=(),
                  # machine options

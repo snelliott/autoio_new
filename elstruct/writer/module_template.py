@@ -2,7 +2,7 @@
 """
 
 
-def energy(method, basis, geom, mult, charge,
+def energy(geom, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options
@@ -12,14 +12,14 @@ def energy(method, basis, geom, mult, charge,
     """ _ """
 
     raise NotImplementedError(
-        method, basis, geom, mult, charge,
+        geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         corr_options, scf_options,
     )
 
 
-def gradient(method, basis, geom, mult, charge,
+def gradient(geom, charge, mult, method, basis,
              # molecule options
              mol_options=(),
              # machine options
@@ -31,7 +31,7 @@ def gradient(method, basis, geom, mult, charge,
     """ _ """
 
     raise NotImplementedError(
-        method, basis, geom, mult, charge,
+        geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         corr_options, scf_options,
@@ -39,7 +39,7 @@ def gradient(method, basis, geom, mult, charge,
     )
 
 
-def hessian(method, basis, geom, mult, charge,
+def hessian(geom, charge, mult, method, basis,
             # molecule options
             mol_options=(),
             # machine options
@@ -51,7 +51,7 @@ def hessian(method, basis, geom, mult, charge,
     """ _ """
 
     raise NotImplementedError(
-        method, basis, geom, mult, charge,
+        geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         corr_options, scf_options,
@@ -59,7 +59,7 @@ def hessian(method, basis, geom, mult, charge,
     )
 
 
-def optimization(method, basis, geom, mult, charge,
+def optimization(geom, charge, mult, method, basis,
                  # molecule options
                  mol_options=(),
                  # machine options
@@ -71,8 +71,8 @@ def optimization(method, basis, geom, mult, charge,
     """ _ """
 
     raise NotImplementedError(
-        method, basis, geom, mult,
-        charge, mol_options,
+        geom, charge, mult, method, basis,
+        mol_options,
         memory, comment, machine_options,
         corr_options, scf_options,
         job_options, frozen_coordinates,

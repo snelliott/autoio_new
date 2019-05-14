@@ -50,7 +50,7 @@ def test__feedback_optimization():
             print(prog, run_dir)
             elcarro.feedback_optimization(
                 script_str, run_dir,
-                prog, method, basis, geom, mult, charge,
+                geom, charge, mult, method, basis, prog,
                 orb_restricted=orb_restricted,
                 frozen_coordinates=frozen_coordinates,
                 job_options=[
@@ -144,7 +144,7 @@ def test__robust_run():
                 print(run_dir)
                 _, out_str = elcarro.robust_run(
                     input_writer, script_str, run_dir,
-                    prog, method, basis, geom, mult, charge,
+                    geom, charge, mult, method, basis, prog,
                     errors=errors, options_mat=options_mat, **kwargs
                 )
 
