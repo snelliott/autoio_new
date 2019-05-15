@@ -28,18 +28,13 @@ def _mp2_energy(output_string):
     return ene
 
 
-def _dft_energy_(func_name):
-
-    def _dft_energy(output_string):
-        ene = ar.energy.read(
-            output_string,
-            app.one_of_these([
-                app.escape('E(R{}) ='.format(func_name)),
-                app.escape('E(U{}) ='.format(func_name))]),
-            case=False)  # this is the default, but as a reminder
-        return ene
-
-    return _dft_energy
+def _dft_energy(output_string):
+    e_pattern = app.escape('E(') + app.VARIABLE_NAME + app.escape(')')
+    ene = ar.energy.read(
+        output_string,
+        start_ptt=app.LINESPACES.join([
+            'SCF Done:', e_pattern, '=']))
+    return ene
 
 
 # a dictionary of functions for reading the energy from the output, by method
@@ -50,9 +45,8 @@ ENERGY_READER_DCT = {
 
 METHODS = elstruct.par.program_methods(PROG)
 for METHOD in METHODS:
-    if elstruct.par.Method.is_dft(METHOD):
-        method_name = elstruct.par.program_method_name(PROG, METHOD)
-        ENERGY_READER_DCT[METHOD] = _dft_energy_(method_name)
+    if elstruct.par.Method.is_standard_dft(METHOD):
+        ENERGY_READER_DCT[METHOD] = _dft_energy
 
 assert all(method in ENERGY_READER_DCT for method in METHODS)
 
@@ -60,6 +54,11 @@ assert all(method in ENERGY_READER_DCT for method in METHODS)
 def energy(method, output_string):
     """ get total energy from output
     """
+
     # get the appropriate reader and call it
-    energy_reader = ENERGY_READER_DCT[method]
+    if elstruct.par.Method.is_nonstandard_dft(method):
+        energy_reader = _dft_energy
+    else:
+        energy_reader = ENERGY_READER_DCT[method]
+
     return energy_reader(output_string)

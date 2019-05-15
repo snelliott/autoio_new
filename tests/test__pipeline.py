@@ -38,7 +38,7 @@ def test__energy():
             for mult, charge in zip(mult_vals, charge_vals):
                 for orb_restricted in (
                         elstruct.program_method_orbital_restrictions(
-                            prog, method, open_shell=(mult != 1))):
+                            prog, method, singlet=(mult == 1))):
 
                     vals = _test_pipeline(
                         script_str=SCRIPT_DCT[prog],
@@ -77,7 +77,7 @@ def test__gradient():
             for mult, charge in zip(mult_vals, charge_vals):
                 for orb_restricted in (
                         elstruct.program_method_orbital_restrictions(
-                            prog, method, open_shell=(mult != 1))):
+                            prog, method, singlet=(mult == 1))):
 
                     vals = _test_pipeline(
                         script_str=SCRIPT_DCT[prog],
@@ -112,7 +112,7 @@ def test__hessian():
             for mult, charge in zip(mult_vals, charge_vals):
                 for orb_restricted in (
                         elstruct.program_method_orbital_restrictions(
-                            prog, method, open_shell=(mult != 1))):
+                            prog, method, singlet=(mult == 1))):
 
                     vals = _test_pipeline(
                         script_str=SCRIPT_DCT[prog],
