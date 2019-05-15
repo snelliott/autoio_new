@@ -6,6 +6,11 @@ import elstruct
 PROG = 'psi4'
 SCRIPT_STR = ("#!/usr/bin/env bash\n"
               "psi4 -i run.inp -o run.out")
+
+# PROG = 'g09'
+# SCRIPT_STR = ("#!/usr/bin/env bash\n"
+#               "g09 run.inp run.out >> stdout.log &> stderr.log")
+
 METHOD = 'dft:b3lyp'
 BASIS = 'basis:sto-3g'
 GEOM = (('O', (0.0, 0.0, -0.110)),
