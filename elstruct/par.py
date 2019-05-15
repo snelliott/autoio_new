@@ -39,9 +39,10 @@ def is_program(prog):
 class Method():
     """ electronic structure methods
 
-    (name, {program: name,
-                     closed shell orb restrictions,
-                     open shell orb restrictions})
+    (name, {program: singlet name,
+                     multiplet name,
+                     singlet orb restrictions,
+                     multiplet orb restrictions})
     """
     HF = ('hf',
           {Program.PSI4: (
@@ -53,6 +54,24 @@ class Method():
            Program.MOLPRO: (
                None, None,
                (True,), (False, True))})
+
+    class Corr():
+        """ correlated method names """
+        MP2 = ('mp2',
+               {Program.PSI4: (
+                   None, None,
+                   (True,), (False, True)),
+                Program.G09: (
+                    None, None,
+                    (True,), (False, True))})
+        CCSD = ('ccsd',
+                {Program.MOLPRO: (
+                    'ccsd', 'uccsd',
+                    (True,), (True,))})
+        # CCSDPTF12 = ('ccsd(t)-f12',
+        #              {Program.MOLPRO: (
+        #                  'ccsd(t)-f12', 'uccsd(t)-f12',
+        #                  (True,), (True,))})
 
     class Dft():
         """ DFT method names """
@@ -82,24 +101,6 @@ class Method():
                         'b2plypd3', 'b2plypd3',
                         (True,), (False,))})
 
-    class Corr():
-        """ correlated method names """
-        MP2 = ('mp2',
-               {Program.PSI4: (
-                   None, None,
-                   (True,), (False, True)),
-                Program.G09: (
-                    None, None,
-                    (True,), (False, True))})
-        CCSD = ('ccsd',
-                {Program.MOLPRO: (
-                    'ccsd', 'uccsd',
-                    (True,), (True,))})
-        # CCSDPTF12 = ('ccsd(t)-f12',
-        #              {Program.MOLPRO: (
-        #                  'ccsd(t)-f12', 'uccsd(t)-f12',
-        #                  (True,), (True,))})
-
     @classmethod
     def contains(cls, name):
         """ does this parameter class contain this value?
@@ -109,22 +110,43 @@ class Method():
         return name in names
 
     @classmethod
-    def is_dft(cls, name):
+    def is_correlated(cls, name):
         """ is this a DFT method?
         """
-        assert cls.contains(name)
+        name = standard_case(name)
+        corr_names = [row[0] for row in pclass.all_values(cls.Corr)]
+        return name in corr_names
+
+    @classmethod
+    def is_standard_dft(cls, name):
+        """ is this a DFT method?
+        """
         name = standard_case(name)
         dft_names = [row[0] for row in pclass.all_values(cls.Dft)]
         return name in dft_names
 
-    @classmethod
-    def is_correlated(cls, name):
-        """ is this a DFT method?
+    @staticmethod
+    def is_nonstandard_dft(name):
+        """ is this a non-standard basis set?
+
+        (indicated by 'dft:<name>')
         """
-        assert cls.contains(name)
-        name = standard_case(name)
-        corr_names = [row[0] for row in pclass.all_values(cls.Corr)]
-        return name in corr_names
+        return name.lower().startswith('dft:')
+
+    @classmethod
+    def is_dft(cls, name):
+        """ is this a (standard or non-standard) DFT method?
+        """
+        return cls.is_standard_dft(name) or cls.is_nonstandard_dft(name)
+
+    @classmethod
+    def nonstandard_dft_name(cls, name):
+        """ extract the name of a non-standard basis set
+
+        (indicated by 'dft:<name>')
+        """
+        assert cls.is_nonstandard_dft(name)
+        return name[4:]
 
 
 def program_methods_info(prog):
@@ -146,7 +168,7 @@ def program_dft_methods(prog):
     """
     prog_methods = program_methods(prog)
     return tuple(method for method in prog_methods
-                 if Method.is_dft(method))
+                 if Method.is_standard_dft(method))
 
 
 def program_nondft_methods(prog):
@@ -154,29 +176,35 @@ def program_nondft_methods(prog):
     """
     prog_methods = program_methods(prog)
     return tuple(method for method in prog_methods
-                 if not Method.is_dft(method))
+                 if not Method.is_standard_dft(method))
 
 
-def program_method_name(prog, method, open_shell=False):
+def program_method_name(prog, method, singlet=True):
     """ list the name of a method for a given program
     """
     prog = standard_case(prog)
-    method = standard_case(method)
-    prog_method_dct = program_methods_info(prog)
-    assert method in prog_method_dct
-    name = (prog_method_dct[method][0] if not open_shell else
-            prog_method_dct[method][1])
-    return method if name is None else name
+
+    if Method.is_nonstandard_dft(method):
+        method = Method.nonstandard_dft_name(method)
+    else:
+        method = standard_case(method)
+        prog_method_dct = program_methods_info(prog)
+        assert method in prog_method_dct
+        name = (prog_method_dct[method][0] if singlet else
+                prog_method_dct[method][1])
+        method = method if name is None else name
+
+    return method
 
 
-def program_method_orbital_restrictions(prog, method, open_shell):
+def program_method_orbital_restrictions(prog, method, singlet):
     """ list the possible orbital restrictions for a given method and program
     """
     prog = standard_case(prog)
     method = standard_case(method)
     prog_method_dct = program_methods_info(prog)
     assert method in prog_method_dct
-    orb_restrictions = (prog_method_dct[method][2] if not open_shell else
+    orb_restrictions = (prog_method_dct[method][2] if singlet else
                         prog_method_dct[method][3])
     return orb_restrictions
 
@@ -189,15 +217,15 @@ def is_program_method(prog, method):
     return method in program_methods(prog)
 
 
-def is_program_method_orbital_restriction(prog, method, open_shell,
+def is_program_method_orbital_restriction(prog, method, singlet,
                                           orb_restricted):
     """ is this a valid method for this program?
     """
     prog = standard_case(prog)
     method = standard_case(method)
-    assert isinstance(open_shell, bool)
+    assert isinstance(singlet, bool)
     return (orb_restricted
-            in program_method_orbital_restrictions(prog, method, open_shell))
+            in program_method_orbital_restrictions(prog, method, singlet))
 
 
 class Basis():
@@ -250,6 +278,25 @@ class Basis():
         names = [row[0] for row in pclass.all_values(cls)]
         return name in names
 
+    is_standard_basis = contains
+
+    @staticmethod
+    def is_nonstandard_basis(name):
+        """ is this a non-standard basis set?
+
+        (indicated by 'basis:<name>')
+        """
+        return name.lower().startswith('basis:')
+
+    @classmethod
+    def nonstandard_basis_name(cls, name):
+        """ extract the name of a non-standard basis set
+
+        (indicated by 'basis:<name>')
+        """
+        assert cls.is_nonstandard_basis(name)
+        return name[6:]
+
 
 def program_bases(prog):
     """ list the methods available for a given program
@@ -263,11 +310,17 @@ def program_basis_name(prog, basis):
     """ list the name of a basis for a given program
     """
     prog = standard_case(prog)
-    basis = standard_case(basis)
-    prog_bases = program_bases(prog)
-    assert basis in prog_bases
-    name = prog_bases[basis]
-    return basis if name is None else name
+
+    if Basis.is_nonstandard_basis(basis):
+        basis = Basis.nonstandard_basis_name(basis)
+    else:
+        basis = standard_case(basis)
+        prog_bases = program_bases(prog)
+        assert basis in prog_bases
+        name = prog_bases[basis]
+        basis = basis if name is None else name
+
+    return basis
 
 
 def is_program_basis(prog, basis):

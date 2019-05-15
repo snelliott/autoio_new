@@ -41,17 +41,17 @@ def bases(prog):
     return par.program_bases(prog)
 
 
-def method_orbital_restrictions(prog, method, open_shell):
+def method_orbital_restrictions(prog, method, singlet):
     """ list of available orbital restrictions for a given method
 
     :param prog: the electronic structure program to use as a backend
     :type prog: str
     :param method: electronic structure method
     :type method: str
-    :param open_shell: whether or not the target is open-shell
-    :type open_shell: bool
+    :param singlet: whether or not the target is a singlet (closed shell)
+    :type singlet: bool
     """
-    return par.program_method_orbital_restrictions(prog, method, open_shell)
+    return par.program_method_orbital_restrictions(prog, method, singlet)
 
 
 def energy(geom, charge, mult, method, basis, prog,
@@ -290,15 +290,21 @@ def optimization(geom, charge, mult, method, basis, prog,
 
 def _process_theory_specifications(prog, method, basis, mult, orb_restricted):
     assert par.is_program(prog)
-    assert par.is_program_method(prog, method)
-    assert par.is_program_basis(prog, basis)
-    open_shell = (mult != 1)
-    orb_restricted = (orb_restricted if orb_restricted is not None else
-                      not open_shell)
-    assert par.is_program_method_orbital_restriction(
-        prog, method, open_shell, orb_restricted)
 
-    prog = par.standard_case(prog)
-    method = par.standard_case(method)
-    basis = par.standard_case(basis)
+    # for non-standard DFT/Basis, the user can input whatever they want
+    if not par.Method.is_nonstandard_dft(method):
+        assert par.is_program_method(prog, method)
+        singlet = (mult == 1)
+        orb_restricted = (orb_restricted if orb_restricted is not None else
+                          singlet)
+        assert par.is_program_method_orbital_restriction(
+            prog, method, singlet, orb_restricted)
+
+        prog = par.standard_case(prog)
+        method = par.standard_case(method)
+
+    if not par.Basis.is_nonstandard_basis(basis):
+        assert par.is_program_basis(prog, basis)
+        basis = par.standard_case(basis)
+
     return prog, method, basis, orb_restricted

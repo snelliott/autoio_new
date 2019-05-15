@@ -98,11 +98,11 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     if job_options or frozen_coordinates:
         raise NotImplementedError
 
-    open_shell = (mult != 1)
+    singlet = (mult == 1)
     molpro_scf_method = (MolproReference.RHF if orb_restricted else
                          MolproReference.UHF)
     molpro_corr_method = (
-        elstruct.par.program_method_name(PROG, method, open_shell)
+        elstruct.par.program_method_name(PROG, method, singlet)
         if elstruct.par.Method.is_correlated(method) else '')
 
     molpro_basis = elstruct.par.program_basis_name(PROG, basis)

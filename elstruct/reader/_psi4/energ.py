@@ -42,7 +42,7 @@ ENERGY_READER_DCT = {
 
 METHODS = elstruct.par.program_methods(PROG)
 for METHOD in METHODS:
-    if elstruct.par.Method.is_dft(METHOD):
+    if elstruct.par.Method.is_standard_dft(METHOD):
         ENERGY_READER_DCT[METHOD] = _dft_energy
 
 assert all(method in ENERGY_READER_DCT for method in METHODS)
@@ -51,6 +51,11 @@ assert all(method in ENERGY_READER_DCT for method in METHODS)
 def energy(method, output_string):
     """ get total energy from output
     """
+
     # get the appropriate reader and call it
-    energy_reader = ENERGY_READER_DCT[method]
+    if elstruct.par.Method.is_nonstandard_dft(method):
+        energy_reader = _dft_energy
+    else:
+        energy_reader = ENERGY_READER_DCT[method]
+
     return energy_reader(output_string)
