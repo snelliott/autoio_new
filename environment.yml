@@ -5,6 +5,7 @@ channels:
     - psi4/label/dev
     - rdkit
     - openbabel
+    - conda-forge
 
 dependencies:
     - python
@@ -21,3 +22,4 @@ dependencies:
     - psi4=1.4a1.dev102+9fd6758=py36h2de08a4_0
     - pacchem::autoparse
     - pacchem::autochem
+    - conda-forge::qcelemental

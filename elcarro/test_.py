@@ -157,5 +157,5 @@ def test__robust_run():
 
 
 if __name__ == '__main__':
-    # test__feedback_optimization()
+    test__feedback_optimization()
     test__robust_run()

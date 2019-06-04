@@ -1,8 +1,8 @@
 """ molecular geometry and structure readers
 """
+from qcelemental import periodictable as pt
 import autoread as ar
 import autoparse.pattern as app
-import phycon.elements as pce
 import automol
 
 
@@ -17,8 +17,8 @@ def opt_geometry(output_string):
         sym_ptt=app.UNSIGNED_INTEGER,
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.UNSIGNED_INTEGER,)
-    syms = tuple(map(pce.symbol, nums))
-    geo = automol.constructors.geom.from_data(syms, xyzs, angstrom=True)
+    syms = tuple(map(pt.to_E, nums))
+    geo = automol.geom.from_data(syms, xyzs, angstrom=True)
     return geo
 
 
@@ -46,7 +46,7 @@ def opt_zmatrix(output_string):
         last=True)
 
     # call the automol constructor
-    zma = automol.constructors.zmatrix.from_data(
+    zma = automol.zmatrix.from_data(
         syms, key_mat, name_mat, val_dct,
         one_indexed=True, angstrom=True, degree=True)
     return zma
