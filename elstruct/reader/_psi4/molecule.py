@@ -13,7 +13,7 @@ def opt_geometry(output_string):
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Final (previous) structure:'), app.LINE, '']))
 
-    geo = automol.constructors.geom.from_data(syms, xyzs, angstrom=True)
+    geo = automol.geom.from_data(syms, xyzs, angstrom=True)
     return geo
 
 
@@ -28,7 +28,7 @@ def opt_zmatrix(output_string):
             2 * app.padded(app.NEWLINE)))
 
     # call the automol constructor
-    zma = automol.constructors.zmatrix.from_data(
+    zma = automol.zmatrix.from_data(
         syms, key_mat, name_mat, val_dct,
         one_indexed=True, angstrom=True, degree=True)
     return zma
