@@ -3,6 +3,8 @@
 # pattern generators
 from ._pattern import escape
 from ._pattern import maybe
+from ._pattern import preceded_by
+from ._pattern import not_preceded_by
 from ._pattern import followed_by
 from ._pattern import not_followed_by
 from ._pattern import zero_or_more
@@ -55,6 +57,8 @@ __all__ = [
     # pattern generators
     'escape',
     'maybe',
+    'preceded_by',
+    'not_preceded_by',
     'followed_by',
     'not_followed_by',
     'zero_or_more',
