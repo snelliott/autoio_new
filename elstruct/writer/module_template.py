@@ -67,7 +67,7 @@ def optimization(geom, charge, mult, method, basis,
                  # theory options
                  orb_restricted=None, scf_options=(), corr_options=(),
                  # job options
-                 job_options=(), frozen_coordinates=()):
+                 job_options=(), frozen_coordinates=(), saddle=False):
     """ _ """
 
     raise NotImplementedError(
@@ -75,5 +75,5 @@ def optimization(geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         corr_options, scf_options,
-        job_options, frozen_coordinates,
+        job_options, frozen_coordinates, saddle
     )

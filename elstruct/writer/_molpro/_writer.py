@@ -75,7 +75,7 @@ def optimization(geom, charge, mult, method, basis,
                  # theory options
                  orb_restricted=None, scf_options=(), corr_options=(),
                  # job options
-                 job_options=(), frozen_coordinates=()):
+                 job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
     """
     job_key = JobKey.OPTIMIZATION
@@ -85,6 +85,7 @@ def optimization(geom, charge, mult, method, basis,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
         frozen_coordinates=frozen_coordinates, job_options=job_options,
+        saddle=saddle
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -94,8 +95,12 @@ def optimization(geom, charge, mult, method, basis,
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options, scf_options, corr_options,
-                          job_options=(), frozen_coordinates=()):
+                          job_options=(), frozen_coordinates=(), saddle=False):
+
     if job_options or frozen_coordinates:
+        raise NotImplementedError
+
+    if saddle:
         raise NotImplementedError
 
     singlet = (mult == 1)

@@ -239,7 +239,7 @@ def optimization(geom, charge, mult, method, basis, prog,
                  # theory options
                  orb_restricted=None, scf_options=(), corr_options=(),
                  # job options
-                 job_options=(), frozen_coordinates=()):
+                 job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
 
     :param geom: cartesian or z-matrix geometry
@@ -273,6 +273,8 @@ def optimization(geom, charge, mult, method, basis, prog,
     :param frozen_coordinates: only with z-matrix geometries; list of
         coordinate names to freeze
     :type fozen_coordinates: tuple[str]
+    :param saddle: optimize a saddle point?
+    :type saddle: bool
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -285,7 +287,8 @@ def optimization(geom, charge, mult, method, basis, prog,
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
         scf_options=scf_options, corr_options=corr_options,
-        job_options=job_options, frozen_coordinates=frozen_coordinates)
+        job_options=job_options, frozen_coordinates=frozen_coordinates,
+        saddle=saddle)
 
 
 def _process_theory_specifications(prog, method, basis, mult, orb_restricted):
