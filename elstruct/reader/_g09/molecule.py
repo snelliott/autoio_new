@@ -1,8 +1,10 @@
 """ molecular geometry and structure readers
 """
+import numbers
 from qcelemental import periodictable as pt
 import autoread as ar
 import autoparse.pattern as app
+import autoparse.find as apf
 import automol
 
 
@@ -30,8 +32,19 @@ def opt_zmatrix(output_string):
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Symbolic Z-matrix:'), app.LINE, '']),
+        sym_ptt=ar.par.Pattern.ATOM_SYMBOL + app.maybe(app.UNSIGNED_INTEGER),
+        key_ptt=app.one_of_these([app.UNSIGNED_INTEGER, app.VARIABLE_NAME]),
         line_end_ptt=app.maybe(app.UNSIGNED_INTEGER),
         last=False)
+
+    # for the case when variable names are used instead of integer keys:
+    # (otherwise, does nothing)
+    key_dct = dict(map(reversed, enumerate(syms)))
+    key_dct[None] = 0
+    key_mat = [[key_dct[val]+1 if not isinstance(val, numbers.Real) else val
+                for val in row] for row in key_mat]
+    sym_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
+    syms = [apf.first_capture(sym_ptt, sym) for sym in syms]
 
     # read the values from the end of the output
     val_dct = ar.zmatrix.setval.read(
