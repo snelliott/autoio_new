@@ -163,7 +163,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     job_options = _evaluate_options(job_options)
 
     if saddle:
-        job_options += ('set opt_type ts',)
+        job_options += ('set full_hess_every 0', 'set opt_type ts',)
 
     psi4_method = elstruct.par.program_method_name(PROG, method)
     psi4_basis = elstruct.par.program_basis_name(PROG, basis)

@@ -177,7 +177,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     job_options = _evaluate_options(job_options)
 
     if saddle:
-        raise NotImplementedError
+        job_options += ('CALCFC', 'TS', 'NOEIGEN',)
 
     fill_dct = {
         TemplateKey.MEMORY: memory,
