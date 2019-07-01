@@ -21,6 +21,17 @@ def normal_coordinates(geo, hess):
     return norm_coos
 
 
+def harmonic_frequencies(geo, hess):
+    """ harmonic frequencies (in cm^-1)
+
+    (imaginary entries returned as negative)
+    """
+    freqs = numpy.subtract(real_harmonic_frequencies(geo, hess),
+                           imaginary_harmonic_frequencies(geo, hess))
+    freqs = tuple(freqs)
+    return freqs
+
+
 def real_harmonic_frequencies(geo, hess):
     """ real harmonic frequencies
     """
