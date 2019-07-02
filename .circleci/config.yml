@@ -22,14 +22,6 @@ jobs:
                     pytest -v --cov=elstruct .
                     flake8 --exit-zero elstruct
                     pylint --rcfile=../.pylintrc elstruct
-            - run:
-                name: Test elcarro
-                command: |
-                    source activate elstruct-env
-                    cd elcarro
-                    pytest -v --cov=elcarro --pyargs elcarro
-                    flake8 --exit-zero elcarro
-                    pylint --rcfile=../.pylintrc elcarro
 workflows:
     version: 2
     build-all:
