@@ -12,6 +12,9 @@ angstrom
 geometry = {
 ${geom}
 }
+% if zmat_vals != '':
+${zmat_vals}
+% endif
 set,spin=${spin}
 set,charge=${charge}
 ## 2. theory block

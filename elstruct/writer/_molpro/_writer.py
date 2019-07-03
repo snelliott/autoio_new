@@ -1,6 +1,7 @@
 """ molpro writer module """
 import os
 import automol
+import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
@@ -36,6 +37,7 @@ class TemplateKey():
     MACHINE_OPTIONS = 'machine_options'
     MOL_OPTIONS = 'mol_options'
     GEOM = 'geom'
+    ZMAT_VALS = 'zmat_vals'
     CHARGE = 'charge'
     SPIN = 'spin'
     BASIS = 'basis'
@@ -97,12 +99,6 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           machine_options, scf_options, corr_options,
                           job_options=(), frozen_coordinates=(), saddle=False):
 
-    if job_options or frozen_coordinates:
-        raise NotImplementedError
-
-    if saddle:
-        raise NotImplementedError
-
     singlet = (mult == 1)
     molpro_scf_method = (MolproReference.RHF if orb_restricted else
                          MolproReference.UHF)
@@ -111,10 +107,18 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         if elstruct.par.Method.is_correlated(method) else '')
 
     molpro_basis = elstruct.par.program_basis_name(PROG, basis)
-    geom_str, _ = _geometry_strings(geom)
+    geom_str, zmat_val_str = _geometry_strings(geom)
     memory_mw = int(memory * (1000.0 / 8.0))  # convert gb to mw
     spin = mult - 1
     scf_options = _evaluate_options(scf_options)
+    job_options = _evaluate_options(job_options)
+
+    if saddle:
+        job_options += ('root=2',)
+
+    job_directives = [','.join(job_options)]
+    if frozen_coordinates:
+        job_directives.append('inactive,' + ','.join(frozen_coordinates))
 
     fill_dct = {
         TemplateKey.JOB_KEY: job_key,
@@ -123,6 +127,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
         TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
         TemplateKey.GEOM: geom_str,
+        TemplateKey.ZMAT_VALS: zmat_val_str,
         TemplateKey.CHARGE: charge,
         TemplateKey.SPIN: spin,
         TemplateKey.BASIS: molpro_basis,
@@ -130,7 +135,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.SCF_OPTIONS: ','.join(scf_options),
         TemplateKey.CORR_METHOD: molpro_corr_method,
         TemplateKey.CORR_OPTIONS: ','.join(corr_options),
-        TemplateKey.JOB_OPTIONS: ','.join(job_options),
+        TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
     }
     return fill_dct
 
@@ -140,7 +145,14 @@ def _geometry_strings(geom):
         geom_str = automol.geom.string(geom)
         zmat_val_str = ''
     elif automol.zmatrix.is_valid(geom):
-        raise NotImplementedError
+        zma = geom
+        syms = automol.zmatrix.symbols(zma)
+        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
+        name_mat = automol.zmatrix.name_matrix(zma)
+        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
+
+        geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat, delim=', ')
+        zmat_val_str = aw.zmatrix.setval_block(val_dct)
     else:
         raise ValueError("Invalid geometry value:\n{}".format(geom))
 

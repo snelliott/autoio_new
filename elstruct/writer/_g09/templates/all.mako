@@ -39,8 +39,8 @@ ${geom}
 % if zmat_var_vals != '':
 ${zmat_var_vals}
 % endif
-  Constants:
 % if zmat_const_vals != '':
+  Constants:
 ${zmat_const_vals}
 % endif
 

@@ -57,6 +57,20 @@ def opt_zmatrix(output_string):
         sep_ptt=app.maybe(app.LINESPACES).join([
             app.escape('-DE/DX ='), app.FLOAT, app.escape('!'), app.NEWLINE]),
         last=True)
+    if len(syms) == 1:
+        val_dct = {}
+    else:
+        val_dct = ar.zmatrix.setval.read(
+            output_string,
+            start_ptt=app.padded(app.NEWLINE).join([
+                app.padded('Optimized Parameters', app.NONNEWLINE),
+                app.LINE, app.LINE, app.LINE, app.LINE, '']),
+            entry_sep_ptt='',
+            entry_start_ptt=app.escape('!'),
+            sep_ptt=app.maybe(app.LINESPACES).join([
+                app.escape('-DE/DX ='), app.FLOAT, app.escape('!'),
+                app.NEWLINE]),
+            last=True)
 
     # call the automol constructor
     zma = automol.zmatrix.from_data(

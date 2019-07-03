@@ -31,6 +31,7 @@ def _has_opt_nonconvergence_error_message(output_string):
 
 ERROR_READER_DCT = {
     elstruct.par.Error.SCF_NOCONV: _has_scf_nonconvergence_error_message,
+    elstruct.par.Error.OPT_NOCONV: _has_opt_nonconvergence_error_message,
 }
 
 
