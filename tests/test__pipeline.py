@@ -1,7 +1,7 @@
 """ test elstruct writer/run/reader pipelines
 """
+import warnings
 import tempfile
-import pytest
 import numpy
 import automol
 import elstruct
@@ -130,6 +130,7 @@ def test__hessian():
 def test__optimization():
     """ test elstruct optimization writes and reads
     """
+    method = 'hf'
     basis = 'sto-3g'
     geom = ((('C', (None, None, None), (None, None, None)),
              ('O', (0, None, None), ('R1', None, None)),
@@ -147,41 +148,35 @@ def test__optimization():
     frozen_coordinates = ('R5', 'A5', 'D3')
     ref_frozen_values = (1.8, 1.8, 2.1)
     for prog in elstruct.writer.optimization_programs():
-        methods = list(elstruct.program_nondft_methods(prog))
-        dft_methods = list(elstruct.program_dft_methods(prog))
-        if dft_methods:
-            methods.append(numpy.random.choice(dft_methods))
+        script_str = SCRIPT_DCT[prog]
 
-        for method in methods:
-            script_str = SCRIPT_DCT[prog]
+        vals = _test_pipeline(
+            script_str=script_str,
+            writer=elstruct.writer.optimization,
+            readers=(
+                elstruct.reader.energy_(prog, method),
+                elstruct.reader.opt_geometry_(prog),
+                elstruct.reader.opt_zmatrix_(prog),
+            ),
+            args=(geom, charge, mult, method, basis, prog),
+            kwargs={'orb_restricted': orb_restricted,
+                    'frozen_coordinates':  frozen_coordinates},
+            error=elstruct.Error.OPT_NOCONV,
+            error_kwargs={'job_options': [
+                elstruct.option.specify(
+                    elstruct.Option.Opt.MAXITER_, 2)
+            ]},
+        )
+        print(vals)
 
-            vals = _test_pipeline(
-                script_str=script_str,
-                writer=elstruct.writer.optimization,
-                readers=(
-                    elstruct.reader.energy_(prog, method),
-                    elstruct.reader.opt_geometry_(prog),
-                    elstruct.reader.opt_zmatrix_(prog),
-                ),
-                args=(geom, charge, mult, method, basis, prog),
-                kwargs={'orb_restricted': orb_restricted,
-                        'frozen_coordinates':  frozen_coordinates},
-                error=elstruct.Error.OPT_NOCONV,
-                error_kwargs={'job_options': [
-                    elstruct.option.specify(
-                        elstruct.Option.Opt.MAXITER_, 2)
-                ]},
-            )
-            print(vals)
-
-            if script_str is not None:
-                # check that the frozen coordinates didn't change
-                zma = vals[-1]
-                val_dct = automol.zmatrix.values(zma)
-                frozen_values = tuple(
-                    map(val_dct.__getitem__, frozen_coordinates))
-                assert numpy.allclose(
-                    frozen_values, ref_frozen_values, rtol=1e-4)
+        if script_str is not None:
+            # check that the frozen coordinates didn't change
+            zma = vals[-1]
+            val_dct = automol.zmatrix.values(zma)
+            frozen_values = tuple(
+                map(val_dct.__getitem__, frozen_coordinates))
+            assert numpy.allclose(
+                frozen_values, ref_frozen_values, rtol=1e-4)
 
 
 def _test_pipeline(script_str, writer, readers,
@@ -215,19 +210,19 @@ def _test_pipeline(script_str, writer, readers,
 
             err_kwargs = kwargs.copy()
             err_kwargs.update(error_kwargs)
-            with pytest.warns(UserWarning):
+
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
                 _, err_out_str = elstruct.run.direct(
                     writer, script_str, run_dir, *args, **err_kwargs)
 
-            assert not elstruct.reader.has_normal_exit_message(
-                prog, err_out_str)
             assert elstruct.reader.has_error_message(prog, error,
                                                      err_out_str)
     return read_vals
 
 
 if __name__ == '__main__':
-    # test__energy()
+    test__energy()
     # test__gradient()
-    test__hessian()
+    # test__hessian()
     # test__optimization()
