@@ -35,12 +35,12 @@ comment: ${comment}
 
 ${charge} ${mult}
 ${geom}
-% if zmat_var_vals != '':
   Variables:
+% if zmat_var_vals != '':
 ${zmat_var_vals}
 % endif
-% if zmat_const_vals != '':
   Constants:
+% if zmat_const_vals != '':
 ${zmat_const_vals}
 % endif
 
