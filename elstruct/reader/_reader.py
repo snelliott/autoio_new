@@ -6,6 +6,7 @@ signature are checked. The resulting function signatures are exactly those in
 module_template.py with `prog` inserted as the first argument.
 """
 import functools
+import automol
 from elstruct import program_modules as pm
 from elstruct import par
 from elstruct.reader import module_template
@@ -135,6 +136,25 @@ def opt_geometry_programs():
 
 
 def opt_geometry(prog, output_string):
+    """ read optimized geometry from the output string
+
+    (for robustness: if geometry read fails [esp for monatomics], try reading
+    the z-matrix and converting)
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    try:
+        geo = _opt_geometry(prog, output_string)
+    except TypeError:
+        zma = opt_zmatrix(prog, output_string)
+        geo = automol.zmatrix.geometry(zma)
+    return geo
+
+
+def _opt_geometry(prog, output_string):
     """ read optimized geometry from the output string
 
     :param prog: electronic structure program to use as a backend

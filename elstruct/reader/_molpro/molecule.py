@@ -34,12 +34,16 @@ def opt_zmatrix(output_string):
         case=False)
 
     # read the initial z-matrix values from the beginning out the output
-    val_dct = ar.zmatrix.setval.read(
-        output_string,
-        entry_start_ptt='SETTING',
-        val_ptt=app.one_of_these([app.EXPONENTIAL_FLOAT_D, app.NUMBER]),
-        last=False,
-        case=False)
+    if len(syms) == 1:
+        val_dct = {}
+    else:
+        val_dct = ar.zmatrix.setval.read(
+            output_string,
+            entry_start_ptt='SETTING',
+            val_ptt=app.one_of_these([app.EXPONENTIAL_FLOAT_D, app.NUMBER]),
+            last=False,
+            case=False)
+
     names = sorted(set(numpy.ravel(name_mat)) - {None})
     caps_names = list(map(str.upper, names))
     name_dct = dict(zip(caps_names, names))
