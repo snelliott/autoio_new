@@ -37,26 +37,7 @@ def opt_zmatrix(output_string):
         line_end_ptt=app.maybe(app.UNSIGNED_INTEGER),
         last=False)
 
-    # for the case when variable names are used instead of integer keys:
-    # (otherwise, does nothing)
-    key_dct = dict(map(reversed, enumerate(syms)))
-    key_dct[None] = 0
-    key_mat = [[key_dct[val]+1 if not isinstance(val, numbers.Real) else val
-                for val in row] for row in key_mat]
-    sym_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
-    syms = [apf.first_capture(sym_ptt, sym) for sym in syms]
-
     # read the values from the end of the output
-    val_dct = ar.zmatrix.setval.read(
-        output_string,
-        start_ptt=app.padded(app.NEWLINE).join([
-            app.padded('Optimized Parameters', app.NONNEWLINE),
-            app.LINE, app.LINE, app.LINE, app.LINE, '']),
-        entry_sep_ptt='',
-        entry_start_ptt=app.escape('!'),
-        sep_ptt=app.maybe(app.LINESPACES).join([
-            app.escape('-DE/DX ='), app.FLOAT, app.escape('!'), app.NEWLINE]),
-        last=True)
     if len(syms) == 1:
         val_dct = {}
     else:
@@ -71,6 +52,15 @@ def opt_zmatrix(output_string):
                 app.escape('-DE/DX ='), app.FLOAT, app.escape('!'),
                 app.NEWLINE]),
             last=True)
+
+    # for the case when variable names are used instead of integer keys:
+    # (otherwise, does nothing)
+    key_dct = dict(map(reversed, enumerate(syms)))
+    key_dct[None] = 0
+    key_mat = [[key_dct[val]+1 if not isinstance(val, numbers.Real) else val
+                for val in row] for row in key_mat]
+    sym_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
+    syms = [apf.first_capture(sym_ptt, sym) for sym in syms]
 
     # call the automol constructor
     zma = automol.zmatrix.from_data(
