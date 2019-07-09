@@ -52,6 +52,7 @@ class TemplateKey():
     FROZEN_DIS_STRS = 'frozen_dis_strs'
     FROZEN_ANG_STRS = 'frozen_ang_strs'
     FROZEN_DIH_STRS = 'frozen_dih_strs'
+    GEN_LINES = 'gen_lines'
 
 
 def energy(geom, charge, mult, method, basis,
@@ -60,7 +61,9 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=()):
+           orb_restricted=None, scf_options=(), corr_options=(),
+           # generic options
+           gen_lines=()):
     """ energy input string
     """
     job_key = JobKey.ENERGY
@@ -69,6 +72,7 @@ def energy(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
+        gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -81,6 +85,8 @@ def gradient(geom, charge, mult, method, basis,
              memory=1, comment='', machine_options=(),
              # theory options
              orb_restricted=None, scf_options=(), corr_options=(),
+             # generic options
+             gen_lines=(),
              # job options
              job_options=()):
     """ gradient input string
@@ -91,6 +97,7 @@ def gradient(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
+        gen_lines=gen_lines,
         job_options=job_options,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -104,6 +111,8 @@ def hessian(geom, charge, mult, method, basis,
             memory=1, comment='', machine_options=(),
             # theory options
             orb_restricted=None, scf_options=(), corr_options=(),
+            # generic options
+            gen_lines=(),
             # job options
             job_options=()):
     """ hessian input string
@@ -114,6 +123,7 @@ def hessian(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
+        gen_lines=gen_lines,
         job_options=job_options,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -127,6 +137,8 @@ def optimization(geom, charge, mult, method, basis,
                  memory=1, comment='', machine_options=(),
                  # theory options
                  orb_restricted=None, scf_options=(), corr_options=(),
+                 # generic options
+                 gen_lines=(),
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
@@ -137,6 +149,7 @@ def optimization(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
+        gen_lines=gen_lines,
         frozen_coordinates=frozen_coordinates, job_options=job_options,
         saddle=saddle
     )
@@ -148,6 +161,7 @@ def optimization(geom, charge, mult, method, basis,
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options, scf_options, corr_options,
+                          gen_lines=(),
                           job_options=(), frozen_coordinates=(), saddle=False):
 
     frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (
@@ -187,6 +201,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.FROZEN_DIS_STRS: frozen_dis_strs,
         TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
         TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
+        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
     }
     return fill_dct
 

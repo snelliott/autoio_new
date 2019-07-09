@@ -53,6 +53,7 @@ class TemplateKey():
     # job
     JOB_KEY = 'job_key'
     JOB_OPTIONS = 'job_options'
+    GEN_LINES = 'gen_lines'
 
 
 def energy(geom, charge, mult, method, basis,
@@ -61,7 +62,8 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=()):
+           orb_restricted=None, scf_options=(), corr_options=(),
+           gen_lines=()):
     """ energy input string
     """
     job_key = JobKey.ENERGY
@@ -70,6 +72,7 @@ def energy(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
+        gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -82,6 +85,8 @@ def gradient(geom, charge, mult, method, basis,
              memory=1, comment='', machine_options=(),
              # theory options
              orb_restricted=None, scf_options=(), corr_options=(),
+             # generic options
+             gen_lines=(),
              # job options
              job_options=()):
     """ gradient input string
@@ -92,7 +97,7 @@ def gradient(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
-        job_options=job_options,
+        job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -105,6 +110,8 @@ def hessian(geom, charge, mult, method, basis,
             memory=1, comment='', machine_options=(),
             # theory options
             orb_restricted=None, scf_options=(), corr_options=(),
+            # generic options
+            gen_lines=(),
             # job options
             job_options=()):
     """ hessian input string
@@ -115,7 +122,7 @@ def hessian(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
-        job_options=job_options,
+        job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -128,6 +135,8 @@ def optimization(geom, charge, mult, method, basis,
                  memory=1, comment='', machine_options=(),
                  # theory options
                  orb_restricted=None, scf_options=(), corr_options=(),
+                 # generic options
+                 gen_lines=(),
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
@@ -139,7 +148,7 @@ def optimization(geom, charge, mult, method, basis,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
-        saddle=saddle
+        saddle=saddle, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -149,7 +158,8 @@ def optimization(geom, charge, mult, method, basis,
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options, scf_options, corr_options,
-                          job_options=(), frozen_coordinates=(), saddle=False):
+                          job_options=(), frozen_coordinates=(), saddle=False,
+                          gen_lines=()):
 
     reference = _reference(method, mult, orb_restricted)
     geom_str, zmat_var_val_str, zmat_const_val_str = _geometry_strings(
@@ -181,7 +191,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
 
     fill_dct = {
         TemplateKey.MEMORY: memory,
-        TemplateKey.MACHINE_OPTIONS: ','.join(machine_options),
+        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
         TemplateKey.REFERENCE: reference,
         TemplateKey.METHOD: g09_method,
         TemplateKey.BASIS: g09_basis,
@@ -196,6 +206,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
         TemplateKey.JOB_KEY: job_key,
         TemplateKey.JOB_OPTIONS: ','.join(job_options),
+        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
     }
     return fill_dct
 

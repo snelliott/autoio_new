@@ -60,7 +60,8 @@ def energy(geom, charge, mult, method, basis, prog,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=()):
+           orb_restricted=None, scf_options=(), corr_options=(),
+           gen_lines=()):
     """ energy input string
 
     :param geom: cartesian or z-matrix geometry
@@ -89,6 +90,8 @@ def energy(geom, charge, mult, method, basis, prog,
     :type scf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
+    :param gen_lines: generic lines for the input file
+    :type gen_lines: tuple[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -100,7 +103,8 @@ def energy(geom, charge, mult, method, basis, prog,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
-        scf_options=scf_options, corr_options=corr_options)
+        scf_options=scf_options, corr_options=corr_options,
+        gen_lines=gen_lines)
 
 
 # gradient input writers
@@ -118,6 +122,8 @@ def gradient(geom, charge, mult, method, basis, prog,
              memory=1, comment='', machine_options=(),
              # theory options
              orb_restricted=None, scf_options=(), corr_options=(),
+             # generic options
+             gen_lines=(),
              # job options
              job_options=()):
     """ gradient input string
@@ -148,6 +154,8 @@ def gradient(geom, charge, mult, method, basis, prog,
     :type scf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
+    :param gen_lines: generic lines for the input file
+    :type gen_lines: tuple[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -160,7 +168,7 @@ def gradient(geom, charge, mult, method, basis, prog,
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
         scf_options=scf_options, corr_options=corr_options,
-        job_options=job_options)
+        gen_lines=gen_lines, job_options=job_options)
 
 
 # hessian input writers
@@ -178,6 +186,8 @@ def hessian(geom, charge, mult, method, basis, prog,
             memory=1, comment='', machine_options=(),
             # theory options
             orb_restricted=None, scf_options=(), corr_options=(),
+            # generic options
+            gen_lines=(),
             # job options
             job_options=()):
     """ hessian input string
@@ -208,6 +218,8 @@ def hessian(geom, charge, mult, method, basis, prog,
     :type scf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
+    :param gen_lines: generic lines for the input file
+    :type gen_lines: tuple[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -220,7 +232,7 @@ def hessian(geom, charge, mult, method, basis, prog,
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
         scf_options=scf_options, corr_options=corr_options,
-        job_options=job_options)
+        gen_lines=gen_lines, job_options=job_options)
 
 
 # optimization input writers
@@ -238,6 +250,8 @@ def optimization(geom, charge, mult, method, basis, prog,
                  memory=1, comment='', machine_options=(),
                  # theory options
                  orb_restricted=None, scf_options=(), corr_options=(),
+                 # generic options
+                 gen_lines=(),
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
@@ -275,6 +289,8 @@ def optimization(geom, charge, mult, method, basis, prog,
     :type fozen_coordinates: tuple[str]
     :param saddle: optimize a saddle point?
     :type saddle: bool
+    :param gen_lines: generic lines for the input file
+    :type gen_lines: tuple[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -287,6 +303,7 @@ def optimization(geom, charge, mult, method, basis, prog,
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
         scf_options=scf_options, corr_options=corr_options,
+        gen_lines=gen_lines,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         saddle=saddle)
 
