@@ -46,6 +46,7 @@ class TemplateKey():
     CORR_METHOD = 'corr_method'
     CORR_OPTIONS = 'corr_options'
     JOB_OPTIONS = 'job_options'
+    GEN_LINES = 'gen_lines'
 
 
 def energy(geom, charge, mult, method, basis,
@@ -54,7 +55,9 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=()):
+           orb_restricted=None, scf_options=(), corr_options=(),
+           # generic options
+           gen_lines=()):
     """ energy input string
     """
     job_key = JobKey.ENERGY
@@ -64,6 +67,7 @@ def energy(geom, charge, mult, method, basis,
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
+        gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -76,6 +80,8 @@ def optimization(geom, charge, mult, method, basis,
                  memory=1, comment='', machine_options=(),
                  # theory options
                  orb_restricted=None, scf_options=(), corr_options=(),
+                 # generic options
+                 gen_lines=(),
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
@@ -86,6 +92,7 @@ def optimization(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
+        gen_lines=gen_lines,
         frozen_coordinates=frozen_coordinates, job_options=job_options,
         saddle=saddle
     )
@@ -97,6 +104,7 @@ def optimization(geom, charge, mult, method, basis,
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options, scf_options, corr_options,
+                          gen_lines=(),
                           job_options=(), frozen_coordinates=(), saddle=False):
 
     singlet = (mult == 1)
@@ -136,6 +144,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.CORR_METHOD: molpro_corr_method,
         TemplateKey.CORR_OPTIONS: ','.join(corr_options),
         TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
+        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
     }
     return fill_dct
 

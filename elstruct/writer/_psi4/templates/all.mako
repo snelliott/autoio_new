@@ -38,6 +38,9 @@ ${corr_options}
 % if job_options:
 ${job_options}
 % endif
+% if gen_lines != '':
+${gen_lines}
+% endif
 ## 3. job options block
 % if job_key == 'energy':
 energy('${method}')

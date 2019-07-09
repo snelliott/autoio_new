@@ -26,6 +26,9 @@ ${machine_options}
 # Freq=(${job_options})
 # IOp(7/33=1)
 % endif
+% if gen_lines != '':
+${gen_lines}
+% endif
 ## 3. molecule block
 % if mol_options != '':
 # ${mol_options}

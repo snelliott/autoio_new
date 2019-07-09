@@ -17,6 +17,9 @@ ${zmat_vals}
 % endif
 set,spin=${spin}
 set,charge=${charge}
+$ if gen_lines != '':
+${gen_lines}
+$ endif
 ## 2. theory block
 basis=${basis}
 %if scf_method:
