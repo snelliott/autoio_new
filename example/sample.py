@@ -4,13 +4,13 @@ import tempfile
 import elstruct
 import automol
 
-# PROG = 'psi4'
-# SCRIPT_STR = ("#!/usr/bin/env bash\n"
-#               "psi4 -i run.inp -o run.out")
-
-PROG = 'g09'
+PROG = 'psi4'
 SCRIPT_STR = ("#!/usr/bin/env bash\n"
-              "g09 run.inp run.out >> stdout.log &> stderr.log")
+              "psi4 -i run.inp -o run.out")
+
+# PROG = 'g09'
+# SCRIPT_STR = ("#!/usr/bin/env bash\n"
+#               "g09 run.inp run.out >> stdout.log &> stderr.log")
 
 METHOD = 'hf'
 BASIS = '6-31g'

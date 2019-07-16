@@ -44,6 +44,10 @@ ${gen_lines}
 ## 3. job options block
 % if job_key == 'energy':
 energy('${method}')
+% elif job_key == 'optimization' and method == 'hf' and reference == 'rohf':
+optimize('${method}', dertype=1)
+% elif job_key == 'optimization' and method == 'hf' and reference == 'uhf':
+optimize('${method}', dertype=1)
 % elif job_key == 'optimization':
 optimize('${method}')
 % elif job_key == 'gradient':
