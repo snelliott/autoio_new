@@ -5,6 +5,8 @@ import numpy
 from qcelemental import constants as qcc
 import automol
 
+X = numpy.newaxis
+
 
 def rotational_constants(geo):
     """ get the rotational constants in atomic units
@@ -33,54 +35,9 @@ def harmonic_frequencies(geo, hess, project=True):
     return freqs
 
 
-def mass_weighted_hessian(geo, hess, project=True):
-    """ translation/rotation-projected mass-weighted hessian
-    """
-    amas = automol.geom.masses(geo, amu=False)
-    mw_vec = numpy.divide(1., numpy.sqrt(numpy.repeat(amas, 3)))
-    mw_mat = numpy.outer(mw_vec, mw_vec)
-    mw_hess = numpy.multiply(hess, mw_mat)
-    if project:
-        dim = len(mw_vec)
-        trans_norm_coos = translational_normal_coordinates(geo)
-        rot_norm_coos = rotational_normal_coordinates(geo)
-        tr_norm_coos = numpy.hstack([trans_norm_coos, rot_norm_coos])
-        tr_proj = numpy.eye(dim) - numpy.dot(tr_norm_coos, tr_norm_coos.T)
-        mw_hess = numpy.dot(numpy.dot(tr_proj, mw_hess), tr_proj)
-
-    mw_hess = tuple(map(tuple, mw_hess))
-    return mw_hess
-
-
-def translational_normal_coordinates(geo, axes=None):
-    """ translational normal coordinates
-    """
-    if axes is None:
-        axes = numpy.eye(3)
-    mw_vec = _column_vector(numpy.sqrt(automol.geom.masses(geo)))
-    trans_norm_coos = _normalize_columns(numpy.kron(mw_vec, axes))
-    return trans_norm_coos
-
-
-def rotational_normal_coordinates(geo, axes=None):
-    """ rotational normal coordinates
-    """
-    if axes is None:
-        axes = numpy.eye(3)
-    xyzs = numpy.array(automol.geom.coordinates(geo))
-    mw_vec = _column_vector(numpy.sqrt(automol.geom.masses(geo)))
-    mw_xyzs = numpy.multiply(xyzs, mw_vec)
-    cross_mw_xyzs = functools.partial(numpy.cross, mw_xyzs)
-    rot_norm_coos = _normalize_columns(numpy.hstack(
-        list(map(_column_vector, map(cross_mw_xyzs, axes.T)))))
-    return rot_norm_coos
-
-
 def _frequency_analysis(geo, hess, project=True):
     """ harmonic frequency analysis
     """
-    amas = automol.geom.masses(geo, amu=False)
-    mw_vec = numpy.divide(1., numpy.sqrt(numpy.repeat(amas, 3)))
     mw_hess = mass_weighted_hessian(geo, hess, project=project)
     fcs, mw_norm_coos = numpy.linalg.eigh(mw_hess)
 
@@ -89,8 +46,66 @@ def _frequency_analysis(geo, hess, project=True):
     freqs_im = numpy.imag(freqs)
     freqs_re = numpy.real(freqs)
 
-    norm_coos = mw_vec * mw_norm_coos
+    mw_vec = mass_weighting_vector(geo)
+    norm_coos = _normalize_columns(mw_vec * mw_norm_coos)
     return norm_coos, freqs_re, freqs_im
+
+
+def mass_weighted_hessian(geo, hess, project=True):
+    """ translation/rotation-projected mass-weighted hessian
+    """
+    mw_vec = mass_weighting_vector(geo)
+    mw_mat = numpy.outer((1. / mw_vec), (1. / mw_vec))
+    mw_hess = numpy.multiply(hess, mw_mat)
+    if project:
+        dim = len(mw_vec)
+        trans_norm_coos = translational_normal_coordinates(geo,
+                                                           mass_weighted=True)
+        rot_norm_coos = rotational_normal_coordinates(geo,
+                                                      mass_weighted=True)
+        tr_norm_coos = numpy.hstack([trans_norm_coos, rot_norm_coos])
+        tr_proj = numpy.eye(dim) - numpy.dot(tr_norm_coos, tr_norm_coos.T)
+        mw_hess = numpy.dot(numpy.dot(tr_proj, mw_hess), tr_proj)
+
+    mw_hess = tuple(map(tuple, mw_hess))
+    return mw_hess
+
+
+def translational_normal_coordinates(geo, axes=None, mass_weighted=False):
+    """ translational normal coordinates
+    """
+    if axes is None:
+        axes = numpy.eye(3)
+    dim = len(automol.geom.symbols(geo))
+    trans_norm_coos = _normalize_columns(
+        numpy.kron(numpy.ones((dim, 1)), axes))
+    if mass_weighted:
+        mw_vec = mass_weighting_vector(geo)
+        trans_norm_coos = (1. / mw_vec[:, X]) * trans_norm_coos
+    return trans_norm_coos
+
+
+def rotational_normal_coordinates(geo, axes=None, mass_weighted=False):
+    """ rotational normal coordinates
+    """
+    if axes is None:
+        axes = numpy.eye(3)
+    xyzs = numpy.array(automol.geom.coordinates(geo))
+    cross_xyzs = functools.partial(numpy.cross, xyzs)
+    rot_norm_coos = _normalize_columns(numpy.hstack(
+        list(map(_column_vector, map(cross_xyzs, axes.T)))))
+    if mass_weighted:
+        mw_vec = mass_weighting_vector(geo)
+        rot_norm_coos = (1. / mw_vec[:, X]) * rot_norm_coos
+    return rot_norm_coos
+
+
+def mass_weighting_vector(geo):
+    """ mass-weighting vector
+    """
+    amas = automol.geom.masses(geo, amu=False)
+    mw_vec = numpy.sqrt(numpy.repeat(amas, 3))
+    return mw_vec
 
 
 def _normalize_columns(mat):
