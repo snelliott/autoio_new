@@ -1,11 +1,13 @@
 """ front-end reader utilities
 """
-import functools
 import numpy
+# import scipy.linalg
 from qcelemental import constants as qcc
 import automol
 
 X = numpy.newaxis
+
+EH2WAVENUM = qcc.conversion_factor("hartree", "wavenumber")
 
 
 def rotational_constants(geo):
@@ -47,6 +49,7 @@ def _frequency_analysis(geo, hess, project=True):
     freqs_re = numpy.real(freqs)
 
     mw_vec = mass_weighting_vector(geo)
+    norm_coos = mw_norm_coos
     norm_coos = _normalize_columns(mw_vec * mw_norm_coos)
     return norm_coos, freqs_re, freqs_im
 
@@ -64,8 +67,9 @@ def mass_weighted_hessian(geo, hess, project=True):
         rot_norm_coos = rotational_normal_coordinates(geo,
                                                       mass_weighted=True)
         tr_norm_coos = numpy.hstack([trans_norm_coos, rot_norm_coos])
-        tr_proj = numpy.eye(dim) - numpy.dot(tr_norm_coos, tr_norm_coos.T)
-        mw_hess = numpy.dot(numpy.dot(tr_proj, mw_hess), tr_proj)
+        proj = numpy.eye(dim) - numpy.dot(tr_norm_coos, tr_norm_coos.T)
+        # proj = scipy.linalg.orth(proj, rcond=0.5)
+        mw_hess = numpy.dot(numpy.dot(proj.T, mw_hess), proj)
 
     mw_hess = tuple(map(tuple, mw_hess))
     return mw_hess
@@ -76,12 +80,18 @@ def translational_normal_coordinates(geo, axes=None, mass_weighted=False):
     """
     if axes is None:
         axes = numpy.eye(3)
-    dim = len(automol.geom.symbols(geo))
-    trans_norm_coos = _normalize_columns(
-        numpy.kron(numpy.ones((dim, 1)), axes))
+    natms = len(automol.geom.symbols(geo))
+    trans_norm_coos = numpy.zeros((3*natms, 3))
+    for col_idx, axis in enumerate(axes):
+        for atm_idx in range(natms):
+            row_slc = slice(3*atm_idx, 3*(atm_idx+1))
+            trans_norm_coos[row_slc, col_idx] = axis
+
     if mass_weighted:
         mw_vec = mass_weighting_vector(geo)
-        trans_norm_coos = (1. / mw_vec[:, X]) * trans_norm_coos
+        trans_norm_coos = mw_vec[:, X] * trans_norm_coos
+
+    trans_norm_coos = _normalize_columns(trans_norm_coos)
     return trans_norm_coos
 
 
@@ -91,12 +101,18 @@ def rotational_normal_coordinates(geo, axes=None, mass_weighted=False):
     if axes is None:
         axes = numpy.eye(3)
     xyzs = numpy.array(automol.geom.coordinates(geo))
-    cross_xyzs = functools.partial(numpy.cross, xyzs)
-    rot_norm_coos = _normalize_columns(numpy.hstack(
-        list(map(_column_vector, map(cross_xyzs, axes.T)))))
+    natms = len(xyzs)
+    rot_norm_coos = numpy.zeros((3*natms, 3))
+    for col_idx, axis in enumerate(axes):
+        for atm_idx, xyz in enumerate(xyzs):
+            row_slc = slice(3*atm_idx, 3*(atm_idx+1))
+            rot_norm_coos[row_slc, col_idx] = numpy.cross(xyz, axis)
+
     if mass_weighted:
         mw_vec = mass_weighting_vector(geo)
-        rot_norm_coos = (1. / mw_vec[:, X]) * rot_norm_coos
+        rot_norm_coos = mw_vec[:, X] * rot_norm_coos
+
+    rot_norm_coos = _normalize_columns(rot_norm_coos)
     return rot_norm_coos
 
 
