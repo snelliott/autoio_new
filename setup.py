@@ -4,12 +4,19 @@ from distutils.core import setup
 
 
 setup(name="elstruct",
-      version="0.1.0",
+      version="0.2.13",
       packages=["elstruct",
-                "elstruct.write",
-                "elstruct.read",
-                "elstruct.write._psi4"],
+                "elstruct.writer",
+                "elstruct.reader",
+                "elstruct.writer._psi4",
+                "elstruct.reader._psi4",
+                "elstruct.writer._g09",
+                "elstruct.reader._g09",
+                "elstruct.writer._molpro",
+                "elstruct.reader._molpro"],
       package_dir={'elstruct': 'elstruct'},
       package_data={'elstruct': [
-          'write/_psi4/templates/*.mako',
+          'writer/_psi4/templates/*.mako',
+          'writer/_g09/templates/*.mako',
+          'writer/_molpro/templates/*.mako',
       ]})

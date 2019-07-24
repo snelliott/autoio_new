@@ -1,0 +1,28 @@
+# cmd: conda build . -c pacchem -c psi4 -c rdkit -c openbabel -c conda-forge
+package:
+    name: elstruct
+    version: "0.2.13"
+
+source:
+    path: .
+
+requirements:
+    build:
+        - python
+    run:
+        - python
+        - numpy
+        - scipy
+        - pyyaml
+        - mako
+        - pytest
+        - pytest-cov
+        - future
+        - flake8
+        - pylint
+        - rdkit::rdkit
+        - openbabel::openbabel
+        - psi4::psi4
+        - pacchem::autoparse
+        - pacchem::autochem
+        - conda-forge::qcelemental

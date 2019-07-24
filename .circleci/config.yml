@@ -11,9 +11,12 @@ jobs:
                     apt-get install --yes libxrender-dev  # needed for rdkit
                     conda env create -f environment.yml
             - run:
-                name: Run tests
+                name: Test elstruct
                 command: |
                     source activate elstruct-env
+                    # temporary fix
+                    conda install -c conda-forge pylint>=2.3
+                    # temporary fix
                     python setup.py install
                     cd tests
                     pytest -v --cov=elstruct .

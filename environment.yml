@@ -2,13 +2,15 @@ name: elstruct-env
 
 channels:
     - pacchem
+    - psi4
     - rdkit
     - openbabel
-    - psi4
+    - conda-forge
 
 dependencies:
-    - python=3
+    - python=3.7
     - numpy
+    - scipy
     - pyyaml
     - mako
     - pytest
@@ -20,5 +22,5 @@ dependencies:
     - openbabel::openbabel
     - psi4::psi4
     - pacchem::autoparse
-    - pacchem::autocom
-    - pacchem::automol
+    - pacchem::autochem
+    - conda-forge::qcelemental
