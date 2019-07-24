@@ -16,6 +16,7 @@ def gradient(output_string):
             app.padded(app.escape('Forces (Hartrees/Bohr)'), app.NONNEWLINE),
             app.LINE, app.LINE, '']),
         line_start_ptt=app.LINESPACES.join([app.UNSIGNED_INTEGER] * 2))
+    grad = numpy.multiply(grad,-1.0)
     assert numpy.shape(grad)[1] == 3
     return grad
 
