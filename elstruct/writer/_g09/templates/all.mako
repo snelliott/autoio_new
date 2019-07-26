@@ -25,6 +25,9 @@ ${machine_options}
 % elif job_key == 'hessian':
 # Freq=(${job_options})
 # IOp(7/33=1)
+% elif job_key == 'irc':
+# IRC=(${job_options})
+# IOp(7/33=1)
 % endif
 % if gen_lines != '':
 ${gen_lines}

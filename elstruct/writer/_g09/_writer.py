@@ -29,7 +29,7 @@ class JobKey():
     OPTIMIZATION = 'optimization'
     GRADIENT = 'gradient'
     HESSIAN = 'hessian'
-
+    IRC = 'irc'
 
 class TemplateKey():
     """ mako template keys """
@@ -154,11 +154,38 @@ def optimization(geom, charge, mult, method, basis,
     return inp_str
 
 
+def irc(geom, charge, mult, method, basis,
+        # molecule options
+        mol_options=(),
+        # machine options
+        memory=1, comment='', machine_options=(),
+        # theory options
+        orb_restricted=None, scf_options=(), corr_options=(),
+        # generic options
+        gen_lines=(),
+        # job options
+        job_options=(), frozen_coordinates=(), irc_direction=None):
+    """ optimization input string
+    """
+    job_key = JobKey.IRC
+    fill_dct = _fillvalue_dictionary(
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options,
+        job_options=job_options, frozen_coordinates=frozen_coordinates,
+        irc_direction=irc_direction, gen_lines=gen_lines,
+    )
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
+
+
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options, scf_options, corr_options,
-                          job_options=(), frozen_coordinates=(), saddle=False,
+                          job_options=(), frozen_coordinates=(), 
+                          saddle=False, irc_direction=None
                           gen_lines=()):
 
     reference = _reference(method, mult, orb_restricted)
@@ -188,6 +215,11 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
 
     if saddle:
         job_options += ('CALCFC', 'TS', 'NOEIGEN',)
+
+    if irc_direction is not None:
+        assert irc_direction.upper() == 'FORWARD' or irc_direction.upper() == 'REVERSE'
+        job_options += (irc_direction.upper(), 'CALCALL', 'STEPSIZE=3', 'MAXPOINTS=10',)
+
 
     fill_dct = {
         TemplateKey.MEMORY: memory,
