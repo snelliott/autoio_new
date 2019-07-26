@@ -7,6 +7,7 @@ from elstruct.reader._g09.molecule import opt_zmatrix
 from elstruct.reader._g09.status import has_normal_exit_message
 from elstruct.reader._g09.status import error_list
 from elstruct.reader._g09.status import has_error_message
+from elstruct.reader._g09.irc import get_irc
 
 __all__ = [
     'energy',
@@ -17,4 +18,5 @@ __all__ = [
     'has_normal_exit_message',
     'error_list',
     'has_error_message',
+    'get_irc'
 ]
