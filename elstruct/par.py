@@ -69,13 +69,13 @@ class Method():
                     'ccsd', 'uccsd',
                     (True,), (True,))})
         CCSD_T = ('ccsd(t)',
-                     {Program.MOLPRO: (
-                         'ccsd(t)', 'uccsd(t)',
-                         (True,), (True,))})
+                  {Program.MOLPRO: (
+                      'ccsd(t)', 'uccsd(t)',
+                      (True,), (True,))})
         CCSD_T_F12 = ('ccsd(t)-f12',
-                     {Program.MOLPRO: (
-                         'ccsd(t)-f12', 'uccsd(t)-f12',
-                         (True,), (True,))})
+                      {Program.MOLPRO: (
+                          'ccsd(t)-f12', 'uccsd(t)-f12',
+                          (True,), (True,))})
 
     class Dft():
         """ DFT method names """
@@ -273,29 +273,29 @@ class Basis():
 
         """ Dunning F12 basis sets """
         DF = ('cc-pvdz-f12', {Program.PSI4: None,
-                         Program.G09: None,
-                         Program.MOLPRO: None})
+                              Program.G09: None,
+                              Program.MOLPRO: None})
         TF = ('cc-pvtz-f12', {Program.PSI4: None,
-                         Program.G09: None,
-                         Program.MOLPRO: None})
+                              Program.G09: None,
+                              Program.MOLPRO: None})
         QF = ('cc-pvqz-f12', {Program.PSI4: None,
-                         Program.G09: None,
-                         Program.MOLPRO: None})
+                              Program.G09: None,
+                              Program.MOLPRO: None})
 
         class Aug():
             """ augmented Dunning basis sets """
             AD = ('aug-cc-pvdz', {Program.PSI4: None,
-                                 Program.G09: None,
-                                 Program.MOLPRO: None})
+                                  Program.G09: None,
+                                  Program.MOLPRO: None})
             AT = ('aug-cc-pvtz', {Program.PSI4: None,
-                                 Program.G09: None,
-                                 Program.MOLPRO: None})
+                                  Program.G09: None,
+                                  Program.MOLPRO: None})
             AQ = ('aug-cc-pvqz', {Program.PSI4: None,
-                                 Program.G09: None,
-                                 Program.MOLPRO: None})
+                                  Program.G09: None,
+                                  Program.MOLPRO: None})
             A5 = ('aug-cc-pv5z', {Program.PSI4: None,
-                                 Program.G09: None,
-                                 Program.MOLPRO: None})
+                                  Program.G09: None,
+                                  Program.MOLPRO: None})
 
     @classmethod
     def contains(cls, name):

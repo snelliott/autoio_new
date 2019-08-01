@@ -12,6 +12,10 @@ from elstruct.reader._reader import gradient_
 from elstruct.reader._reader import hessian_programs
 from elstruct.reader._reader import hessian
 from elstruct.reader._reader import hessian_
+# irc_points
+from elstruct.reader._reader import irc_programs
+from elstruct.reader._reader import irc_points
+from elstruct.reader._reader import irc_points_
 # optimization
 from elstruct.reader._reader import opt_geometry_programs
 from elstruct.reader._reader import opt_geometry
@@ -38,6 +42,10 @@ __all__ = [
     'hessian_programs',
     'hessian',
     'hessian_',
+    # irc
+    'irc_programs',
+    'irc_points',
+    'irc_points_',
     # optimization
     'opt_geometry_programs',
     'opt_geometry',

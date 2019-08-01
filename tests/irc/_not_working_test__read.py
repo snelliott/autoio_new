@@ -2,7 +2,7 @@
 """
 
 import os
-from elstruct.reader._g09 import get_irc
+import elstruct.reader
 import autofile.file
 
 
@@ -16,7 +16,7 @@ def test__irc_reader():
         OUT_STR = logfile.read()
 
     # Get the geometries, gradients, and Hessians
-    GEOMS, GRADS, HESSIANS = get_irc(OUT_STR)
+    GEOMS, GRADS, HESSIANS = elstruct.reader.irc_points('g09', OUT_STR)
 
     # Make the directories
     os.system('mkdir -p geoms')

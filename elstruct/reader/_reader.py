@@ -127,6 +127,38 @@ def hessian_(prog):
     return func
 
 
+# irc_points
+def irc_programs():
+    """ list of program modules implementing irc_points readers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.irc_points)
+
+
+def irc_points(prog, output_string):
+    """ read irc_points from the output string
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.irc_points,
+        # *args
+        output_string)
+
+
+def irc_points_(prog):
+    """ read irc_points from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    """
+    func = functools.partial(irc_points, prog)
+    func.__name__ = '_irc_points_'
+    return func
+
+
 # optimization
 def opt_geometry_programs():
     """ list of program modules implementing optimized geometry readers

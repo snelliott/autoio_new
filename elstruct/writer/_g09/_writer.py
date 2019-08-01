@@ -31,6 +31,7 @@ class JobKey():
     HESSIAN = 'hessian'
     IRC = 'irc'
 
+
 class TemplateKey():
     """ mako template keys """
     # machine
@@ -184,8 +185,8 @@ def irc(geom, charge, mult, method, basis,
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options, scf_options, corr_options,
-                          job_options=(), frozen_coordinates=(), 
-                          saddle=False, irc_direction=None
+                          job_options=(), frozen_coordinates=(),
+                          saddle=False, irc_direction=None,
                           gen_lines=()):
 
     reference = _reference(method, mult, orb_restricted)
@@ -217,9 +218,10 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         job_options += ('CALCFC', 'TS', 'NOEIGEN',)
 
     if irc_direction is not None:
-        assert irc_direction.upper() == 'FORWARD' or irc_direction.upper() == 'REVERSE'
-        job_options += (irc_direction.upper(), 'CALCALL', 'STEPSIZE=3', 'MAXPOINTS=10',)
-
+        assert (irc_direction.upper() == 'FORWARD' or
+                irc_direction.upper() == 'REVERSE')
+        job_options += (
+            irc_direction.upper(), 'CALCALL', 'STEPSIZE=3', 'MAXPOINTS=10',)
 
     fill_dct = {
         TemplateKey.MEMORY: memory,

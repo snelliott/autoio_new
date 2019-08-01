@@ -41,6 +41,7 @@ def _frequency_analysis(geo, hess, project=True):
     """ harmonic frequency analysis
     """
     mw_hess = mass_weighted_hessian(geo, hess, project=project)
+    print(mw_hess)
     fcs, mw_norm_coos = numpy.linalg.eigh(mw_hess)
 
     conv = qcc.conversion_factor("hartree", "wavenumber")
@@ -66,6 +67,8 @@ def mass_weighted_hessian(geo, hess, project=True):
                                                            mass_weighted=True)
         rot_norm_coos = rotational_normal_coordinates(geo,
                                                       mass_weighted=True)
+        print(trans_norm_coos)
+        print(rot_norm_coos)
         tr_norm_coos = numpy.hstack([trans_norm_coos, rot_norm_coos])
         proj = numpy.eye(dim) - numpy.dot(tr_norm_coos, tr_norm_coos.T)
         # proj = scipy.linalg.orth(proj, rcond=0.5)
@@ -112,7 +115,13 @@ def rotational_normal_coordinates(geo, axes=None, mass_weighted=False):
         mw_vec = mass_weighting_vector(geo)
         rot_norm_coos = mw_vec[:, X] * rot_norm_coos
 
-    rot_norm_coos = _normalize_columns(rot_norm_coos)
+    # for linear molecules aligned to an axis, one of these can be zero
+    rot_norm_coo_vecs = []
+    for rot_norm_coo in rot_norm_coos.T:
+        if numpy.linalg.norm(rot_norm_coo) > 1e-5:
+            rot_norm_coo_vecs.append(rot_norm_coo)
+
+    rot_norm_coos = numpy.transpose(rot_norm_coo_vecs)
     return rot_norm_coos
 
 
