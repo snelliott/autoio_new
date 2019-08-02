@@ -25,6 +25,12 @@ def hessian(output_string):
     raise NotImplementedError
 
 
+# irc points
+def irc_points(output_string):
+    """ _ """
+    raise NotImplementedError
+
+
 # optimization
 def opt_geometry(output_string):
     """ _ """

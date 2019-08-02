@@ -313,7 +313,7 @@ def irc_programs():
     """ list of program modules implementing optimization input writers
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.optimization)
+        MODULE_NAME, module_template.irc)
 
 
 def irc(geom, charge, mult, method, basis, prog,
@@ -327,7 +327,7 @@ def irc(geom, charge, mult, method, basis, prog,
         gen_lines=(),
         # job options
         job_options=(), frozen_coordinates=(), irc_direction=None):
-    """ optimization input string
+    """ irc input string
 
     :param geom: cartesian or z-matrix geometry
     :type geom: tuple
@@ -369,7 +369,7 @@ def irc(geom, charge, mult, method, basis, prog,
         prog, method, basis, mult, orb_restricted)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.optimization,
+        prog, MODULE_NAME, module_template.irc,
         # *args
         geom, charge, mult, method, basis,
         # **kwargs
