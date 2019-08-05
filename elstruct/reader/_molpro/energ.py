@@ -19,6 +19,16 @@ def _hf_energy(output_string):
     return ene
 
 
+def _mp2_energy(output_string):
+    ene = ar.energy.read(
+        output_string,
+        app.one_of_these([
+            app.escape('!MP2 total energy') + app.maybe(':'),
+            app.escape('!RMP2 energy'),
+        ]))
+    return ene
+
+
 def _ccsd_energy(output_string):
     ene = ar.energy.read(
         output_string,
@@ -52,6 +62,7 @@ def _ccsd_t_f12_energy(output_string):
 # a dictionary of functions for reading the energy from the output, by method
 ENERGY_READER_DCT = {
     elstruct.par.Method.HF[0]: _hf_energy,
+    elstruct.par.Method.Corr.MP2[0]: _mp2_energy,
     elstruct.par.Method.Corr.CCSD[0]: _ccsd_energy,
     elstruct.par.Method.Corr.CCSD_T[0]: _ccsd_t_energy,
     elstruct.par.Method.Corr.CCSD_T_F12[0]: _ccsd_t_f12_energy,

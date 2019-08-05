@@ -46,23 +46,26 @@ class Method():
     """
     HF = ('hf',
           {Program.PSI4: (
-              None, None,
+              'hf', 'uhf',
               (True,), (False, True)),
            Program.G09: (
-               None, None,
+               'hf', 'hf',
                (True,), (False, True)),
            Program.MOLPRO: (
-               None, None,
+               'hf', 'hf',
                (True,), (False, True))})
 
     class Corr():
         """ correlated method names """
         MP2 = ('mp2',
                {Program.PSI4: (
-                   None, None,
+                   'mp2', 'mp2',
                    (True,), (False, True)),
                 Program.G09: (
-                    None, None,
+                    'mp2', 'mp2',
+                    (True,), (False, True)),
+                Program.MOLPRO: (
+                    'mp2', 'ump2',
                     (True,), (False, True))})
         CCSD = ('ccsd',
                 {Program.MOLPRO: (
