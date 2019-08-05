@@ -10,9 +10,16 @@ from elstruct.writer._writer import gradient
 # hessian
 from elstruct.writer._writer import hessian_programs
 from elstruct.writer._writer import hessian
+# anharm
+from elstruct.writer._writer import anharm_programs
+from elstruct.writer._writer import anharm
 # optimization
 from elstruct.writer._writer import optimization_programs
 from elstruct.writer._writer import optimization
+# irc
+from elstruct.writer._writer import irc_programs
+from elstruct.writer._writer import irc
+
 
 __all__ = [
     # energies
@@ -26,7 +33,13 @@ __all__ = [
     # hessian
     'hessian_programs',
     'hessian',
+    # anharm
+    'anharm_programs',
+    'anharm',
     # optimizations
     'optimization_programs',
     'optimization',
+    # irc
+    'irc_programs',
+    'irc'
 ]

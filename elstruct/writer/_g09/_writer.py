@@ -29,6 +29,7 @@ class JobKey():
     OPTIMIZATION = 'optimization'
     GRADIENT = 'gradient'
     HESSIAN = 'hessian'
+    ANHARM = 'anharm'
     IRC = 'irc'
 
 
@@ -55,6 +56,7 @@ class TemplateKey():
     JOB_KEY = 'job_key'
     JOB_OPTIONS = 'job_options'
     GEN_LINES = 'gen_lines'
+    IRC_DIRECTION = 'irc_direction'
 
 
 def energy(geom, charge, mult, method, basis,
@@ -129,27 +131,26 @@ def hessian(geom, charge, mult, method, basis,
     return inp_str
 
 
-def optimization(geom, charge, mult, method, basis,
-                 # molecule options
-                 mol_options=(),
-                 # machine options
-                 memory=1, comment='', machine_options=(),
-                 # theory options
-                 orb_restricted=None, scf_options=(), corr_options=(),
-                 # generic options
-                 gen_lines=(),
-                 # job options
-                 job_options=(), frozen_coordinates=(), saddle=False):
-    """ optimization input string
+def anharm(geom, charge, mult, method, basis,
+           # molecule options
+           mol_options=(),
+           # machine options
+           memory=1, comment='', machine_options=(),
+           # theory options
+           orb_restricted=None, scf_options=(), corr_options=(),
+           # generic options
+           gen_lines=(),
+           # job options
+           job_options=()):
+    """ hessian input string
     """
-    job_key = JobKey.OPTIMIZATION
+    job_key = JobKey.ANHARM
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, corr_options=corr_options,
-        job_options=job_options, frozen_coordinates=frozen_coordinates,
-        saddle=saddle, gen_lines=gen_lines,
+        job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -176,6 +177,32 @@ def irc(geom, charge, mult, method, basis,
         scf_options=scf_options, corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         irc_direction=irc_direction, gen_lines=gen_lines,
+    )
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
+
+
+def optimization(geom, charge, mult, method, basis,
+                 # molecule options
+                 mol_options=(),
+                 # machine options
+                 memory=1, comment='', machine_options=(),
+                 # theory options
+                 orb_restricted=None, scf_options=(), corr_options=(),
+                 # generic options
+                 gen_lines=(),
+                 # job options
+                 job_options=(), frozen_coordinates=(), saddle=False):
+    """ optimization input string
+    """
+    job_key = JobKey.OPTIMIZATION
+    fill_dct = _fillvalue_dictionary(
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, corr_options=corr_options,
+        job_options=job_options, frozen_coordinates=frozen_coordinates,
+        saddle=saddle, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -220,8 +247,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     if irc_direction is not None:
         assert (irc_direction.upper() == 'FORWARD' or
                 irc_direction.upper() == 'REVERSE')
-        job_options += (
-            irc_direction.upper(), 'CALCALL', 'STEPSIZE=3', 'MAXPOINTS=10',)
+        job_options = (irc_direction.upper(),) + job_options
 
     fill_dct = {
         TemplateKey.MEMORY: memory,

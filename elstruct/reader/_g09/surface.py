@@ -57,7 +57,7 @@ def hessian(output_string):
 
 
 def irc_points(output_string):
-    """ get a list of strings for each irc point
+    """ obtain the geometry, gradient, and hessian at each point along the irc
     """
 
     # Lines
@@ -89,7 +89,7 @@ def irc_points(output_string):
 
 
 def irc_geometry(output_string):
-    """ get geometry from at a point on the IRC
+    """ get geometry at a point on the IRC
     """
     nums, xyzs = ar.geom.read(
         output_string,
