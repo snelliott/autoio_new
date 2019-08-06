@@ -10,9 +10,9 @@ from elstruct.writer._writer import gradient
 # hessian
 from elstruct.writer._writer import hessian_programs
 from elstruct.writer._writer import hessian
-# anharm
-from elstruct.writer._writer import anharm_programs
-from elstruct.writer._writer import anharm
+# vpt2
+from elstruct.writer._writer import vpt2_programs
+from elstruct.writer._writer import vpt2
 # optimization
 from elstruct.writer._writer import optimization_programs
 from elstruct.writer._writer import optimization
@@ -33,9 +33,9 @@ __all__ = [
     # hessian
     'hessian_programs',
     'hessian',
-    # anharm
-    'anharm_programs',
-    'anharm',
+    # vpt2
+    'vpt2_programs',
+    'vpt2',
     # optimizations
     'optimization_programs',
     'optimization',

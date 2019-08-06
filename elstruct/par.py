@@ -274,17 +274,6 @@ class Basis():
                          Program.G09: None,
                          Program.MOLPRO: None})
 
-        """ Dunning F12 basis sets """
-        DF = ('cc-pvdz-f12', {Program.PSI4: None,
-                              Program.G09: None,
-                              Program.MOLPRO: None})
-        TF = ('cc-pvtz-f12', {Program.PSI4: None,
-                              Program.G09: None,
-                              Program.MOLPRO: None})
-        QF = ('cc-pvqz-f12', {Program.PSI4: None,
-                              Program.G09: None,
-                              Program.MOLPRO: None})
-
         class Aug():
             """ augmented Dunning basis sets """
             AD = ('aug-cc-pvdz', {Program.PSI4: None,
@@ -299,6 +288,13 @@ class Basis():
             A5 = ('aug-cc-pv5z', {Program.PSI4: None,
                                   Program.G09: None,
                                   Program.MOLPRO: None})
+
+        class F12():
+            """ Dunning F12 basis sets """
+            DF = ('cc-pvdz-f12', {Program.MOLPRO: None})
+            TF = ('cc-pvtz-f12', {Program.MOLPRO: None})
+            QF = ('cc-pvqz-f12', {Program.MOLPRO: None})
+
 
     @classmethod
     def contains(cls, name):
@@ -408,3 +404,7 @@ class Option():
             CARTESIAN = option.create('opt_coord_cartesian')
             ZMATRIX = option.create('opt_coord_zmatrix')
             REDUNDANT = option.create('opt_coord_redundant')
+
+if __name__ == '__main__':
+    print(program_methods_info('g09'))
+
