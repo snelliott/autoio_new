@@ -25,7 +25,7 @@ ${machine_options}
 % elif job_key == 'hessian':
 # Freq=(${job_options})
 # IOp(7/33=1)
-% elif job_key == 'anharm':
+% elif job_key == 'vpt2':
 # Freq=(ANHARM,VIBROT${job_options})
 % elif job_key == 'irc':
 # IRC=(${job_options})

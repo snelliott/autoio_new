@@ -29,7 +29,7 @@ class JobKey():
     OPTIMIZATION = 'optimization'
     GRADIENT = 'gradient'
     HESSIAN = 'hessian'
-    ANHARM = 'anharm'
+    VPT2 = 'vpt2'
     IRC = 'irc'
 
 
@@ -131,7 +131,7 @@ def hessian(geom, charge, mult, method, basis,
     return inp_str
 
 
-def anharm(geom, charge, mult, method, basis,
+def vpt2(geom, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options
@@ -144,7 +144,7 @@ def anharm(geom, charge, mult, method, basis,
            job_options=()):
     """ hessian input string
     """
-    job_key = JobKey.ANHARM
+    job_key = JobKey.VPT2
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,

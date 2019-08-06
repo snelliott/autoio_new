@@ -235,15 +235,15 @@ def hessian(geom, charge, mult, method, basis, prog,
         gen_lines=gen_lines, job_options=job_options)
 
 
-# anharm input writers
-def anharm_programs():
+# vpt2 input writers
+def vpt2_programs():
     """ list of program modules implementing hessian input writers
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.anharm)
+        MODULE_NAME, module_template.vpt2)
 
 
-def anharm(geom, charge, mult, method, basis, prog,
+def vpt2(geom, charge, mult, method, basis, prog,
            # molecule options
            mol_options=(),
            # machine options
@@ -289,7 +289,7 @@ def anharm(geom, charge, mult, method, basis, prog,
         prog, method, basis, mult, orb_restricted)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.anharm,
+        prog, MODULE_NAME, module_template.vpt2,
         # *args
         geom, charge, mult, method, basis,
         # **kwargs

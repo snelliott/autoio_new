@@ -68,7 +68,7 @@ def hessian(geom, charge, mult, method, basis,
     )
 
 
-def anharm(geom, charge, mult, method, basis,
+def vpt2(geom, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options

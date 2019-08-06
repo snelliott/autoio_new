@@ -42,6 +42,12 @@ def opt_zmatrix(output_string):
     raise NotImplementedError(output_string)
 
 
+# vpt2
+def vpt2(output_string):
+    """ _ """
+    raise NotImplementedError(output_string)
+
+
 # status
 def has_normal_exit_message(output_string):
     """ _ """

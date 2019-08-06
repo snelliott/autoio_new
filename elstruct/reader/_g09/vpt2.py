@@ -11,7 +11,7 @@ import autoparse.find as apf
 KJ2EH = qcc.conversion_factor('kJ/mol', 'hartree')
 
 
-def anharmonic_frequenciess_reader(output_string):
+def anharmonic_frequencies_reader(output_string):
     """ Get the anharmonic vibrational frequencies
     """
 
@@ -168,20 +168,17 @@ def cent_dist_const_reader(output_string):
     return cent_dist_consts
 
 
-if __name__ == '__main__':
-    with open('output.dat', 'r') as output_file:
-        output_string = output_file.read()
-    print('anharm_freqs')
-    print(anharmonic_frequenciess_reader(output_string))
-    print('\nanharm_zpve')
-    print(anharm_zpve_reader(output_string))
-    print('\nanharm_matrix')
-    anharm_matrix = anharmonicity_matrix_reader(output_string)
-    for row in anharm_matrix:
-        print(row)
-    print('\nvibrot_matrix')
-    vibrot_matrix = vibro_rot_alpha_matrix_reader(output_string)
-    for row in vibrot_matrix:
-        print(row)
-    print('\ncentdist_consts')
-    print(cent_dist_const_reader(output_string))
+def vpt2(output_string):
+    """ read various pieces of anharm data from output string
+    """
+
+    # Initialize dictionary to store information dictionary
+    anharm_dict = {
+        'freqs': anharmonic_frequencies_reader(output_string),
+        'zpve': anharm_zpve_reader(output_string),
+        'x_mat': anharmonicity_matrix_reader(output_string),
+        'vibrot_mat': vibro_rot_alpha_matrix_reader(output_string),
+        'cent_dist_const': cent_dist_const_reader(output_string)
+    }
+
+    return anharm_dict

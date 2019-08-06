@@ -4,7 +4,7 @@
 import elstruct.writer
 
 
-def test__anharm_writer():
+def test__vpt2_writer():
     """ writes an irc log file from Gaussian
         writes the information to files
     """
@@ -19,7 +19,7 @@ def test__anharm_writer():
     method = 'b3lyp'
     job_options = ()
 
-    anharm_str = elstruct.writer.anharm(
+    vpt2_str = elstruct.writer.vpt2(
         geom,
         charge,
         mult,
@@ -36,8 +36,8 @@ def test__anharm_writer():
         gen_lines=(),
         job_options=job_options)
 
-    print(anharm_str)
+    print(vpt2_str)
 
 
 if __name__ == '__main__':
-    test__anharm_writer()
+    test__vpt2_writer()
