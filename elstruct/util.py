@@ -41,7 +41,7 @@ def _frequency_analysis(geo, hess, project=True):
     """ harmonic frequency analysis
     """
     mw_hess = mass_weighted_hessian(geo, hess, project=project)
-    print(mw_hess)
+    # print(mw_hess)
     fcs, mw_norm_coos = numpy.linalg.eigh(mw_hess)
 
     conv = qcc.conversion_factor("hartree", "wavenumber")
@@ -67,8 +67,8 @@ def mass_weighted_hessian(geo, hess, project=True):
                                                            mass_weighted=True)
         rot_norm_coos = rotational_normal_coordinates(geo,
                                                       mass_weighted=True)
-        print(trans_norm_coos)
-        print(rot_norm_coos)
+        # print(trans_norm_coos)
+        # print(rot_norm_coos)
         tr_norm_coos = numpy.hstack([trans_norm_coos, rot_norm_coos])
         proj = numpy.eye(dim) - numpy.dot(tr_norm_coos, tr_norm_coos.T)
         # proj = scipy.linalg.orth(proj, rcond=0.5)
