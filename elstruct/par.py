@@ -21,6 +21,10 @@ class Program():
     PSI4 = 'psi4'
     G09 = 'g09'
     MOLPRO = 'molpro'
+    CFOUR2 = 'cfour2'
+    ORCA4 = 'orca4'
+    MRCC2018 = 'mrcc2018'
+    NWCHEM6 = 'nwchem6'
 
 
 def programs():
@@ -34,6 +38,28 @@ def is_program(prog):
     """
     prog = standard_case(prog)
     return prog in programs()
+
+
+# class MultiRefMethod():
+#     """ multireference electronic structure methods
+#     """
+#     CASSCF = ('casscf',
+#               Program.MOLPRO: (
+#                 'hf', 'hf',
+#                 (True,), (False, True))})
+#     CASPT2 = ('caspt2',
+#               Program.MOLPRO: (
+#                 'hf', 'hf',
+#                 (True,), (False, True))})
+#     CASPT2c = ('caspt2',
+#               Program.MOLPRO: (
+#                 'hf', 'hf',
+#                 (True,), (False, True))})
+#     MRCI_Q = ('mrcisd_q',
+#               Program.MOLPRO: (
+#                 'hf', 'hf',
+#                 (True,), (False, True))})
+              
 
 
 class Method():
@@ -378,6 +404,7 @@ class Error():
     """ Job errors
     """
     SCF_NOCONV = 'scf_noconv'
+    CC_NOCONV = 'cc_noconv'
     OPT_NOCONV = 'opt_noconv'
 
 

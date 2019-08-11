@@ -244,16 +244,16 @@ def vpt2_programs():
 
 
 def vpt2(geom, charge, mult, method, basis, prog,
-           # molecule options
-           mol_options=(),
-           # machine options
-           memory=1, comment='', machine_options=(),
-           # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
-           # generic options
-           gen_lines=(),
-           # job options
-           job_options=()):
+         # molecule options
+         mol_options=(),
+         # machine options
+         memory=1, comment='', machine_options=(),
+         # theory options
+         orb_restricted=None, scf_options=(), corr_options=(),
+         # generic options
+         gen_lines=(),
+         # job options
+         job_options=()):
     """ hessian input string
 
     :param geom: cartesian or z-matrix geometry

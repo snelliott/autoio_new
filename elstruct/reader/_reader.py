@@ -274,6 +274,38 @@ def vpt2_(prog):
     return func
 
 
+# dipole moment
+def dipole_moment_programs():
+    """ list of program modules implementing dipole_moment readers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.dipole_moment)
+
+
+def dipole_moment(prog, output_string):
+    """ read dipole_moment from the output string
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.dipole_moment,
+        # *args
+        output_string)
+
+
+def dipole_moment_(prog):
+    """ read dipole_moment from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    """
+    func = functools.partial(dipole_moment, prog)
+    func.__name__ = '_dipole_moment_'
+    return func
+
+
 # status
 def has_normal_exit_message(prog, output_string):
     """ does this output string have a normal exit message?

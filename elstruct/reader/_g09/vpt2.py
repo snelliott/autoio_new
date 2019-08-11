@@ -161,9 +161,6 @@ def cent_dist_const_reader(output_string):
         app.EXPONENTIAL_FLOAT_D
     )
 
-    #for x in apf.all_captures(pattern, block):
-    #    print(x)
-
     # Get list of values
     cent_dist_consts = [[lbl, float(val.replace('D', 'E'))]
                         for (lbl, val) in apf.all_captures(pattern, block)]

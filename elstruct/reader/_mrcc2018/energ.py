@@ -4,17 +4,16 @@ import autoread as ar
 import autoparse.pattern as app
 import elstruct.par
 
-
-PROG = elstruct.par.Program.CFOUR2
+PROG = elstruct.par.Program.MRCC2018
 
 
 def _hf_energy(output_string):
     ene = ar.energy.read(
         output_string,
         app.one_of_these([
-            app.escape('E(SCF)='),
-            app.escape('E(ROHF)=')])
-        )
+            app.escape('***FINAL HARTREE-FOCK ENERGY:'),
+            app.escape('***SEMICANONICAL ROHF ENERGY:'),
+        ]))
     return ene
 
 
@@ -22,8 +21,8 @@ def _mp2_energy(output_string):
     ene = ar.energy.read(
         output_string,
         app.one_of_these([
-            app.escape('Total MP2 energy'),
-            app.escape('MP2 energy')
+            app.escape('Total MP2 energy [au]:'),
+            app.escape('MP2 energy [au]:')
         ]))
     return ene
 
@@ -31,7 +30,7 @@ def _mp2_energy(output_string):
 def _ccsd_energy(output_string):
     ene = ar.energy.read(
         output_string,
-        app.escape('CCSD energy')
+        app.escape('Total CCSD energy [au]:')
         )
     return ene
 
@@ -39,8 +38,26 @@ def _ccsd_energy(output_string):
 def _ccsd_t_energy(output_string):
     ene = ar.energy.read(
         output_string,
-        app.escape('CCSD(T) energy')
+        app.escape('CCSD(T) total energy [au]:')
         )
+    return ene
+
+
+def _ccsdt_energy(output_string):
+    ene = ar.energy.read(
+        output_string,
+        app.escape('Total CCSDT energy [au]:')
+        )
+    return ene
+
+
+def _ccsdt_q_energy(output_string):
+    ene = ar.energy.read(
+        output_string,
+        app.one_of_these([
+            app.escape('Total CCSDT(Q) energy [au]:'),
+            app.escape('Total CCSDT(Q)/B energy [au]:'),
+        ]))
     return ene
 
 

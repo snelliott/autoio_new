@@ -47,9 +47,6 @@ class TemplateKey():
     CORR_OPTIONS = 'corr_options'
     METHOD = 'method'
     JOB_OPTIONS = 'job_options'
-    FROZEN_DIS_STRS = 'frozen_dis_strs'
-    FROZEN_ANG_STRS = 'frozen_ang_strs'
-    FROZEN_DIH_STRS = 'frozen_dih_strs'
     GEN_LINES = 'gen_lines'
 
 
@@ -162,22 +159,21 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           gen_lines=(),
                           job_options=(), frozen_coordinates=(), saddle=False):
 
-    frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (
-        _frozen_coordinate_strings(geom, frozen_coordinates))
-
-    reference = _reference(method, mult, orb_restricted)
-    geom_str, zmat_val_str = _geometry_strings(geom)
+    reference = _reference(mult, orb_restricted)
+    geom_str, zmat_val_str = _geometry_strings(geom, frozen_coordinates)
 
     if not elstruct.par.Method.is_correlated(method):
         assert not corr_options
+    elif elstruct.par.Method.is_correlated(method) in ('ccsd', 'ccsd(t)'):
+        corr_options = (('ABCDTYPE=AOBASIS'))
 
     scf_options = _evaluate_options(scf_options)
     job_options = _evaluate_options(job_options)
 
-
     if JobKey == 'energy':
         job_options += ('GEO_METHOD=SINGLE_POINT\nVIBRATION=0',)
-    if JobKey == 'gradient':
+    elif JobKey == 'gradient':
+        job_options += ('DERIV_LEVEL=1\nVIBRATION=0',)
     elif JobKey == 'hessian' and not num_hess:
         job_options += ('VIBRATION=ANALYTIC',)
     elif JobKey == 'hessian' and num_hess:
@@ -186,7 +182,6 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         job_options += ('GEO_METHOD=NR\nVIBRATION=0',)
     elif JobKey == 'optimization' and saddle:
         job_options += ('GEO_METHOD=TS\nVIBRATION=0',)
-
 
     cfour2_method = elstruct.par.program_method_name(PROG, method)
     cfour2_basis = elstruct.par.program_basis_name(PROG, basis)
@@ -207,15 +202,12 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
         TemplateKey.JOB_KEY: job_key,
         TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
-        TemplateKey.FROZEN_DIS_STRS: frozen_dis_strs,
-        TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
-        TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
         TemplateKey.GEN_LINES: '\n'.join(gen_lines),
     }
     return fill_dct
 
 
-def _geometry_strings(geom):
+def _geometry_strings(geom, frozen_coordinates):
     if automol.geom.is_valid(geom):
         geom_str = automol.geom.string(geom)
         zmat_val_str = ''
@@ -223,7 +215,9 @@ def _geometry_strings(geom):
         zma = geom
         syms = automol.zmatrix.symbols(zma)
         key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = automol.zmatrix.name_matrix(zma)
+        name_mat = [[name+'*' if name in frozen_coordinates else name
+                     for row in automol.zmatrix.name_matrix(zma)
+                     for name in row]]
         val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
 
         geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)
@@ -234,37 +228,13 @@ def _geometry_strings(geom):
     return geom_str, zmat_val_str
 
 
-def _frozen_coordinate_strings(geom, frozen_coordinates):
-    if not frozen_coordinates:
-        dis_strs = ang_strs = dih_strs = ()
-    else:
-        coo_dct = automol.zmatrix.coordinates(geom, shift=1)
-        assert all(coo_name in coo_dct for coo_name in frozen_coordinates)
-
-        def _coordinate_strings(coo_names):
-            frz_coo_names = [coo_name for coo_name in frozen_coordinates
-                             if coo_name in coo_names]
-            frz_coo_strs = tuple(' '.join(map(str, coo_keys))
-                                 for frz_coo_name in frz_coo_names
-                                 for coo_keys in coo_dct[frz_coo_name])
-            return frz_coo_strs
-
-        dis_strs = _coordinate_strings(
-            automol.zmatrix.distance_names(geom))
-        ang_strs = _coordinate_strings(
-            automol.zmatrix.central_angle_names(geom))
-        dih_strs = _coordinate_strings(
-            automol.zmatrix.dihedral_angle_names(geom))
-    return dis_strs, ang_strs, dih_strs
-
-
-def _reference(method, mult, orb_restricted):
+def _reference(mult, orb_restricted):
     if mult != 1:
-        reference = (Psi4Reference.ROHF if orb_restricted else
-                     Psi4Reference.UHF)
+        reference = (Cfour2Reference.ROHF if orb_restricted else
+                     Cfour2Reference.UHF)
     else:
         assert mult == 1 and orb_restricted is True
-        reference = Psi4Reference.RHF
+        reference = Cfour2Reference.RHF
 
     return reference
 
@@ -275,5 +245,5 @@ def _evaluate_options(options):
         if elstruct.option.is_valid(option):
             name = elstruct.option.name(option)
             assert name in par.OPTION_NAMES
-            options[idx] = par.PSI4_OPTION_EVAL_DCT[name](option)
+            options[idx] = par.CFOUR2_OPTION_EVAL_DCT[name](option)
     return tuple(options)

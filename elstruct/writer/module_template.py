@@ -69,16 +69,16 @@ def hessian(geom, charge, mult, method, basis,
 
 
 def vpt2(geom, charge, mult, method, basis,
-           # molecule options
-           mol_options=(),
-           # machine options
-           memory=1, comment='', machine_options=(),
-           # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
-           # generic options
-           gen_lines=(),
-           # job options
-           job_options=()):
+         # molecule options
+         mol_options=(),
+         # machine options
+         memory=1, comment='', machine_options=(),
+         # theory options
+         orb_restricted=None, scf_options=(), corr_options=(),
+         # generic options
+         gen_lines=(),
+         # job options
+         job_options=()):
     """ _ """
 
     raise NotImplementedError(

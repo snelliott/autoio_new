@@ -48,6 +48,12 @@ def vpt2(output_string):
     raise NotImplementedError(output_string)
 
 
+# properties
+def dipole_moment(output_string):
+    """ _ """
+    raise NotImplementedError(output_string)
+
+
 # status
 def has_normal_exit_message(output_string):
     """ _ """

@@ -19,6 +19,7 @@ class MolproReference():
     """ _ """
     RHF = 'rhf'
     UHF = 'uhf'
+    ROHF = 'rohf'
 
 
 class JobKey():
