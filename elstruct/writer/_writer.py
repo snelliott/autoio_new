@@ -60,7 +60,9 @@ def energy(geom, charge, mult, method, basis, prog,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
+           orb_restricted=None,
+           scf_options=(), casscf_options=(), corr_options=(),
+           # generic options
            gen_lines=()):
     """ energy input string
 
@@ -88,6 +90,8 @@ def energy(geom, charge, mult, method, basis, prog,
     :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
+    :param casscf_options: casscf method directives
+    :type casscf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     :param gen_lines: generic lines for the input file
@@ -103,7 +107,7 @@ def energy(geom, charge, mult, method, basis, prog,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines)
 
 
@@ -121,7 +125,8 @@ def gradient(geom, charge, mult, method, basis, prog,
              # machine options
              memory=1, comment='', machine_options=(),
              # theory options
-             orb_restricted=None, scf_options=(), corr_options=(),
+             orb_restricted=None,
+             scf_options=(), casscf_options=(), corr_options=(),
              # generic options
              gen_lines=(),
              # job options
@@ -152,6 +157,8 @@ def gradient(geom, charge, mult, method, basis, prog,
     :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
+    :param casscf_options: casscf method directives
+    :type casscf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     :param gen_lines: generic lines for the input file
@@ -167,7 +174,7 @@ def gradient(geom, charge, mult, method, basis, prog,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines, job_options=job_options)
 
 
@@ -185,7 +192,8 @@ def hessian(geom, charge, mult, method, basis, prog,
             # machine options
             memory=1, comment='', machine_options=(),
             # theory options
-            orb_restricted=None, scf_options=(), corr_options=(),
+            orb_restricted=None,
+            scf_options=(), casscf_options=(), corr_options=(),
             # generic options
             gen_lines=(),
             # job options
@@ -216,6 +224,8 @@ def hessian(geom, charge, mult, method, basis, prog,
     :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
+    :param casscf_options: casscf method directives
+    :type casscf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     :param gen_lines: generic lines for the input file
@@ -231,7 +241,8 @@ def hessian(geom, charge, mult, method, basis, prog,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines, job_options=job_options)
 
 
@@ -249,7 +260,8 @@ def vpt2(geom, charge, mult, method, basis, prog,
          # machine options
          memory=1, comment='', machine_options=(),
          # theory options
-         orb_restricted=None, scf_options=(), corr_options=(),
+         orb_restricted=None,
+         scf_options=(), casscf_options=(), corr_options=(),
          # generic options
          gen_lines=(),
          # job options
@@ -280,6 +292,8 @@ def vpt2(geom, charge, mult, method, basis, prog,
     :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
+    :param casscf_options: casscf method directives
+    :type casscf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     :param gen_lines: generic lines for the input file
@@ -295,7 +309,8 @@ def vpt2(geom, charge, mult, method, basis, prog,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines, job_options=job_options)
 
 
@@ -313,7 +328,8 @@ def irc(geom, charge, mult, method, basis, prog,
         # machine options
         memory=1, comment='', machine_options=(),
         # theory options
-        orb_restricted=None, scf_options=(), corr_options=(),
+        orb_restricted=None,
+        scf_options=(), casscf_options=(), corr_options=(),
         # generic options
         gen_lines=(),
         # job options
@@ -344,6 +360,8 @@ def irc(geom, charge, mult, method, basis, prog,
     :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
+    :param casscf_options: casscf method directives
+    :type casscf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     :param job_options: geometry optimization routine directives
@@ -366,7 +384,8 @@ def irc(geom, charge, mult, method, basis, prog,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         irc_direction=irc_direction)
@@ -386,7 +405,8 @@ def optimization(geom, charge, mult, method, basis, prog,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, scf_options=(), corr_options=(),
+                 orb_restricted=None,
+                 scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=(),
                  # job options
@@ -417,6 +437,8 @@ def optimization(geom, charge, mult, method, basis, prog,
     :type orb_restricted: bool
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
+    :param casscf_options: casscf method directives
+    :type casscf_options: tuple[str]
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     :param job_options: geometry optimization routine directives
@@ -439,7 +461,8 @@ def optimization(geom, charge, mult, method, basis, prog,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         saddle=saddle)

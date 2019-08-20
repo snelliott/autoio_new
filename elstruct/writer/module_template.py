@@ -8,7 +8,8 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
+           orb_restricted=None,
+           scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=()):
     """ _ """
@@ -17,7 +18,7 @@ def energy(geom, charge, mult, method, basis,
         geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
-        corr_options, scf_options,
+        scf_options, casscf_options, corr_options,
         gen_lines
     )
 
@@ -28,7 +29,8 @@ def gradient(geom, charge, mult, method, basis,
              # machine options
              memory=1, comment='', machine_options=(),
              # theory options
-             orb_restricted=None, scf_options=(), corr_options=(),
+             orb_restricted=None,
+             scf_options=(), casscf_options=(), corr_options=(),
              # generic options
              gen_lines=(),
              # job options
@@ -39,7 +41,7 @@ def gradient(geom, charge, mult, method, basis,
         geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
-        corr_options, scf_options,
+        scf_options, casscf_options, corr_options,
         gen_lines,
         job_options,
     )
@@ -51,7 +53,8 @@ def hessian(geom, charge, mult, method, basis,
             # machine options
             memory=1, comment='', machine_options=(),
             # theory options
-            orb_restricted=None, scf_options=(), corr_options=(),
+            orb_restricted=None,
+            scf_options=(), casscf_options=(), corr_options=(),
             # generic options
             gen_lines=(),
             # job options
@@ -62,7 +65,7 @@ def hessian(geom, charge, mult, method, basis,
         geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
-        corr_options, scf_options,
+        scf_options, casscf_options, corr_options,
         gen_lines,
         job_options,
     )
@@ -74,7 +77,8 @@ def vpt2(geom, charge, mult, method, basis,
          # machine options
          memory=1, comment='', machine_options=(),
          # theory options
-         orb_restricted=None, scf_options=(), corr_options=(),
+         orb_restricted=None,
+         scf_options=(), casscf_options=(), corr_options=(),
          # generic options
          gen_lines=(),
          # job options
@@ -85,7 +89,7 @@ def vpt2(geom, charge, mult, method, basis,
         geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
-        corr_options, scf_options,
+        scf_options, casscf_options, corr_options,
         gen_lines,
         job_options,
     )
@@ -97,7 +101,8 @@ def irc(geom, charge, mult, method, basis,
         # machine options
         memory=1, comment='', machine_options=(),
         # theory options
-        orb_restricted=None, scf_options=(), corr_options=(),
+        orb_restricted=None,
+        scf_options=(), casscf_options=(), corr_options=(),
         # generic options
         gen_lines=(),
         # job options
@@ -108,7 +113,7 @@ def irc(geom, charge, mult, method, basis,
         geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
-        corr_options, scf_options,
+        scf_options, casscf_options, corr_options,
         gen_lines,
         job_options, frozen_coordinates, irc_direction
     )
@@ -120,7 +125,8 @@ def optimization(geom, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, scf_options=(), corr_options=(),
+                 orb_restricted=None,
+                 scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=(),
                  # job options
@@ -131,7 +137,7 @@ def optimization(geom, charge, mult, method, basis,
         geom, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
-        corr_options, scf_options,
+        scf_options, casscf_options, corr_options,
         gen_lines,
         job_options, frozen_coordinates, saddle
     )

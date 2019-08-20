@@ -1,14 +1,14 @@
-""" g09 writer module """
+""" orca4 writer module """
 import os
 import automol
 import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
+from elstruct.writer._orca4 import par
 from elstruct import pclass
-from elstruct.writer._g09 import par
 
-PROG = elstruct.par.Program.G09
+PROG = elstruct.par.Program.ORCA4
 
 # set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -16,7 +16,7 @@ TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 
 # mako template keys
-class G09Reference():
+class Orca4Reference():
     """ _ """
     RHF = 'rhf'
     UHF = 'uhf'
@@ -63,7 +63,9 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
+           orb_restricted=None,
+           scf_options=(), casscf_options=(), corr_options=(),
+           # generic options
            gen_lines=()):
     """ energy input string
     """
@@ -72,7 +74,7 @@ def energy(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -85,7 +87,8 @@ def gradient(geom, charge, mult, method, basis,
              # machine options
              memory=1, comment='', machine_options=(),
              # theory options
-             orb_restricted=None, scf_options=(), corr_options=(),
+             orb_restricted=None,
+             scf_options=(), casscf_options=(), corr_options=(),
              # generic options
              gen_lines=(),
              # job options
@@ -97,7 +100,7 @@ def gradient(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -110,7 +113,8 @@ def hessian(geom, charge, mult, method, basis,
             # machine options
             memory=1, comment='', machine_options=(),
             # theory options
-            orb_restricted=None, scf_options=(), corr_options=(),
+            orb_restricted=None,
+            scf_options=(), casscf_options=(), corr_options=(),
             # generic options
             gen_lines=(),
             # job options
@@ -122,7 +126,7 @@ def hessian(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -135,7 +139,8 @@ def optimization(geom, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, scf_options=(), corr_options=(),
+                 orb_restricted=None,
+                 scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=(),
                  # job options
@@ -147,7 +152,7 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         saddle=saddle, gen_lines=gen_lines,
     )
@@ -158,7 +163,8 @@ def optimization(geom, charge, mult, method, basis,
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
-                          machine_options, scf_options, corr_options,
+                          machine_options,
+                          scf_options, casscf_options, corr_options,
                           job_options=(), frozen_coordinates=(),
                           saddle=False, irc_direction=None,
                           gen_lines=()):
@@ -173,7 +179,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     if elstruct.par.Method.is_correlated(method):
         assert not corr_options
 
-    if (reference == G09Reference.ROHF and
+    if (reference == Orca4Reference.ROHF and
             job_key in (JobKey.GRADIENT, JobKey.HESSIAN)):
         job_options = list(job_options)
         job_options.insert(0, 'EnOnly')
@@ -189,6 +195,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     scf_guess_options, scf_options = _intercept_scf_guess_option(scf_options)
     scf_guess_options = _evaluate_options(scf_guess_options)
     scf_options = _evaluate_options(scf_options)
+    casscf_options = _evaluate_options(casscf_options)
     job_options = _evaluate_options(job_options)
 
     if saddle:
@@ -253,10 +260,10 @@ def _reference(method, mult, orb_restricted):
     if elstruct.par.Method.is_dft(method):
         reference = ''
     elif mult != 1:
-        reference = G09Reference.ROHF if orb_restricted else G09Reference.UHF
+        reference = Orca4Reference.ROHF if orb_restricted else Orca4Reference.UHF
     else:
         assert mult == 1 and orb_restricted is True
-        reference = G09Reference.RHF
+        reference = Orca4Reference.RHF
     return reference
 
 
@@ -278,5 +285,5 @@ def _evaluate_options(opts):
         if elstruct.option.is_valid(opt):
             name = elstruct.option.name(opt)
             assert name in par.OPTION_NAMES
-            opts[idx] = par.G09_OPTION_EVAL_DCT[name](opt)
+            opts[idx] = par.Orca4_OPTION_EVAL_DCT[name](opt)
     return tuple(opts)

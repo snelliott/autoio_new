@@ -21,6 +21,14 @@ class MolproReference():
     UHF = 'uhf'
 
 
+class MolproMultiReference():
+    """ _ """
+    CASSCF = 'casscf'
+    CASPT2 = 'rs2'
+    CASPT2C = 'rs2c'
+    MRCI_Q = 'mrci'
+
+
 class JobKey():
     """ _ """
     ENERGY = 'energy'
@@ -31,20 +39,27 @@ class JobKey():
 
 class TemplateKey():
     """ mako template keys """
-    JOB_KEY = 'job_key'
+    # machine
     COMMENT = 'comment'
     MEMORY_MW = 'memory_mw'
     MACHINE_OPTIONS = 'machine_options'
-    MOL_OPTIONS = 'mol_options'
-    GEOM = 'geom'
-    ZMAT_VALS = 'zmat_vals'
-    CHARGE = 'charge'
-    SPIN = 'spin'
+    # theoretical method
     BASIS = 'basis'
     SCF_METHOD = 'scf_method'
     SCF_OPTIONS = 'scf_options'
+    ISMULTIREF = 'ismultiref'
+    CASSCF_OPTIONS = 'casscf_options'
     CORR_METHOD = 'corr_method'
     CORR_OPTIONS = 'corr_options'
+    # molecule / state
+    MOL_OPTIONS = 'mol_options'
+    CHARGE = 'charge'
+    SPIN = 'spin'
+    GEOM = 'geom'
+    ZMAT_VALS = 'zmat_vals'
+    # job
+    COMMENT = 'comment'
+    JOB_KEY = 'job_key'
     JOB_OPTIONS = 'job_options'
     GEN_LINES = 'gen_lines'
 
@@ -55,7 +70,8 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
+           orb_restricted=None,
+           scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=()):
     """ energy input string
@@ -66,7 +82,8 @@ def energy(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted,
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -79,7 +96,8 @@ def optimization(geom, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, scf_options=(), corr_options=(),
+                 orb_restricted=None,
+                 scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=(),
                  # job options
@@ -91,7 +109,8 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
         frozen_coordinates=frozen_coordinates, job_options=job_options,
         saddle=saddle
@@ -103,23 +122,36 @@ def optimization(geom, charge, mult, method, basis,
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
-                          machine_options, scf_options, corr_options,
-                          gen_lines=(),
-                          job_options=(), frozen_coordinates=(), saddle=False):
+                          machine_options,
+                          scf_options, casscf_options, corr_options,
+                          job_options=(), frozen_coordinates=(),
+                          saddle=False,
+                          gen_lines=()):
 
+    # Set the spin
     singlet = (mult == 1)
+    spin = mult - 1
+
+    # Set the reference
     molpro_scf_method = (MolproReference.RHF if orb_restricted else
                          MolproReference.UHF)
-    # add in the multireference method stuff
-    molpro_corr_method = (
-        elstruct.par.program_method_name(PROG, method, singlet)
-        if elstruct.par.Method.is_correlated(method) else '')
 
+    # set correlated method; check if multiref
+    molpro_corr_method, ismultiref = _set_method(method, singlet)
+
+    # Set the basis
     molpro_basis = elstruct.par.program_basis_name(PROG, basis)
+
+    # Set the geometry
     geom_str, zmat_val_str = _geometry_strings(geom)
-    memory_mw = int(memory * (1000.0 / 8.0))  # convert gb to mw
-    spin = mult - 1
+
+    # Set the memory; convert from GB to MW
+    memory_mw = int(memory * (1024.0 / 8.0))
+
+    # Set the job directives and options
     scf_options = _evaluate_options(scf_options)
+    casscf_options = _evaluate_options(casscf_options)
+    corr_options = _evaluate_options(corr_options)
     job_options = _evaluate_options(job_options)
 
     if saddle:
@@ -128,10 +160,11 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     job_directives = [','.join(job_options)]
     if frozen_coordinates:
         job_directives.append('inactive,' + ','.join(frozen_coordinates))
-    
+
     if job_key == 'hessian':
         job_directives.append('print,hessian,low=5')
 
+    # Create a dictionary to fille the template
     fill_dct = {
         TemplateKey.JOB_KEY: job_key,
         TemplateKey.COMMENT: comment,
@@ -145,12 +178,36 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.BASIS: molpro_basis,
         TemplateKey.SCF_METHOD: molpro_scf_method,
         TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        TemplateKey.ISMULTIREF: ismultiref,
+        TemplateKey.CASSCF_OPTIONS: '\n'.join(casscf_options),
         TemplateKey.CORR_METHOD: molpro_corr_method,
         TemplateKey.CORR_OPTIONS: ','.join(corr_options),
         TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
         TemplateKey.GEN_LINES: '\n'.join(gen_lines),
     }
+
     return fill_dct
+
+
+def _set_method(method, singlet):
+    # Check if MultiReference Method; then check if casscf
+    if elstruct.par.Method.is_multiref(method):
+        ismultiref = True
+        if elstruct.par.Method.is_casscf(method):
+            corr_method = ''
+        else:
+            corr_method = elstruct.par.program_method_name(
+                PROG, method, singlet)
+    # Set methods if single reference
+    else:
+        ismultiref = False
+        if elstruct.par.Method.is_correlated(method):
+            corr_method = elstruct.par.program_method_name(
+                PROG, method, singlet)
+        else:
+            corr_method = ''
+
+    return corr_method, ismultiref
 
 
 def _geometry_strings(geom):

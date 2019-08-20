@@ -40,15 +40,17 @@ class TemplateKey():
     CHARGE = 'charge'
     MULT = 'mult'
     GEOM = 'geom'
-    ZMAT_VALS = 'zmat_vals'
+    ZMAT_VAR_VALS = 'zmat_var_vals'
     BASIS = 'basis'
     REFERENCE = 'reference'
     SCF_OPTIONS = 'scf_options'
+    CASSCF_OPTIONS = 'casscf_options'
     CORR_OPTIONS = 'corr_options'
     METHOD = 'method'
     JOB_OPTIONS = 'job_options'
     GEN_LINES = 'gen_lines'
-
+    SADDLE = 'saddle'
+    NUMERICAL = 'numerical'
 
 def energy(geom, charge, mult, method, basis,
            # molecule options
@@ -56,7 +58,8 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
+           orb_restricted=None,
+           scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=()):
     """ energy input string
@@ -66,7 +69,7 @@ def energy(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -79,7 +82,8 @@ def gradient(geom, charge, mult, method, basis,
              # machine options
              memory=1, comment='', machine_options=(),
              # theory options
-             orb_restricted=None, scf_options=(), corr_options=(),
+             orb_restricted=None,
+             scf_options=(), casscf_options=(), corr_options=(),
              # generic options
              gen_lines=(),
              # job options
@@ -91,7 +95,7 @@ def gradient(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
         job_options=job_options,
     )
@@ -105,7 +109,8 @@ def hessian(geom, charge, mult, method, basis,
             # machine options
             memory=1, comment='', machine_options=(),
             # theory options
-            orb_restricted=None, scf_options=(), corr_options=(),
+            orb_restricted=None,
+            scf_options=(), casscf_options=(), corr_options=(),
             # generic options
             gen_lines=(),
             # job options
@@ -117,7 +122,7 @@ def hessian(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
         job_options=job_options,
     )
@@ -131,7 +136,8 @@ def optimization(geom, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, scf_options=(), corr_options=(),
+                 orb_restricted=None,
+                 scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=(),
                  # job options
@@ -143,7 +149,7 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
         frozen_coordinates=frozen_coordinates, job_options=job_options,
         saddle=saddle
@@ -155,7 +161,8 @@ def optimization(geom, charge, mult, method, basis,
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
-                          machine_options, scf_options, corr_options,
+                          machine_options,
+                          scf_options, casscf_options, corr_options,
                           gen_lines=(),
                           job_options=(), frozen_coordinates=(), saddle=False):
 
@@ -167,21 +174,15 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     elif elstruct.par.Method.is_correlated(method) in ('ccsd', 'ccsd(t)'):
         corr_options = (('ABCDTYPE=AOBASIS'))
 
+    # Unused options
+    mol_options = mol_options
+    machine_options = machine_options
+
     scf_options = _evaluate_options(scf_options)
+    casscf_options = _evaluate_options(casscf_options)
     job_options = _evaluate_options(job_options)
 
-    if JobKey == 'energy':
-        job_options += ('GEO_METHOD=SINGLE_POINT\nVIBRATION=0',)
-    elif JobKey == 'gradient':
-        job_options += ('DERIV_LEVEL=1\nVIBRATION=0',)
-    elif JobKey == 'hessian' and not num_hess:
-        job_options += ('VIBRATION=ANALYTIC',)
-    elif JobKey == 'hessian' and num_hess:
-        job_options += ('VIBRATION=FINDIF',)
-    elif JobKey == 'optimization' and not saddle:
-        job_options += ('GEO_METHOD=NR\nVIBRATION=0',)
-    elif JobKey == 'optimization' and saddle:
-        job_options += ('GEO_METHOD=TS\nVIBRATION=0',)
+    numerical = None
 
     cfour2_method = elstruct.par.program_method_name(PROG, method)
     cfour2_basis = elstruct.par.program_basis_name(PROG, basis)
@@ -189,12 +190,10 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     fill_dct = {
         TemplateKey.COMMENT: comment,
         TemplateKey.MEMORY: memory,
-        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
         TemplateKey.CHARGE: charge,
         TemplateKey.MULT: mult,
         TemplateKey.GEOM: geom_str,
-        TemplateKey.ZMAT_VALS: zmat_val_str,
+        TemplateKey.ZMAT_VAR_VALS: zmat_val_str,
         TemplateKey.BASIS: cfour2_basis,
         TemplateKey.METHOD: cfour2_method,
         TemplateKey.REFERENCE: reference,
@@ -203,6 +202,8 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.JOB_KEY: job_key,
         TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
         TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        TemplateKey.SADDLE: saddle,
+        TemplateKey.NUMERICAL: numerical
     }
     return fill_dct
 

@@ -26,13 +26,12 @@ basis=${basis}
 %if scf_method:
 {${scf_method},${scf_options}}
 %endif
+%if ismultiref:
+{casscf,${casscf_options}}
+%endif
 %if corr_method:
 {${corr_method},${corr_options}}
 %endif
-## %if mr_method:
-## {${corr_method},${corr_options}}
-## {${corr_method},${corr_options}}
-## %endif
 %if job_key == 'optimization':
 {optg,${job_options}}
 status

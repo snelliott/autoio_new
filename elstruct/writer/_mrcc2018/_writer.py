@@ -1,11 +1,11 @@
-""" molpro writer module """
+""" mrcc2018 writer module """
 import os
 import automol
 import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
-from elstruct.writer._molpro import par
+from elstruct.writer._mrcc import par
 
 PROG = elstruct.par.Program.MOLPRO
 
@@ -15,7 +15,7 @@ TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 
 # mako template keys
-class MolproReference():
+class MRCC2018Reference():
     """ _ """
     RHF = 'rhf'
     UHF = 'uhf'
@@ -44,6 +44,7 @@ class TemplateKey():
     BASIS = 'basis'
     SCF_METHOD = 'scf_method'
     SCF_OPTIONS = 'scf_options'
+    CASSCF_OPTIONS = 'casscf_options'
     CORR_METHOD = 'corr_method'
     CORR_OPTIONS = 'corr_options'
     JOB_OPTIONS = 'job_options'
@@ -56,7 +57,8 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
+           orb_restricted=None, 
+           scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=()):
     """ energy input string
@@ -67,7 +69,7 @@ def energy(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted,
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -80,7 +82,8 @@ def optimization(geom, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, scf_options=(), corr_options=(),
+                 orb_restricted=None, 
+                 scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=(),
                  # job options
@@ -92,7 +95,7 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
         frozen_coordinates=frozen_coordinates, job_options=job_options,
         saddle=saddle
@@ -104,23 +107,24 @@ def optimization(geom, charge, mult, method, basis,
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
-                          machine_options, scf_options, corr_options,
+                          machine_options, scf_options, casscf_options, corr_options,
                           gen_lines=(),
                           job_options=(), frozen_coordinates=(), saddle=False):
 
     singlet = (mult == 1)
-    molpro_scf_method = (MolproReference.RHF if orb_restricted else
-                         MolproReference.UHF)
+    mrcc_scf_method = (MRCC2018Reference.RHF if orb_restricted else
+                         MRCC2018Reference.UHF)
     # add in the multireference method stuff
-    molpro_corr_method = (
+    mrcc_corr_method = (
         elstruct.par.program_method_name(PROG, method, singlet)
         if elstruct.par.Method.is_correlated(method) else '')
 
-    molpro_basis = elstruct.par.program_basis_name(PROG, basis)
+    mrcc_basis = elstruct.par.program_basis_name(PROG, basis)
     geom_str, zmat_val_str = _geometry_strings(geom)
     memory_mw = int(memory * (1000.0 / 8.0))  # convert gb to mw
     spin = mult - 1
     scf_options = _evaluate_options(scf_options)
+    casscf_options = _evaluate_options(casscf_options)
     job_options = _evaluate_options(job_options)
 
     if saddle:
@@ -143,10 +147,10 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.ZMAT_VALS: zmat_val_str,
         TemplateKey.CHARGE: charge,
         TemplateKey.SPIN: spin,
-        TemplateKey.BASIS: molpro_basis,
-        TemplateKey.SCF_METHOD: molpro_scf_method,
+        TemplateKey.BASIS: mrcc_basis,
+        TemplateKey.SCF_METHOD: mrcc_scf_method,
         TemplateKey.SCF_OPTIONS: ','.join(scf_options),
-        TemplateKey.CORR_METHOD: molpro_corr_method,
+        TemplateKey.CORR_METHOD: mrcc_corr_method,
         TemplateKey.CORR_OPTIONS: ','.join(corr_options),
         TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
         TemplateKey.GEN_LINES: '\n'.join(gen_lines),

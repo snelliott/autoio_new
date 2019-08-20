@@ -1,4 +1,4 @@
-""" elstruct.writer._g09 parameters
+""" elstruct.writer._mrcc2018 parameters
 """
 from elstruct import Option
 from elstruct import option

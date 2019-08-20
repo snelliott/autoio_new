@@ -40,28 +40,6 @@ def is_program(prog):
     return prog in programs()
 
 
-# class MultiRefMethod():
-#     """ multireference electronic structure methods
-#     """
-#     CASSCF = ('casscf',
-#               Program.MOLPRO: (
-#                 'hf', 'hf',
-#                 (True,), (False, True))})
-#     CASPT2 = ('caspt2',
-#               Program.MOLPRO: (
-#                 'hf', 'hf',
-#                 (True,), (False, True))})
-#     CASPT2c = ('caspt2',
-#               Program.MOLPRO: (
-#                 'hf', 'hf',
-#                 (True,), (False, True))})
-#     MRCI_Q = ('mrcisd_q',
-#               Program.MOLPRO: (
-#                 'hf', 'hf',
-#                 (True,), (False, True))})
-              
-
-
 class Method():
     """ electronic structure methods
 
@@ -76,6 +54,9 @@ class Method():
               (True,), (False, True)),
            Program.G09: (
                'hf', 'hf',
+               (True,), (False, True)),
+           Program.CFOUR2: (
+               'rhf', 'hf',
                (True,), (False, True)),
            Program.MOLPRO: (
                'hf', 'hf',
@@ -100,11 +81,34 @@ class Method():
         CCSD_T = ('ccsd(t)',
                   {Program.MOLPRO: (
                       'ccsd(t)', 'uccsd(t)',
-                      (True,), (True,))})
+                      (True,), (True,)),
+                   Program.CFOUR2: (
+                       'ccsd(t)', 'uccsd(t)',
+                       (True,), (True,))})
         CCSD_T_F12 = ('ccsd(t)-f12',
                       {Program.MOLPRO: (
                           'ccsd(t)-f12', 'uccsd(t)-f12',
                           (True,), (True,))})
+
+    class MultiRef():
+        """ multireference electronic structure methods
+        """
+        CASSCF = ('casscf',
+                  {Program.MOLPRO: (
+                      'casscf', 'casscf',
+                      (True,), (False, True))})
+        CASPT2 = ('caspt2',
+                  {Program.MOLPRO: (
+                      'rs2', 'rs2',
+                      (True,), (False, True))})
+        CASPT2c = ('caspt2c',
+                   {Program.MOLPRO: (
+                       'rs2c', 'rs2c',
+                       (True,), (False, True))})
+        MRCI_Q = ('mrcisd_q',
+                  {Program.MOLPRO: (
+                      'mrci', 'mrci',
+                      (True,), (False, True))})
 
     class Dft():
         """ DFT method names """
@@ -144,11 +148,27 @@ class Method():
 
     @classmethod
     def is_correlated(cls, name):
-        """ is this a DFT method?
+        """ is this a single-reference correlated method?
         """
         name = standard_case(name)
         corr_names = [row[0] for row in pclass.all_values(cls.Corr)]
         return name in corr_names
+
+    @classmethod
+    def is_multiref(cls, name):
+        """ is this a mulitreference method?
+        """
+        name = standard_case(name)
+        multiref_names = [row[0] for row in pclass.all_values(cls.MultiRef)]
+        return name in multiref_names
+
+    @classmethod
+    def is_casscf(cls, name):
+        """ is the method casscf or post-casscf?
+        """
+        name = standard_case(name)
+        multiref_names = [row[0] for row in pclass.all_values(cls.MultiRef)]
+        return Method.MultiRef.CASSCF in multiref_names
 
     @classmethod
     def is_standard_dft(cls, name):
@@ -160,7 +180,7 @@ class Method():
 
     @staticmethod
     def is_nonstandard_dft(name):
-        """ is this a non-standard basis set?
+        """ is this a non-standard DFT method?
 
         (indicated by 'dft:<name>')
         """
@@ -277,6 +297,7 @@ class Basis():
                           Program.MOLPRO: None})
         P631 = ('6-31g', {Program.PSI4: None,
                           Program.G09: None,
+                          Program.CFOUR2: None,
                           Program.MOLPRO: None})
         P631S = ('6-31g*', {Program.PSI4: None,
                             Program.G09: None,
@@ -320,7 +341,6 @@ class Basis():
             DF = ('cc-pvdz-f12', {Program.MOLPRO: None})
             TF = ('cc-pvtz-f12', {Program.MOLPRO: None})
             QF = ('cc-pvqz-f12', {Program.MOLPRO: None})
-
 
     @classmethod
     def contains(cls, name):
@@ -390,6 +410,9 @@ class Job():
     GRADIENT = 'gradient'
     HESSIAN = 'hessian'
     OPTIMIZATION = 'optimization'
+    VPT2 = 'vpt2'
+    IRC = 'irc'
+    PROPERTIES = 'properties'
 
     @classmethod
     def contains(cls, name):
@@ -422,6 +445,17 @@ class Option():
             CORE = option.create('scf_guess_core')
             HUCKEL = option.create('scf_guess_huckel')
 
+    class Casscf():
+        """ CASSCF options to set active space (passed to `casscf_options`) """
+        OCC_ = option.create('casscf_occ', ['num'])
+        CLOSED_ = option.create('casscf_closed', ['num'])
+        WFN_ = option.create(
+            'casscf_wavefunction', ['nelec', 'sym', 'spin', 'charge'])
+
+    class MRCorr():
+        """ Correlated multiref method options (passed to `corr_options`) """
+        SHIFT_ = option.create('level_shift', ['num'])
+
     class Opt():
         """ optimization options (passed to `job_options`) """
         MAXITER_ = option.create('opt_maxiter', ['num'])
@@ -431,7 +465,3 @@ class Option():
             CARTESIAN = option.create('opt_coord_cartesian')
             ZMATRIX = option.create('opt_coord_zmatrix')
             REDUNDANT = option.create('opt_coord_redundant')
-
-if __name__ == '__main__':
-    print(program_methods_info('g09'))
-
