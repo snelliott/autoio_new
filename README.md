@@ -26,15 +26,15 @@ READER:
 
 WRITER:
 1. Single-Point Energy
-    - Gaussian09, Molpro2015, Psi4 1 
+    - CFOUR 2, Gaussian09, Molpro2015, MRCC 2018, Psi4 1 
 2. Gradient
-    - Gaussian09, Molpro2015, Psi4 1 
+    - CFOUR 2, Gaussian09, Molpro2015, MRCC 2018, Psi4 1 
 3. Hessian
-    - Gaussian09, Molpro2015, Psi4 1 
+    - CFOUR 2, Gaussian09, Molpro2015, MRCC 2018, Psi4 1 
 4. Optimization (Full and Constrained)
-    - Gaussian09, Molpro2015, Psi4 1 
+    - CFOUR 2, Gaussian09, Molpro2015, MRCC 2018 (full), Psi4 1 
 5. VPT2
-    - Gaussian09 
+    - Gaussian9 
 6. IRC
     - Gaussian09 
 

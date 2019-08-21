@@ -47,24 +47,6 @@ def test__mr_writer():
         gen_lines=())
     print(ene_str)
 
-    ene_str = elstruct.writer.gradient(
-        geom,
-        charge,
-        mult,
-        method,
-        basis,
-        prog,
-        mol_options=(),
-        memory=1,
-        comment='',
-        machine_options=(),
-        orb_restricted=orb_restricted,
-        scf_options=(),
-        casscf_options=(),
-        corr_options=(),
-        gen_lines=())
-    print(ene_str)
-
     ene_str = elstruct.writer.hessian(
         geom_int,
         charge,
@@ -101,25 +83,6 @@ def test__mr_writer():
         gen_lines=())
     print(ene_str)
 
-    ene_str = elstruct.writer.optimization(
-        geom_int,
-        charge,
-        mult,
-        method,
-        basis,
-        prog,
-        mol_options=(),
-        memory=1,
-        comment='',
-        machine_options=(),
-        orb_restricted=orb_restricted,
-        scf_options=(),
-        casscf_options=(),
-        corr_options=(),
-        gen_lines=(),
-        saddle=True,
-        frozen_coordinates=('R3', 'D3',),)
-    print(ene_str)
 
 if __name__ == '__main__':
     test__mr_writer()

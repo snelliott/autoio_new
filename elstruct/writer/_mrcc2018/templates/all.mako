@@ -5,7 +5,7 @@ mem=${memory}GB
 ## 2. method block
 calc=${corr_method}
 basis=${basis}
-scftype=${reference}
+scftype=${scf_method}
 ## job options block
 % if job_options:
 ${job_options}
@@ -30,3 +30,7 @@ freq=on
 
 geom=${coord_sys}
 ${geom}
+
+% if zmat_val_str:
+${zmat_val_str}
+% endif

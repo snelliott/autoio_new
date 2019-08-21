@@ -5,7 +5,7 @@ import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
-from elstruct.writer._mrcc import par
+from elstruct.writer._mrcc2018 import par
 
 PROG = elstruct.par.Program.MOLPRO
 
@@ -33,13 +33,13 @@ class TemplateKey():
     """ mako template keys """
     JOB_KEY = 'job_key'
     COMMENT = 'comment'
-    MEMORY_MW = 'memory_mw'
+    MEMORY = 'memory'
     MACHINE_OPTIONS = 'machine_options'
     MOL_OPTIONS = 'mol_options'
     GEOM = 'geom'
-    ZMAT_VALS = 'zmat_vals'
+    ZMAT_VALS = 'zmat_val_str'
     CHARGE = 'charge'
-    SPIN = 'spin'
+    MULT = 'mult'
     BASIS = 'basis'
     SCF_METHOD = 'scf_method'
     SCF_OPTIONS = 'scf_options'
@@ -173,20 +173,17 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     fill_dct = {
         TemplateKey.JOB_KEY: job_key,
         TemplateKey.COMMENT: comment,
-        TemplateKey.MEMORY_MW: memory_mw,
-        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
+        TemplateKey.MEMORY: memory,
         TemplateKey.GEOM: geom_str,
         TemplateKey.ZMAT_VALS: zmat_val_str,
         TemplateKey.CHARGE: charge,
-        TemplateKey.SPIN: spin,
+        TemplateKey.MULT: mult,
         TemplateKey.BASIS: mrcc_basis,
         TemplateKey.SCF_METHOD: mrcc_scf_method,
         TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
         TemplateKey.CORR_METHOD: mrcc_corr_method,
         TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
-        TemplateKey.JOB_OPTIONS: '\n'.join(job_directives),
-        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
         TemplateKey.COORD_SYS: coord_sys
     }
     return fill_dct
@@ -203,7 +200,7 @@ def _geometry_strings(geom):
         name_mat = automol.zmatrix.name_matrix(zma)
         val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
 
-        geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat, delim=', ')
+        geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)
         zmat_val_str = aw.zmatrix.setval_block(val_dct)
     else:
         raise ValueError("Invalid geometry value:\n{}".format(geom))

@@ -60,6 +60,9 @@ class Method():
                (True,), (False, True)),
            Program.MOLPRO: (
                'hf', 'hf',
+               (True,), (False, True)),
+           Program.MRCC2018: (
+               'hf', 'hf',
                (True,), (False, True))})
 
     class Corr():
@@ -83,7 +86,10 @@ class Method():
                       'ccsd(t)', 'uccsd(t)',
                       (True,), (True,)),
                    Program.CFOUR2: (
-                       'ccsd(t)', 'uccsd(t)',
+                       'ccsd(t)', 'ccsd(t)',
+                       (True,), (True,)),
+                   Program.MRCC2018: (
+                       'ccsd(t)', 'ccsd(t)',
                        (True,), (True,))})
         CCSD_T_F12 = ('ccsd(t)-f12',
                       {Program.MOLPRO: (
@@ -298,7 +304,8 @@ class Basis():
         P631 = ('6-31g', {Program.PSI4: None,
                           Program.G09: None,
                           Program.CFOUR2: None,
-                          Program.MOLPRO: None})
+                          Program.MOLPRO: None,
+                          Program.MRCC2018: None})
         P631S = ('6-31g*', {Program.PSI4: None,
                             Program.G09: None,
                             Program.MOLPRO: None})
