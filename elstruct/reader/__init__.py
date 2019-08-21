@@ -23,10 +23,14 @@ from elstruct.reader._reader import opt_geometry_
 from elstruct.reader._reader import opt_zmatrix_programs
 from elstruct.reader._reader import opt_zmatrix
 from elstruct.reader._reader import opt_zmatrix_
-# vpt2onicity
+# vpt2
 from elstruct.reader._reader import vpt2_programs
 from elstruct.reader._reader import vpt2
 from elstruct.reader._reader import vpt2_
+# properties
+from elstruct.reader._reader import dipole_moment_programs
+from elstruct.reader._reader import dipole_moment
+from elstruct.reader._reader import dipole_moment_
 # status
 from elstruct.reader._reader import has_normal_exit_message
 from elstruct.reader._reader import error_list
@@ -57,7 +61,7 @@ __all__ = [
     'opt_zmatrix_programs',
     'opt_zmatrix',
     'opt_zmatrix_',
-    # vpt2onicity
+    # vpt2
     'vpt2_programs',
     'vpt2',
     'vpt2_',

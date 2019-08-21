@@ -14,10 +14,23 @@
 ! Opt
 % elif job_key == 'gradient':
 ! EnGrad
-% elif job_key == 'hessian':
-! AnFreq/NumFreq
+% elif job_key == 'hessian' and not numerical:
+! AnFreq
+% elif job_key == 'hessian' and numerical:
+! NumFreq
 % endif
-## 3. molecule block
+## 3. theory options block
+% if scf_options:
+% scf
+${scf_options}
+end
+% endif
+% if corr_options:
+% mdci
+${corr_options}
+end
+% endif
+## 4. molecule block
 * ${coord_sys} ${charge} ${mult}
 ${geom}
 *

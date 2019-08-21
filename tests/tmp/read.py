@@ -15,6 +15,7 @@ def test__vpt2_reader():
     vpt2_dict = elstruct.reader.vpt2('g09', output_string)
 
     for key, val in vpt2_dict.items():
+        print('\n\n')
         print(key)
         print(val)
 

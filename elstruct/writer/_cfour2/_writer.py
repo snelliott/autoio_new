@@ -40,18 +40,18 @@ class TemplateKey():
     CHARGE = 'charge'
     MULT = 'mult'
     GEOM = 'geom'
-    ZMAT_VALS = 'zmat_vals'
+    ZMAT_VAR_VALS = 'zmat_var_vals'
     BASIS = 'basis'
     REFERENCE = 'reference'
     SCF_OPTIONS = 'scf_options'
+    CASSCF_OPTIONS = 'casscf_options'
     CORR_OPTIONS = 'corr_options'
     METHOD = 'method'
     JOB_OPTIONS = 'job_options'
-    FROZEN_DIS_STRS = 'frozen_dis_strs'
-    FROZEN_ANG_STRS = 'frozen_ang_strs'
-    FROZEN_DIH_STRS = 'frozen_dih_strs'
     GEN_LINES = 'gen_lines'
-
+    SADDLE = 'saddle'
+    NUMERICAL = 'numerical'
+    COORD_SYS = 'coord_sys'
 
 def energy(geom, charge, mult, method, basis,
            # molecule options
@@ -59,7 +59,8 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
+           orb_restricted=None,
+           scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=()):
     """ energy input string
@@ -69,7 +70,7 @@ def energy(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -82,7 +83,8 @@ def gradient(geom, charge, mult, method, basis,
              # machine options
              memory=1, comment='', machine_options=(),
              # theory options
-             orb_restricted=None, scf_options=(), corr_options=(),
+             orb_restricted=None,
+             scf_options=(), casscf_options=(), corr_options=(),
              # generic options
              gen_lines=(),
              # job options
@@ -94,7 +96,7 @@ def gradient(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
         job_options=job_options,
     )
@@ -108,7 +110,8 @@ def hessian(geom, charge, mult, method, basis,
             # machine options
             memory=1, comment='', machine_options=(),
             # theory options
-            orb_restricted=None, scf_options=(), corr_options=(),
+            orb_restricted=None,
+            scf_options=(), casscf_options=(), corr_options=(),
             # generic options
             gen_lines=(),
             # job options
@@ -120,7 +123,7 @@ def hessian(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
         job_options=job_options,
     )
@@ -134,7 +137,8 @@ def optimization(geom, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, scf_options=(), corr_options=(),
+                 orb_restricted=None,
+                 scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=(),
                  # job options
@@ -146,7 +150,7 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
         frozen_coordinates=frozen_coordinates, job_options=job_options,
         saddle=saddle
@@ -158,64 +162,67 @@ def optimization(geom, charge, mult, method, basis,
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
-                          machine_options, scf_options, corr_options,
+                          machine_options,
+                          scf_options, casscf_options, corr_options,
                           gen_lines=(),
                           job_options=(), frozen_coordinates=(), saddle=False):
 
-    frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (
-        _frozen_coordinate_strings(geom, frozen_coordinates))
+    reference = _reference(mult, orb_restricted)
+    geom_str, zmat_val_str = _geometry_strings(geom, frozen_coordinates, job_key)
+    # Set options for coupled cluster
+    if method in ('ccsd', 'ccsd(t)'):
+        corr_options = (('ABCDTYPE=AOBASIS'),)
+    if method in ('ccsd', 'ccsd(t)') and reference in ('rhf', 'uhf'):
+        corr_options += (('CC_PROG=ECC'),)
+    elif method in ('ccsd', 'ccsd(t)') and reference in ('rohf'):
+        corr_options += (('CC_PROG=VCC'),)
+    elif method in ('ccsdt', 'ccsdt(q)') and reference in ('rhf'):
+        corr_options += (('CC_PROG=NCC'),)
+    elif method in ('ccsdt', 'ccsdt(q)') and reference in ('uhf', 'rohf'):
+        raise NotImplementedError("CFOUR ONLY ALLOWS CLOSED-SHELL")
 
-    reference = _reference(method, mult, orb_restricted)
-    geom_str, zmat_val_str = _geometry_strings(geom)
 
-    if not elstruct.par.Method.is_correlated(method):
-        assert not corr_options
+    # Unused options
+    mol_options = mol_options
+    machine_options = machine_options
 
     scf_options = _evaluate_options(scf_options)
+    casscf_options = _evaluate_options(casscf_options)
     job_options = _evaluate_options(job_options)
 
-
-    if JobKey == 'energy':
-        job_options += ('GEO_METHOD=SINGLE_POINT\nVIBRATION=0',)
-    if JobKey == 'gradient':
-    elif JobKey == 'hessian' and not num_hess:
-        job_options += ('VIBRATION=ANALYTIC',)
-    elif JobKey == 'hessian' and num_hess:
-        job_options += ('VIBRATION=FINDIF',)
-    elif JobKey == 'optimization' and not saddle:
-        job_options += ('GEO_METHOD=NR\nVIBRATION=0',)
-    elif JobKey == 'optimization' and saddle:
-        job_options += ('GEO_METHOD=TS\nVIBRATION=0',)
-
+    numerical = None
 
     cfour2_method = elstruct.par.program_method_name(PROG, method)
     cfour2_basis = elstruct.par.program_basis_name(PROG, basis)
 
+    if automol.geom.is_valid(geom):
+        coord_sys = 'CARTESIAN'
+    elif automol.zmatrix.is_valid(geom):
+        coord_sys = 'INTERNAL'
+
     fill_dct = {
         TemplateKey.COMMENT: comment,
         TemplateKey.MEMORY: memory,
-        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
         TemplateKey.CHARGE: charge,
         TemplateKey.MULT: mult,
         TemplateKey.GEOM: geom_str,
-        TemplateKey.ZMAT_VALS: zmat_val_str,
-        TemplateKey.BASIS: cfour2_basis,
-        TemplateKey.METHOD: cfour2_method,
-        TemplateKey.REFERENCE: reference,
+        TemplateKey.COORD_SYS: coord_sys,
+        TemplateKey.ZMAT_VAR_VALS: zmat_val_str,
+        TemplateKey.BASIS: cfour2_basis.upper(),
+        TemplateKey.METHOD: cfour2_method.upper(),
+        TemplateKey.REFERENCE: reference.upper(),
         TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
         TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
         TemplateKey.JOB_KEY: job_key,
         TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
-        TemplateKey.FROZEN_DIS_STRS: frozen_dis_strs,
-        TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
-        TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
         TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        TemplateKey.SADDLE: saddle,
+        TemplateKey.NUMERICAL: numerical
     }
     return fill_dct
 
 
-def _geometry_strings(geom):
+def _geometry_strings(geom, frozen_coordinates, job_key):
     if automol.geom.is_valid(geom):
         geom_str = automol.geom.string(geom)
         zmat_val_str = ''
@@ -223,48 +230,38 @@ def _geometry_strings(geom):
         zma = geom
         syms = automol.zmatrix.symbols(zma)
         key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = automol.zmatrix.name_matrix(zma)
+        if job_key == 'optimization':
+            name_mat = [[name+'*' 
+                         if name is not None and name not in frozen_coordinates else name
+                         for name in row]
+                         for row in automol.zmatrix.name_matrix(zma)]
+        else:
+            name_mat = automol.zmatrix.name_matrix(zma)
         val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
 
         geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)
         zmat_val_str = aw.zmatrix.setval_block(val_dct)
+
+        # Substituite multiple whitespaces for single whitespace
+        geom_str = '\n'.join([' '.join(string.split()) 
+                              for string in geom_str.splitlines()]) 
+        zmat_val_str = '\n'.join([' '.join(string.split()) 
+                                  for string in zmat_val_str.splitlines()]) 
+        zmat_val_str += '\n'
+
     else:
         raise ValueError("Invalid geometry value:\n{}".format(geom))
 
     return geom_str, zmat_val_str
 
 
-def _frozen_coordinate_strings(geom, frozen_coordinates):
-    if not frozen_coordinates:
-        dis_strs = ang_strs = dih_strs = ()
-    else:
-        coo_dct = automol.zmatrix.coordinates(geom, shift=1)
-        assert all(coo_name in coo_dct for coo_name in frozen_coordinates)
-
-        def _coordinate_strings(coo_names):
-            frz_coo_names = [coo_name for coo_name in frozen_coordinates
-                             if coo_name in coo_names]
-            frz_coo_strs = tuple(' '.join(map(str, coo_keys))
-                                 for frz_coo_name in frz_coo_names
-                                 for coo_keys in coo_dct[frz_coo_name])
-            return frz_coo_strs
-
-        dis_strs = _coordinate_strings(
-            automol.zmatrix.distance_names(geom))
-        ang_strs = _coordinate_strings(
-            automol.zmatrix.central_angle_names(geom))
-        dih_strs = _coordinate_strings(
-            automol.zmatrix.dihedral_angle_names(geom))
-    return dis_strs, ang_strs, dih_strs
-
-
-def _reference(method, mult, orb_restricted):
+def _reference(mult, orb_restricted):
     if mult != 1:
-        reference = (Psi4Reference.ROHF if orb_restricted else
-                     Psi4Reference.UHF)
+        reference = (Cfour2Reference.ROHF if orb_restricted else
+                     Cfour2Reference.UHF)
     else:
         assert mult == 1 and orb_restricted is True
-        reference = Psi4Reference.RHF
+        reference = Cfour2Reference.RHF
 
     return reference
 
@@ -275,5 +272,5 @@ def _evaluate_options(options):
         if elstruct.option.is_valid(option):
             name = elstruct.option.name(option)
             assert name in par.OPTION_NAMES
-            options[idx] = par.PSI4_OPTION_EVAL_DCT[name](option)
+            options[idx] = par.CFOUR2_OPTION_EVAL_DCT[name](option)
     return tuple(options)

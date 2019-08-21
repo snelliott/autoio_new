@@ -4,6 +4,7 @@ import autoread as ar
 import autoparse.pattern as app
 import elstruct.par
 
+
 PROG = elstruct.par.Program.CFOUR2
 
 
@@ -11,11 +12,9 @@ def _hf_energy(output_string):
     ene = ar.energy.read(
         output_string,
         app.one_of_these([
-            app.LINESPACES.join([
-                app.escape('E(SCF)='), app.FLOAT, app.EXPONENTIAL_D]),
-            app.LINESPACES.join([
-                app.escape('E(ROHF)='), app.FLOAT, app.EXPONENTIAL_D])
-        ]))
+            app.escape('E(SCF)='),
+            app.escape('E(ROHF)=')])
+        )
     return ene
 
 
@@ -23,10 +22,8 @@ def _mp2_energy(output_string):
     ene = ar.energy.read(
         output_string,
         app.one_of_these([
-            app.LINESPACES.join([
-                app.escape('Total MP2 energy'), '=', app.FLOAT, 'a.u.']),
-            app.LINESPACES.join([
-                app.escape('MP2 energy'), app.FLOAT])
+            app.escape('Total MP2 energy'),
+            app.escape('MP2 energy')
         ]))
     return ene
 
@@ -34,8 +31,7 @@ def _mp2_energy(output_string):
 def _ccsd_energy(output_string):
     ene = ar.energy.read(
         output_string,
-        app.LINESPACES.join([
-            app.escape('CCSD energy') app.FLOAT])
+        app.escape('CCSD energy')
         )
     return ene
 
@@ -43,8 +39,7 @@ def _ccsd_energy(output_string):
 def _ccsd_t_energy(output_string):
     ene = ar.energy.read(
         output_string,
-        app.LINESPACES.join([
-            app.escape('CCSD(T) energy') app.FLOAT])
+        app.escape('CCSD(T) energy')
         )
     return ene
 

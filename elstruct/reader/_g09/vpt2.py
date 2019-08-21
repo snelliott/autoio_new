@@ -154,7 +154,7 @@ def cent_dist_const_reader(output_string):
     pattern = (
         'TauP' +
         app.SPACE +
-        app.one_or_more(app.LOWERCASE_LETTER) +
+        app.capturing(app.one_or_more(app.LOWERCASE_LETTER)) +
         app.SPACES +
         app.capturing(app.EXPONENTIAL_FLOAT_D) +
         app.SPACES +
@@ -162,8 +162,8 @@ def cent_dist_const_reader(output_string):
     )
 
     # Get list of values
-    cent_dist_consts = [float(val.replace('D', 'E'))
-                        for val in apf.all_captures(pattern, block)]
+    cent_dist_consts = [[lbl, float(val.replace('D', 'E'))]
+                        for (lbl, val) in apf.all_captures(pattern, block)]
 
     return cent_dist_consts
 

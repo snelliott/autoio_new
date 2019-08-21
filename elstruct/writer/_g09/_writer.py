@@ -46,13 +46,13 @@ class TemplateKey():
     SCF_GUESS_OPTIONS = 'scf_guess_options'
     # molecule / state
     MOL_OPTIONS = 'mol_options'
-    COMMENT = 'comment'
     CHARGE = 'charge'
     MULT = 'mult'
     GEOM = 'geom'
     ZMAT_VAR_VALS = 'zmat_var_vals'
     ZMAT_CONST_VALS = 'zmat_const_vals'
     # job
+    COMMENT = 'comment'
     JOB_KEY = 'job_key'
     JOB_OPTIONS = 'job_options'
     GEN_LINES = 'gen_lines'
@@ -65,7 +65,9 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
+           orb_restricted=None,
+           scf_options=(), casscf_options=(), corr_options=(),
+           # generic options
            gen_lines=()):
     """ energy input string
     """
@@ -74,7 +76,8 @@ def energy(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -87,7 +90,8 @@ def gradient(geom, charge, mult, method, basis,
              # machine options
              memory=1, comment='', machine_options=(),
              # theory options
-             orb_restricted=None, scf_options=(), corr_options=(),
+             orb_restricted=None,
+             scf_options=(), casscf_options=(), corr_options=(),
              # generic options
              gen_lines=(),
              # job options
@@ -99,7 +103,8 @@ def gradient(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -112,7 +117,8 @@ def hessian(geom, charge, mult, method, basis,
             # machine options
             memory=1, comment='', machine_options=(),
             # theory options
-            orb_restricted=None, scf_options=(), corr_options=(),
+            orb_restricted=None,
+            scf_options=(), casscf_options=(), corr_options=(),
             # generic options
             gen_lines=(),
             # job options
@@ -124,7 +130,8 @@ def hessian(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -132,16 +139,17 @@ def hessian(geom, charge, mult, method, basis,
 
 
 def vpt2(geom, charge, mult, method, basis,
-           # molecule options
-           mol_options=(),
-           # machine options
-           memory=1, comment='', machine_options=(),
-           # theory options
-           orb_restricted=None, scf_options=(), corr_options=(),
-           # generic options
-           gen_lines=(),
-           # job options
-           job_options=()):
+         # molecule options
+         mol_options=(),
+         # machine options
+         memory=1, comment='', machine_options=(),
+         # theory options
+         orb_restricted=None,
+         scf_options=(), casscf_options=(), corr_options=(),
+         # generic options
+         gen_lines=(),
+         # job options
+         job_options=()):
     """ hessian input string
     """
     job_key = JobKey.VPT2
@@ -149,7 +157,8 @@ def vpt2(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -162,7 +171,8 @@ def irc(geom, charge, mult, method, basis,
         # machine options
         memory=1, comment='', machine_options=(),
         # theory options
-        orb_restricted=None, scf_options=(), corr_options=(),
+        orb_restricted=None,
+        scf_options=(), casscf_options=(), corr_options=(),
         # generic options
         gen_lines=(),
         # job options
@@ -174,7 +184,8 @@ def irc(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         irc_direction=irc_direction, gen_lines=gen_lines,
     )
@@ -188,7 +199,8 @@ def optimization(geom, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, scf_options=(), corr_options=(),
+                 orb_restricted=None,
+                 scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=(),
                  # job options
@@ -200,7 +212,8 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         saddle=saddle, gen_lines=gen_lines,
     )
@@ -211,7 +224,8 @@ def optimization(geom, charge, mult, method, basis,
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
-                          machine_options, scf_options, corr_options,
+                          machine_options,
+                          scf_options, casscf_options, corr_options,
                           job_options=(), frozen_coordinates=(),
                           saddle=False, irc_direction=None,
                           gen_lines=()):
@@ -239,6 +253,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     scf_guess_options, scf_options = _intercept_scf_guess_option(scf_options)
     scf_guess_options = _evaluate_options(scf_guess_options)
     scf_options = _evaluate_options(scf_options)
+    casscf_options = _evaluate_options(casscf_options)
     job_options = _evaluate_options(job_options)
 
     if saddle:
