@@ -3,14 +3,21 @@
 ## 1. memory block
 mem=${memory}GB
 ## 2. method block
-calc=${method}
+calc=${corr_method}
 basis=${basis}
 scftype=${reference}
 ## job options block
-## scfiguess=sad
-## ccmaxit=2
-## scftol=7
-## cctol=7
+% if job_options:
+${job_options}
+% endif
+## n. scf options block
+% if scf_options:
+${scf_options}
+% endif
+## n. corr options block
+%if corr_options:
+${corr_options}
+% endif
 ## x. molecule block
 charge=${charge}
 mult=${mult}

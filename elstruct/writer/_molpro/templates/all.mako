@@ -32,7 +32,9 @@ basis=${basis}
 %if corr_method:
 {${corr_method},${corr_options}}
 %endif
-%if job_key == 'optimization':
+%if job_key == 'gradient':
+{force,${job_options}}
+%elif job_key == 'optimization':
 {optg,${job_options}}
 status
 %elif job_key == 'hessian':

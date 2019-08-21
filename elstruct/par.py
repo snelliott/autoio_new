@@ -24,7 +24,7 @@ class Program():
     CFOUR2 = 'cfour2'
     ORCA4 = 'orca4'
     MRCC2018 = 'mrcc2018'
-    NWCHEM6 = 'nwchem6'
+#    NWCHEM6 = 'nwchem6'
 
 
 def programs():

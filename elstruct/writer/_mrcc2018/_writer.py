@@ -26,7 +26,6 @@ class JobKey():
     """ _ """
     ENERGY = 'energy'
     OPTIMIZATION = 'optimization'
-    GRADIENT = 'gradient'
     HESSIAN = 'hessian'
 
 
@@ -49,7 +48,7 @@ class TemplateKey():
     CORR_OPTIONS = 'corr_options'
     JOB_OPTIONS = 'job_options'
     GEN_LINES = 'gen_lines'
-
+    COORD_SYS = 'coord_sys'
 
 def energy(geom, charge, mult, method, basis,
            # molecule options
@@ -71,6 +70,33 @@ def energy(geom, charge, mult, method, basis,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
         gen_lines=gen_lines,
+    )
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
+
+
+def hessian(geom, charge, mult, method, basis,
+            # molecule options
+            mol_options=(),
+            # machine options
+            memory=1, comment='', machine_options=(),
+            # theory options
+            orb_restricted=None,
+            scf_options=(), casscf_options=(), corr_options=(),
+            # generic options
+            gen_lines=(),
+            # job options
+            job_options=()):
+    """ hessian input string
+    """
+    job_key = JobKey.HESSIAN
+    fill_dct = _fillvalue_dictionary(
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        gen_lines=gen_lines,
+        job_options=job_options,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -111,31 +137,38 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           gen_lines=(),
                           job_options=(), frozen_coordinates=(), saddle=False):
 
+    # Set the spin
     singlet = (mult == 1)
+    spin = mult - 1
+   
+    # Set the theoretical method
     mrcc_scf_method = (MRCC2018Reference.RHF if orb_restricted else
                          MRCC2018Reference.UHF)
-    # add in the multireference method stuff
     mrcc_corr_method = (
         elstruct.par.program_method_name(PROG, method, singlet)
         if elstruct.par.Method.is_correlated(method) else '')
-
     mrcc_basis = elstruct.par.program_basis_name(PROG, basis)
+    
+    # Build the geometry
     geom_str, zmat_val_str = _geometry_strings(geom)
-    memory_mw = int(memory * (1000.0 / 8.0))  # convert gb to mw
     spin = mult - 1
+    
+    # Check options
     scf_options = _evaluate_options(scf_options)
     casscf_options = _evaluate_options(casscf_options)
     job_options = _evaluate_options(job_options)
 
-    if saddle:
-        job_options += ('root=2',)
+    # Set the coordinate system
+    if automol.geom.is_valid(geom):
+        coord_sys = 'xyz'
+    elif automol.zmatrix.is_valid(geom):
+        coord_sys = 'zmat'
 
-    job_directives = [','.join(job_options)]
-    if frozen_coordinates:
-        job_directives.append('inactive,' + ','.join(frozen_coordinates))
-    
-    if job_key == 'hessian':
-        job_directives.append('print,hessian,low=5')
+    # No TS optimizer based on manual
+    assert not saddle
+
+    # No Frozen coordinates allowed based on manual
+    assert not frozen_coordinates
 
     fill_dct = {
         TemplateKey.JOB_KEY: job_key,
@@ -149,11 +182,12 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.SPIN: spin,
         TemplateKey.BASIS: mrcc_basis,
         TemplateKey.SCF_METHOD: mrcc_scf_method,
-        TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
         TemplateKey.CORR_METHOD: mrcc_corr_method,
-        TemplateKey.CORR_OPTIONS: ','.join(corr_options),
-        TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
+        TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
+        TemplateKey.JOB_OPTIONS: '\n'.join(job_directives),
         TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        TemplateKey.COORD_SYS: coord_sys
     }
     return fill_dct
 
@@ -183,5 +217,5 @@ def _evaluate_options(opts):
         if elstruct.option.is_valid(opt):
             name = elstruct.option.name(opt)
             assert name in par.OPTION_NAMES
-            opts[idx] = par.MOLPRO_OPTION_EVAL_DCT[name](opt)
+            opts[idx] = par.MRCC2018_OPTION_EVAL_DCT[name](opt)
     return tuple(opts)

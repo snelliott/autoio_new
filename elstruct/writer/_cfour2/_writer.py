@@ -169,9 +169,18 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
 
     reference = _reference(mult, orb_restricted)
     geom_str, zmat_val_str = _geometry_strings(geom, frozen_coordinates, job_key)
-
+    # Set options for coupled cluster
     if method in ('ccsd', 'ccsd(t)'):
         corr_options = (('ABCDTYPE=AOBASIS'),)
+    if method in ('ccsd', 'ccsd(t)') and reference in ('rhf', 'uhf'):
+        corr_options += (('CC_PROG=ECC'),)
+    elif method in ('ccsd', 'ccsd(t)') and reference in ('rohf'):
+        corr_options += (('CC_PROG=VCC'),)
+    elif method in ('ccsdt', 'ccsdt(q)') and reference in ('rhf'):
+        corr_options += (('CC_PROG=NCC'),)
+    elif method in ('ccsdt', 'ccsdt(q)') and reference in ('uhf', 'rohf'):
+        raise NotImplementedError("CFOUR ONLY ALLOWS CLOSED-SHELL")
+
 
     # Unused options
     mol_options = mol_options

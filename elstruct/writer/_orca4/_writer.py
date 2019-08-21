@@ -179,11 +179,6 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     if elstruct.par.Method.is_correlated(method):
         assert not corr_options
 
-    if (reference == Orca4Reference.ROHF and
-            job_key in (JobKey.GRADIENT, JobKey.HESSIAN)):
-        job_options = list(job_options)
-        job_options.insert(0, 'EnOnly')
-
     g09_method = elstruct.par.program_method_name(PROG, method)
     g09_basis = elstruct.par.program_basis_name(PROG, basis)
 
@@ -197,14 +192,6 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     scf_options = _evaluate_options(scf_options)
     casscf_options = _evaluate_options(casscf_options)
     job_options = _evaluate_options(job_options)
-
-    if saddle:
-        job_options += ('CALCFC', 'TS', 'NOEIGEN',)
-
-    if irc_direction is not None:
-        assert (irc_direction.upper() == 'FORWARD' or
-                irc_direction.upper() == 'REVERSE')
-        job_options = (irc_direction.upper(),) + job_options
 
     fill_dct = {
         TemplateKey.MEMORY: memory,
@@ -265,18 +252,6 @@ def _reference(method, mult, orb_restricted):
         assert mult == 1 and orb_restricted is True
         reference = Orca4Reference.RHF
     return reference
-
-
-def _intercept_scf_guess_option(scf_opts):
-    guess_opts = []
-    ret_scf_opts = []
-    for opt in scf_opts:
-        if (elstruct.option.is_valid(opt) and opt in
-                pclass.values(elstruct.par.Option.Scf.Guess)):
-            guess_opts.append(opt)
-        else:
-            ret_scf_opts.append(opt)
-    return guess_opts, ret_scf_opts
 
 
 def _evaluate_options(opts):
