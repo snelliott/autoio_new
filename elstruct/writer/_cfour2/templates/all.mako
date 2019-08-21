@@ -41,7 +41,7 @@ ${corr_options}
 CHARGE=${charge}
 MULTIPLICITY=${mult}
 ## n. coord sys block
-## COORDS=INT
+COORDS=${coord_sys}
 UNITS=ANGSTROM
 ## n. machine options block
 MEMORY_SIZE=${memory}

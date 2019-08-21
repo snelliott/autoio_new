@@ -26,7 +26,7 @@ def test__mr_writer():
     mult = 1
     charge = 0
     orb_restricted = True
-    prog = 'cfour2'
+    prog = 'mrcc2018'
     method = 'ccsd(t)'
 
     ene_str = elstruct.writer.energy(

@@ -51,6 +51,7 @@ class TemplateKey():
     GEN_LINES = 'gen_lines'
     SADDLE = 'saddle'
     NUMERICAL = 'numerical'
+    COORD_SYS = 'coord_sys'
 
 def energy(geom, charge, mult, method, basis,
            # molecule options
@@ -167,12 +168,10 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           job_options=(), frozen_coordinates=(), saddle=False):
 
     reference = _reference(mult, orb_restricted)
-    geom_str, zmat_val_str = _geometry_strings(geom, frozen_coordinates)
+    geom_str, zmat_val_str = _geometry_strings(geom, frozen_coordinates, job_key)
 
-    if not elstruct.par.Method.is_correlated(method):
-        assert not corr_options
-    elif elstruct.par.Method.is_correlated(method) in ('ccsd', 'ccsd(t)'):
-        corr_options = (('ABCDTYPE=AOBASIS'))
+    if method in ('ccsd', 'ccsd(t)'):
+        corr_options = (('ABCDTYPE=AOBASIS'),)
 
     # Unused options
     mol_options = mol_options
@@ -187,16 +186,22 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     cfour2_method = elstruct.par.program_method_name(PROG, method)
     cfour2_basis = elstruct.par.program_basis_name(PROG, basis)
 
+    if automol.geom.is_valid(geom):
+        coord_sys = 'CARTESIAN'
+    elif automol.zmatrix.is_valid(geom):
+        coord_sys = 'INTERNAL'
+
     fill_dct = {
         TemplateKey.COMMENT: comment,
         TemplateKey.MEMORY: memory,
         TemplateKey.CHARGE: charge,
         TemplateKey.MULT: mult,
         TemplateKey.GEOM: geom_str,
+        TemplateKey.COORD_SYS: coord_sys,
         TemplateKey.ZMAT_VAR_VALS: zmat_val_str,
-        TemplateKey.BASIS: cfour2_basis,
-        TemplateKey.METHOD: cfour2_method,
-        TemplateKey.REFERENCE: reference,
+        TemplateKey.BASIS: cfour2_basis.upper(),
+        TemplateKey.METHOD: cfour2_method.upper(),
+        TemplateKey.REFERENCE: reference.upper(),
         TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
         TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
         TemplateKey.JOB_KEY: job_key,
@@ -208,7 +213,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     return fill_dct
 
 
-def _geometry_strings(geom, frozen_coordinates):
+def _geometry_strings(geom, frozen_coordinates, job_key):
     if automol.geom.is_valid(geom):
         geom_str = automol.geom.string(geom)
         zmat_val_str = ''
@@ -216,13 +221,25 @@ def _geometry_strings(geom, frozen_coordinates):
         zma = geom
         syms = automol.zmatrix.symbols(zma)
         key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = [[name+'*' if name in frozen_coordinates else name
-                     for row in automol.zmatrix.name_matrix(zma)
-                     for name in row]]
+        if job_key == 'optimization':
+            name_mat = [[name+'*' 
+                         if name is not None and name not in frozen_coordinates else name
+                         for name in row]
+                         for row in automol.zmatrix.name_matrix(zma)]
+        else:
+            name_mat = automol.zmatrix.name_matrix(zma)
         val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
 
         geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)
         zmat_val_str = aw.zmatrix.setval_block(val_dct)
+
+        # Substituite multiple whitespaces for single whitespace
+        geom_str = '\n'.join([' '.join(string.split()) 
+                              for string in geom_str.splitlines()]) 
+        zmat_val_str = '\n'.join([' '.join(string.split()) 
+                                  for string in zmat_val_str.splitlines()]) 
+        zmat_val_str += '\n'
+
     else:
         raise ValueError("Invalid geometry value:\n{}".format(geom))
 
