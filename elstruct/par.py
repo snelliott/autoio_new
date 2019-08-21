@@ -24,7 +24,7 @@ class Program():
     CFOUR2 = 'cfour2'
     ORCA4 = 'orca4'
     MRCC2018 = 'mrcc2018'
-#    NWCHEM6 = 'nwchem6'
+    NWCHEM6 = 'nwchem6'
 
 
 def programs():
@@ -107,11 +107,11 @@ class Method():
                   {Program.MOLPRO: (
                       'rs2', 'rs2',
                       (True,), (False, True))})
-        CASPT2c = ('caspt2c',
+        CASPT2C = ('caspt2c',
                    {Program.MOLPRO: (
                        'rs2c', 'rs2c',
                        (True,), (False, True))})
-        MRCI_Q = ('mrcisd_q',
+        MRCISDQ = ('mrcisd_q',
                   {Program.MOLPRO: (
                       'mrci', 'mrci',
                       (True,), (False, True))})

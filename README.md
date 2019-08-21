@@ -2,6 +2,7 @@
 
 ## Authors
 Andreas V. Copan, Kevin. B. Moore III, Stephen J. Klippenstein
+Argonne National Laboratory
 
 ## Features
 READER:
@@ -12,7 +13,7 @@ READER:
 3. Optimized Cartesian Coordinates
     - CFOUR 2, Gaussian09, Molpro2015, MRCC, Orca 4, Psi4 1 
 4. Optimized Z-Matrix
-    - CFOUR 2, Gaussian09, Molpro2015, MRCC, Orca 4, Psi4 1 
+    - CFOUR 2, Gaussian09, Molpro2015, Psi4 1 
 5. Cartesian Gradient
     - CFOUR 2, Gaussian09, MRCC, Orca 4, Psi4 1 
 6. Cartesian Hessian
@@ -20,8 +21,6 @@ READER:
 7. VPT2: Anh Freqs, ZPVE, X Matrix, VibroRot Matrix, Centrif.Consts
     - Gaussian09 
 8. IRC Geometries, Gradients, and Hessians
-    - Gaussian09 
-9. Properties: Dipole Moment
     - Gaussian09 
 
 WRITER:
