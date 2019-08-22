@@ -102,19 +102,19 @@ class Method():
         CASSCF = ('casscf',
                   {Program.MOLPRO: (
                       'casscf', 'casscf',
-                      (True,), (False, True))})
+                      (True,), (True, True))})
         CASPT2 = ('caspt2',
                   {Program.MOLPRO: (
                       'rs2', 'rs2',
-                      (True,), (False, True))})
+                      (True,), (True, True))})
         CASPT2C = ('caspt2c',
                    {Program.MOLPRO: (
                        'rs2c', 'rs2c',
-                       (True,), (False, True))})
+                       (True,), (True, True))})
         MRCISDQ = ('mrcisd_q',
                   {Program.MOLPRO: (
                       'mrci', 'mrci',
-                      (True,), (False, True))})
+                      (True,), (True, True))})
 
     class Dft():
         """ DFT method names """
