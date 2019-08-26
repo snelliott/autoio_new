@@ -209,7 +209,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     job_options = _evaluate_options(job_options)
 
     # Make no scf method if calling a multiref method
-    if _ismultiref:
+    if ismultiref:
         molpro_scf_method = ''
         scf_options = []
 
