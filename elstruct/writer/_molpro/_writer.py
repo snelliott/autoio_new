@@ -282,6 +282,9 @@ def _geometry_strings(geom):
 
         geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat, delim=', ')
         zmat_val_str = aw.zmatrix.setval_block(val_dct)
+    elif geom == 'GEOMETRY':
+        geom_str = geom
+        zmat_val_str = ''
     else:
         raise ValueError("Invalid geometry value:\n{}".format(geom))
 
