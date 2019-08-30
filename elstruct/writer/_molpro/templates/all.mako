@@ -12,7 +12,6 @@ ${gen_lines}
 %if mol_options:
 ${mol_options}
 %endif
-angstrom
 geometry = {
 ${geom}
 }
@@ -42,5 +41,7 @@ status
 put,molden,freq.molden
 status
 %elif job_key == 'energy':
+molpro_energy=energy
+show[1,e25.15],molpro_energy
 status,all,crash
 %endif
