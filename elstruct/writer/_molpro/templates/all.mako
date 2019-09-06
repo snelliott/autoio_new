@@ -41,7 +41,14 @@ status
 put,molden,freq.molden
 status
 %elif job_key == 'energy':
+
+%if 'mp2' in corr_method:
+status,${scf_method}-SCF,crash
+%else:
+
 molpro_energy=energy
 show[1,e25.15],molpro_energy
+
 status,all,crash
+%endif
 %endif
