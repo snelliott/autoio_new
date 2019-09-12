@@ -1,10 +1,10 @@
-""" elstruct.writer._molpro parameters
+""" elstruct.writer._molpro2015 parameters
 """
 from elstruct import Option
 from elstruct import option
 
 
-MOLPRO_OPTION_EVAL_DCT = {
+MOLPRO2015_OPTION_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
     option.name(Option.Scf.DIIS_):
@@ -20,4 +20,4 @@ MOLPRO_OPTION_EVAL_DCT = {
     option.name(Option.Opt.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
 }
-OPTION_NAMES = tuple(sorted(MOLPRO_OPTION_EVAL_DCT.keys()))
+OPTION_NAMES = tuple(sorted(MOLPRO2015_OPTION_EVAL_DCT.keys()))

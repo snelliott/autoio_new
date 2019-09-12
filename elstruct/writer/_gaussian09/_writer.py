@@ -1,14 +1,14 @@
-""" orca4 writer module """
+""" gaussian09 writer module """
 import os
 import automol
 import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
-from elstruct.writer._orca4 import par
 from elstruct import pclass
+from elstruct.writer._gaussian09 import par
 
-PROG = elstruct.par.Program.ORCA4
+PROG = elstruct.par.Program.GAUSSIAN09
 
 # set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -16,7 +16,7 @@ TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 
 # mako template keys
-class Orca4Reference():
+class GAUSSIAN09Reference():
     """ _ """
     RHF = 'rhf'
     UHF = 'uhf'
@@ -29,6 +29,8 @@ class JobKey():
     OPTIMIZATION = 'optimization'
     GRADIENT = 'gradient'
     HESSIAN = 'hessian'
+    VPT2 = 'vpt2'
+    IRC = 'irc'
 
 
 class TemplateKey():
@@ -44,13 +46,13 @@ class TemplateKey():
     SCF_GUESS_OPTIONS = 'scf_guess_options'
     # molecule / state
     MOL_OPTIONS = 'mol_options'
-    COMMENT = 'comment'
     CHARGE = 'charge'
     MULT = 'mult'
     GEOM = 'geom'
     ZMAT_VAR_VALS = 'zmat_var_vals'
     ZMAT_CONST_VALS = 'zmat_const_vals'
     # job
+    COMMENT = 'comment'
     JOB_KEY = 'job_key'
     JOB_OPTIONS = 'job_options'
     GEN_LINES = 'gen_lines'
@@ -74,7 +76,8 @@ def energy(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -100,7 +103,8 @@ def gradient(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -126,8 +130,64 @@ def hessian(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, gen_lines=gen_lines,
+    )
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
+
+
+def vpt2(geom, charge, mult, method, basis,
+         # molecule options
+         mol_options=(),
+         # machine options
+         memory=1, comment='', machine_options=(),
+         # theory options
+         orb_restricted=None,
+         scf_options=(), casscf_options=(), corr_options=(),
+         # generic options
+         gen_lines=(),
+         # job options
+         job_options=()):
+    """ hessian input string
+    """
+    job_key = JobKey.VPT2
+    fill_dct = _fillvalue_dictionary(
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
+        job_options=job_options, gen_lines=gen_lines,
+    )
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
+
+
+def irc(geom, charge, mult, method, basis,
+        # molecule options
+        mol_options=(),
+        # machine options
+        memory=1, comment='', machine_options=(),
+        # theory options
+        orb_restricted=None,
+        scf_options=(), casscf_options=(), corr_options=(),
+        # generic options
+        gen_lines=(),
+        # job options
+        job_options=(), frozen_coordinates=(), irc_direction=None):
+    """ optimization input string
+    """
+    job_key = JobKey.IRC
+    fill_dct = _fillvalue_dictionary(
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
+        job_options=job_options, frozen_coordinates=frozen_coordinates,
+        irc_direction=irc_direction, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -152,7 +212,8 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         saddle=saddle, gen_lines=gen_lines,
     )
@@ -173,18 +234,20 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     geom_str, zmat_var_val_str, zmat_const_val_str = _geometry_strings(
         geom, frozen_coordinates)
 
-
-    memory = memory * 1000.0
-
     if elstruct.par.Method.is_correlated(method):
         assert not corr_options
 
-    orca4_method = elstruct.par.program_method_name(PROG, method)
-    orca4_basis = elstruct.par.program_basis_name(PROG, basis)
+    if (reference == GAUSSIAN09Reference.ROHF and
+            job_key in (JobKey.GRADIENT, JobKey.HESSIAN)):
+        job_options = list(job_options)
+        job_options.insert(0, 'EnOnly')
+
+    gaussian09_method = elstruct.par.program_method_name(PROG, method)
+    gaussian09_basis = elstruct.par.program_basis_name(PROG, basis)
 
     # in the case of Hartree-Fock, swap the method for the reference name
     if method == elstruct.par.Method.HF[0]:
-        orca4_method = reference
+        gaussian09_method = reference
         reference = ''
 
     scf_guess_options, scf_options = _intercept_scf_guess_option(scf_options)
@@ -193,12 +256,20 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     casscf_options = _evaluate_options(casscf_options)
     job_options = _evaluate_options(job_options)
 
+    if saddle:
+        job_options += ('CALCFC', 'TS', 'NOEIGEN',)
+
+    if irc_direction is not None:
+        assert (irc_direction.upper() == 'FORWARD' or
+                irc_direction.upper() == 'REVERSE')
+        job_options = (irc_direction.upper(),) + job_options
+
     fill_dct = {
         TemplateKey.MEMORY: memory,
         TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
         TemplateKey.REFERENCE: reference,
-        TemplateKey.METHOD: orca4_method,
-        TemplateKey.BASIS: orca4_basis,
+        TemplateKey.METHOD: gaussian09_method,
+        TemplateKey.BASIS: gaussian09_basis,
         TemplateKey.SCF_OPTIONS: ','.join(scf_options),
         TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
         TemplateKey.MOL_OPTIONS: ','.join(mol_options),
@@ -247,11 +318,23 @@ def _reference(method, mult, orb_restricted):
     if elstruct.par.Method.is_dft(method):
         reference = ''
     elif mult != 1:
-        reference = Orca4Reference.ROHF if orb_restricted else Orca4Reference.UHF
+        reference = GAUSSIAN09Reference.ROHF if orb_restricted else GAUSSIAN09Reference.UHF
     else:
         assert mult == 1 and orb_restricted is True
-        reference = Orca4Reference.RHF
+        reference = GAUSSIAN09Reference.RHF
     return reference
+
+
+def _intercept_scf_guess_option(scf_opts):
+    guess_opts = []
+    ret_scf_opts = []
+    for opt in scf_opts:
+        if (elstruct.option.is_valid(opt) and opt in
+                pclass.values(elstruct.par.Option.Scf.Guess)):
+            guess_opts.append(opt)
+        else:
+            ret_scf_opts.append(opt)
+    return guess_opts, ret_scf_opts
 
 
 def _evaluate_options(opts):
@@ -260,5 +343,5 @@ def _evaluate_options(opts):
         if elstruct.option.is_valid(opt):
             name = elstruct.option.name(opt)
             assert name in par.OPTION_NAMES
-            opts[idx] = par.Orca4_OPTION_EVAL_DCT[name](opt)
+            opts[idx] = par.GAUSSIAN09_OPTION_EVAL_DCT[name](opt)
     return tuple(opts)

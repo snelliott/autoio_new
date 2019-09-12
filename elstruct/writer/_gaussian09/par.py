@@ -1,10 +1,10 @@
-""" elstruct.writer._g09 parameters
+""" elstruct.writer._gaussian09 parameters
 """
 from elstruct import Option
 from elstruct import option
 
 
-G09_OPTION_EVAL_DCT = {
+GAUSSIAN09_OPTION_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'MaxCycle={}'.format(*option.values(osp)),
     option.name(Option.Scf.DIIS_):
@@ -23,4 +23,4 @@ G09_OPTION_EVAL_DCT = {
     option.name(Option.Opt.Coord.REDUNDANT):
     lambda osp: 'Redundant',
 }
-OPTION_NAMES = tuple(sorted(G09_OPTION_EVAL_DCT.keys()))
+OPTION_NAMES = tuple(sorted(GAUSSIAN09_OPTION_EVAL_DCT.keys()))

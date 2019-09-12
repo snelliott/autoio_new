@@ -6,7 +6,7 @@ import autoparse.pattern as app
 import autoparse.find as apf
 import elstruct.par
 
-PROG = elstruct.par.Program.G09
+PROG = elstruct.par.Program.GAUSSIAN16
 
 
 def _hf_energy(output_string):
