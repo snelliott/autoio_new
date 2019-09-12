@@ -6,21 +6,13 @@ import numpy
 import automol
 import elstruct
 
+
 SCRIPT_DCT = {
     'psi4': "#!/usr/bin/env bash\n"
             "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log",
-    'g09': None,
-    'molpro': None,
+    'gaussian09': None,
+    'molpro2015': None,
 }
-
-# SCRIPT_DCT = {
-#     'psi4': "#!/usr/bin/env bash\n"
-#             "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log",
-#     'g09': "#!/usr/bin/env bash\n"
-#            "g09 run.inp run.out >> stdout.log &> stderr.log",
-#     'molpro': "#!/usr/bin/env bash\n"
-#               "molpro run.inp -o run.out >> stdout.log &> stderr.log",
-# }
 
 
 def test__energy():

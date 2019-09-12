@@ -4,7 +4,7 @@ import autoread as ar
 import autoparse.pattern as app
 import elstruct.par
 
-PROG = elstruct.par.Program.MOLPRO
+PROG = elstruct.par.Program.MOLPRO2015
 
 
 def _hf_energy(output_string):

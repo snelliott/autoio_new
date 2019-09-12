@@ -7,7 +7,7 @@ import elstruct.option
 from elstruct import template
 from elstruct.writer._mrcc2018 import par
 
-PROG = elstruct.par.Program.MOLPRO
+PROG = elstruct.par.Program.MRCC2018
 
 # set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
