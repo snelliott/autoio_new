@@ -4,6 +4,9 @@ from elstruct.reader._molpro2015.molecule import opt_geometry
 from elstruct.reader._molpro2015.molecule import opt_zmatrix
 from elstruct.reader._molpro2015.status import has_normal_exit_message
 from elstruct.reader._molpro2015.status import has_error_message
+from elstruct.reader._molpro2015.version import name
+from elstruct.reader._molpro2015.version import number
+
 
 __all__ = [
     'energy',
@@ -11,4 +14,6 @@ __all__ = [
     'opt_zmatrix',
     'has_normal_exit_message',
     'has_error_message',
+    'name',
+    'number'
 ]
