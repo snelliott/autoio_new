@@ -1,0 +1,156 @@
+
+    -----------------------------------------------------------------------
+          Psi4: An Open-Source Ab Initio Electronic Structure Package
+                               Psi4 1.2.1 release
+
+                         Git: Rev {HEAD} 406f4de 
+
+
+    R. M. Parrish, L. A. Burns, D. G. A. Smith, A. C. Simmonett,
+    A. E. DePrince III, E. G. Hohenstein, U. Bozkaya, A. Yu. Sokolov,
+    R. Di Remigio, R. M. Richard, J. F. Gonthier, A. M. James,
+    H. R. McAlexander, A. Kumar, M. Saitow, X. Wang, B. P. Pritchard,
+    P. Verma, H. F. Schaefer III, K. Patkowski, R. A. King, E. F. Valeev,
+    F. A. Evangelista, J. M. Turney, T. D. Crawford, and C. D. Sherrill,
+    J. Chem. Theory Comput. 13(7) pp 3185--3197 (2017).
+    (doi: 10.1021/acs.jctc.7b00174)
+
+
+                         Additional Contributions by
+    P. Kraus, H. Kruse, M. H. Lechner, M. C. Schieber, and R. A. Shaw
+
+    -----------------------------------------------------------------------
+
+
+    Psi4 started on: Sunday, 23 December 2018 11:13AM
+
+    Process ID: 67260
+    Host:       blogin2
+    PSIDATADIR: /home/kmoore/miniconda/envs/esenv/share/psi4
+    Memory:     500.0 MiB
+    Threads:    4
+    
+  ==> Input File <==
+
+--------------------------------------------------------------------------
+# sp
+
+memory 30 GB
+
+molecule{
+0 2
+N    0.01836  -0.02380   0.04148
+H   -0.05189  -0.52738   0.91851
+H    0.91202  -0.18284  -0.40766
+H   -0.75308  -0.27330  -0.56702
+O   -0.55587  -2.41852  -0.08415
+H    0.25635  -2.73280  -0.52164
+units angstrom
+}
+
+set basis cc-pvdz
+set scf_type pk
+
+set reference rhf
+
+energy('scf')
+--------------------------------------------------------------------------
+
+  Memory set to  27.940 GiB by Python driver.
+
+*** tstart() called on blogin2
+*** at Sun Dec 23 11:13:30 2018
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1      entry N          line   168 file /home/kmoore/miniconda/envs/esenv/share/psi4/basis/cc-pvdz.gbs 
+    atoms 2-4, 6 entry H          line    22 file /home/kmoore/miniconda/envs/esenv/share/psi4/basis/cc-pvdz.gbs 
+    atoms 5      entry O          line   198 file /home/kmoore/miniconda/envs/esenv/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+            by Justin Turney, Rob Parrish, Andy Simmonett
+                             and Daniel Smith
+                              RHF Reference
+                        4 Threads,  28610 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C1
+
+    Geometry (in Angstrom), charge = 0, multiplicity = 2:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         N            0.261319915921     1.232843790032     0.081076946827    14.003074004780
+         H            0.191069915921     0.729263790032     0.958106946827     1.007825032070
+         H            1.154979915921     1.073803790032    -0.368063053173     1.007825032070
+         H           -0.510120084079     0.983343790032    -0.527423053173     1.007825032070
+         O           -0.312910084079    -1.161876209968    -0.044553053173    15.994914619560
+         H            0.499309915921    -1.476156209968    -0.482043053173     1.007825032070
+
+  Running in c1 symmetry.
+
+  Rotational constants: A =      4.72559  B =      0.32615  C =      0.32129 [cm^-1]
+  Rotational constants: A = 141669.47633  B =   9777.77008  C =   9631.90958 [MHz]
+  Nuclear repulsion =   35.624730340015802
+
+  Charge       = 0
+  Multiplicity = 2
+  Electrons    = 19
+  Nalpha       = 10
+  Nbeta        = 9
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 24
+    Number of basis function: 48
+    Number of Cartesian functions: 50
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+
+Traceback (most recent call last):
+  File "/home/kmoore/miniconda/envs/esenv/bin/psi4", line 269, in <module>
+    exec(content)
+  File "<string>", line 37, in <module>
+  File "/home/kmoore/miniconda/envs/esenv/lib//python3.6/site-packages/psi4/driver/driver.py", line 492, in energy
+    wfn = procedures['energy'][lowername](lowername, molecule=molecule, **kwargs)
+  File "/home/kmoore/miniconda/envs/esenv/lib//python3.6/site-packages/psi4/driver/procrouting/proc.py", line 2009, in run_scf
+    scf_wfn = scf_helper(name, post_scf=False, **kwargs)
+  File "/home/kmoore/miniconda/envs/esenv/lib//python3.6/site-packages/psi4/driver/procrouting/proc.py", line 1283, in scf_helper
+    scf_wfn = scf_wavefunction_factory(name, base_wfn, core.get_option('SCF', 'REFERENCE'))
+  File "/home/kmoore/miniconda/envs/esenv/lib//python3.6/site-packages/psi4/driver/procrouting/proc.py", line 1005, in scf_wavefunction_factory
+    wfn = core.RHF(ref_wfn, superfunc)
+
+RuntimeError: 
+Fatal Error: RHF: RHF reference is only for singlets.
+Error occurred in file: /scratch/psilocaluser/conda-builds/psi4-multiout_1532493090788/work/psi4/src/psi4/libscf_solver/rhf.cc on line: 78
+The most recent 5 function calls were:
+
+
+
+    Psi4 stopped on: Sunday, 23 December 2018 11:13AM
+    Psi4 wall time for execution: 0:00:00.63
+
+*** Psi4 encountered an error. Buy a developer more coffee!
+*** Resources and help at github.com/psi4/psi4.
