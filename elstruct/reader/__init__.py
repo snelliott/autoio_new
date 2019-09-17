@@ -35,6 +35,10 @@ from elstruct.reader._reader import dipole_moment_
 from elstruct.reader._reader import has_normal_exit_message
 from elstruct.reader._reader import error_list
 from elstruct.reader._reader import has_error_message
+# version
+from elstruct.reader._reader import program_name
+from elstruct.reader._reader import program_version
+
 
 __all__ = [
     # energy
@@ -69,4 +73,7 @@ __all__ = [
     'has_normal_exit_message',
     'error_list',
     'has_error_message',
+    # version
+    'program_name',
+    'program_version'
 ]

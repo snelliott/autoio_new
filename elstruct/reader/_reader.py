@@ -345,3 +345,16 @@ def has_error_message(prog, error, output_string):
         prog, MODULE_NAME, module_template.has_error_message,
         # *args
         error, output_string)
+
+# versions 
+def program_name(output_string):
+    """ get the name of the electronic structure code from the output
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.name)
+
+def program_version(output_sring):
+    """ get the name of the electronic structure code from the output
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.number)

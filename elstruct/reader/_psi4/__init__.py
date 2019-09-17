@@ -7,8 +7,8 @@ from elstruct.reader._psi4.molecule import opt_zmatrix
 from elstruct.reader._psi4.status import has_normal_exit_message
 from elstruct.reader._psi4.status import error_list
 from elstruct.reader._psi4.status import has_error_message
-from elstruct.reader._psi4.version import name
-from elstruct.reader._psi4.version import number
+from elstruct.reader._psi4.version import program_name
+from elstruct.reader._psi4.version import program_version
 
 
 __all__ = [
@@ -20,6 +20,6 @@ __all__ = [
     'has_normal_exit_message',
     'error_list',
     'has_error_message',
-    'name',
-    'number'
+    'program_name',
+    'program_version'
 ]

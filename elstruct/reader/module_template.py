@@ -68,3 +68,14 @@ def error_list():
 def has_error_message(error, output_string):
     """ _ """
     raise NotImplementedError(error, output_string)
+
+
+# version
+def program_name(output_string):
+    """ _ """
+    raise NotImplementedError(output_string)
+
+
+def program_version(output_string):
+    """ _ """
+    raise NotImplementedError(output_string)

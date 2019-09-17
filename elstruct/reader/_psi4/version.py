@@ -6,7 +6,7 @@ import autoparse.pattern as app
 import autoparse.find as apf
 
 
-def name(output_string):
+def program_name(output_string):
     """ reads the program name (here: MainName + MainVersion)
     """
     prog_string = _get_prog_string(output_string)
@@ -14,12 +14,11 @@ def name(output_string):
     num = num.split('.')[0]
     prog_name = prog_string.split()[0]
     prog_name = prog_name.lower()
-    prog_name = prog_name + '_' + num
 
     return prog_name
 
 
-def number(output_string):
+def program_version(output_string):
     """ reads the program version number
     """
     prog_string = _get_prog_string(output_string)
