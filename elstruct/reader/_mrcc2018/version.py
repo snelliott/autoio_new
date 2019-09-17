@@ -6,7 +6,7 @@ import autoparse.pattern as app
 import autoparse.find as apf
 
 
-def name(output_string):
+def program_name(output_string):
     """ reads the program name (here: MainName + MainVersion)
     """
     if _check_name_string(output_string) is not None:
@@ -17,7 +17,7 @@ def name(output_string):
     return prog_name
 
 
-def number(output_string):
+def program_version(output_string):
     """ reads the program version number
     """
     version_string = _get_version_string(output_string)
