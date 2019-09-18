@@ -348,15 +348,15 @@ def has_error_message(prog, error, output_string):
 
 
 # versions 
-def program_name(output_string):
+def program_name(prog, output_string):
     """ get the name of the electronic structure code from the output
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.program_name)
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.program_name, output_string)
 
 
-def program_version(output_sring):
+def program_version(prog, output_string):
     """ get the name of the electronic structure code from the output
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.program_version)
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.program_version, output_string)
