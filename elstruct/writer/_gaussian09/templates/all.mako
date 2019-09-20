@@ -26,7 +26,7 @@ ${machine_options}
 # Freq=(${job_options})
 # IOp(7/33=1)
 % elif job_key == 'vpt2':
-# Freq=(ANHARM,VIBROT${job_options})
+# Freq=(ANHARM,VIBROT,READANHARM${job_options})
 % elif job_key == 'irc':
 # IRC=(${job_options})
 # IOp(7/33=1)
@@ -50,5 +50,9 @@ ${zmat_var_vals}
 % if zmat_const_vals != '':
   Constants:
 ${zmat_const_vals}
+% endif
+
+% if job_key == 'vpt2':
+Print=NMOrder=AscNoIrrep
 % endif
 
