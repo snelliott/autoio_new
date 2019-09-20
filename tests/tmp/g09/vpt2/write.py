@@ -15,7 +15,7 @@ def test__vpt2_writer():
     mult = 1
     charge = 0
     orb_restricted = True
-    prog = 'g09'
+    prog = 'gaussian09'
     method = 'b3lyp'
     job_options = ()
 
