@@ -37,10 +37,29 @@ def anharmonic_frequencies_reader(output_string):
         app.one_or_more(app.SPACE) +
         app.FLOAT
     )
+    pattern2 = (
+        app.INTEGER +
+        app.escape('(1)') +
+        app.SPACE +
+        app.maybe(app.one_or_more(app.LOWERCASE_LETTER)) +
+        app.one_or_more(app.SPACE) +
+        app.FLOAT +
+        app.one_or_more(app.SPACE) +
+        app.capturing(app.FLOAT) +
+        app.one_or_more(app.SPACE) +
+        app.one_or_more(app.escape('*')) +
+        app.one_or_more(app.SPACE) +
+        app.one_or_more(app.escape('*')) +
+        app.one_or_more(app.SPACE) +
+        app.FLOAT
+    )
 
     # Get list of values
     anharm_freq = [float(val)
                    for val in apf.all_captures(pattern, block)]
+    if not anharm_freq:
+        anharm_freq = [float(val)
+                       for val in apf.all_captures(pattern2, block)]
 
     return anharm_freq
 
@@ -49,7 +68,7 @@ def anharm_zpve_reader(output_string):
     """ Get the anharmonic ZPVE
     """
 
-    anharm_zpve_pattern_2 = (
+    anharm_zpve_pattern = (
         'Total Anharm' +
         app.one_or_more(app.SPACE) +
         ':' +
@@ -92,7 +111,7 @@ def anharm_zpve_reader(output_string):
     # )
 
     # Retrieve the anharm ZPVE
-    anh_zpve = apf.last_capture(anharm_zpve_pattern_2, output_string)
+    anh_zpve = apf.last_capture(anharm_zpve_pattern, output_string)
 
     # Format the ZPVE
     anh_zpve = float(anh_zpve.replace('D', 'E'))
@@ -120,6 +139,8 @@ def anharmonicity_matrix_reader(output_string):
                          app.padded(app.NEWLINE)),
         line_start_ptt=comp_ptt,
         tril=True)
+    mat = tuple([tuple([float(val.replace('D', 'E')) for val in row])
+                 for row in mat])
 
     return mat
 
@@ -137,11 +158,12 @@ def vibro_rot_alpha_matrix_reader(output_string):
             app.padded(app.escape(begin_string), app.NONNEWLINE),
             app.LINE, app.LINE, '']),
         line_start_ptt=end_string)
+
     return vib_rot_mat
 
 
 def cent_dist_const_reader(output_string):
-    """ Get the Vibration-Rotation Alpha Matrix
+    """ Get the quartic centrifugal distortion constants
     """
 
     # block
@@ -149,6 +171,11 @@ def cent_dist_const_reader(output_string):
         ('Quartic Centrifugal Distortion Constants Tau Prime' +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          'Asymmetric Top Reduction'), output_string)
+    if not block:
+        block = apf.last_capture(
+            ('Quartic Centrifugal Distortion Constants Tau Prime' +
+             app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+             'Rotational l-type doubling constants'), output_string)
 
     # pattern
     pattern = (
@@ -162,10 +189,10 @@ def cent_dist_const_reader(output_string):
     )
 
     # Get list of values
-    cent_dist_consts = [[lbl, float(val.replace('D', 'E'))]
-                        for (lbl, val) in apf.all_captures(pattern, block)]
+    cent_dist_const = [[lbl, float(val.replace('D', 'E'))]
+                       for (lbl, val) in apf.all_captures(pattern, block)]
 
-    return cent_dist_consts
+    return cent_dist_const
 
 
 def vpt2(output_string):
