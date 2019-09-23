@@ -45,6 +45,34 @@ def _ccsd_t_energy(output_string):
         app.one_of_these([
             app.escape('!CCSD(T) total energy') + app.maybe(':'),
             app.escape('!RHF-UCCSD(T) energy'),
+            app.LINESPACES.join([
+                app.escape('!CCSD(T) STATE'),
+                app.FLOAT, 
+                app.escape('Energy')]),
+        ]))
+    return ene
+
+
+def _ccsdt_energy(output_string):
+    ene = ar.energy.read(
+        output_string,
+        app.one_of_these([
+            app.LINESPACES.join([
+                app.escape('!CCSDT STATE'),
+                app.FLOAT,
+                app.escape('Energy')]),
+        ]))
+    return ene
+
+
+def _ccsdt_q_energy(output_string):
+    ene = ar.energy.read(
+        output_string,
+        app.one_of_these([
+            app.LINESPACES.join([
+                app.escape('!CCSDT(Q) STATE'),
+                app.FLOAT,
+                app.escape('Energy')]),
         ]))
     return ene
 
@@ -92,6 +120,8 @@ ENERGY_READER_DCT = {
     elstruct.par.Method.Corr.MP2[0]: _mp2_energy,
     elstruct.par.Method.Corr.CCSD[0]: _ccsd_energy,
     elstruct.par.Method.Corr.CCSD_T[0]: _ccsd_t_energy,
+    elstruct.par.Method.Corr.CCSDT[0]: _ccsdt_energy,
+    elstruct.par.Method.Corr.CCSDT_Q[0]: _ccsdt_q_energy,
     elstruct.par.Method.Corr.CCSD_T_F12[0]: _ccsd_t_f12_energy,
     elstruct.par.Method.MultiRef.CASSCF[0]: _casscf_energy,
     elstruct.par.Method.MultiRef.CASPT2[0]: _caspt2_energy,
