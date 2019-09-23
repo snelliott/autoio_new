@@ -87,7 +87,7 @@ class Method():
         CCSD = ('ccsd',
                 {Program.MOLPRO2015: (
                     'ccsd', 'uccsd',
-                    (True,), (True,))})
+                    (True,), (True, True))})
         CCSD_T = ('ccsd(t)',
                   {Program.MOLPRO2015: (
                       'ccsd(t)', 'uccsd(t)',
@@ -97,7 +97,21 @@ class Method():
                        (True,), (True,)),
                    Program.MRCC2018: (
                        'ccsd(t)', 'ccsd(t)',
-                       (True,), (True,))})
+                       (True,), (True, True))})
+        CCSDT = ('ccsdt',
+                 {Program.MOLPRO2015: (
+                     'mrcc,method=ccsdt', 'mrcc,method=ccsdt',
+                     (True,), (False, True)),
+                  Program.MRCC2018: (
+                      'ccsdt', 'ccsdt',
+                      (True,), (True, True))})
+        CCSDT_Q = ('ccsdt(q)',
+                   {Program.MOLPRO2015: (
+                       'mrcc,method=ccsdt(q)', 'mrcc,method=ccsdt(q)',
+                       (True,), (False, True)),
+                    Program.MRCC2018: (
+                        'ccsdt(q)', 'ccsdt(q)',
+                        (True,), (True, True))})
         CCSD_T_F12 = ('ccsd(t)-f12',
                       {Program.MOLPRO2015: (
                           'ccsd(t)-f12', 'uccsd(t)-f12',
