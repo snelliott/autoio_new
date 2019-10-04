@@ -12,6 +12,7 @@ ${gen_lines}
 %if mol_options:
 ${mol_options}
 %endif
+angstrom
 geometry = {
 ${geom}
 }
