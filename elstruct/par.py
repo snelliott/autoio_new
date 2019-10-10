@@ -203,11 +203,10 @@ class Method():
 
     @classmethod
     def is_casscf(cls, name):
-        """ is the method casscf or post-casscf?
+        """ is the method casscf? 
         """
         name = standard_case(name)
-        multiref_names = [row[0] for row in pclass.all_values(cls.MultiRef)]
-        return Method.MultiRef.CASSCF in multiref_names
+        return name == 'casscf'
 
     @classmethod
     def is_standard_dft(cls, name):
