@@ -481,6 +481,7 @@ class Error():
     SCF_NOCONV = 'scf_noconv'
     CC_NOCONV = 'cc_noconv'
     OPT_NOCONV = 'opt_noconv'
+    IRC_NOCONV = 'irc_noconv'
 
 
 class Option():

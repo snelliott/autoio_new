@@ -32,9 +32,17 @@ def _has_opt_nonconvergence_error_message(output_string):
     return apf.has_match(pattern, output_string, case=False)
 
 
+def _has_irc_nonconvergence_error_message(output_string):
+    """ does this output string have an optimization non-convergence message?
+    """
+    pattern = app.escape('Maximum number of corrector steps exceeded')
+    return apf.has_match(pattern, output_string, case=False)
+
+
 ERROR_READER_DCT = {
     elstruct.par.Error.SCF_NOCONV: _has_scf_nonconvergence_error_message,
     elstruct.par.Error.OPT_NOCONV: _has_opt_nonconvergence_error_message,
+    elstruct.par.Error.IRC_NOCONV: _has_irc_nonconvergence_error_message,
 }
 
 
