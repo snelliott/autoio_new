@@ -102,3 +102,30 @@ def irc_geometry(output_string):
     syms = tuple(map(pt.to_E, nums))
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
     return geo
+
+
+def irc_energies_rxn_coords(output_string):
+    """ get the energies and reaction coordinate values,
+        relative to the saddle point
+    """
+    block = apf.last_capture(
+        (app.escape('Summary of reaction path following') +
+         app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+         app.escape('Total number of points:') + app.SPACES + app.INTEGER),
+        output_string)
+
+    pattern = (
+        app.INTEGER + app.SPACES +
+        app.capturing(app.FLOAT) +
+        app.SPACES +
+        app.capturing(app.FLOAT)
+    )
+    captures = apf.all_captures(pattern, block)
+
+    if captures is not None:
+        energies = [float(capture[0]) for capture in captures]
+        coords = [float(capture[1]) for capture in captures]
+    else:
+        energies, coords = None, None
+
+    return energies, coords
