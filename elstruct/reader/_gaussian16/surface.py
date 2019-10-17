@@ -104,28 +104,50 @@ def irc_geometry(output_string):
     return geo
 
 
-def irc_energies_rxn_coords(output_string):
-    """ get the energies and reaction coordinate values,
-        relative to the saddle point
+def irc_energies(output_string):
+    """ get the energies relative to the saddle point
     """
+    energies = _read_irc_reacion_path_summary(output_string, 'energy')
+    return energies
+
+
+def irc_coordinates(output_string):
+    """ get the coordinates relative to the saddle point
+    """
+    coordinates = _read_irc_reacion_path_summary(output_string, 'coord')
+    return coordinates
+
+
+def _read_irc_reacion_path_summary(output_string, read_val):
+    """ get the desired values from the reaction path summary block
+    """
+    assert read_vals in ('energy', 'coord')
+
     block = apf.last_capture(
         (app.escape('Summary of reaction path following') +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          app.escape('Total number of points:') + app.SPACES + app.INTEGER),
         output_string)
 
-    pattern = (
-        app.INTEGER + app.SPACES +
-        app.capturing(app.FLOAT) +
-        app.SPACES +
-        app.capturing(app.FLOAT)
-    )
+    if read_val == 'energy':
+        pattern = (
+            app.INTEGER + app.SPACES +
+            app.capturing(app.FLOAT) +
+            app.SPACES +
+            app.FLOAT
+        )
+    elif read_val == 'coord':
+        pattern = (
+            app.INTEGER + app.SPACES +
+            app.FLOAT +
+            app.SPACES +
+            app.capturing(app.FLOAT)
+        )
+
     captures = apf.all_captures(pattern, block)
-
     if captures is not None:
-        energies = [float(capture[0]) for capture in captures]
-        coords = [float(capture[1]) for capture in captures]
+        values = [float(capture) for capture in captures]
     else:
-        energies, coords = None, None
+        values = None
 
-    return energies, coords
+    return values
