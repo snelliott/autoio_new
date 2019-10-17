@@ -203,7 +203,7 @@ class Method():
 
     @classmethod
     def is_casscf(cls, name):
-        """ is the method casscf? 
+        """ is the method casscf?
         """
         name = standard_case(name)
         return name == 'casscf'
