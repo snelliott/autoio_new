@@ -395,7 +395,7 @@ def has_error_message(prog, error, output_string):
         error, output_string)
 
 
-# versions 
+# versions
 def program_name(prog, output_string):
     """ get the name of the electronic structure code from the output
     """
