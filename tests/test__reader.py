@@ -22,7 +22,7 @@ def test__hessian_programs():
     """ test elstruct.reader.hessian_programs
     """
     assert set(reader.hessian_programs()) >= {
-        'gaussian09', 'gaussian16', 'orca4', 'psi4'}
+        'gaussian09', 'gaussian16', 'orca4', 'psi4', 'molpro2015'}
 
 
 def test__opt_geometry_programs():
@@ -55,3 +55,9 @@ def test__vpt2_programs():
 
 if __name__ == '__main__':
     test__programs()
+    test__gradient_programs()
+    test__hessian_programs()
+    test__opt_geometry_programs()
+    test__opt_zmatrix_programs()
+    test__irc_programs()
+    test__vpt2_programs()
