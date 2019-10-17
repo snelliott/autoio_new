@@ -3,6 +3,8 @@ from elstruct.reader._gaussian16.energ import energy
 from elstruct.reader._gaussian16.surface import gradient
 from elstruct.reader._gaussian16.surface import hessian
 from elstruct.reader._gaussian16.surface import irc_points
+from elstruct.reader._gaussian16.surface import irc_energies
+from elstruct.reader._gaussian16.surface import irc_coordinates
 from elstruct.reader._gaussian16.molecule import opt_geometry
 from elstruct.reader._gaussian16.molecule import opt_zmatrix
 from elstruct.reader._gaussian16.vpt2 import vpt2
@@ -18,6 +20,8 @@ __all__ = [
     'gradient',
     'hessian',
     'irc_points',
+    'irc_energies',
+    'irc_coordinates',
     'opt_geometry',
     'opt_zmatrix',
     'vpt2',
