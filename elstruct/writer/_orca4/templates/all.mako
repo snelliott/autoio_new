@@ -1,8 +1,8 @@
 ## 0. comment block
 # ${comment}
 ## 1. machine options block
-% pal nprocs ${nprocs} end
-% MaxCore ${memory} 
+%% pal nprocs ${nprocs} end
+%% MaxCore ${memory} 
 ## 2. theoretical method block
 % if reference:
 ! ${reference} ${method} ${basis}
@@ -21,13 +21,8 @@
 % endif
 ## 3. theory options block
 % if scf_options:
-% scf
+%% scf
 ${scf_options}
-end
-% endif
-% if corr_options:
-% mdci
-${corr_options}
 end
 % endif
 ## 4. molecule block

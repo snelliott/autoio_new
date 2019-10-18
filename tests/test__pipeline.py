@@ -147,6 +147,13 @@ def test__optimization():
     for prog in elstruct.writer.optimization_programs():
         script_str = SCRIPT_DCT[prog]
 
+        # MRCC2018 does not support constrained optimizations
+        if prog != 'mrcc2018':
+            opt_kwargs = {'orb_restricted': orb_restricted,
+                          'frozen_coordinates':  frozen_coordinates}
+        else:
+            opt_kwargs = {'orb_restricted': orb_restricted}
+
         vals = _test_pipeline(
             script_str=script_str,
             writer=elstruct.writer.optimization,
@@ -156,8 +163,7 @@ def test__optimization():
                 elstruct.reader.opt_zmatrix_(prog),
             ),
             args=(geom, charge, mult, method, basis, prog),
-            kwargs={'orb_restricted': orb_restricted,
-                    'frozen_coordinates':  frozen_coordinates},
+            kwargs=opt_kwargs,
             error=elstruct.Error.OPT_NOCONV,
             error_kwargs={'job_options': [
                 elstruct.option.specify(
