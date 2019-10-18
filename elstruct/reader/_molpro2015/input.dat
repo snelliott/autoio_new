@@ -11,6 +11,8 @@ H         -0.00000        0.53835        0.78304
 basis=6-31G*
 
 {rhf}
-{ccsd(t)}
 {optg}
+
+molpro_energy=energy
+show[1,e25.15],molpro_energy
 

@@ -41,7 +41,6 @@ status
 {freq,${job_options}}
 put,molden,freq.molden
 status
-%elif job_key == 'energy':
 
 molpro_energy=energy
 show[1,e25.15],molpro_energy

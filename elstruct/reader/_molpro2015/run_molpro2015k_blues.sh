@@ -4,7 +4,7 @@
 CWD=$(pwd)
 
 # Set host
-HOST=b460
+HOST=b458
 
 # Load Molpro
 module load molpro/2015.1_170920
