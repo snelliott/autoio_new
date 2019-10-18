@@ -5,6 +5,7 @@ import autoparse.find as apf
 import elstruct.par
 
 
+# Exit message for the program
 def has_normal_exit_message(output_string):
     """ does this output string have a normal exit message?
     """
@@ -12,6 +13,38 @@ def has_normal_exit_message(output_string):
     return apf.has_match(pattern, output_string, case=False)
 
 
+# Parsers for convergence success messages
+def has_scf_convergence_message(output_string):
+    """ does this output string have a convergence success message?
+    """
+    scf_str1 = (
+        'Initial convergence to {} achieved.  Increase integral accuracy.' +
+        app.LINE_FILL + app.NEWLINE + app.LINE_FILL + app.escape('SCF Done:')
+    ).format(app.EXPONENTIAL_FLOAT_D)
+    scf_str2 = app.escape('Rotation gradient small -- convergence achieved.')
+    pattern = app.one_of_these([scf_str1, scf_str2])
+    return apf.has_match(pattern, output_string, case=False)
+
+
+def has_opt_convergence_message(output_string):
+    """ does this output string have a convergence success message?
+    """
+    pattern = (
+        app.escape('Optimization completed.') +
+        app.LINE_FILL + app.NEWLINE + app.LINE_FILL +
+        app.escape('-- Stationary point found.')
+    )
+    return apf.has_match(pattern, output_string, case=False)
+
+
+def has_irc_convergence_message(output_string):
+    """ does this output string have a convergence success message?
+    """
+    pattern = app.escape('Reaction path calculation complete.')
+    return apf.has_match(pattern, output_string, case=False)
+
+
+# Parsers for various error messages
 def _has_scf_nonconvergence_error_message(output_string):
     """ does this output string have an SCF non-convergence message?
     """
@@ -59,3 +92,14 @@ def has_error_message(error, output_string):
     # get the appropriate reader and call it
     error_reader = ERROR_READER_DCT[error]
     return error_reader(output_string)
+
+
+if __name__ == '__main__':
+    with open('output.dat', 'r') as f:
+        outstr = f.read()
+    with open('prod1_l1.log', 'r') as f:
+        pstr = f.read()
+    print(has_scf_convergence_message(outstr))
+    print(has_irc_convergence_message(outstr))
+    print(has_scf_convergence_message(pstr))
+    print(has_opt_convergence_message(pstr))

@@ -1,0 +1,16 @@
+memory,1000,m
+gthresh,energy=1.0d-10,orbital=1.0d-10
+
+angstrom
+Geometry = {
+O         -0.00000       -0.01840        0.00000
+H          0.00000        0.53835       -0.78304
+H         -0.00000        0.53835        0.78304
+}
+
+basis=6-31G*
+
+{rhf}
+{ccsd(t)}
+{optg}
+
