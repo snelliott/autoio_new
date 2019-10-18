@@ -199,13 +199,19 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     # scf_options = _evaluate_options(scf_options)
     # casscf_options = _evaluate_options(casscf_options)
     # job_options = _evaluate_options(job_options)
+    numerical = False
+    nprocs = 1
+    coord_sys = 'xyz'
 
     if saddle:
         raise NotImplementedError
 
     fill_dct = {
+        'nprocs': nprocs,
+        'numerical': numerical,
+        'coord_sys': coord_sys,
         TemplateKey.MEMORY: memory,
-        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
+        # TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
         TemplateKey.REFERENCE: reference,
         TemplateKey.METHOD: orca4_method,
         TemplateKey.BASIS: orca4_basis,
@@ -216,11 +222,11 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.CHARGE: charge,
         TemplateKey.MULT: mult,
         TemplateKey.GEOM: geom_str,
-        TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
-        TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
+        # TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
+        # TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
         TemplateKey.JOB_KEY: job_key,
-        TemplateKey.JOB_OPTIONS: ','.join(job_options),
-        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        # TemplateKey.JOB_OPTIONS: ','.join(job_options),
+        # TemplateKey.GEN_LINES: '\n'.join(gen_lines),
     }
     return fill_dct
 
