@@ -6,6 +6,12 @@ import elstruct.par
 
 PROG = elstruct.par.Program.MOLPRO2015
 
+BASIS_PATTERN = app.one_or_more(
+    app.one_of_these(
+        [app.LETTER, app.NUMBER, app.escape('*'), app.escape('-'),
+         app.escape('('), app.escape(')')])
+    )
+
 
 def _hf_energy(output_string):
     ene = ar.energy.read(
@@ -47,7 +53,7 @@ def _ccsd_t_energy(output_string):
             app.escape('!RHF-UCCSD(T) energy'),
             app.LINESPACES.join([
                 app.escape('!CCSD(T) STATE'),
-                app.FLOAT, 
+                app.FLOAT,
                 app.escape('Energy')]),
         ]))
     return ene
@@ -114,6 +120,20 @@ def _mrci_energy(output_string):
     return ene
 
 
+def _end_file_energy(output_string):
+    # end_file_ptt = (
+    #     method + app.escape('/') + BASIS_PATTERN +
+    #     app.escape('//') +
+    #     app.one_or_more(app.NONNEWLINE) +
+    #     'energy=')
+    end_file_ptt = 'MOLPRO_ENERGY'
+    ene = ar.energy.read(
+        output_string,
+        end_file_ptt
+        )
+    return ene
+
+
 # a dictionary of functions for reading the energy from the output, by method
 ENERGY_READER_DCT = {
     elstruct.par.Method.HF[0]: _hf_energy,
@@ -142,6 +162,16 @@ def energy(method, output_string):
     """ get total energy from output
     """
     assert method in method_list()
-    # get the appropriate reader and call it
-    energy_reader = ENERGY_READER_DCT[method]
-    return energy_reader(output_string)
+    # First Try and grab the energy printed at the end of the file
+    ene = _end_file_energy(output_string)
+    if ene is None:
+        # get the appropriate reader and call it
+        energy_reader = ENERGY_READER_DCT[method]
+        ene = energy_reader(output_string)
+    return ene
+
+
+if __name__ == '__main__':
+    with open('output.dat', 'r') as f:
+        out_str = f.read()
+    print(energy('hf', out_str))

@@ -39,3 +39,10 @@ def polarizability(output_string):
                        [vals[3], vals[4], vals[5]]])
 
     return tensor
+
+
+if __name__ == '__main__':
+    with open('polar.out', 'r') as f:
+        out_str = f.read()
+    print(dipole_moment(out_str))
+    print(polarizability(out_str))
