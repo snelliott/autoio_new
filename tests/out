@@ -1,7 +1,0 @@
-def test__programs():
-def test__gradient_programs():
-def test__hessian_programs():
-def test__opt_geometry_programs():
-def test__opt_zmatrix_programs():
-def test__irc_programs():
-def test__vpt2_programs():

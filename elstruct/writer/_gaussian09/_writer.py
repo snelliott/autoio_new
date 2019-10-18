@@ -318,7 +318,8 @@ def _reference(method, mult, orb_restricted):
     if elstruct.par.Method.is_dft(method):
         reference = ''
     elif mult != 1:
-        reference = GAUSSIAN09Reference.ROHF if orb_restricted else GAUSSIAN09Reference.UHF
+        reference = (GAUSSIAN09Reference.ROHF
+                     if orb_restricted else GAUSSIAN09Reference.UHF)
     else:
         assert mult == 1 and orb_restricted is True
         reference = GAUSSIAN09Reference.RHF

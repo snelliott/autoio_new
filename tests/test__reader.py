@@ -15,14 +15,15 @@ def test__gradient_programs():
     """ test elstruct.reader.gradient_programs
     """
     assert set(reader.gradient_programs()) >= {
-        'cfour2', 'gaussian09', 'gaussian16', 'mrcc2018', 'orca4', 'psi4'}
+        'cfour2', 'gaussian09', 'gaussian16', 'molpro2015',
+        'mrcc2018', 'orca4', 'psi4'}
 
 
 def test__hessian_programs():
     """ test elstruct.reader.hessian_programs
     """
     assert set(reader.hessian_programs()) >= {
-        'gaussian09', 'gaussian16', 'orca4', 'psi4', 'molpro2015'}
+        'gaussian09', 'gaussian16', 'molpro2015', 'orca4', 'psi4'}
 
 
 def test__opt_geometry_programs():

@@ -74,7 +74,9 @@ def energy(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options,
+        casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -100,7 +102,9 @@ def gradient(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options,
+        casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -126,7 +130,9 @@ def hessian(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options,
+        casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -152,7 +158,9 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options,
+        casscf_options=casscf_options,
+        corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         saddle=saddle, gen_lines=gen_lines,
     )
@@ -173,7 +181,6 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     geom_str, zmat_var_val_str, zmat_const_val_str = _geometry_strings(
         geom, frozen_coordinates)
 
-
     memory = memory * 1000.0
 
     if elstruct.par.Method.is_correlated(method):
@@ -187,11 +194,14 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         orca4_method = reference
         reference = ''
 
-    scf_guess_options, scf_options = _intercept_scf_guess_option(scf_options)
-    scf_guess_options = _evaluate_options(scf_guess_options)
-    scf_options = _evaluate_options(scf_options)
-    casscf_options = _evaluate_options(casscf_options)
-    job_options = _evaluate_options(job_options)
+    # scf_guess_options, scf_options = _intercept_scf_guess_option(scf_options)
+    # scf_guess_options = _evaluate_options(scf_guess_options)
+    # scf_options = _evaluate_options(scf_options)
+    # casscf_options = _evaluate_options(casscf_options)
+    # job_options = _evaluate_options(job_options)
+
+    if saddle:
+        raise NotImplementedError
 
     fill_dct = {
         TemplateKey.MEMORY: memory,
@@ -200,7 +210,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.METHOD: orca4_method,
         TemplateKey.BASIS: orca4_basis,
         TemplateKey.SCF_OPTIONS: ','.join(scf_options),
-        TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
+        # TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
         TemplateKey.MOL_OPTIONS: ','.join(mol_options),
         TemplateKey.COMMENT: comment,
         TemplateKey.CHARGE: charge,
@@ -247,18 +257,19 @@ def _reference(method, mult, orb_restricted):
     if elstruct.par.Method.is_dft(method):
         reference = ''
     elif mult != 1:
-        reference = Orca4Reference.ROHF if orb_restricted else Orca4Reference.UHF
+        reference = (Orca4Reference.ROHF
+                     if orb_restricted else Orca4Reference.UHF)
     else:
         assert mult == 1 and orb_restricted is True
         reference = Orca4Reference.RHF
     return reference
 
 
-def _evaluate_options(opts):
-    opts = list(opts)
-    for idx, opt in enumerate(opts):
-        if elstruct.option.is_valid(opt):
-            name = elstruct.option.name(opt)
-            assert name in par.OPTION_NAMES
-            opts[idx] = par.Orca4_OPTION_EVAL_DCT[name](opt)
-    return tuple(opts)
+# def _evaluate_options(opts):
+#     opts = list(opts)
+#     for idx, opt in enumerate(opts):
+#         if elstruct.option.is_valid(opt):
+#             name = elstruct.option.name(opt)
+#             assert name in par.OPTION_NAMES
+#             opts[idx] = par.Orca4_OPTION_EVAL_DCT[name](opt)
+#     return tuple(opts)

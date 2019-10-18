@@ -9,18 +9,21 @@ import autoparse.pattern as app
 import autoparse.find as apf
 
 
-# def gradient(output_string):
-#     """ read gradient from the output string
-#     """
-#     grad = ar.matrix.read(
-#         output_string,
-#         start_ptt=app.padded(app.NEWLINE).join([
-#             app.padded(app.escape('Forces (Hartrees/Bohr)'), app.NONNEWLINE),
-#             app.LINE, app.LINE, '']),
-#         line_start_ptt=app.LINESPACES.join([app.UNSIGNED_INTEGER] * 2))
-#     grad = numpy.multiply(grad, -1.0)
-#     assert numpy.shape(grad)[1] == 3
-#     return grad
+def gradient(output_string):
+    """ read gradient from the output string
+    """
+    head_ptt = ('Atom' + app.SPACES +
+                app.escape('dE/dx') + app.SPACES +
+                app.escape('dE/dy') + app.SPACES +
+                app.escape('dE/dz'))
+    grad = ar.matrix.read(
+        output_string,
+        start_ptt=app.padded(app.NEWLINE).join([
+            app.padded(head_ptt, app.NONNEWLINE),
+            app.LINE, '']),
+        line_start_ptt=app.UNSIGNED_INTEGER)
+    assert numpy.shape(grad)[1] == 3
+    return grad
 
 
 def hessian(output_string):
@@ -45,7 +48,7 @@ def hessian(output_string):
 
 
 if __name__ == '__main__':
-    with open('output.dat', 'r') as f:
+    with open('old.out', 'r') as f:
         OUTPUT_STRING = f.read()
-    # print(gradient(OUTPUT_STRING))
+    print(gradient(OUTPUT_STRING))
     print(hessian(OUTPUT_STRING))

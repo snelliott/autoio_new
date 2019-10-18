@@ -18,14 +18,14 @@ class Module():
 
 class Program():
     """ Programs to be called """
-    PSI4 = 'psi4'
+    CFOUR2 = 'cfour2'
     GAUSSIAN09 = 'gaussian09'
     GAUSSIAN16 = 'gaussian16'
     MOLPRO2015 = 'molpro2015'
-    CFOUR2 = 'cfour2'
-    ORCA4 = 'orca4'
     MRCC2018 = 'mrcc2018'
     NWCHEM6 = 'nwchem6'
+    ORCA4 = 'orca4'
+    PSI4 = 'psi4'
 
 
 def programs():
@@ -50,8 +50,8 @@ class Method():
                      multiplet orb restrictions})
     """
     HF = ('hf',
-          {Program.PSI4: (
-              'hf', 'uhf',
+          {Program.CFOUR2: (
+              'rhf', 'hf',
               (True,), (False, True)),
            Program.GAUSSIAN09: (
                'hf', 'hf',
@@ -59,20 +59,23 @@ class Method():
            Program.GAUSSIAN16: (
                'hf', 'hf',
                (True,), (False, True)),
-           Program.CFOUR2: (
-               'rhf', 'hf',
-               (True,), (False, True)),
            Program.MOLPRO2015: (
                'hf', 'hf',
                (True,), (False, True)),
            Program.MRCC2018: (
                'hf', 'hf',
+               (True,), (False, True)),
+           Program.ORCA4: (
+               'hf', 'uhf',
+               (True,), (False, True)),
+           Program.PSI4: (
+               'hf', 'uhf',
                (True,), (False, True))})
 
     class Corr():
         """ correlated method names """
         MP2 = ('mp2',
-               {Program.PSI4: (
+               {Program.CFOUR2: (
                    'mp2', 'mp2',
                    (True,), (False, True)),
                 Program.GAUSSIAN09: (
@@ -83,17 +86,29 @@ class Method():
                     (True,), (False, True)),
                 Program.MOLPRO2015: (
                     'mp2', 'ump2',
+                    (True,), (False, True)),
+                Program.MRCC2018: (
+                    'mp2', 'mp2',
+                    (True,), (False, True)),
+                Program.ORCA4: (
+                    'mp2', 'mp2',
+                    (True,), (False, True)),
+                Program.PSI4: (
+                    'mp2', 'mp2',
                     (True,), (False, True))})
         CCSD = ('ccsd',
-                {Program.MOLPRO2015: (
-                    'ccsd', 'uccsd',
-                    (True,), (True, True))})
+                {Program.CFOUR2: (
+                    'ccsd', 'ccsd',
+                    (True,), (True,)),
+                 Program.MOLPRO2015: (
+                     'ccsd', 'uccsd',
+                     (True,), (True, True))})
         CCSD_T = ('ccsd(t)',
-                  {Program.MOLPRO2015: (
-                      'ccsd(t)', 'uccsd(t)',
+                  {Program.CFOUR2: (
+                      'ccsd(t)', 'ccsd(t)',
                       (True,), (True,)),
-                   Program.CFOUR2: (
-                       'ccsd(t)', 'ccsd(t)',
+                   Program.MOLPRO2015: (
+                       'ccsd(t)', 'uccsd(t)',
                        (True,), (True,)),
                    Program.MRCC2018: (
                        'ccsd(t)', 'ccsd(t)',
@@ -324,69 +339,119 @@ class Basis():
 
     (name, {program: name})
     """
-    STO3G = ('sto-3g', {Program.PSI4: None,
+    STO3G = ('sto-3g', {Program.CFOUR2: None,
                         Program.GAUSSIAN09: None,
                         Program.GAUSSIAN16: None,
-                        Program.MOLPRO2015: None})
+                        Program.MOLPRO2015: None,
+                        Program.MRCC2018: None,
+                        Program.NWCHEM6: None,
+                        Program.ORCA4: None,
+                        Program.PSI4: None})
 
     class Pople:
         """ Pople basis sets """
-        P321 = ('3-21g', {Program.PSI4: None,
+        P321 = ('3-21g', {Program.CFOUR2: None,
                           Program.GAUSSIAN09: None,
                           Program.GAUSSIAN16: None,
-                          Program.MOLPRO2015: None})
-        P631 = ('6-31g', {Program.PSI4: None,
-                          Program.GAUSSIAN09: None,
-                          Program.GAUSSIAN16: None,
-                          Program.CFOUR2: None,
                           Program.MOLPRO2015: None,
-                          Program.MRCC2018: None})
-        P631S = ('6-31g*', {Program.PSI4: None,
+                          Program.MRCC2018: None,
+                          Program.NWCHEM6: None,
+                          Program.ORCA4: None,
+                          Program.PSI4: None})
+        P631 = ('6-31g', {Program.CFOUR2: None,
+                          Program.GAUSSIAN09: None,
+                          Program.GAUSSIAN16: None,
+                          Program.MOLPRO2015: None,
+                          Program.MRCC2018: None,
+                          Program.NWCHEM6: None,
+                          Program.ORCA4: None,
+                          Program.PSI4: None})
+        P631S = ('6-31g*', {Program.CFOUR2: None,
                             Program.GAUSSIAN09: None,
                             Program.GAUSSIAN16: None,
-                            Program.MOLPRO2015: None})
-        P631PS = ('6-31+g*', {Program.PSI4: None,
+                            Program.MOLPRO2015: None,
+                            Program.MRCC2018: None,
+                            Program.NWCHEM6: None,
+                            Program.ORCA4: None,
+                            Program.PSI4: None})
+        P631PS = ('6-31+g*', {Program.CFOUR2: None,
                               Program.GAUSSIAN09: None,
                               Program.GAUSSIAN16: None,
-                              Program.MOLPRO2015: None})
+                              Program.MOLPRO2015: None,
+                              Program.MRCC2018: None,
+                              Program.NWCHEM6: None,
+                              Program.ORCA4: None,
+                              Program.PSI4: None})
 
     class Dunning():
         """ Dunning basis sets """
-        D = ('cc-pvdz', {Program.PSI4: None,
+        D = ('cc-pvdz', {Program.CFOUR2: None,
                          Program.GAUSSIAN09: None,
                          Program.GAUSSIAN16: None,
-                         Program.MOLPRO2015: None})
-        T = ('cc-pvtz', {Program.PSI4: None,
+                         Program.MOLPRO2015: None,
+                         Program.MRCC2018: None,
+                         Program.NWCHEM6: None,
+                         Program.ORCA4: None,
+                         Program.PSI4: None})
+        T = ('cc-pvtz', {Program.CFOUR2: None,
                          Program.GAUSSIAN09: None,
                          Program.GAUSSIAN16: None,
-                         Program.MOLPRO2015: None})
-        Q = ('cc-pvqz', {Program.PSI4: None,
+                         Program.MOLPRO2015: None,
+                         Program.MRCC2018: None,
+                         Program.NWCHEM6: None,
+                         Program.ORCA4: None,
+                         Program.PSI4: None})
+        Q = ('cc-pvqz', {Program.CFOUR2: None,
                          Program.GAUSSIAN09: None,
                          Program.GAUSSIAN16: None,
-                         Program.MOLPRO2015: None})
-        P = ('cc-pv5z', {Program.PSI4: None,
+                         Program.MOLPRO2015: None,
+                         Program.MRCC2018: None,
+                         Program.NWCHEM6: None,
+                         Program.ORCA4: None,
+                         Program.PSI4: None})
+        P = ('cc-pv5z', {Program.CFOUR2: None,
                          Program.GAUSSIAN09: None,
                          Program.GAUSSIAN16: None,
-                         Program.MOLPRO2015: None})
+                         Program.MOLPRO2015: None,
+                         Program.MRCC2018: None,
+                         Program.NWCHEM6: None,
+                         Program.ORCA4: None,
+                         Program.PSI4: None})
 
         class Aug():
             """ augmented Dunning basis sets """
-            AD = ('aug-cc-pvdz', {Program.PSI4: None,
+            AD = ('aug-cc-pvdz', {Program.CFOUR2: None,
                                   Program.GAUSSIAN09: None,
                                   Program.GAUSSIAN16: None,
-                                  Program.MOLPRO2015: None})
-            AT = ('aug-cc-pvtz', {Program.PSI4: None,
+                                  Program.MOLPRO2015: None,
+                                  Program.MRCC2018: None,
+                                  Program.NWCHEM6: None,
+                                  Program.ORCA4: None,
+                                  Program.PSI4: None})
+            AT = ('aug-cc-pvtz', {Program.CFOUR2: None,
                                   Program.GAUSSIAN09: None,
                                   Program.GAUSSIAN16: None,
-                                  Program.MOLPRO2015: None})
-            AQ = ('aug-cc-pvqz', {Program.PSI4: None,
+                                  Program.MOLPRO2015: None,
+                                  Program.MRCC2018: None,
+                                  Program.NWCHEM6: None,
+                                  Program.ORCA4: None,
+                                  Program.PSI4: None})
+            AQ = ('aug-cc-pvqz', {Program.CFOUR2: None,
                                   Program.GAUSSIAN09: None,
                                   Program.GAUSSIAN16: None,
-                                  Program.MOLPRO2015: None})
-            A5 = ('aug-cc-pv5z', {Program.PSI4: None,
+                                  Program.MOLPRO2015: None,
+                                  Program.MRCC2018: None,
+                                  Program.NWCHEM6: None,
+                                  Program.ORCA4: None,
+                                  Program.PSI4: None})
+            A5 = ('aug-cc-pv5z', {Program.CFOUR2: None,
                                   Program.GAUSSIAN09: None,
                                   Program.GAUSSIAN16: None,
-                                  Program.MOLPRO2015: None})
+                                  Program.MOLPRO2015: None,
+                                  Program.MRCC2018: None,
+                                  Program.NWCHEM6: None,
+                                  Program.ORCA4: None,
+                                  Program.PSI4: None})
 
         class F12():
             """ Dunning F12 basis sets """

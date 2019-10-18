@@ -8,10 +8,15 @@ import elstruct
 
 
 SCRIPT_DCT = {
+    'cfour2': None,
+    'gaussian09': None,
+    'gaussian16': None,
+    'molpro2015': None,
+    'mrcc2018': None,
+    'nwchem6': None,
+    'orca4': None,
     'psi4': "#!/usr/bin/env bash\n"
             "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log",
-    'gaussian09': None,
-    'molpro2015': None,
 }
 
 
@@ -142,6 +147,13 @@ def test__optimization():
     for prog in elstruct.writer.optimization_programs():
         script_str = SCRIPT_DCT[prog]
 
+        # MRCC2018 does not support constrained optimizations
+        if prog != 'mrcc2018':
+            opt_kwargs = {'orb_restricted': orb_restricted,
+                          'frozen_coordinates':  frozen_coordinates}
+        else:
+            opt_kwargs = {'orb_restricted': orb_restricted}
+
         vals = _test_pipeline(
             script_str=script_str,
             writer=elstruct.writer.optimization,
@@ -151,8 +163,7 @@ def test__optimization():
                 elstruct.reader.opt_zmatrix_(prog),
             ),
             args=(geom, charge, mult, method, basis, prog),
-            kwargs={'orb_restricted': orb_restricted,
-                    'frozen_coordinates':  frozen_coordinates},
+            kwargs=opt_kwargs,
             error=elstruct.Error.OPT_NOCONV,
             error_kwargs={'job_options': [
                 elstruct.option.specify(
@@ -174,29 +185,24 @@ def test__optimization():
 def _test_pipeline(script_str, writer, readers,
                    args, kwargs, error=None, error_kwargs=None):
     read_vals = []
-    print()
-    print(args[1:], writer.__name__)
     prog = args[-1]
-    # for programs with no run test, at lest make sure we can generate
-    # an input file
+
+    # for programs with no run test, ensure input file generated
     _ = writer(*args, **kwargs)
     if script_str is not None:
         script_str = SCRIPT_DCT[prog]
         run_dir = tempfile.mkdtemp()
-        print(run_dir)
         _, out_str = elstruct.run.direct(
             writer, script_str, run_dir, *args, **kwargs)
 
         assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
         for reader in readers:
-            print(reader.__name__)
             val = reader(out_str)
             read_vals.append(val)
 
         if error is not None:
             run_dir = tempfile.mkdtemp()
-            print(run_dir, '(error run)')
             assert not elstruct.reader.has_error_message(prog, error,
                                                          out_str)
 
@@ -215,6 +221,6 @@ def _test_pipeline(script_str, writer, readers,
 
 if __name__ == '__main__':
     test__energy()
-    # test__gradient()
-    # test__hessian()
-    # test__optimization()
+    test__gradient()
+    test__hessian()
+    test__optimization()
