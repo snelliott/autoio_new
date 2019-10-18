@@ -121,7 +121,7 @@ def irc_coordinates(output_string):
 def _read_irc_reacion_path_summary(output_string, read_val):
     """ get the desired values from the reaction path summary block
     """
-    assert read_vals in ('energy', 'coord')
+    assert read_val in ('energy', 'coord')
 
     block = apf.last_capture(
         (app.escape('Summary of reaction path following') +
