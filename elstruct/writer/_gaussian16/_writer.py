@@ -68,7 +68,7 @@ def energy(geom, charge, mult, method, basis,
            orb_restricted=None,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
-           gen_lines=()):
+           gen_lines=None):
     """ energy input string
     """
     job_key = JobKey.ENERGY
@@ -93,7 +93,7 @@ def gradient(geom, charge, mult, method, basis,
              orb_restricted=None,
              scf_options=(), casscf_options=(), corr_options=(),
              # generic options
-             gen_lines=(),
+             gen_lines=None,
              # job options
              job_options=()):
     """ gradient input string
@@ -120,7 +120,7 @@ def hessian(geom, charge, mult, method, basis,
             orb_restricted=None,
             scf_options=(), casscf_options=(), corr_options=(),
             # generic options
-            gen_lines=(),
+            gen_lines=None,
             # job options
             job_options=()):
     """ hessian input string
@@ -147,7 +147,7 @@ def vpt2(geom, charge, mult, method, basis,
          orb_restricted=None,
          scf_options=(), casscf_options=(), corr_options=(),
          # generic options
-         gen_lines=(),
+         gen_lines=None,
          # job options
          job_options=()):
     """ hessian input string
@@ -174,7 +174,7 @@ def irc(geom, charge, mult, method, basis,
         orb_restricted=None,
         scf_options=(), casscf_options=(), corr_options=(),
         # generic options
-        gen_lines=(),
+        gen_lines=None,
         # job options
         job_options=(), frozen_coordinates=(), irc_direction=None):
     """ optimization input string
@@ -202,7 +202,7 @@ def optimization(geom, charge, mult, method, basis,
                  orb_restricted=None,
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
-                 gen_lines=(),
+                 gen_lines=None,
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
@@ -228,7 +228,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           scf_options, casscf_options, corr_options,
                           job_options=(), frozen_coordinates=(),
                           saddle=False, irc_direction=None,
-                          gen_lines=()):
+                          gen_lines=None):
 
     reference = _reference(method, mult, orb_restricted)
     geom_str, zmat_var_val_str, zmat_const_val_str = _geometry_strings(
@@ -263,6 +263,12 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         assert (irc_direction.upper() == 'FORWARD' or
                 irc_direction.upper() == 'REVERSE')
         job_options = (irc_direction.upper(),) + job_options
+
+    # Set the gen lines blocks
+    if gen_lines is not None:
+        gen_lines = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
+    else:
+        gen_lines = ''
 
     fill_dct = {
         TemplateKey.MEMORY: memory,
@@ -309,7 +315,7 @@ def _geometry_strings(geom, frozen_coordinates):
         zmat_cval_str = aw.zmatrix.setval_block(
             cval_dct, setval_sign=' ').strip()
     else:
-        raise ValueError("Invalid geometry value:\n{}".format(geom))
+        raise ValueError("Invalid geometry value:\n{0}".format(geom))
 
     return geom_str, zmat_vval_str, zmat_cval_str
 

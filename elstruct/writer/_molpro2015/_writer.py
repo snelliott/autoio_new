@@ -61,7 +61,8 @@ class TemplateKey():
     COMMENT = 'comment'
     JOB_KEY = 'job_key'
     JOB_OPTIONS = 'job_options'
-    GEN_LINES = 'gen_lines'
+    GEN_LINES_1 = 'gen_lines_1'
+    GEN_LINES_2 = 'gen_lines_2'
 
 
 def energy(geom, charge, mult, method, basis,
@@ -73,7 +74,7 @@ def energy(geom, charge, mult, method, basis,
            orb_restricted=None,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
-           gen_lines=()):
+           gen_lines=None):
     """ energy input string
     """
     job_key = JobKey.ENERGY
@@ -99,7 +100,7 @@ def gradient(geom, charge, mult, method, basis,
              orb_restricted=None,
              scf_options=(), casscf_options=(), corr_options=(),
              # generic options
-             gen_lines=(),
+             gen_lines=None,
              # job options
              job_options=()):
     """ gradient input string
@@ -126,7 +127,7 @@ def hessian(geom, charge, mult, method, basis,
             orb_restricted=None,
             scf_options=(), casscf_options=(), corr_options=(),
             # generic options
-            gen_lines=(),
+            gen_lines=None,
             # job options
             job_options=()):
     """ hessian input string
@@ -153,7 +154,7 @@ def optimization(geom, charge, mult, method, basis,
                  orb_restricted=None,
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
-                 gen_lines=(),
+                 gen_lines=None,
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
@@ -180,7 +181,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           scf_options, casscf_options, corr_options,
                           job_options=(), frozen_coordinates=(),
                           saddle=False,
-                          gen_lines=()):
+                          gen_lines=None):
 
     # Set the spin
     singlet = (mult == 1)
@@ -223,6 +224,14 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     if job_key == 'hessian':
         job_directives.append('print,hessian,low=5')
 
+    # Set the gen lines blocks
+    if gen_lines is not None:
+        gen_lines_1 = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
+        gen_lines_2 = '\n'.join(gen_lines[2]) if 2 in gen_lines else ''
+    else:
+        gen_lines_1 = ''
+        gen_lines_2 = ''
+
     # Create a dictionary to fille the template
     fill_dct = {
         TemplateKey.JOB_KEY: job_key,
@@ -242,7 +251,8 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.CORR_METHOD: molpro_corr_method,
         TemplateKey.CORR_OPTIONS: ','.join(corr_options),
         TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
-        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        TemplateKey.GEN_LINES_1: gen_lines_1,
+        TemplateKey.GEN_LINES_2: gen_lines_2
     }
 
     return fill_dct

@@ -64,7 +64,7 @@ def energy(geom, charge, mult, method, basis,
            orb_restricted=None,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
-           gen_lines=()):
+           gen_lines=None):
     """ energy input string
     """
     job_key = JobKey.ENERGY
@@ -89,7 +89,7 @@ def gradient(geom, charge, mult, method, basis,
              orb_restricted=None,
              scf_options=(), casscf_options=(), corr_options=(),
              # generic options
-             gen_lines=(),
+             gen_lines=None,
              # job options
              job_options=()):
     """ gradient input string
@@ -117,7 +117,7 @@ def hessian(geom, charge, mult, method, basis,
             orb_restricted=None,
             scf_options=(), casscf_options=(), corr_options=(),
             # generic options
-            gen_lines=(),
+            gen_lines=None,
             # job options
             job_options=()):
     """ hessian input string
@@ -145,7 +145,7 @@ def optimization(geom, charge, mult, method, basis,
                  orb_restricted=None,
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
-                 gen_lines=(),
+                 gen_lines=None,
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
@@ -168,8 +168,9 @@ def optimization(geom, charge, mult, method, basis,
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
-                          machine_options, scf_options, casscf_options, corr_options,
-                          gen_lines=(),
+                          machine_options,
+                          scf_options, casscf_options, corr_options,
+                          gen_lines=None,
                           job_options=(), frozen_coordinates=(), saddle=False):
 
     frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (
@@ -190,6 +191,12 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
 
     psi4_method = elstruct.par.program_method_name(PROG, method)
     psi4_basis = elstruct.par.program_basis_name(PROG, basis)
+
+    # Set the gen lines blocks
+    if gen_lines is not None:
+        gen_lines = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
+    else:
+        gen_lines = ''
 
     fill_dct = {
         TemplateKey.COMMENT: comment,
@@ -229,7 +236,7 @@ def _geometry_strings(geom):
         geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)
         zmat_val_str = aw.zmatrix.setval_block(val_dct)
     else:
-        raise ValueError("Invalid geometry value:\n{}".format(geom))
+        raise ValueError("Invalid geometry value:\n{0}".format(geom))
 
     return geom_str, zmat_val_str
 

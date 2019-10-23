@@ -11,7 +11,7 @@ def energy(geom, charge, mult, method, basis,
            orb_restricted=None,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
-           gen_lines=()):
+           gen_lines=None):
     """ _ """
 
     raise NotImplementedError(
@@ -32,7 +32,7 @@ def gradient(geom, charge, mult, method, basis,
              orb_restricted=None,
              scf_options=(), casscf_options=(), corr_options=(),
              # generic options
-             gen_lines=(),
+             gen_lines=None,
              # job options
              job_options=()):
     """ _ """
@@ -56,7 +56,7 @@ def hessian(geom, charge, mult, method, basis,
             orb_restricted=None,
             scf_options=(), casscf_options=(), corr_options=(),
             # generic options
-            gen_lines=(),
+            gen_lines=None,
             # job options
             job_options=()):
     """ _ """
@@ -80,7 +80,7 @@ def vpt2(geom, charge, mult, method, basis,
          orb_restricted=None,
          scf_options=(), casscf_options=(), corr_options=(),
          # generic options
-         gen_lines=(),
+         gen_lines=None,
          # job options
          job_options=()):
     """ _ """
@@ -104,7 +104,7 @@ def irc(geom, charge, mult, method, basis,
         orb_restricted=None,
         scf_options=(), casscf_options=(), corr_options=(),
         # generic options
-        gen_lines=(),
+        gen_lines=None,
         # job options
         job_options=(), frozen_coordinates=(), irc_direction=None):
     """ _ """
@@ -128,7 +128,7 @@ def optimization(geom, charge, mult, method, basis,
                  orb_restricted=None,
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
-                 gen_lines=(),
+                 gen_lines=None,
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ _ """

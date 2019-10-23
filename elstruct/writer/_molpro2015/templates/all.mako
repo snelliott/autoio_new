@@ -4,11 +4,11 @@ memory,${memory_mw},m
 % if machine_options:
 ${machine_options}
 % endif
-## 0b. general lines block
-% if gen_lines != '':
-${gen_lines}
+## 1. general lines block 1
+% if gen_lines_1 != '':
+${gen_lines_1}
 % endif
-## 1. molecule block
+## 2. molecule block
 % if mol_options:
 ${mol_options}
 % endif
@@ -19,10 +19,16 @@ ${geom}
 % if zmat_vals != '':
 ${zmat_vals}
 % endif
+## 3. spin and charge block
 set,spin=${spin}
 set,charge=${charge}
-## 2. theory block
+## 4. basis block
 basis=${basis}
+## 5. general lines block 2 (for fancy wavefunction guessing)
+% if gen_lines_2 != '':
+${gen_lines_2}
+% endif
+## 6. method block 
 % if scf_method:
 {${scf_method},${scf_options},maxit=300}
 % endif
@@ -33,6 +39,7 @@ basis=${basis}
 {${corr_method},${corr_options}}
 % endif
 
+## 7.job block
 % if job_key == 'gradient':
 {force,${job_options}}
 % elif job_key == 'optimization':
