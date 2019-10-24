@@ -63,7 +63,7 @@ def energy(geom, charge, mult, method, basis, prog,
            orb_restricted=None,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
-           gen_lines=()):
+           gen_lines=None):
     """ energy input string
 
     :param geom: cartesian or z-matrix geometry
@@ -95,7 +95,7 @@ def energy(geom, charge, mult, method, basis, prog,
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     :param gen_lines: generic lines for the input file
-    :type gen_lines: tuple[str]
+    :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -107,7 +107,8 @@ def energy(geom, charge, mult, method, basis, prog,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines)
 
 
@@ -128,7 +129,7 @@ def gradient(geom, charge, mult, method, basis, prog,
              orb_restricted=None,
              scf_options=(), casscf_options=(), corr_options=(),
              # generic options
-             gen_lines=(),
+             gen_lines=None,
              # job options
              job_options=()):
     """ gradient input string
@@ -162,7 +163,7 @@ def gradient(geom, charge, mult, method, basis, prog,
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     :param gen_lines: generic lines for the input file
-    :type gen_lines: tuple[str]
+    :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -174,7 +175,8 @@ def gradient(geom, charge, mult, method, basis, prog,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines, job_options=job_options)
 
 
@@ -195,7 +197,7 @@ def hessian(geom, charge, mult, method, basis, prog,
             orb_restricted=None,
             scf_options=(), casscf_options=(), corr_options=(),
             # generic options
-            gen_lines=(),
+            gen_lines=None,
             # job options
             job_options=()):
     """ hessian input string
@@ -229,7 +231,7 @@ def hessian(geom, charge, mult, method, basis, prog,
     :param corr_options: correlation method directives
     :type corr_options: tuple[str]
     :param gen_lines: generic lines for the input file
-    :type gen_lines: tuple[str]
+    :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -263,7 +265,7 @@ def vpt2(geom, charge, mult, method, basis, prog,
          orb_restricted=None,
          scf_options=(), casscf_options=(), corr_options=(),
          # generic options
-         gen_lines=(),
+         gen_lines=None,
          # job options
          job_options=()):
     """ hessian input string
@@ -298,6 +300,7 @@ def vpt2(geom, charge, mult, method, basis, prog,
     :type corr_options: tuple[str]
     :param gen_lines: generic lines for the input file
     :type gen_lines: tuple[str]
+    :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -331,7 +334,7 @@ def irc(geom, charge, mult, method, basis, prog,
         orb_restricted=None,
         scf_options=(), casscf_options=(), corr_options=(),
         # generic options
-        gen_lines=(),
+        gen_lines=None,
         # job options
         job_options=(), frozen_coordinates=(), irc_direction=None):
     """ irc input string
@@ -372,7 +375,7 @@ def irc(geom, charge, mult, method, basis, prog,
     :param irc_direction: direction along imaginary mode eigenvector to move
     :type irc_direction: string
     :param gen_lines: generic lines for the input file
-    :type gen_lines: tuple[str]
+    :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
@@ -408,7 +411,7 @@ def optimization(geom, charge, mult, method, basis, prog,
                  orb_restricted=None,
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
-                 gen_lines=(),
+                 gen_lines=None,
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
@@ -449,7 +452,7 @@ def optimization(geom, charge, mult, method, basis, prog,
     :param saddle: optimize a saddle point?
     :type saddle: bool
     :param gen_lines: generic lines for the input file
-    :type gen_lines: tuple[str]
+    :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_restricted)
