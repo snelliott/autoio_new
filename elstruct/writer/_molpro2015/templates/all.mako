@@ -24,7 +24,7 @@ set,charge=${charge}
 ## 2. theory block
 basis=${basis}
 % if scf_method:
-{${scf_method},${scf_options}}
+{${scf_method},${scf_options},maxit=300}
 % endif
 % if ismultiref:
 {casscf,${casscf_options}}
