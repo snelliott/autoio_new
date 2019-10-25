@@ -75,9 +75,14 @@ def error_list():
     raise NotImplementedError()
 
 
-def has_error_message(error, output_string):
+def success_list():
     """ _ """
-    raise NotImplementedError(error, output_string)
+    raise NotImplementedError()
+
+
+def check_convergence_messages(error, success, output_string):
+    """ _ """
+    raise NotImplementedError(error, success, output_string)
 
 
 # version

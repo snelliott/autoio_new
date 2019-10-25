@@ -38,7 +38,8 @@ from elstruct.reader._reader import dipole_moment_
 # status
 from elstruct.reader._reader import has_normal_exit_message
 from elstruct.reader._reader import error_list
-from elstruct.reader._reader import has_error_message
+from elstruct.reader._reader import success_list
+from elstruct.reader._reader import check_convergence_messages
 # version
 from elstruct.reader._reader import program_name
 from elstruct.reader._reader import program_version
@@ -80,7 +81,8 @@ __all__ = [
     # status
     'has_normal_exit_message',
     'error_list',
-    'has_error_message',
+    'success_list',
+    'check_convergence_messages',
     # version
     'program_name',
     'program_version'

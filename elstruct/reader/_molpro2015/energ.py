@@ -2,6 +2,7 @@
 """
 import autoread as ar
 import autoparse.pattern as app
+import autoparse.find as apf
 import elstruct.par
 
 PROG = elstruct.par.Program.MOLPRO2015
@@ -126,11 +127,15 @@ def _end_file_energy(output_string):
     #     app.escape('//') +
     #     app.one_or_more(app.NONNEWLINE) +
     #     'energy=')
-    end_file_ptt = 'MOLPRO_ENERGY'
-    ene = ar.energy.read(
-        output_string,
-        end_file_ptt
-        )
+    end_file_ptt = (
+        'MOLPRO_ENERGY' + app.SPACES +
+        app.escape('=') + app.SPACES +
+        app.capturing(app.FLOAT) + app.SPACES +
+        'AU'
+    )
+    ene = apf.last_capture(end_file_ptt, output_string)
+    ene = float(ene) if ene is not None else ene
+
     return ene
 
 
@@ -172,6 +177,6 @@ def energy(method, output_string):
 
 
 if __name__ == '__main__':
-    with open('output.dat', 'r') as f:
+    with open('run.out', 'r') as f:
         out_str = f.read()
     print(energy('hf', out_str))
