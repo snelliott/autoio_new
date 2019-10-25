@@ -11,6 +11,7 @@ from elstruct.reader._gaussian09.vpt2 import vpt2
 from elstruct.reader._gaussian09.status import has_normal_exit_message
 from elstruct.reader._gaussian09.status import error_list
 from elstruct.reader._gaussian09.status import success_list
+from elstruct.reader._gaussian09.status import has_error_message
 from elstruct.reader._gaussian09.status import check_convergence_messages
 from elstruct.reader._gaussian09.version import program_name
 from elstruct.reader._gaussian09.version import program_version
@@ -29,6 +30,7 @@ __all__ = [
     'has_normal_exit_message',
     'error_list',
     'success_list',
+    'has_error_message',
     'check_convergence_messages',
     'program_name',
     'program_version'

@@ -31,6 +31,7 @@ ERROR_READER_DCT = {
     elstruct.par.Error.SCF_NOCONV: _has_scf_nonconvergence_error_message,
     elstruct.par.Error.OPT_NOCONV: _has_opt_nonconvergence_error_message,
 }
+SUCCESS_READER_DCT = {}
 
 
 def error_list():
@@ -39,11 +40,26 @@ def error_list():
     return tuple(sorted(ERROR_READER_DCT.keys()))
 
 
+def success_list():
+    """ list of errors that be identified from the output file
+    """
+    return tuple(sorted(SUCCESS_READER_DCT.keys()))
+
+
+def has_error_message(error, output_string):
+    """ does this output string have an error message?
+    """
+    assert error in error_list()
+    # get the appropriate reader and call it
+    error_reader = ERROR_READER_DCT[error]
+    return error_reader(output_string)
+
+
 def check_convergence_messages(error, success, output_string):
     """ check if error messages should trigger job success or failure
     """
     assert error in error_list()
-    assert success in sucess_list()
+    assert success in success_list()
 
     job_success = True
     has_error = ERROR_READER_DCT[error](output_string)

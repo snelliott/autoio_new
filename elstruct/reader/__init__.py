@@ -82,6 +82,7 @@ __all__ = [
     'has_normal_exit_message',
     'error_list',
     'success_list',
+    'has_error_message',
     'check_convergence_messages',
     # version
     'program_name',

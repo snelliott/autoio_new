@@ -389,6 +389,21 @@ def success_list(prog):
         prog, MODULE_NAME, module_template.success_list)
 
 
+def has_error_message(prog, error, output_string):
+    """ does this output string have an error message?
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param error: a key indicating the type of error message
+    :type error: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.has_error_message,
+        # *args
+        error, output_string)
+
+
 def check_convergence_messages(prog, error, success, output_string):
     """ does this output string have an error message?
 
