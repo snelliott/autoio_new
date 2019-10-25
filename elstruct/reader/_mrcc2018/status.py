@@ -33,6 +33,15 @@ def error_list():
     return tuple(sorted(ERROR_READER_DCT.keys()))
 
 
+def has_error_message(error, output_string):
+    """ does this output string have an error message?
+    """
+    assert error in error_list()
+    # get the appropriate reader and call it
+    error_reader = ERROR_READER_DCT[error]
+    return error_reader(output_string)
+
+
 def check_convergence_messages(error, success, output_string):
     """ check if error messages should trigger job success or failure
     """
