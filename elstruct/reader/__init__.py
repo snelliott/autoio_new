@@ -36,6 +36,7 @@ from elstruct.reader._reader import dipole_moment_programs
 from elstruct.reader._reader import dipole_moment
 from elstruct.reader._reader import dipole_moment_
 # status
+from elstruct.reader._reader import has_error_message
 from elstruct.reader._reader import has_normal_exit_message
 from elstruct.reader._reader import error_list
 from elstruct.reader._reader import success_list
@@ -79,10 +80,10 @@ __all__ = [
     'vpt2',
     'vpt2_',
     # status
+    'has_error_message',
     'has_normal_exit_message',
     'error_list',
     'success_list',
-    'has_error_message',
     'check_convergence_messages',
     # version
     'program_name',

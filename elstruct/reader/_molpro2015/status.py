@@ -77,8 +77,8 @@ def error_list():
     return tuple(sorted(ERROR_READER_DCT.keys()))
 
 
-def sucess_list():
-    """ list of sucesss that be identified from the output file
+def success_list():
+    """ list of successs that be identified from the output file
     """
     return tuple(sorted(SUCCESS_READER_DCT.keys()))
 
@@ -96,9 +96,11 @@ def check_convergence_messages(error, success, output_string):
     """ check if error messages should trigger job success or failure
     """
     assert error in error_list()
-    assert success in sucess_list()
+    assert success in success_list()
 
     job_success = True
+    #print('check conv test:', error, error_list, ERROR_READER_DCT)
+    #print('success in check_conv:', success, success_list)
     has_error = ERROR_READER_DCT[error](output_string)
     if has_error:
         job_success = False
