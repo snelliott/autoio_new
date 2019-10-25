@@ -24,7 +24,8 @@ def _has_scf_convergence_message(output_string):
         app.LINE_FILL + app.NEWLINE + app.LINE_FILL + app.escape('SCF Done:')
     ).format(app.EXPONENTIAL_FLOAT_D)
     scf_str2 = app.escape('Rotation gradient small -- convergence achieved.')
-    pattern = app.one_of_these([scf_str1, scf_str2])
+    scf_str3 = app.escape('The problem occurs in Multi')
+    pattern = app.one_of_these([scf_str1, scf_str2, scf_str3])
     return apf.has_match(pattern, output_string, case=False)
 
 
@@ -51,8 +52,13 @@ def _has_scf_nonconvergence_error_message(output_string):
 def _has_opt_nonconvergence_error_message(output_string):
     """ does this output string have an optimization non-convergence message?
     """
-    pattern = app.escape('No convergence in max. number of iterations')
-    return apf.has_match(pattern, output_string, case=False)
+    # First check for scf convergence issues
+    if _has_scf_nonconvergence_error_message(output_string):
+        error = True
+    else:
+        pattern = app.escape('No convergence in max. number of iterations')
+        error = apf.has_match(pattern, output_string, case=False)
+    return error
 
 
 ERROR_READER_DCT = {
