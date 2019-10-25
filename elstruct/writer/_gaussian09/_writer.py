@@ -287,7 +287,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
         TemplateKey.JOB_KEY: job_key,
         TemplateKey.JOB_OPTIONS: ','.join(job_options),
-        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        TemplateKey.GEN_LINES: gen_lines,
     }
     return fill_dct
 
