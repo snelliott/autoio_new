@@ -549,6 +549,16 @@ class Error():
     IRC_NOCONV = 'irc_noconv'
 
 
+class Success():
+    """ Job successes
+    """
+    SCF_CONV = 'scf_conv'
+    CC_CONV = 'cc_conv'
+    OPT_CONV = 'opt_conv'
+    IRC_CONV = 'irc_conv'
+
+
+
 class Option():
     """ Writer option values
     """

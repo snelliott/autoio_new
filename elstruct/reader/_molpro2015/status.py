@@ -16,7 +16,7 @@ def has_normal_exit_message(output_string):
 
 
 # Parsers for convergence success messages
-def has_scf_convergence_message(output_string):
+def _has_scf_convergence_message(output_string):
     """ does this output string have a convergence success message?
     """
     scf_str1 = (
@@ -28,7 +28,7 @@ def has_scf_convergence_message(output_string):
     return apf.has_match(pattern, output_string, case=False)
 
 
-def has_opt_convergence_message(output_string):
+def _has_opt_convergence_message(output_string):
     """ does this output string have a convergence success message?
     """
     pattern = (
@@ -59,6 +59,10 @@ ERROR_READER_DCT = {
     elstruct.par.Error.SCF_NOCONV: _has_scf_nonconvergence_error_message,
     elstruct.par.Error.OPT_NOCONV: _has_opt_nonconvergence_error_message,
 }
+SUCCESS_READER_DCT = {
+    elstruct.par.Success.SCF_CONV: _has_scf_convergence_message,
+    elstruct.par.Success.OPT_CONV: _has_opt_convergence_message,
+}
 
 
 def error_list():
@@ -67,22 +71,21 @@ def error_list():
     return tuple(sorted(ERROR_READER_DCT.keys()))
 
 
-def has_error_message(error, output_string):
-    """ does this output string have an error message?
+def sucess_list():
+    """ list of sucesss that be identified from the output file
+    """
+    return tuple(sorted(SUCCESS_READER_DCT.keys()))
+
+
+def check_convergence_messages(error, success, output_string):
+    """ check if error messages should trigger job success or failure
     """
     assert error in error_list()
-    # get the appropriate reader and call it
-    error_reader = ERROR_READER_DCT[error]
-    return error_reader(output_string)
+    assert success in sucess_list()
 
+    job_success = True
+    has_error = ERROR_READER_DCT[error](output_string)
+    if has_error:
+        job_success = False
 
-if __name__ == '__main__':
-    with open('output.dat', 'r') as f:
-        outstr = f.read()
-    with open('prod1_l1.log', 'r') as f:
-        pstr = f.read()
-    print(has_scf_convergence_message(outstr))
-    print(has_irc_convergence_message(outstr))
-    print(has_scf_convergence_message(pstr))
-    print(has_opt_convergence_message(pstr))
-
+    return job_success
