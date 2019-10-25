@@ -5,6 +5,7 @@ from elstruct import run
 from elstruct import option
 from elstruct import util
 from elstruct.par import Error
+from elstruct.par import Success
 from elstruct.par import Job
 from elstruct.par import Option
 from elstruct.par import Method
@@ -24,6 +25,7 @@ __all__ = [
     'option',
     'util',
     'Error',
+    'Success',
     'Job',
     'Option',
     'Method',
