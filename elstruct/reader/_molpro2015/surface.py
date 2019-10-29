@@ -36,8 +36,10 @@ def hessian(output_string):
     )
     mat = ar.matrix.read(
         output_string,
-        start_ptt=(app.escape('Mass weighted Second Derivative Matrix') +
-                   app.lpadded(app.NEWLINE)),
+        start_ptt=(
+            app.escape('Force Constants (Second Derivatives of the Energy) ') +
+            app.escape('in [a.u.]') +
+            app.lpadded(app.NEWLINE)),
         block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
                          app.padded(app.NEWLINE)),
         line_start_ptt=comp_ptt,
@@ -48,7 +50,7 @@ def hessian(output_string):
 
 
 if __name__ == '__main__':
-    with open('old.out', 'r') as f:
+    with open('run.out', 'r') as f:
         OUTPUT_STRING = f.read()
     print(gradient(OUTPUT_STRING))
     print(hessian(OUTPUT_STRING))
