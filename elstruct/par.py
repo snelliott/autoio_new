@@ -572,6 +572,7 @@ class Option():
             """ _ """
             CORE = option.create('scf_guess_core')
             HUCKEL = option.create('scf_guess_huckel')
+            MIX = option.create('scf_guess_mix')
 
     class Casscf():
         """ CASSCF options to set active space (passed to `casscf_options`) """
