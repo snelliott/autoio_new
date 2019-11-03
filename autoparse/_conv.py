@@ -37,8 +37,5 @@ def _cast_string(string):
         try:
             ret = float(string)
         except ValueError:
-            try:
-                ret = float(string.replace('D', 'E'))
-            except ValueError:
-                pass
+            pass
     return ret
