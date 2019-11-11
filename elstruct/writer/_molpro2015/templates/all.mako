@@ -1,5 +1,5 @@
 ## 0. machine options block
-***,${comment}
+! ${comment}
 memory,${memory_mw},m
 % if machine_options:
 ${machine_options}
