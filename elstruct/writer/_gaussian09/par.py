@@ -12,6 +12,8 @@ GAUSSIAN09_OPTION_EVAL_DCT = {
     option.name(Option.Scf.Guess.CORE):
     lambda osp: 'Core',
     option.name(Option.Scf.Guess.HUCKEL):
+    lambda osp: 'Mix',
+    option.name(Option.Scf.Guess.MIX):
     lambda osp: 'Huckel',
     option.name(Option.Opt.MAXITER_):
     lambda osp: 'MaxCycle={}'.format(*option.values(osp)),

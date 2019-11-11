@@ -21,7 +21,7 @@ __all__ = [
     'opt_zmatrix',
     'has_normal_exit_message',
     'error_list',
-#    'success_list',
+    # 'success_list',
     'has_error_message',
     'check_convergence_messages',
     'program_name',

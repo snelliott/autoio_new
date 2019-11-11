@@ -35,6 +35,22 @@ def opt_geometry(output_string):
     return geo
 
 
+def hess_geometry(output_string):
+    """ get the geometry associated with a hessian calculation
+        so that the two are in the same coordinate system.
+        this is needed to project properly
+    """
+    syms, xyzs = ar.geom.read(
+        output_string,
+        start_ptt=app.padded(app.NEWLINE).join([
+            app.escape('ATOMIC COORDINATES'),
+            app.LINE, app.LINE, app.LINE, '']),
+        line_start_ptt=app.UNSIGNED_INTEGER,
+        line_sep_ptt=app.FLOAT,)
+    geo = automol.geom.from_data(syms, xyzs, angstrom=False)
+    return geo
+
+
 def opt_zmatrix(output_string):
     """ get optimized z-matrix geometry from output
     """
@@ -69,9 +85,13 @@ def opt_zmatrix(output_string):
                for caps_name in caps_names}
 
     # read optimized z-matrix values from the end of the output
+    VAR_STRING = app.one_of_these([
+        app.padded('Optimized variables'),
+        app.padded('Current variables')
+    ])
     opt_val_dct = ar.zmatrix.setval.read(
         output_string,
-        start_ptt=app.padded('Optimized variables') + app.NEWLINE,
+        start_ptt=VAR_STRING + app.NEWLINE,
         entry_end_ptt=app.one_of_these(['ANGSTROM', 'DEGREE']),
         last=True,
         case=False)

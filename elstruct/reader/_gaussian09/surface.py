@@ -151,3 +151,10 @@ def _read_irc_reacion_path_summary(output_string, read_val):
         values = None
 
     return values
+
+
+if __name__ == '__main__':
+    with open('run.out', 'r') as f:
+        RF = f.read()
+    print(hessian(RF))
+
