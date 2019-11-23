@@ -25,7 +25,8 @@ def _has_scf_convergence_message(output_string):
     ).format(app.EXPONENTIAL_FLOAT_D)
     scf_str2 = app.escape('Rotation gradient small -- convergence achieved.')
     scf_str3 = app.escape('The problem occurs in Multi')
-    pattern = app.one_of_these([scf_str1, scf_str2, scf_str3])
+    scf_str4 = app.escape('The problem occurs in cipro')
+    pattern = app.one_of_these([scf_str1, scf_str2, scf_str3, scf_str4])
     return apf.has_match(pattern, output_string, case=False)
 
 
