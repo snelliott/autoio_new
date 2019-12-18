@@ -15,7 +15,10 @@ def has_normal_exit_message(output_string):
 def _has_scf_nonconvergence_error_message(output_string):
     """ does this output string have an SCF non-convergence message?
     """
-    pattern = app.escape('PsiException: Could not converge SCF iterations')
+    pattern = app.one_of_these([
+        app.escape('PsiException: Could not converge SCF iterations'),
+        app.escape('Failed to converge.')
+    ])
     return apf.has_match(pattern, output_string, case=False)
 
 
