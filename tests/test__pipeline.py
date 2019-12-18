@@ -33,8 +33,8 @@ def test__energy():
     for prog in elstruct.writer.programs():
         for method in elstruct.program_methods(prog):
             for mult, charge in zip(mult_vals, charge_vals):
-                for orb_restricted in (
-                        elstruct.program_method_orbital_restrictions(
+                for orb_mode in (
+                        elstruct.program_method_orbital_modes(
                             prog, method, singlet=(mult == 1))):
 
                     vals = _test_pipeline(
@@ -44,7 +44,7 @@ def test__energy():
                             elstruct.reader.energy_(prog, method),
                         ),
                         args=(geom, charge, mult, method, basis, prog),
-                        kwargs={'orb_restricted': orb_restricted},
+                        kwargs={'orb_mode': orb_mode},
                         error=elstruct.Error.SCF_NOCONV,
                         error_kwargs={'scf_options': [
                             elstruct.option.specify(
@@ -72,8 +72,8 @@ def test__gradient():
 
         for method in methods:
             for mult, charge in zip(mult_vals, charge_vals):
-                for orb_restricted in (
-                        elstruct.program_method_orbital_restrictions(
+                for orb_mode in (
+                        elstruct.program_method_orbital_modes(
                             prog, method, singlet=(mult == 1))):
 
                     vals = _test_pipeline(
@@ -84,7 +84,7 @@ def test__gradient():
                             elstruct.reader.gradient_(prog),
                         ),
                         args=(geom, charge, mult, method, basis, prog),
-                        kwargs={'orb_restricted': orb_restricted},
+                        kwargs={'orb_mode': orb_mode},
                     )
                     print(vals)
 
@@ -107,8 +107,8 @@ def test__hessian():
 
         for method in methods:
             for mult, charge in zip(mult_vals, charge_vals):
-                for orb_restricted in (
-                        elstruct.program_method_orbital_restrictions(
+                for orb_mode in (
+                        elstruct.program_method_orbital_modes(
                             prog, method, singlet=(mult == 1))):
 
                     vals = _test_pipeline(
@@ -119,7 +119,7 @@ def test__hessian():
                             elstruct.reader.hessian_(prog),
                         ),
                         args=(geom, charge, mult, method, basis, prog),
-                        kwargs={'orb_restricted': orb_restricted},
+                        kwargs={'orb_mode': orb_mode},
                     )
                     print(vals)
 
@@ -141,7 +141,7 @@ def test__optimization():
              'R5': 1.8, 'A5': 1.8, 'D5': 5.2})
     mult = 1
     charge = 0
-    orb_restricted = True
+    orb_mode = 'R'
     frozen_coordinates = ('R5', 'A5', 'D3')
     ref_frozen_values = (1.8, 1.8, 2.1)
     for prog in elstruct.writer.optimization_programs():
@@ -149,10 +149,10 @@ def test__optimization():
 
         # MRCC2018 does not support constrained optimizations
         if prog != 'mrcc2018':
-            opt_kwargs = {'orb_restricted': orb_restricted,
+            opt_kwargs = {'orb_mode': orb_mode,
                           'frozen_coordinates':  frozen_coordinates}
         else:
-            opt_kwargs = {'orb_restricted': orb_restricted}
+            opt_kwargs = {'orb_mode': orb_mode}
 
         vals = _test_pipeline(
             script_str=script_str,
