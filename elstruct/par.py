@@ -46,91 +46,91 @@ class Method():
 
     (name, {program: singlet name,
                      multiplet name,
-                     singlet orb restrictions,
-                     multiplet orb restrictions})
+                     singlet orb modes,
+                     multiplet orb modes})
     """
     HF = ('hf',
           {Program.CFOUR2: (
               'rhf', 'hf',
-              (True,), (False, True)),
+              ('R',), ('U', 'R')),
            Program.GAUSSIAN09: (
                'hf', 'hf',
-               (True,), (False, True)),
+               ('R',), ('U', 'R')),
            Program.GAUSSIAN16: (
                'hf', 'hf',
-               (True,), (False, True)),
+               ('R',), ('U', 'R')),
            Program.MOLPRO2015: (
                'hf', 'hf',
-               (True,), (False, True)),
+               ('R',), ('U', 'R')),
            Program.MRCC2018: (
                'hf', 'hf',
-               (True,), (False, True)),
+               ('R',), ('U', 'R')),
            Program.ORCA4: (
                'hf', 'uhf',
-               (True,), (False, True)),
+               ('R',), ('U', 'R')),
            Program.PSI4: (
                'hf', 'uhf',
-               (True,), (False, True))})
+               ('R',), ('U', 'R'))})
 
     class Corr():
         """ correlated method names """
         MP2 = ('mp2',
                {Program.CFOUR2: (
                    'mp2', 'mp2',
-                   (True,), (False, True)),
+                   ('R',), ('U', 'R')),
                 Program.GAUSSIAN09: (
                     'mp2', 'mp2',
-                    (True,), (False, True)),
+                    ('R',), ('U', 'R')),
                 Program.GAUSSIAN16: (
                     'mp2', 'mp2',
-                    (True,), (False, True)),
+                    ('R',), ('U', 'R')),
                 Program.MOLPRO2015: (
                     'mp2', 'ump2',
-                    (True,), (False, True)),
+                    ('R',), ('U', 'R')),
                 Program.MRCC2018: (
                     'mp2', 'mp2',
-                    (True,), (False, True)),
+                    ('R',), ('U', 'R')),
                 Program.ORCA4: (
                     'mp2', 'mp2',
-                    (True,), (False, True)),
+                    ('R',), ('U', 'R')),
                 Program.PSI4: (
                     'mp2', 'mp2',
-                    (True,), (False, True))})
+                    ('R',), ('U', 'R'))})
         CCSD = ('ccsd',
                 {Program.CFOUR2: (
                     'ccsd', 'ccsd',
-                    (True,), (True,)),
+                    ('R',), ('R',)),
                  Program.MOLPRO2015: (
                      'ccsd', 'uccsd',
-                     (True,), (True, True))})
+                     ('R',), ('R', 'R'))})
         CCSD_T = ('ccsd(t)',
                   {Program.CFOUR2: (
                       'ccsd(t)', 'ccsd(t)',
-                      (True,), (True,)),
+                      ('R',), ('R',)),
                    Program.MOLPRO2015: (
                        'ccsd(t)', 'uccsd(t)',
-                       (True,), (True,)),
+                       ('R',), ('R',)),
                    Program.MRCC2018: (
                        'ccsd(t)', 'ccsd(t)',
-                       (True,), (True, True))})
+                       ('R',), ('R', 'R'))})
         CCSDT = ('ccsdt',
                  {Program.MOLPRO2015: (
                      'mrcc,method=ccsdt', 'mrcc,method=ccsdt',
-                     (True,), (False, True)),
+                     ('R',), ('U', 'R')),
                   Program.MRCC2018: (
                       'ccsdt', 'ccsdt',
-                      (True,), (True, True))})
+                      ('R',), ('R', 'R'))})
         CCSDT_Q = ('ccsdt(q)',
                    {Program.MOLPRO2015: (
                        'mrcc,method=ccsdt(q)', 'mrcc,method=ccsdt(q)',
-                       (True,), (False, True)),
+                       ('R',), ('U', 'R')),
                     Program.MRCC2018: (
                         'ccsdt(q)', 'ccsdt(q)',
-                        (True,), (True, True))})
+                        ('R',), ('R', 'R'))})
         CCSD_T_F12 = ('ccsd(t)-f12',
                       {Program.MOLPRO2015: (
                           'ccsd(t)-f12', 'uccsd(t)-f12',
-                          (True,), (True,))})
+                          ('R',), ('R',))})
 
     class MultiRef():
         """ multireference electronic structure methods
@@ -138,63 +138,63 @@ class Method():
         CASSCF = ('casscf',
                   {Program.MOLPRO2015: (
                       'casscf', 'casscf',
-                      (True,), (True, True))})
+                      ('R',), ('R', 'R'))})
         CASPT2 = ('caspt2',
                   {Program.MOLPRO2015: (
                       'rs2', 'rs2',
-                      (True,), (True, True))})
+                      ('R',), ('R', 'R'))})
         CASPT2I = ('caspt2i',
-                  {Program.MOLPRO2015: (
-                      'rs2', 'rs2',
-                      (True,), (True, True))})
+                   {Program.MOLPRO2015: (
+                       'rs2', 'rs2',
+                       ('R',), ('R', 'R'))})
         CASPT2C = ('caspt2c',
                    {Program.MOLPRO2015: (
                        'rs2c', 'rs2c',
-                       (True,), (True, True))})
+                       ('R',), ('R', 'R'))})
         MRCISDQ = ('mrcisd_q',
                    {Program.MOLPRO2015: (
                        'mrci', 'mrci',
-                       (True,), (True, True))})
+                       ('R',), ('R', 'R'))})
 
     class Dft():
         """ DFT method names """
         B3LYP = ('b3lyp',
                  {Program.PSI4: (
                      'B3LYP', 'B3LYP',
-                     (True,), (False,)),
+                     ('R',), ('U',)),
                   Program.GAUSSIAN09: (
                       'b3lyp', 'b3lyp',
-                      (True,), (False,)),
+                      ('R',), ('U',)),
                   Program.GAUSSIAN16: (
                       'b3lyp', 'b3lyp',
-                      (True,), (False,))})
+                      ('R',), ('U',))})
         WB97XD = ('wb97xd',
                   {Program.PSI4: (
                       'WB97X-D', 'WB97X-D',
-                      (True,), (False,)),
+                      ('R',), ('U',)),
                    Program.GAUSSIAN09: (
                        'wb97xd', 'wb97xd',
-                       (True,), (False,)),
+                       ('R',), ('U',)),
                    Program.GAUSSIAN16: (
                        'wb97xd', 'wb97xd',
-                       (True,), (False,))})
+                       ('R',), ('U',))})
         M062X = ('m062x',
                  {Program.PSI4: (
                      'M06-2X', 'M06-2X',
-                     (True,), (False,)),
+                     ('R',), ('U',)),
                   Program.GAUSSIAN09: (
                       'm062x', 'm062x',
-                      (True,), (False,)),
+                      ('R',), ('U',)),
                   Program.GAUSSIAN16: (
                       'm062x', 'm062x',
-                      (True,), (False,))})
+                      ('R',), ('U',))})
         B2PLYPD3 = ('b2plypd3',
                     {Program.GAUSSIAN09: (
                         'b2plypd3', 'b2plypd3',
-                        (True,), (False,)),
+                        ('R',), ('U',)),
                      Program.GAUSSIAN16: (
                          'b2plypd3', 'b2plypd3',
-                         (True,), (False,))})
+                         ('R',), ('U',))})
 
     @classmethod
     def contains(cls, name):
@@ -307,16 +307,16 @@ def program_method_name(prog, method, singlet=True):
     return method
 
 
-def program_method_orbital_restrictions(prog, method, singlet):
-    """ list the possible orbital restrictions for a given method and program
+def program_method_orbital_modes(prog, method, singlet):
+    """ list the possible orbital modes for a given method and program
     """
     prog = standard_case(prog)
     method = standard_case(method)
     prog_method_dct = program_methods_info(prog)
     assert method in prog_method_dct
-    orb_restrictions = (prog_method_dct[method][2] if singlet else
-                        prog_method_dct[method][3])
-    return orb_restrictions
+    orb_modes = (prog_method_dct[method][2] if singlet else
+                 prog_method_dct[method][3])
+    return orb_modes
 
 
 def is_program_method(prog, method):
@@ -327,15 +327,13 @@ def is_program_method(prog, method):
     return method in program_methods(prog)
 
 
-def is_program_method_orbital_restriction(prog, method, singlet,
-                                          orb_restricted):
+def is_program_method_orbital_mode(prog, method, singlet, orb_mode):
     """ is this a valid method for this program?
     """
     prog = standard_case(prog)
     method = standard_case(method)
     assert isinstance(singlet, bool)
-    return (orb_restricted
-            in program_method_orbital_restrictions(prog, method, singlet))
+    return orb_mode in program_method_orbital_modes(prog, method, singlet)
 
 
 class Basis():
