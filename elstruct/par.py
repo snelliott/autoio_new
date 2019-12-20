@@ -307,16 +307,16 @@ def program_method_name(prog, method, singlet=True):
     return method
 
 
-def program_method_orbital_modes(prog, method, singlet):
+def program_method_orbital_types(prog, method, singlet):
     """ list the possible orbital modes for a given method and program
     """
     prog = standard_case(prog)
     method = standard_case(method)
     prog_method_dct = program_methods_info(prog)
     assert method in prog_method_dct
-    orb_modes = (prog_method_dct[method][2] if singlet else
+    orb_types = (prog_method_dct[method][2] if singlet else
                  prog_method_dct[method][3])
-    return orb_modes
+    return orb_types
 
 
 def is_program_method(prog, method):
@@ -327,13 +327,13 @@ def is_program_method(prog, method):
     return method in program_methods(prog)
 
 
-def is_program_method_orbital_mode(prog, method, singlet, orb_mode):
+def is_program_method_orbital_type(prog, method, singlet, orb_type):
     """ is this a valid method for this program?
     """
     prog = standard_case(prog)
     method = standard_case(method)
     assert isinstance(singlet, bool)
-    return orb_mode in program_method_orbital_modes(prog, method, singlet)
+    return orb_type in program_method_orbital_types(prog, method, singlet)
 
 
 class Basis():

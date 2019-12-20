@@ -14,7 +14,7 @@ from elstruct.par import programs
 from elstruct.par import program_methods
 from elstruct.par import program_dft_methods
 from elstruct.par import program_nondft_methods
-from elstruct.par import program_method_orbital_modes
+from elstruct.par import program_method_orbital_types
 from elstruct.par import program_bases
 
 
@@ -34,6 +34,6 @@ __all__ = [
     'program_methods',
     'program_dft_methods',
     'program_nondft_methods',
-    'program_method_orbital_modes',
+    'program_method_orbital_types',
     'program_bases',
 ]
