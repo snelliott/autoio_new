@@ -41,7 +41,7 @@ def bases(prog):
     return par.program_bases(prog)
 
 
-def method_orbital_modes(prog, method, singlet):
+def method_orbital_types(prog, method, singlet):
     """ list of available orbital restrictions for a given method
 
     :param prog: the electronic structure program to use as a backend
@@ -51,7 +51,7 @@ def method_orbital_modes(prog, method, singlet):
     :param singlet: whether or not the target is a singlet (closed shell)
     :type singlet: bool
     """
-    return par.program_method_orbital_modes(prog, method, singlet)
+    return par.program_method_orbital_types(prog, method, singlet)
 
 
 def energy(geom, charge, mult, method, basis, prog,
@@ -60,7 +60,7 @@ def energy(geom, charge, mult, method, basis, prog,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_mode='RU',
+           orb_type='RU',
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=None):
@@ -86,10 +86,10 @@ def energy(geom, charge, mult, method, basis, prog,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
-    :param orb_mode: 'R' indicates restricted orbitals, 'U' indicates
+    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
         unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
         character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_mode: str
+    :type orb_type: str
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param casscf_options: casscf method directives
@@ -100,7 +100,7 @@ def energy(geom, charge, mult, method, basis, prog,
     :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
-        prog, method, basis, mult, orb_mode)
+        prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
@@ -128,7 +128,7 @@ def gradient(geom, charge, mult, method, basis, prog,
              # machine options
              memory=1, comment='', machine_options=(),
              # theory options
-             orb_mode='RU',
+             orb_type='RU',
              scf_options=(), casscf_options=(), corr_options=(),
              # generic options
              gen_lines=None,
@@ -156,10 +156,10 @@ def gradient(geom, charge, mult, method, basis, prog,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
-    :param orb_mode: 'R' indicates restricted orbitals, 'U' indicates
+    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
         unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
         character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_mode: str
+    :type orb_type: str
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param casscf_options: casscf method directives
@@ -170,7 +170,7 @@ def gradient(geom, charge, mult, method, basis, prog,
     :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
-        prog, method, basis, mult, orb_mode)
+        prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.gradient,
@@ -198,7 +198,7 @@ def hessian(geom, charge, mult, method, basis, prog,
             # machine options
             memory=1, comment='', machine_options=(),
             # theory options
-            orb_mode='RU',
+            orb_type='RU',
             scf_options=(), casscf_options=(), corr_options=(),
             # generic options
             gen_lines=None,
@@ -226,10 +226,10 @@ def hessian(geom, charge, mult, method, basis, prog,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
-    :param orb_mode: 'R' indicates restricted orbitals, 'U' indicates
+    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
         unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
         character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_mode: str
+    :type orb_type: str
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param casscf_options: casscf method directives
@@ -240,7 +240,7 @@ def hessian(geom, charge, mult, method, basis, prog,
     :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
-        prog, method, basis, mult, orb_mode)
+        prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.hessian,
@@ -268,7 +268,7 @@ def vpt2(geom, charge, mult, method, basis, prog,
          # machine options
          memory=1, comment='', machine_options=(),
          # theory options
-         orb_mode=None,
+         orb_type=None,
          scf_options=(), casscf_options=(), corr_options=(),
          # generic options
          gen_lines=None,
@@ -296,10 +296,10 @@ def vpt2(geom, charge, mult, method, basis, prog,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
-    :param orb_mode: 'R' indicates restricted orbitals, 'U' indicates
+    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
         unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
         character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_mode: str
+    :type orb_type: str
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param casscf_options: casscf method directives
@@ -311,7 +311,7 @@ def vpt2(geom, charge, mult, method, basis, prog,
     :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
-        prog, method, basis, mult, orb_mode)
+        prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.vpt2,
@@ -339,7 +339,7 @@ def irc(geom, charge, mult, method, basis, prog,
         # machine options
         memory=1, comment='', machine_options=(),
         # theory options
-        orb_mode=None,
+        orb_type=None,
         scf_options=(), casscf_options=(), corr_options=(),
         # generic options
         gen_lines=None,
@@ -367,10 +367,10 @@ def irc(geom, charge, mult, method, basis, prog,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
-    :param orb_mode: 'R' indicates restricted orbitals, 'U' indicates
+    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
         unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
         character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_mode: str
+    :type orb_type: str
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param casscf_options: casscf method directives
@@ -388,7 +388,7 @@ def irc(geom, charge, mult, method, basis, prog,
     :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
-        prog, method, basis, mult, orb_mode)
+        prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.irc,
@@ -418,7 +418,7 @@ def optimization(geom, charge, mult, method, basis, prog,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_mode=None,
+                 orb_type=None,
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=None,
@@ -446,10 +446,10 @@ def optimization(geom, charge, mult, method, basis, prog,
     :type comment: str
     :param machine_options: machine directives (num procs, num threads, etc.)
     :type machine_options: tuple[str]
-    :param orb_mode: 'R' indicates restricted orbitals, 'U' indicates
+    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
         unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
         character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_mode: str
+    :type orb_type: str
     :param scf_options: scf method directives
     :type scf_options: tuple[str]
     :param casscf_options: casscf method directives
@@ -467,7 +467,7 @@ def optimization(geom, charge, mult, method, basis, prog,
     :type gen_lines: dct[idx]=[str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
-        prog, method, basis, mult, orb_mode)
+        prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.optimization,
@@ -483,23 +483,23 @@ def optimization(geom, charge, mult, method, basis, prog,
         saddle=saddle)
 
 
-def _process_theory_specifications(prog, method, basis, mult, orb_mode):
+def _process_theory_specifications(prog, method, basis, mult, orb_type):
     assert par.is_program(prog)
 
     # determine the orbital restriction
     singlet = (mult == 1)
-    if len(orb_mode) == 2:
-        orb_mode = orb_mode[0] if singlet else orb_mode[1]
+    if len(orb_type) == 2:
+        orb_type = orb_type[0] if singlet else orb_type[1]
 
-    assert orb_mode in ('R', 'U')
-    orb_restricted = (orb_mode == 'R')
+    assert orb_type in ('R', 'U')
+    orb_restricted = (orb_type == 'R')
 
     # for non-standard DFT/Basis, the user can input whatever they want
     if not par.Method.is_nonstandard_dft(method):
         assert par.is_program_method(prog, method)
 
-        assert par.is_program_method_orbital_mode(
-            prog, method, singlet, orb_mode)
+        assert par.is_program_method_orbital_type(
+            prog, method, singlet, orb_type)
 
         prog = par.standard_case(prog)
         method = par.standard_case(method)
