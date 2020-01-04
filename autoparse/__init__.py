@@ -1,7 +1,11 @@
-""" interface to the re module
 """
-from . import pattern
-from . import find
+autoparse
+*********
+"""
 from ._conv import cast
+#: pattern generators
+from . import pattern
+#: text parsers
+from . import find
 
 __all__ = ['pattern', 'find', 'cast']
