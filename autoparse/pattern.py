@@ -1,4 +1,8 @@
-""" re pattern generators and constants
+"""
+autoparse.pattern
+*****************
+
+Generate re patterns for text parsing.
 """
 # pattern generators
 from ._pattern import escape

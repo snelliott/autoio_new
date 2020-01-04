@@ -1,4 +1,8 @@
-""" re finders
+"""
+autoparse.find
+**************
+
+Extract information from a file using re patterns.
 """
 import re
 from functools import partial
