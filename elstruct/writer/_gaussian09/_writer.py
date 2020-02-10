@@ -257,11 +257,10 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     job_options = _evaluate_options(job_options)
 
     if saddle:
-        job_options += ('CALCFC', 'TS', 'NOEIGEN',)
+        job_options += ('CALCFC', 'TS', 'NOEIGEN', 'MAXCYCLES=60')
 
     if irc_direction is not None:
-        assert (irc_direction.upper() == 'FORWARD' or
-                irc_direction.upper() == 'REVERSE')
+        assert (irc_direction.upper() in ('FORWARD', 'REVERSE'))
         job_options = (irc_direction.upper(),) + job_options
 
     # Set the gen lines blocks

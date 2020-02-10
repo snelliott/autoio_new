@@ -3,13 +3,18 @@
 import numpy
 import autoread as ar
 import autoparse.pattern as app
-import autoparse.find as apf
 import automol
 
 
 MOLPRO_ENTRY_START_PATTERN = (
-    'SETTING' + app.not_followed_by(app.padded('MOLPRO_ENERGY'))
+        'SETTING' + app.SPACES +
+        app.one_of_these(['R', 'A', 'D']) +
+        app.one_or_more(app.INTEGER)
 )
+# 'SETTING' + app.not_followed_by(app.padded('MOLPRO_ENERGY')),
+# 'SETTING' + app.not_followed_by('MOLPRO_ENERGY'),
+# 'SETTING' + app.not_followed_by(app.padded('SPIN')),
+# 'SETTING' + app.not_followed_by(app.padded('CHARGE'))
 
 
 def opt_geometry(output_string):
@@ -30,7 +35,7 @@ def opt_geometry(output_string):
     syms, xyzs = ar.geom.read(
         output_string,
         start_ptt=ptt)
-        # line_start_ptt=(app.LETTER + app.maybe(app.LETTER)))
+    # line_start_ptt=(app.LETTER + app.maybe(app.LETTER)))
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
     return geo
 
@@ -70,9 +75,13 @@ def opt_zmatrix(output_string):
     else:
         val_dct = ar.zmatrix.setval.read(
             output_string,
-            # name_ptt=MOLPRO_VAR_NAME_PATTERN,
-            entry_start_ptt=MOLPRO_ENTRY_START_PATTERN,
-            val_ptt=app.one_of_these([app.EXPONENTIAL_FLOAT_D, app.NUMBER]),
+            # entry_start_ptt=MOLPRO_ENTRY_START_PATTERN,
+            entry_start_ptt='SETTING',
+            name_ptt=(
+                app.one_of_these(['R', 'A', 'D']) +
+                app.one_or_more(app.INTEGER)),
+            val_ptt=(
+                app.one_of_these([app.EXPONENTIAL_FLOAT_D, app.NUMBER])),
             last=True,
             case=False)
         print('val_dct:', val_dct)
@@ -105,14 +114,3 @@ def opt_zmatrix(output_string):
         syms, key_mat, name_mat, val_dct,
         one_indexed=True, angstrom=True, degree=True)
     return zma
-
-
-if __name__ == '__main__':
-    # with open('output.dat') as f:
-    #     out_str = f.read()
-    # geo = opt_geometry(out_str)
-    # print(automol.geom.string(geo))
-    with open('run.out') as f:
-        out_str = f.read()
-    zmat = opt_zmatrix(out_str)
-    print(automol.zmatrix.string(zmat))
