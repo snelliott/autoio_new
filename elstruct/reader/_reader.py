@@ -127,6 +127,37 @@ def hessian_(prog):
     return func
 
 
+def harmonic_frequencies_programs():
+    """ list of program modules implementing harmonic_frequencies readers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.harmonic_frequencies)
+
+
+def harmonic_frequencies(prog, output_string):
+    """ read harmonic_frequencies from the output string
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.harmonic_frequencies,
+        # *args
+        output_string)
+
+
+def harmonic_frequencies_(prog):
+    """ read harmonic_frequencies from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    """
+    func = functools.partial(harmonic_frequencies, prog)
+    func.__name__ = '_harmonic_frequencies_'
+    return func
+
+
 # irc_information
 def irc_programs():
     """ list of program modules implementing irc_points readers

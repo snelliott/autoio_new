@@ -61,7 +61,7 @@ def anharmonic_frequencies_reader(output_string):
         anharm_freq = [float(val)
                        for val in apf.all_captures(pattern2, block)]
 
-    return anharm_freq
+    return sorted(anharm_freq)
 
 
 def anharm_zpve_reader(output_string):

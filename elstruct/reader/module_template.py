@@ -25,6 +25,11 @@ def hessian(output_string):
     raise NotImplementedError
 
 
+def harmonic_frequencies(output_string):
+    """ _ """
+    raise NotImplementedError
+
+
 # irc points
 def irc_points(output_string):
     """ _ """

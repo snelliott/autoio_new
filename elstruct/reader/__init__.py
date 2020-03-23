@@ -12,6 +12,9 @@ from elstruct.reader._reader import gradient_
 from elstruct.reader._reader import hessian_programs
 from elstruct.reader._reader import hessian
 from elstruct.reader._reader import hessian_
+from elstruct.reader._reader import harmonic_frequencies_programs
+from elstruct.reader._reader import harmonic_frequencies
+from elstruct.reader._reader import harmonic_frequencies_
 # irc
 from elstruct.reader._reader import irc_programs
 from elstruct.reader._reader import irc_points

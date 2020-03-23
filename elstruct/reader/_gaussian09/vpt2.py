@@ -61,7 +61,7 @@ def anharmonic_frequencies_reader(output_string):
         anharm_freq = [float(val)
                        for val in apf.all_captures(pattern2, block)]
 
-    return anharm_freq
+    return sorted(anharm_freq)
 
 
 def anharm_zpve_reader(output_string):
@@ -170,12 +170,20 @@ def cent_dist_const_reader(output_string):
     block = apf.last_capture(
         ('Quartic Centrifugal Distortion Constants Tau Prime' +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
-         'Asymmetric Top Reduction'), output_string)
+         'Asymmetric Top Reduction'),
+        output_string)
     if not block:
         block = apf.last_capture(
             ('Quartic Centrifugal Distortion Constants Tau Prime' +
              app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
-             'Rotational l-type doubling constants'), output_string)
+             'Constants in the Symmetrically Reduced Hamiltonian'),
+            output_string)
+    if not block:
+        block = apf.last_capture(
+            ('Quartic Centrifugal Distortion Constants Tau Prime' +
+             app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+             'Rotational l-type doubling constants'),
+            output_string)
 
     # pattern
     pattern = (
