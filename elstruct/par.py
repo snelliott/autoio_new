@@ -530,7 +530,8 @@ class Job():
     HESSIAN = 'hessian'
     OPTIMIZATION = 'optimization'
     VPT2 = 'vpt2'
-    IRC = 'irc'
+    IRCF = 'ircf'
+    IRCR = 'ircr'
     PROPERTIES = 'properties'
 
     @classmethod
