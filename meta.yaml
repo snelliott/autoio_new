@@ -1,7 +1,7 @@
-# cmd: conda build . -c pacchem -c psi4 -c rdkit -c openbabel -c conda-forge
+# cmd: conda build . -c auto-mech -c psi4 -c rdkit -c openbabel -c conda-forge
 package:
     name: elstruct
-    version: "0.2.13"
+    version: "0.3.0"
 
 source:
     path: .
@@ -23,6 +23,6 @@ requirements:
         - rdkit::rdkit
         - openbabel::openbabel
         - psi4::psi4
-        - pacchem::autoparse
-        - pacchem::autochem
+        - auto-mech::autoparse
+        - auto-mech::automol
         - conda-forge::qcelemental
