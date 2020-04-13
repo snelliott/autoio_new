@@ -1,7 +1,7 @@
 name: elstruct-env
 
 channels:
-    - pacchem
+    - auto-mech
     - psi4
     - rdkit
     - openbabel
@@ -21,6 +21,6 @@ dependencies:
     - rdkit::rdkit
     - openbabel::openbabel
     - psi4::psi4
-    - pacchem::autoparse
-    - pacchem::autochem
+    - auto-mech::autoparse
+    - auto-mech::automol
     - conda-forge::qcelemental
