@@ -106,18 +106,18 @@ def irc_points(output_string):
     # Obtain the grads and hessians
     geoms = []
     grads = []
-    hess = []
+    hessians = []
     for string in pt_strs:
         geoms.append(irc_geometry(string))
         grads.append(gradient(string))
-        hess.append(hessian(string))
+        hessians.append(hessian(string))
 
     # Combine with the 0 index info
     geoms = [sadpt_geom] + geoms
     grads = [sadpt_grad] + grads
-    hess = [sadpt_hess] + hess
+    hessians = [sadpt_hess] + hessians
 
-    return geoms, grads, hess
+    return geoms, grads, hessians
 
 
 def sadpt_geometry(sadpt_string):

@@ -30,6 +30,7 @@ class JobKey():
     OPTIMIZATION = 'optimization'
     GRADIENT = 'gradient'
     HESSIAN = 'hessian'
+    IRC = 'irc'
 
 
 class TemplateKey():
@@ -53,6 +54,7 @@ class TemplateKey():
     FROZEN_ANG_STRS = 'frozen_ang_strs'
     FROZEN_DIH_STRS = 'frozen_dih_strs'
     GEN_LINES = 'gen_lines'
+    IRC_DIRECTION = 'irc_direction'
 
 
 def energy(geom, charge, mult, method, basis,
@@ -64,7 +66,9 @@ def energy(geom, charge, mult, method, basis,
            orb_restricted=None,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
-           gen_lines=None):
+           gen_lines=None,
+           # job options
+           job_options=()):
     """ energy input string
     """
     job_key = JobKey.ENERGY
@@ -75,6 +79,7 @@ def energy(geom, charge, mult, method, basis,
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
         gen_lines=gen_lines,
+        job_options=job_options,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -165,13 +170,42 @@ def optimization(geom, charge, mult, method, basis,
     return inp_str
 
 
+def irc(geom, charge, mult, method, basis,
+        # molecule options
+        mol_options=(),
+        # machine options
+        memory=1, comment='', machine_options=(),
+        # theory options
+        orb_restricted=None,
+        scf_options=(), casscf_options=(), corr_options=(),
+        # generic options
+        gen_lines=None,
+        # job options
+        job_options=(), frozen_coordinates=(), irc_direction=None):
+    """ optimization input string
+    """
+    job_key = JobKey.IRC
+    fill_dct = _fillvalue_dictionary(
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
+        job_options=job_options, frozen_coordinates=frozen_coordinates,
+        irc_direction=irc_direction, gen_lines=gen_lines,
+    )
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
+
+
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options,
                           scf_options, casscf_options, corr_options,
-                          gen_lines=None,
-                          job_options=(), frozen_coordinates=(), saddle=False):
+                          job_options=(), frozen_coordinates=(),
+                          saddle=False, irc_direction=None,
+                          gen_lines=None):
 
     frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (
         _frozen_coordinate_strings(geom, frozen_coordinates))
@@ -218,6 +252,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
         TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
         TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        TemplateKey.IRC_DIRECTION: '\n'.join(irc_direction),
     }
     return fill_dct
 

@@ -61,6 +61,22 @@ _, wfn = frequency('${method}', return_wfn=True, dertype=1)
 _, wfn = frequency('${method}', return_wfn=True, dertype=1)
 % elif job_key == 'hessian':
 _, wfn = frequency('${method}', return_wfn=True)
+% elif job_key == 'irc' and method == 'hf' and reference == 'rohf':
+set 
+set opt_type irc
+set irc_direction ${irc_direction}
+_, wfn = frequency('${method}', return_wfn=True, dertype=1)
+optimize('${method}', dertype=1)
+% elif job_key == 'irc' and method == 'hf' and reference == 'uhf':
+set opt_type irc
+set irc_direction ${irc_direction}
+_, wfn = frequency('${method}', return_wfn=True, dertype=1)
+optimize('${method}', dertype=1)
+% elif job_key == 'irc':
+set opt_type irc
+set irc_direction ${irc_direction}
+_, wfn = frequency('${method}', return_wfn=True)
+optimize('${method}')
 % endif
 % if job_key == 'hessian':
 hess = wfn.hessian()
