@@ -66,9 +66,7 @@ def energy(geom, charge, mult, method, basis,
            orb_restricted=None,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
-           gen_lines=None,
-           # job options
-           job_options=()):
+           gen_lines=None):
     """ energy input string
     """
     job_key = JobKey.ENERGY

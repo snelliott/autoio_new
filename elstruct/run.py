@@ -32,7 +32,6 @@ def from_input_string(script_str, run_dir, input_str):
     """
     with _EnterDirectory(run_dir):
         # write the submit script to the run directory
-        print(script_str)
         with open(SCRIPT_NAME, 'w') as script_obj:
             script_obj.write(script_str)
 

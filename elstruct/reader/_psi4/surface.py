@@ -64,7 +64,7 @@ def irc_points(output_string):
         for string in captures:
             syms, xyzs = ar.geom.read(
                 string,
-                start_ptt=geo_head_ptt
+                start_ptt=geo_head_ptt,
                 line_start_ptt=app.escape('@IRC')
             )
             geoms.append(automol.geom.from_data(syms, xyzs, angstrom=True))
@@ -119,7 +119,7 @@ def irc_energies(output_string):
    
     pattern = (
         app.escape('@IRC') + app.SPACES + app.INTEGER + app.SPACES +
-        app.capturing(app.FLOAT) + app.SPACES
+        app.capturing(app.FLOAT) + app.SPACES +
         app.FLOAT
     )
 
