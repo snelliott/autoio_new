@@ -32,3 +32,101 @@ def hessian(output_string):
         line_start_ptt=comp_ptt)
     assert numpy.allclose(hess, numpy.transpose(hess))
     return hess
+
+
+def irc_points(output_string):
+    """ obtain the geometry, gradient, and hessian at each point along the irc
+    """
+
+    # Set pattern to find the end of each IRC optimization
+    pattern = app.escape(
+            '@IRC  **** Point ' +
+            app.INTEGER +
+            ' on IRC path is optimized ****'
+    )
+    block = apf.last_capture(
+        (head_ptt + 
+         app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+         app.escape('    Back-transformation to cartesian coordinates...')),
+        output_string)
+
+    # Set pattern for grabbing the geometry from the block
+    geo_head_ptt = (
+        app.escape('@IRC    Cartesian Geometry (in Angstrom)') +
+        app.LINE_FILL +
+        '\n'
+    )
+
+    # Grab all of the optimized geometries
+    captures = apf.all_captures(pattern, block)
+    if captures is not None:
+        geoms = []
+        for string in captures:
+            syms, xyzs = ar.geom.read(
+                string,
+                start_ptt=geo_head_ptt,
+                line_start_ptt=app.escape('@IRC')
+            )
+            geoms.append(automol.geom.from_data(syms, xyzs, angstrom=True))
+    else:
+        geoms = []
+
+    # Set the gradients and hessians to empty lists since they MAY not be run
+    grads, hessians = [], []
+
+    return geoms, grads, hessians
+
+
+def irc_coordinates(output_string):
+    """ get the coordinates relative to the saddle point
+    """
+    block = apf.last_capture(
+        (app.escape('@IRC              ****     IRC Steps     ****') +
+         app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+         app.escape('---Fragment 1 Intrafragment Coordinates---')),
+        output_string)
+
+    pattern = (
+        app.escape('@IRC') + app.SPACES + app.INTEGER + app.SPACES +
+        app.FLOAT + app.SPACES +
+        app.capturing(app.FLOAT) + app.SPACES +
+        app.FLOAT + app.SPACES +
+        app.LINE_FILL
+    )
+    
+    captures = apf.all_captures(pattern, block)
+    if captures is not None:
+        # Remove duplicates that may appear because of Psi4 output printing
+        unique_coords = []
+        for coord in captures:
+            if coord not in unique_coords:
+                unique_coords.append(coord)
+        coords = [float(coord) for coord in unique_coords]
+    else:
+        coords = None
+
+    return coords
+
+
+def irc_energies(output_string):
+    """ get the energies relative to the saddle point
+    """
+    block = apf.last_capture(
+        (app.escape('@IRC            ****      IRC Report      ****') +
+         app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+         app.escape('@IRC              ****     IRC Steps     ****')),
+        output_string)
+   
+    pattern = (
+        app.escape('@IRC') + app.SPACES + app.INTEGER + app.SPACES +
+        app.capturing(app.FLOAT) + app.SPACES +
+        app.FLOAT
+    )
+
+    captures = apf.all_captures(pattern, block)
+    if captures is not None:
+        energies = [float(capture) for capture in captures]
+    else:
+        energies = None
+
+    return energies
