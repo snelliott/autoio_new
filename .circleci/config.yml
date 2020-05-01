@@ -8,19 +8,22 @@ jobs:
             - run: 
                 name: Create conda environment
                 command: |
+                    apt-get update --yes
+                    apt-get install --yes libxrender-dev build-essential
                     conda env create -f environment.yml
             - run:
-                name: Run tests
+                name: Build/install autoparse
                 command: |
                     source activate autoparse-env
-                    # temporary fix
-                    conda install -c conda-forge pylint>=2.3
-                    # temporary fix
                     python setup.py install
+            - run:
+                name: Test autoparse
+                command: |
+                    source activate autoparse-env
                     cd autoparse
-                    pytest -v --cov=autoparse --pyargs autoparse
+                    pytest -v --disable-pytest-warnings --cov=autoparse --pyargs autoparse
                     flake8 --exit-zero autoparse
-                    pylint autoparse
+                    pylint --rcfile=../.pylintrc autoparse
 workflows:
     version: 2
     build-all:

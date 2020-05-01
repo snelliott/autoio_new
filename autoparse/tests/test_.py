@@ -187,12 +187,12 @@ def test__multis():
 
 
 if __name__ == '__main__':
-    # test__variable_name()
-    # test__is_number()
-    # test__remove_empty_lines()
-    # test__first_matching_pattern()
-    # test__first_matching_pattern_all_captures()
-    # test__first_matching_pattern_first_capture()
+    test__variable_name()
+    test__is_number()
+    test__remove_empty_lines()
+    test__first_matching_pattern()
+    test__first_matching_pattern_all_captures()
+    test__first_matching_pattern_first_capture()
     test__single()
     test__singles()
     test__multi()
