@@ -1,9 +1,9 @@
 name: autoparse-env
 
 dependencies:
-    - python=3.7
+    - python
     - pytest
     - pytest-cov
     - flake8
     - pylint
-      # - toml
+    - toml
