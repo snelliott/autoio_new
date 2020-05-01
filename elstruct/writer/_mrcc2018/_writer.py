@@ -50,13 +50,14 @@ class TemplateKey():
     GEN_LINES = 'gen_lines'
     COORD_SYS = 'coord_sys'
 
+
 def energy(geom, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, 
+           orb_restricted=None,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=None):
@@ -68,7 +69,8 @@ def energy(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted,
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -94,7 +96,8 @@ def hessian(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
         job_options=job_options,
     )
@@ -108,7 +111,7 @@ def optimization(geom, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, 
+                 orb_restricted=None,
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=None,
@@ -121,7 +124,8 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
         frozen_coordinates=frozen_coordinates, job_options=job_options,
         saddle=saddle
@@ -133,30 +137,33 @@ def optimization(geom, charge, mult, method, basis,
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
-                          machine_options, scf_options, casscf_options, corr_options,
-                          gen_lines=None,
-                          job_options=(), frozen_coordinates=(), saddle=False):
+                          machine_options,
+                          scf_options, casscf_options, corr_options,
+                          job_options=(), frozen_coordinates=(),
+                          saddle=False,
+                          gen_lines=None):
 
     # Set the spin
     singlet = (mult == 1)
-    spin = mult - 1
-   
+
     # Set the theoretical method
     mrcc_scf_method = (MRCC2018Reference.RHF if orb_restricted else
-                         MRCC2018Reference.UHF)
+                       MRCC2018Reference.UHF)
     mrcc_corr_method = (
         elstruct.par.program_method_name(PROG, method, singlet)
         if elstruct.par.Method.is_correlated(method) else '')
     mrcc_basis = elstruct.par.program_basis_name(PROG, basis)
-    
+
     # Build the geometry
     geom_str, zmat_val_str = _geometry_strings(geom)
-    spin = mult - 1
-    
+
     # Check options
     scf_options = _evaluate_options(scf_options)
     casscf_options = _evaluate_options(casscf_options)
     job_options = _evaluate_options(job_options)
+    _ = mol_options
+    _ = machine_options
+    _ = gen_lines
 
     # Set the coordinate system
     if automol.geom.is_valid(geom):

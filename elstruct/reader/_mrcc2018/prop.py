@@ -16,6 +16,10 @@ def dipole_moment(output_string):
         app.padded('x=') + app.capturing(app.FLOAT) +
         app.padded('y=') + app.capturing(app.FLOAT) +
         app.padded('z=') + app.capturing(app.FLOAT))
-    vals = [float(val)
-            for val in apf.last_capture(pattern, output_string)]
+    captures = apf.last_capture(pattern, output_string)
+    vals = captures if captures is not None else []
+    if captures is not None:
+        vals = [float(val) for val in vals]
+    else:
+        vals = None
     return vals

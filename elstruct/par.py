@@ -539,7 +539,8 @@ class Job():
         """ does this parameter class contain this value?
         """
         name = standard_case(name)
-        names = [row for row in pclass.all_values(cls)]
+        names = pclass.all_values(cls)
+        # names = [row for row in pclass.all_values(cls)]
         return name in names
 
 
@@ -559,7 +560,6 @@ class Success():
     CC_CONV = 'cc_conv'
     OPT_CONV = 'opt_conv'
     IRC_CONV = 'irc_conv'
-
 
 
 class Option():

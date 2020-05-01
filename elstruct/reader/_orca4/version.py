@@ -51,10 +51,3 @@ def _get_version_string(output_string):
     version_string = apf.first_capture(pattern, output_string)
 
     return version_string
-
-
-if __name__ == '__main__':
-    with open('output.dat', 'r') as f:
-        output = f.read()
-    print(name(output))
-    print(number(output))

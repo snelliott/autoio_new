@@ -39,9 +39,3 @@ def _get_prog_string(output_string):
     prog_string = apf.first_capture(pattern, output_string)
 
     return prog_string
-
-if __name__ == '__main__':
-    with open('output.dat', 'r') as f:
-        a = f.read()
-    print(name(a))
-    print(number(a))

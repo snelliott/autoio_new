@@ -189,8 +189,8 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         raise NotImplementedError("CFOUR ONLY ALLOWS CLOSED-SHELL")
 
     # Unused options
-    mol_options = mol_options
-    machine_options = machine_options
+    _ = mol_options
+    _ = machine_options
 
     scf_options = _evaluate_options(scf_options)
     casscf_options = _evaluate_options(casscf_options)
@@ -242,14 +242,7 @@ def _geometry_strings(geom, frozen_coordinates, job_key):
         zma = geom
         syms = automol.zmatrix.symbols(zma)
         key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        if job_key == 'optimization':
-            name_mat = [
-                [name+'*'
-                 if name is not None and name not in frozen_coordinates else name
-                 for name in row]
-                 for row in automol.zmatrix.name_matrix(zma)]
-        else:
-            name_mat = automol.zmatrix.name_matrix(zma)
+        name_mat = _name_mat(zma, frozen_coordinates, job_key)
         val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
 
         geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)
@@ -266,6 +259,21 @@ def _geometry_strings(geom, frozen_coordinates, job_key):
         raise ValueError("Invalid geometry value:\n{0}".format(geom))
 
     return geom_str, zmat_val_str
+
+
+def _name_mat(zma, frozen_coordinates, job_key):
+    """ build name mat
+    """
+    if job_key == 'optimization':
+        name_mat = [
+            [name+'*'
+             if name is not None and name not in frozen_coordinates else name
+             for name in row]
+            for row in automol.zmatrix.name_matrix(zma)]
+    else:
+        name_mat = automol.zmatrix.name_matrix(zma)
+
+    return name_mat
 
 
 def _reference(mult, orb_restricted):

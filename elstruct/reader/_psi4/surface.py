@@ -1,8 +1,11 @@
 """ gradient and hessian readers
 """
+
 import numpy
+import automol
 import autoread as ar
 import autoparse.pattern as app
+import autoparse.find as apf
 
 
 def gradient(output_string):
@@ -40,12 +43,12 @@ def irc_points(output_string):
 
     # Set pattern to find the end of each IRC optimization
     pattern = app.escape(
-            '@IRC  **** Point ' +
-            app.INTEGER +
-            ' on IRC path is optimized ****'
+        '@IRC  **** Point ' +
+        app.INTEGER +
+        ' on IRC path is optimized ****'
     )
     block = apf.last_capture(
-        (head_ptt + 
+        (pattern +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          app.escape('    Back-transformation to cartesian coordinates...')),
         output_string)
@@ -93,7 +96,7 @@ def irc_coordinates(output_string):
         app.FLOAT + app.SPACES +
         app.LINE_FILL
     )
-    
+
     captures = apf.all_captures(pattern, block)
     if captures is not None:
         # Remove duplicates that may appear because of Psi4 output printing
@@ -116,7 +119,7 @@ def irc_energies(output_string):
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          app.escape('@IRC              ****     IRC Steps     ****')),
         output_string)
-   
+
     pattern = (
         app.escape('@IRC') + app.SPACES + app.INTEGER + app.SPACES +
         app.capturing(app.FLOAT) + app.SPACES +

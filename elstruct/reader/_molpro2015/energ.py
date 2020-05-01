@@ -175,9 +175,3 @@ def energy(method, output_string):
         energy_reader = ENERGY_READER_DCT[method]
         ene = energy_reader(output_string)
     return ene
-
-
-if __name__ == '__main__':
-    with open('run.out', 'r') as f:
-        out_str = f.read()
-    print(energy('hf', out_str))
