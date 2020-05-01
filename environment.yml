@@ -20,7 +20,7 @@ dependencies:
     - pylint
     - rdkit::rdkit
     - openbabel::openbabel
+    - conda-forge::qcelemental
     - psi4::psi4
     - auto-mech::autoparse
     - auto-mech::automol
-    - conda-forge::qcelemental

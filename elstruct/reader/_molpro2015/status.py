@@ -88,7 +88,6 @@ def has_error_message(error, output_string):
     """ does this output string have an error message?
     """
     assert error in error_list()
-    # get the appropriate reader and call it
     error_reader = ERROR_READER_DCT[error]
     return error_reader(output_string)
 
@@ -100,8 +99,6 @@ def check_convergence_messages(error, success, output_string):
     assert success in success_list()
 
     job_success = True
-    #print('check conv test:', error, error_list, ERROR_READER_DCT)
-    #print('success in check_conv:', success, success_list)
     has_error = ERROR_READER_DCT[error](output_string)
     if has_error:
         job_success = False

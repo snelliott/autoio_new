@@ -1,4 +1,5 @@
 """ psi4 writer module """
+
 import os
 import automol
 import autowrite as aw
@@ -6,6 +7,7 @@ import elstruct.par
 import elstruct.option
 from elstruct import template
 from elstruct.writer._psi4 import par
+
 
 PROG = elstruct.par.Program.PSI4
 
@@ -77,7 +79,6 @@ def energy(geom, charge, mult, method, basis,
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
         gen_lines=gen_lines,
-        job_options=job_options,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -250,7 +251,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
         TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
         TemplateKey.GEN_LINES: '\n'.join(gen_lines),
-        TemplateKey.IRC_DIRECTION: '\n'.join(irc_direction),
+        TemplateKey.IRC_DIRECTION: irc_direction,
     }
     return fill_dct
 

@@ -4,7 +4,7 @@ from elstruct import Option
 from elstruct import option
 
 
-G16_OPTION_EVAL_DCT = {
+GAUSSIAN16_OPTION_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'MaxCycle={}'.format(*option.values(osp)),
     option.name(Option.Scf.DIIS_):
@@ -23,4 +23,4 @@ G16_OPTION_EVAL_DCT = {
     option.name(Option.Opt.Coord.REDUNDANT):
     lambda osp: 'Redundant',
 }
-OPTION_NAMES = tuple(sorted(G16_OPTION_EVAL_DCT.keys()))
+OPTION_NAMES = tuple(sorted(GAUSSIAN16_OPTION_EVAL_DCT.keys()))

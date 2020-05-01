@@ -1,12 +1,12 @@
 """ orca4 writer module """
+
 import os
 import automol
 import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
-from elstruct.writer._orca4 import par
-from elstruct import pclass
+
 
 PROG = elstruct.par.Program.ORCA4
 
@@ -180,6 +180,13 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     reference = _reference(method, mult, orb_restricted)
     geom_str, zmat_var_val_str, zmat_const_val_str = _geometry_strings(
         geom, frozen_coordinates)
+
+    _ = machine_options
+    _ = casscf_options
+    _ = job_options
+    _ = irc_direction
+    _ = zmat_var_val_str
+    _ = zmat_const_val_str
 
     memory = memory * 1000.0
 

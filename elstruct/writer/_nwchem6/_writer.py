@@ -55,7 +55,7 @@ def energy(geom, charge, mult, method, basis,
            # machine options
            memory=1, comment='', machine_options=(),
            # theory options
-           orb_restricted=None, 
+           orb_restricted=None,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=None):
@@ -67,7 +67,8 @@ def energy(geom, charge, mult, method, basis,
         charge=charge, orb_restricted=orb_restricted,
         mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
@@ -80,7 +81,7 @@ def optimization(geom, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_restricted=None, 
+                 orb_restricted=None,
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=None,
@@ -93,7 +94,8 @@ def optimization(geom, charge, mult, method, basis,
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options, corr_options=corr_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
         gen_lines=gen_lines,
         frozen_coordinates=frozen_coordinates, job_options=job_options,
         saddle=saddle
@@ -105,13 +107,15 @@ def optimization(geom, charge, mult, method, basis,
 # helper functions
 def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           orb_restricted, mol_options, memory, comment,
-                          machine_options, scf_options, casscf_options, corr_options,
-                          gen_lines=None,
-                          job_options=(), frozen_coordinates=(), saddle=False):
+                          machine_options,
+                          scf_options, casscf_options, corr_options,
+                          job_options=(), frozen_coordinates=(),
+                          saddle=False,
+                          gen_lines=None):
 
     singlet = (mult == 1)
     nwchem6_scf_method = (NWChem6Reference.RHF if orb_restricted else
-                         NWChem6Reference.UHF)
+                          NWChem6Reference.UHF)
     # add in the multireference method stuff
     nwchem6_corr_method = (
         elstruct.par.program_method_name(PROG, method, singlet)
@@ -122,7 +126,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     memory_mw = int(memory * (1000.0 / 8.0))  # convert gb to mw
     spin = mult - 1
     scf_options = _evaluate_options(scf_options)
-    casscf_options = _evaluate_options(scf_options)
+    _ = casscf_options
     job_options = _evaluate_options(job_options)
 
     if saddle:
@@ -131,7 +135,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     job_directives = [','.join(job_options)]
     if frozen_coordinates:
         job_directives.append('inactive,' + ','.join(frozen_coordinates))
-    
+
     if job_key == 'hessian':
         job_directives.append('print,hessian,low=5')
 

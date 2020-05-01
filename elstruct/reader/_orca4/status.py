@@ -60,6 +60,7 @@ def check_convergence_messages(error, success, output_string):
     """
     assert error in error_list()
     # assert success in sucess_list()
+    _ = success
 
     job_success = True
     has_error = ERROR_READER_DCT[error](output_string)
