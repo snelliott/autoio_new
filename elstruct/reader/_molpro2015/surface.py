@@ -1,12 +1,8 @@
 """ gradient and hessian readers
 """
 import numpy
-from qcelemental import periodictable as pt
-import automol
 import autoread as ar
-from autoparse import cast as _cast
 import autoparse.pattern as app
-import autoparse.find as apf
 
 
 def gradient(output_string):

@@ -100,7 +100,6 @@ def has_error_message(error, output_string):
     """ does this output string have an error message?
     """
     assert error in error_list()
-    # get the appropriate reader and call it
     error_reader = ERROR_READER_DCT[error]
     return error_reader(output_string)
 
@@ -121,11 +120,3 @@ def check_convergence_messages(error, success, output_string):
         job_success = True
 
     return job_success
-
-
-if __name__ == '__main__':
-    with open('output.dat', 'r') as f:
-        outstr = f.read()
-    with open('prod1_l1.log', 'r') as f:
-        pstr = f.read()
-    print(assess_job_sucess('opt_noconv', 'opt_conv', pstr))

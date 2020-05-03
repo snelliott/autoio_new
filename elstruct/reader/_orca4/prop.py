@@ -15,9 +15,15 @@ def dipole_moment(output_string):
         app.capturing(app.FLOAT),
         app.capturing(app.FLOAT),
         app.capturing(app.FLOAT)])
-    vals = [float(val)
-            for val in apf.last_capture(pattern, output_string)]
+    captures = apf.last_capture(pattern, output_string)
+    vals = captures if captures is not None else []
+    if vals:
+        vals = [float(val) for val in vals]
+    else:
+        vals = None
     return vals
+#
+#
 # def polarizability(output_string):
 #     """
 #     Reads the static polarizability

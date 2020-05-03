@@ -1,4 +1,5 @@
 """ gaussian16 writer module """
+
 import os
 import automol
 import autowrite as aw
@@ -7,6 +8,7 @@ import elstruct.option
 from elstruct import template
 from elstruct import pclass
 from elstruct.writer._gaussian16 import par
+
 
 PROG = elstruct.par.Program.GAUSSIAN16
 
@@ -324,7 +326,10 @@ def _reference(method, mult, orb_restricted):
     if elstruct.par.Method.is_dft(method):
         reference = ''
     elif mult != 1:
-        reference = Gaussian16Reference.ROHF if orb_restricted else Gaussian16Reference.UHF
+        if orb_restricted:
+            reference = Gaussian16Reference.ROHF
+        else:
+            reference = Gaussian16Reference.UHF
     else:
         assert mult == 1 and orb_restricted is True
         reference = Gaussian16Reference.RHF
@@ -349,5 +354,5 @@ def _evaluate_options(opts):
         if elstruct.option.is_valid(opt):
             name = elstruct.option.name(opt)
             assert name in par.OPTION_NAMES
-            opts[idx] = par.Gaussian16_OPTION_EVAL_DCT[name](opt)
+            opts[idx] = par.GAUSSIAN16_OPTION_EVAL_DCT[name](opt)
     return tuple(opts)
