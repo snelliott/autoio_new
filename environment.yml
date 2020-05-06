@@ -1,7 +1,7 @@
 name: elstruct-env
 
 channels:
-    - auto-mech
+    - kevinmooreiii
     - psi4
     - rdkit
     - openbabel
@@ -22,5 +22,5 @@ dependencies:
     - openbabel::openbabel
     - conda-forge::qcelemental
     - psi4::psi4
-    - auto-mech::autoparse
-    - auto-mech::automol
+    - kevinmooreiii::autoparse
+    - kevinmooreiii::automol
