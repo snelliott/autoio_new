@@ -1,4 +1,4 @@
-# cmd: conda build . -c kevinmooreiii -c psi4 -c rdkit -c openbabel -c conda-forge
+# cmd: conda build . -c defaults -c kevinmooreiii -c psi4 -c rdkit -c openbabel -c conda-forge
 package:
     name: elstruct
     version: "0.2.0"

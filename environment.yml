@@ -1,6 +1,7 @@
 name: elstruct-env
 
 channels:
+    - defaults
     - kevinmooreiii
     - psi4
     - rdkit
