@@ -1,8 +1,9 @@
 name: elstruct-env
 
 channels:
-    - defaults
+    # - defaults
     - kevinmooreiii
+    - auto-mech
     - psi4
     - rdkit
     - openbabel
@@ -25,3 +26,4 @@ dependencies:
     - psi4::psi4
     - kevinmooreiii::autoparse
     - kevinmooreiii::automol
+    - auto-mech::x2z
