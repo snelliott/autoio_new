@@ -6,4 +6,3 @@ dependencies:
     - pytest-cov
     - flake8
     - pylint
-    - toml
