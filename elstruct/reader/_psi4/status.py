@@ -5,6 +5,7 @@ import autoparse.find as apf
 import elstruct.par
 
 
+# Exit message for the program
 def has_normal_exit_message(output_string):
     """ does this output string have a normal exit message?
     """
@@ -12,6 +13,23 @@ def has_normal_exit_message(output_string):
     return apf.has_match(pattern, output_string, case=False)
 
 
+# Parsers for convergence success messages
+def _has_scf_convergence_message(output_string):
+    """ does this output string have a convergence success message?
+    """
+    scf_str1 = 'Energy and wave function converged'
+    pattern = app.one_of_these([scf_str1])
+    return apf.has_match(pattern, output_string, case=True)
+
+
+def _has_opt_convergence_message(output_string):
+    """ does this output string have a convergence success message?
+    """
+    pattern = app.escape('**** Optimization is complete!')
+    return apf.has_match(pattern, output_string, case=True)
+
+
+# Parsers for various error messages
 def _has_scf_nonconvergence_error_message(output_string):
     """ does this output string have an SCF non-convergence message?
     """
@@ -34,7 +52,10 @@ ERROR_READER_DCT = {
     elstruct.par.Error.SCF_NOCONV: _has_scf_nonconvergence_error_message,
     elstruct.par.Error.OPT_NOCONV: _has_opt_nonconvergence_error_message,
 }
-SUCCESS_READER_DCT = {}
+SUCCESS_READER_DCT = {
+    elstruct.par.Success.SCF_CONV: _has_scf_convergence_message,
+    elstruct.par.Success.OPT_CONV: _has_opt_convergence_message,
+}
 
 
 def error_list():
@@ -64,9 +85,13 @@ def check_convergence_messages(error, success, output_string):
     assert error in error_list()
     assert success in success_list()
 
-    job_success = True
+    job_success = False
     has_error = ERROR_READER_DCT[error](output_string)
     if has_error:
-        job_success = False
+        has_success = SUCCESS_READER_DCT[success](output_string)
+        if has_success:
+            job_success = True
+    else:
+        job_success = True
 
     return job_success
