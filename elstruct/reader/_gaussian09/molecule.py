@@ -38,6 +38,7 @@ def opt_zmatrix(output_string):
         last=False)
 
     # read the values from the end of the output
+    grad_val = app.one_of_these([app.FLOAT, 'nan', '-nan'])
     if len(syms) == 1:
         val_dct = {}
     else:
@@ -49,9 +50,18 @@ def opt_zmatrix(output_string):
             entry_sep_ptt='',
             entry_start_ptt=app.escape('!'),
             sep_ptt=app.maybe(app.LINESPACES).join([
-                app.escape('-DE/DX ='), app.FLOAT, app.escape('!'),
+                app.escape('-DE/DX ='), grad_val, app.escape('!'),
                 app.NEWLINE]),
             last=True)
+
+    # Check for ptt
+    err_ptt = app.LINESPACES.join([
+        app.escape('-DE/DX ='), app.one_of_these(['nan', '-nan'])])
+    if 'Optimized Parameters' in output_string:
+        test_str = output_string.split('Optimized Parameters')[1]
+        if apf.has_match(err_ptt, test_str):
+            print('Warning: Bad gradient value (nan)',
+                  'in "Optimized Parameters" list.')
 
     # for the case when variable names are used instead of integer keys:
     # (otherwise, does nothing)
