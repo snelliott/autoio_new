@@ -11,7 +11,9 @@ def hf298k(output_str):
         :return hf298k: 298 K Heat of Formation [units]
         :rtype: float
     """
-    lines = output_str.readlines()
+
+    lines = output_str.splitlines()
     line = lines[-1]
-    hf298k = float(line.split()[-1])
-    return hf298k
+    hf_val = float(line.split()[-1])
+
+    return hf_val

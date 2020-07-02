@@ -17,4 +17,3 @@ ${freqs}
 % if use_cm_shift:
     UseCMShift
 % endif
-  End
