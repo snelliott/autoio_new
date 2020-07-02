@@ -14,7 +14,7 @@ SECTION_PATH = os.path.join(TEMPLATE_PATH, 'sections')
 RXNCHAN_PATH = os.path.join(SECTION_PATH, 'reaction_channel')
 
 
-def species(spc_label, spc_data, zero_energy):
+def species(spc_label, spc_data, zero_energy=None):
     """ Writes the string that defines the `Species` section for
         for a given species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -31,7 +31,8 @@ def species(spc_label, spc_data, zero_energy):
     spc_data = util.indent(spc_data, 2)
 
     # Format the precision of the zero energy
-    zero_energy = '{0:<8.2f}'.format(zero_energy)
+    if zero_energy is not None:
+        zero_energy = '{0:<8.2f}'.format(zero_energy)
 
     # Create dictionary to fill template
     spc_keys = {

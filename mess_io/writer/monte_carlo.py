@@ -115,7 +115,13 @@ def mc_data(geos, enes, grads=(), hessians=()):
             dat_str += 'Hessian'+'\n'
             dat_str += hessians[idx]+'\n'
 
-    return remove_trail_whitespace(dat_str)
+    # Format string as needed
+    dat_str = remove_trail_whitespace(dat_str)
+
+    if not grads and not hessians:
+        dat_str = '\n' + dat_str
+
+    return dat_str
 
 
 def fluxional_mode(atom_indices, span=360.0):
