@@ -17,8 +17,8 @@ MONTE_CARLO_PATH = os.path.join(SECTION_PATH, 'monte_carlo')
 
 def mc_species(geom, elec_levels,
                flux_mode_str, data_file_name,
-               ground_energy, reference_energy,
-               freqs=(), no_qc_corr=False, use_cm_shift=False):
+               ground_energy, reference_energy=None.
+               freqs=(), use_cm_shift=False):
     """ Writes a monte carlo species section
 
         :param core: `MonteCarlo` section string in MESS format
@@ -31,12 +31,8 @@ def mc_species(geom, elec_levels,
         :type hind_rot: str
         :param ground_energy: energy relative to reference (kcal.mol-1)
         :type ground_energy: float
-        :param reference_energy: reference energy (kcal.mol-1)
-        :type reference_energy: float
         :param freqs: vibrational frequencies (cm-1)
         :type freqs: list(float)
-        :param no_qc_corr: signal to preclude quantum correction
-        :type no_qc_corr: bool
         :param use_cm_chift: signal to include a CM shift
         :type use_cm_shift: bool
         :rtype: str
@@ -61,13 +57,12 @@ def mc_species(geom, elec_levels,
         'atom_list': atom_list,
         'flux_mode_str': flux_mode_str,
         'data_file_name': data_file_name,
+        'reference_energy': reference_energy,
         'ground_energy': ground_energy,
         'nlevels': nlevels,
         'levels': levels,
         'nfreqs': nfreqs,
         'freqs': freqs,
-        'reference_energy': reference_energy,
-        'no_qc_corr': no_qc_corr,
         'use_cm_shift': use_cm_shift
     }
 

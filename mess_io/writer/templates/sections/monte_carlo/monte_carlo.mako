@@ -5,15 +5,14 @@ ${flux_mode_str}\
     ElectronicLevels[1/cm]         ${nlevels}
 ${levels}
     GroundEnergy[kcal/mol]         ${ground_energy}
-    ReferenceEnergy[kcal/mol]      ${reference_energy}
+% if reference_energy is not None:
+    ReferenceEnergy[kcal/mol]         ${reference_energy}
+% endif
 % if nfreqs > 0:
   NonFluxionalFrequencies[1/cm]    ${nfreqs}
 ${freqs}
   NoHessian
 % endif
-% if no_qc_corr:
-    NoQuantumCorrection
-% endif
 % if use_cm_shift:
-    UseCMShift
+  UseCMShift
 % endif

@@ -290,6 +290,42 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
         template_keys=rotor_keys)
 
 
+def rotor_bundle(enegrid_step=5.0, enegrid_max=50.0,
+                 quantm_st_max=100.0, mc_samp_size=2000.0):
+    """ Write a HinderedRotor Bundle string
+
+        :param gride_step: (cm-1)
+        :type gride_step: float
+        :param gride_max: (kcal/mol)
+        :type gride_max: float
+        :param quantm_st_max: (kcal/mol)
+        :type quantm_st_max: float
+        :param mc_samp_size: ??
+        :type mc_samp_size: ??
+        :param grid
+    """
+ 
+    # Set the Monte Carlo List (just num of flux modes?)
+    mc_modes_lst = []
+
+    # Create dictionary to fill template
+    rotor_keys = {
+        'intl_rotor_strs': intl_rotor_strs,
+        'pot_strs': pot_strs,
+        'freq_strs': freq_strs,
+        'enegrid_step': enegrid_step,
+        'enegrid_max': enegrid_max,
+        'quantm_st_max': quantm_st_max,
+        'mc_mods_lst': mc_modes_lst,
+        'mc_samp_size': mc_samp_size
+    }
+    
+    return build_mako_str(
+        template_file_name='rotor_bundle.mako',
+        template_src_path=SPEC_INFO_PATH,
+        template_keys=rotor_keys)
+
+
 def mdhr_data(potentials, freqs=()):
     """ Writes the string for an auxiliary data file for MESS containing
         potentials and vibrational frequencies of a
