@@ -17,7 +17,7 @@ MONTE_CARLO_PATH = os.path.join(SECTION_PATH, 'monte_carlo')
 
 def mc_species(geom, elec_levels,
                flux_mode_str, data_file_name,
-               ground_energy, reference_energy=None.
+               ground_energy, reference_energy=None,
                freqs=(), use_cm_shift=False):
     """ Writes a monte carlo species section
 
