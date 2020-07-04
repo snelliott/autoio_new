@@ -304,22 +304,19 @@ def rotor_bundle(enegrid_step=5.0, enegrid_max=50.0,
         :type mc_samp_size: ??
         :param grid
     """
- 
+
     # Set the Monte Carlo List (just num of flux modes?)
     mc_modes_lst = []
 
     # Create dictionary to fill template
     rotor_keys = {
-        'intl_rotor_strs': intl_rotor_strs,
-        'pot_strs': pot_strs,
-        'freq_strs': freq_strs,
         'enegrid_step': enegrid_step,
         'enegrid_max': enegrid_max,
         'quantm_st_max': quantm_st_max,
         'mc_mods_lst': mc_modes_lst,
         'mc_samp_size': mc_samp_size
     }
-    
+
     return build_mako_str(
         template_file_name='rotor_bundle.mako',
         template_src_path=SPEC_INFO_PATH,
@@ -344,25 +341,31 @@ def mdhr_data(potentials, freqs=()):
 
     # Write top line string with number of points in potential
     if ndims == 1:
-        dat_str = '{0:>6d}'.format(*dims)
+        dat_str = '{0:>6d}\n'.format(*dims)
+        head_str = '{0:>6s}{1:>15s}'.format('i', 'V(kcal/mol)')
         nfreqs = len(freqs[0]) if freqs else None
     elif ndims == 2:
-        dat_str = '{0:>6d}{1:>6d}'.format(*dims)
+        dat_str = '{0:>6d}{1:>6d}\n'.format(*dims)
+        head_str = '{0:>6s}{1:>6s}{2:>15s}'.format('i', 'j', 'V(kcal/mol)')
         nfreqs = len(freqs[0][0]) if freqs else None
     elif ndims == 3:
-        dat_str = '{0:>6d}{1:>6d}{2:>6d}'.format(*dims)
+        dat_str = '{0:>6d}{1:>6d}{2:>6d}\n'.format(*dims)
+        head_str = '{0:>6s}{1:>6s}{2:>6s}{3:>15s}'.format(
+            'i', 'j', 'k', 'V(kcal/mol)')
         nfreqs = len(freqs[0][0][0]) if freqs else None
     elif ndims == 4:
-        dat_str = '{0:>6d}{1:>6d}{2:>6d}{3:>6d}'.format(*dims)
+        dat_str = '{0:>6d}{1:>6d}{2:>6d}{3:>6d}\n'.format(*dims)
+        head_str = '{0:>6s}{1:>6s}{2:>6s}{3:>6s}{4:>15s}'.format(
+            'i', 'j', 'k', 'l', 'V(kcal/mol)')
         nfreqs = len(freqs[0][0][0][0]) if freqs else None
 
     # Add the nofreq line
     if freqs:
-        dat_str += '\n '
-        dat_str += ' '.join('{0:d}'.format(idx+1) for idx in range(nfreqs))
-        dat_str += '\n\n'
+        dat_str += ' '.join('{0:d}'.format(i+1) for i in range(nfreqs)) + '\n'
+        dat_str += head_str + 'Freqs(cm-1)' + '\n'
     else:
-        dat_str += '\n nofreq\n\n'
+        dat_str += '\n'
+        dat_str += head_str + '\n'
 
     # Write the strings with the potential values
     if ndims == 1:
