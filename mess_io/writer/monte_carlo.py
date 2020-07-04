@@ -17,7 +17,7 @@ MONTE_CARLO_PATH = os.path.join(SECTION_PATH, 'monte_carlo')
 
 def mc_species(geom, elec_levels,
                flux_mode_str, data_file_name,
-               ground_energy, reference_energy=None.
+               ground_energy, reference_energy=None,
                freqs=(), use_cm_shift=False):
     """ Writes a monte carlo species section
 
@@ -98,11 +98,20 @@ def mc_data(geos, enes, grads=(), hessians=()):
     dat_str = ''
     for idx, _ in enumerate(geos):
         idx_str = str(idx+1)
+        # print('grads test',grads)
+        # print('hessian test',grads)
+        # if grads and hessians:
+            # print('grads inside test',grads)
+            # print('hessian inside test',grads)
         dat_str += 'Sampling point'+idx_str+'\n'
         dat_str += 'Energy'+'\n'
         dat_str += enes[idx]+'\n'
-        dat_str += 'Geometry'+'\n'
-        dat_str += geos[idx]+'\n'
+        # dat_str += 'Geometry'+'\n'
+        # dat_str += geos[idx]+'\n'
+        geo_str = 'Geometry'+'\n'
+        geo_str += geos[idx]+'\n'
+        geo_str = remove_trail_whitespace(geo_str)
+        dat_str += geo_str
         if grads:
             dat_str += 'Gradient'+'\n'
             dat_str += grads[idx]
@@ -111,10 +120,11 @@ def mc_data(geos, enes, grads=(), hessians=()):
             dat_str += hessians[idx]+'\n'
 
     # Format string as needed
-    dat_str = remove_trail_whitespace(dat_str)
-
     if not grads and not hessians:
-        dat_str = '\n' + dat_str
+        dat_str = remove_trail_whitespace(dat_str)
+
+    # if not grads and not hessians:
+    dat_str = '\n' + dat_str
 
     return dat_str
 
