@@ -110,7 +110,7 @@ def mc_data(geos, enes, grads=(), hessians=()):
         dat_str += enes[idx]+'\n'
         geo_str = 'Geometry'+'\n'
         geo_str += geos[idx]+'\n'
-         geo_str = remove_trail_whitespace(geo_str)
+        geo_str = remove_trail_whitespace(geo_str)
         dat_str += geo_str
         if grads:
             dat_str += 'Gradient'+'\n'
@@ -142,7 +142,7 @@ def fluxional_mode(atom_indices, span=360.0):
     """
 
     # Format the aotm indices string
-     atom_indices = util.format_flux_mode_indices(atom_indices)
+    atom_indices = util.format_flux_mode_indices(atom_indices)
 
     # Create dictionary to fill template
     flux_mode_keys = {
