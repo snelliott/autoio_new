@@ -132,7 +132,7 @@ def format_rotor_potential(potential):
 
     # Build potentials string
     potential_str = ''
-    for i, energy in enumerate(potential):
+    for i, energy in enumerate(potential.values()):
         if ((i+1) % 6) == 0 and (i+1) != npotential:
             potential_str += '{0:<8.2f}\n'.format(energy)
         else:

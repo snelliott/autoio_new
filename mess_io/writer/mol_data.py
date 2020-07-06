@@ -304,22 +304,19 @@ def rotor_bundle(enegrid_step=5.0, enegrid_max=50.0,
         :type mc_samp_size: ??
         :param grid
     """
- 
+
     # Set the Monte Carlo List (just num of flux modes?)
     mc_modes_lst = []
 
     # Create dictionary to fill template
     rotor_keys = {
-        'intl_rotor_strs': intl_rotor_strs,
-        'pot_strs': pot_strs,
-        'freq_strs': freq_strs,
         'enegrid_step': enegrid_step,
         'enegrid_max': enegrid_max,
         'quantm_st_max': quantm_st_max,
         'mc_mods_lst': mc_modes_lst,
         'mc_samp_size': mc_samp_size
     }
-    
+
     return build_mako_str(
         template_file_name='rotor_bundle.mako',
         template_src_path=SPEC_INFO_PATH,
@@ -338,79 +335,69 @@ def mdhr_data(potentials, freqs=()):
         :rtype: str
     """
 
-    # Determine the dimensions of the rotor potential list
-    dims = numpy.array(potentials).shape
-    ndims = len(dims)
+    assert potentials, 'Potential has no values'
+
+    pot_idxs = list(potentials.keys())
+
+    # Get the dimensions of the MDHR
+    ndims = len(pot_idxs[0])
+    assert ndims in (1, 2, 3, 4), 'Rotor must have dimension 1-4'
+
+    # Get the number of terms in each rotor of MDHR
+    dims = tuple()
+    for dim in range(ndims):
+        dims += (max((x[dim] for x in pot_idxs))+1,)
+    # dims = pot_idxs[-1]
+
+    # Get the number of freqs
+    if freqs:
+        nfreqs = len(list(freqs.keys())[0])
+    else:
+        nfreqs = 0
 
     # Write top line string with number of points in potential
     if ndims == 1:
-        dat_str = '{0:>6d}'.format(*dims)
-        nfreqs = len(freqs[0]) if freqs else None
+        num_str = '{0:>6d}\n'.format(*dims)
+        head_str = '{0:>6s}{1:>15s}'.format('i', 'V(kcal/mol)')
     elif ndims == 2:
-        dat_str = '{0:>6d}{1:>6d}'.format(*dims)
-        nfreqs = len(freqs[0][0]) if freqs else None
+        num_str = '{0:>6d}{1:>6d}\n'.format(*dims)
+        head_str = '{0:>6s}{1:>6s}{2:>15s}'.format('i', 'j', 'V(kcal/mol)')
     elif ndims == 3:
-        dat_str = '{0:>6d}{1:>6d}{2:>6d}'.format(*dims)
-        nfreqs = len(freqs[0][0][0]) if freqs else None
+        num_str = '{0:>6d}{1:>6d}{2:>6d}\n'.format(*dims)
+        head_str = '{0:>6s}{1:>6s}{2:>6s}{3:>15s}'.format(
+            'i', 'j', 'k', 'V(kcal/mol)')
     elif ndims == 4:
-        dat_str = '{0:>6d}{1:>6d}{2:>6d}{3:>6d}'.format(*dims)
-        nfreqs = len(freqs[0][0][0][0]) if freqs else None
+        num_str = '{0:>6d}{1:>6d}{2:>6d}{3:>6d}\n'.format(*dims)
+        head_str = '{0:>6s}{1:>6s}{2:>6s}{3:>6s}{4:>15s}'.format(
+            'i', 'j', 'k', 'l', 'V(kcal/mol)')
 
     # Add the nofreq line
-    if freqs:
-        dat_str += '\n '
-        dat_str += ' '.join('{0:d}'.format(idx+1) for idx in range(nfreqs))
-        dat_str += '\n\n'
+    if nfreqs > 0:
+        freq_str = ' '.join('{0:d}'.format(i+1) for i in range(nfreqs)) + '\n'
+        head_str += 'Freqs(cm-1)' + '\n'
     else:
-        dat_str += '\n nofreq\n\n'
+        freq_str = '\n'
+        head_str += '\n'
 
-    # Write the strings with the potential values
-    if ndims == 1:
-        for i in range(dims[0]):
-            dat_str += (
-                '{0:>6d}{1:>15.8f}'.format(
-                    i+1, potentials[i])
-                )
-            if freqs:
-                ' {}'.join((freq for freq in freqs[i]))
-            dat_str += '\n'
-    elif ndims == 2:
-        for i in range(dims[0]):
-            for j in range(dims[1]):
-                dat_str += (
-                    '{0:>6d}{1:>6d}{2:>15.8f}'.format(
-                        i+1, j+1, potentials[i][j])
-                )
-                if freqs:
-                    strs = ('{0:d}'.format(int(val)) for val in freqs[i][j])
-                    dat_str += '  ' + ' '.join(strs)
-                dat_str += '\n'
-    elif ndims == 3:
-        for i in range(dims[0]):
-            for j in range(dims[1]):
-                for k in range(dims[2]):
-                    dat_str += (
-                        '{0:>6d}{1:>6d}{2:>6d}{3:>15.8f}'.format(
-                            i+1, j+1, k+1, potentials[i][j][k])
-                    )
-                    if freqs:
-                        ' {}'.join((freq for freq in freqs[i][j][k]))
-                    dat_str += '\n'
-    elif ndims == 4:
-        for i in range(dims[0]):
-            for j in range(dims[1]):
-                for k in range(dims[2]):
-                    for lma in range(dims[3]):
-                        dat_str += (
-                            '{0:>6d}{1:>6d}{2:>6d}{3:>6d}{4:>15.8f}'.format(
-                                i+1, j+1, k+1, lma+1,
-                                potentials[i][j][k][lma])
-                        )
-                        if freqs:
-                            ' {}'.join((freq for freq in freqs[i][j][k][lma]))
-                        dat_str += '\n'
+    # Build the lines for each point on the potential
+    dat_str = num_str + freq_str + head_str
+    for idxs, val in potentials.items():
 
-    return remove_trail_whitespace(dat_str)
+        # Add the idxs for the rotors
+        for idx in idxs:
+            dat_str += '{0:>6d}'.format(idx+1)
+
+        # Add the potential value
+        dat_str += '{0:>15f}'.format(val)
+
+        # Add any frequencies if necessary
+        if idxs in freqs:
+            for freq in freqs[idxs]:
+                dat_str += '{0:>8.1f}'.format(freq)
+
+        dat_str += '\n'
+
+    return dat_str
 
 
 def umbrella_mode(group, plane, ref_atom, potential,
