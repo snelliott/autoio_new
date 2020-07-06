@@ -6,6 +6,7 @@ import os
 from mess_io.writer import util
 from ioformat import build_mako_str
 from ioformat import remove_trail_whitespace
+from ioformat import indent
 
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
@@ -15,7 +16,7 @@ SECTION_PATH = os.path.join(TEMPLATE_PATH, 'sections')
 MONTE_CARLO_PATH = os.path.join(SECTION_PATH, 'monte_carlo')
 
 
-def mc_species(geom, elec_levels,
+def mc_species(geom, sym_factor, elec_levels,
                flux_mode_str, data_file_name,
                ground_energy, reference_energy=None,
                freqs=(), use_cm_shift=False):
@@ -23,12 +24,14 @@ def mc_species(geom, elec_levels,
 
         :param core: `MonteCarlo` section string in MESS format
         :type core: str
-        :param freqs: vibrational frequencies without fluxional mode (cm-1)
-        :type freqs: list(float)
+        :param sym_factor: symmetry factor of species
+        :type sym_factor: float
         :param elec_levels: energy and degeneracy of atom's electronic states
         :type elec_levels: list(float)
-        :param hind_rot: string of MESS-format `Rotor` sections for all rotors
-        :type hind_rot: str
+        :param flux_mode_str: MESS-format `FluxionalMode` sections for rotors
+        :type flux_mode_str: str
+        :param data_file_name: Name of data file w/ enes, geos, grads, hessians 
+        :type data_file_name: str
         :param ground_energy: energy relative to reference (kcal.mol-1)
         :type ground_energy: float
         :param freqs: vibrational frequencies (cm-1)
@@ -43,6 +46,7 @@ def mc_species(geom, elec_levels,
 
     # Build a formatted frequencies and elec levels string
     nlevels, levels = util.elec_levels_format(elec_levels)
+    levels = indent(levels, 2)
     if freqs:
         nfreqs, freqs = util.freqs_format(freqs)
         no_qc_corr = True
@@ -55,6 +59,7 @@ def mc_species(geom, elec_levels,
     # Create dictionary to fill template
     monte_carlo_keys = {
         'atom_list': atom_list,
+        'sym_factor': sym_factor,
         'flux_mode_str': flux_mode_str,
         'data_file_name': data_file_name,
         'reference_energy': reference_energy,
@@ -97,20 +102,15 @@ def mc_data(geos, enes, grads=(), hessians=()):
 
     dat_str = ''
     for idx, _ in enumerate(geos):
+        # Set the sampling point index
         idx_str = str(idx+1)
-        # print('grads test',grads)
-        # print('hessian test',grads)
-        # if grads and hessians:
-            # print('grads inside test',grads)
-            # print('hessian inside test',grads)
+        # Build string with data for all points
         dat_str += 'Sampling point'+idx_str+'\n'
         dat_str += 'Energy'+'\n'
         dat_str += enes[idx]+'\n'
-        # dat_str += 'Geometry'+'\n'
-        # dat_str += geos[idx]+'\n'
         geo_str = 'Geometry'+'\n'
         geo_str += geos[idx]+'\n'
-        geo_str = remove_trail_whitespace(geo_str)
+         geo_str = remove_trail_whitespace(geo_str)
         dat_str += geo_str
         if grads:
             dat_str += 'Gradient'+'\n'
@@ -128,7 +128,7 @@ def mc_data(geos, enes, grads=(), hessians=()):
 
     return dat_str
 
-
+ 
 def fluxional_mode(atom_indices, span=360.0):
     """ Writes the string that defines the `FluxionalMode` section for a
         single fluxional mode (torsion) of a species for a MESS input file by
@@ -142,7 +142,7 @@ def fluxional_mode(atom_indices, span=360.0):
     """
 
     # Format the aotm indices string
-    atom_indices = util.format_flux_mode_indices(atom_indices)
+     atom_indices = util.format_flux_mode_indices(atom_indices)
 
     # Create dictionary to fill template
     flux_mode_keys = {
