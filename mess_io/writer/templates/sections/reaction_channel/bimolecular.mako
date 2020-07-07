@@ -5,14 +5,14 @@ ${species1_data}\
 % if not isatom1:
       ZeroEnergy[kcal/mol]    0.0
 % endif
-    End
+  End
 !---------------------------------------------------
   Fragment ${species2_label}
 ${species2_data}\
 % if not isatom2:
       ZeroEnergy[kcal/mol]    0.0
 % endif
-    End
+  End
 !---------------------------------------------------
   GroundEnergy[kcal/mol]    ${ground_energy}
 End\
