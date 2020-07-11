@@ -5,7 +5,7 @@ from mako.template import Template
 
 
 def read_and_fill(template_dir, template_name, fill_dct):
-    """ read in a template from a tempalte directory and return the filled
+    """ read in a template from a template directory and return the filled
     template string
     """
     template_path = os.path.join(template_dir, template_name)
