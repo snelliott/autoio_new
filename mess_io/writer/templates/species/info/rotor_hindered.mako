@@ -15,4 +15,7 @@ ${potential}
 % if use_quantum_weight:
   UseQuantumWeight
 % endif
+% if therm_pow_max is not None:
+  ThermalPowerMax      ${therm_pow_max}
+% endif
 End

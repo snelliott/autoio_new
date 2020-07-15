@@ -88,6 +88,35 @@ def freqs_format(freqs):
     return nfreqs, freq_str
 
 
+def intens_format(intens):
+    """ Formats the vibrational intenuencies of a species into a string that
+        is appropriate for a MESS input file.
+
+        :param intens: harmonic infrared intensities of species
+        :type intens: list(float)
+        :return nintens: number of harmonic infrared intensities for species
+        :rtype int
+        :return inten_str: MESS-format string containing infrared intensities
+        :rtype string
+    """
+
+    # Get the number of intens
+    nintens = len(intens)
+
+    # Build intens string
+    inten_str = ''
+    for i, inten in enumerate(intens):
+        if ((i+1) % 6) == 0 and (i+1) != len(intens):
+            inten_str += '{0:<8.1f}\n'.format(int(inten))
+        else:
+            inten_str += '{0:<8.1f}'.format(inten)
+
+    # Indent the lines
+    inten_str = indent(inten_str, 4)
+
+    return nintens, inten_str
+
+
 def format_rotor_key_defs(rotor_keyword_vals, remdummy=None):
     """ Formats strings that contain the 'Group', 'Axis', and 'Symmetry'
         keywords and values that are used to define hindered rotors and
