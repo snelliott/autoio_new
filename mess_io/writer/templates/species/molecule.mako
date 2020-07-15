@@ -18,6 +18,11 @@ ${hind_rot}\
   Anharmonicities[1/cm]
 ${anharm}
 % endif 
+## Infrared Intensities
+% if nintens > 0:
+  InfraredIntensities[km/mol]  ${nintens}
+${intens}
+% endif
 ## Rovibrational Coupling Section
 % if rovib_coups != '':
   RovibrationalCouplings[1/cm]
@@ -28,4 +33,10 @@ ${rovib_coups}
   RotationalDistortion[1/cm]
 ${rot_dists}
   End
+## Various Keywords
+% if freq_scale_factor is not None:
+  FrequencyScalingFactor    ${freq_scale_factor} 
+% endif
+% if use_harmfreqs_key: 
+  AreFrequenciesHarmonic
 % endif

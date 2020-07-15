@@ -168,6 +168,7 @@ def core_rotd(sym_factor, flux_file_name, stoich):
 
 
 def rotor_hindered(group, axis, symmetry, potential,
+                   therm_pow_max=None, 
                    remdummy=None, geom=None, use_quantum_weight=False,
                    rotor_id=''):
     """ Writes the string that defines the `Rotor` section for a
@@ -182,6 +183,8 @@ def rotor_hindered(group, axis, symmetry, potential,
         :type symmetry: int
         :param potential: value of the potential along torsion (kcal.mol-1)
         :type potential: list(float)
+        :param therm_pow_max: max exp't power in Boltzmann weight
+        :type therm_pow_max: int
         :param remdummy: list of idxs of dummy atoms for shifting values
         :type remdummy: list(int)
         :param geom: geometry of the species the rotor exists for
@@ -214,6 +217,7 @@ def rotor_hindered(group, axis, symmetry, potential,
         'natom': natom,
         'geom': geom,
         'use_quantum_weight': use_quantum_weight,
+        'therm_pow_max': therm_pow_max,
         'rotor_id': rotor_id
     }
 
@@ -225,6 +229,7 @@ def rotor_hindered(group, axis, symmetry, potential,
 
 def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
                    pot_exp_size=5, hmin=13, hmax=101,
+                   therm_pow_max=None,
                    remdummy=None, geom=None, rotor_id=''):
     """ Writes the string that defines the `Rotor` section for a
         single internal rotor of a species for a MESS input file by
@@ -255,8 +260,12 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
         :rtype: str
     """
 
-    assert mass_exp_size > 0 and mass_exp_size % 2 == 1
-    assert pot_exp_size > 0 and pot_exp_size % 2 == 1
+    assert mass_exp_size > 0 and mass_exp_size % 2 == 1, (
+        'Mass exponent size: {} is not an odd number'.format(mass_exp_size)
+    )
+    assert pot_exp_size > 0 and pot_exp_size % 2 == 1, (
+        'Potential exponent size: {} is not an odd number'.format(pot_exp_size)
+    )
 
     # Format the sections
     rotor_group = util.format_rotor_key_defs(group, remdummy)
