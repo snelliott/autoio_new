@@ -323,7 +323,7 @@ def rotor_bundle(enegrid_step=5.0, enegrid_max=50.0,
         template_keys=rotor_keys)
 
 
-def mdhr_data(potentials, freqs=()):
+def mdhr_data(potentials, freqs=(), nrot=0):
     """ Writes the string for an auxiliary data file for MESS containing
         potentials and vibrational frequencies of a
         multidimensional hindered rotor, up to four dimensions.
@@ -351,7 +351,8 @@ def mdhr_data(potentials, freqs=()):
 
     # Get the number of freqs
     if freqs:
-        nfreqs = len(list(freqs.keys())[0])
+        nfreqs = len(list(freqs.values())[0])
+        nfreqs -= nrot
     else:
         nfreqs = 0
 
