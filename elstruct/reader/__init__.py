@@ -15,6 +15,9 @@ from elstruct.reader._reader import hessian_
 from elstruct.reader._reader import harmonic_frequencies_programs
 from elstruct.reader._reader import harmonic_frequencies
 from elstruct.reader._reader import harmonic_frequencies_
+from elstruct.reader._reader import normal_coords_programs
+from elstruct.reader._reader import normal_coords
+from elstruct.reader._reader import normal_coords_
 # irc
 from elstruct.reader._reader import irc_programs
 from elstruct.reader._reader import irc_points
@@ -63,6 +66,9 @@ __all__ = [
     'hessian_programs',
     'hessian',
     'hessian_',
+    'normal_coords_programs',
+    'normal_coords',
+    'normal_coords_',
     # irc
     'irc_programs',
     'irc_points',
