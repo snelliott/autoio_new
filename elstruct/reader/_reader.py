@@ -158,6 +158,35 @@ def harmonic_frequencies_(prog):
     return func
 
 
+def normal_coords_programs():
+    """ list of program modules implementing normal mode readers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.normal_coords)
+
+
+def normal_coords(prog, output_string):
+    """ read normal modes from the output string
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.normal_coords,
+        # *args
+        output_string)
+
+def normal_coords_(prog):
+    """ read normal_coords from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    """
+    func = functools.partial(normal_coords, prog)
+    func.__name__ = '_normal_coords_'
+    return func
+
 # irc_information
 def irc_programs():
     """ list of program modules implementing irc_points readers

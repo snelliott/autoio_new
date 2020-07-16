@@ -72,6 +72,23 @@ def harmonic_frequencies(output_string):
     return freqs
 
 
+def normal_coords(output_string):
+    """ read normal modes from the output string
+    """
+    comp_ptt = app.UNSIGNED_INTEGER + app.SPACES + app.UNSIGNED_INTEGER
+    nmodes = []
+    start = 'Atom  AN      X      Y      Z'
+    start += 'X      Y      Z        X      Y      Z'
+    for mode in apf.split('Frequencies', output_string)[1:]:
+        mat = ar.matrix.read(mode,
+            start_ptt=app.padded(app.NEWLINE).join([app.escape(start), '']),
+            line_start_ptt=comp_ptt)
+        nmat = numpy.array(mat)
+        for i in range(int(len(nmat)/3)):
+            nmodes.append(nmat[:, i*3:(i+1)*3])
+    return nmodes
+
+
 def irc_points(output_string):
     """ obtain the geometry, gradient, and hessian at each point along the irc
     """
