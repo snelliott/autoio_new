@@ -17,8 +17,8 @@ MONTE_CARLO_PATH = os.path.join(SECTION_PATH, 'monte_carlo')
 
 
 def mc_species(geom, sym_factor, elec_levels,
-               flux_mode_str, data_file_name,
-               ground_energy, reference_energy=None,
+               flux_mode_str, data_file_name, ref_config_file_name='',
+               ground_energy=None, reference_energy=None,
                freqs=(), use_cm_shift=False):
     """ Writes a monte carlo species section
 
@@ -32,8 +32,10 @@ def mc_species(geom, sym_factor, elec_levels,
         :type flux_mode_str: str
         :param data_file_name: Name of data file w/ enes, geos, grads, hessians 
         :type data_file_name: str
-        :param ground_energy: energy relative to reference (kcal.mol-1)
+        :param ground_energy: energy relative to reference n PES (kcal.mol-1)
         :type ground_energy: float
+        :param reference_energy: harmonic ZPVE used for MC PF (kcal.mol-1)
+        :type reference_energy: float
         :param freqs: vibrational frequencies (cm-1)
         :type freqs: list(float)
         :param use_cm_chift: signal to include a CM shift
@@ -53,6 +55,12 @@ def mc_species(geom, sym_factor, elec_levels,
     else:
         nfreqs = 0
 
+    # Check if reference config name is present
+    if nfreqs > 0:
+        assert ref_config_file_name, (
+            'Must provide a reference configuration file if no Hessians given'
+        )
+
     # Indent various strings string if needed
     flux_mode_str = util.indent(flux_mode_str, 4)
 
@@ -62,6 +70,7 @@ def mc_species(geom, sym_factor, elec_levels,
         'sym_factor': sym_factor,
         'flux_mode_str': flux_mode_str,
         'data_file_name': data_file_name,
+        'ref_config_file_name': ref_config_file_name,
         'reference_energy': reference_energy,
         'ground_energy': ground_energy,
         'nlevels': nlevels,
