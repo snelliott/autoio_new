@@ -14,6 +14,9 @@ ${levels}
 ${freqs}
   NoHessian
 % endif
+% if ref_config_file_name:
+ReferenceConfiguration           ${ref_config_file_name} 
+% endif
 % if use_cm_shift:
   UseCMShift
 % endif
