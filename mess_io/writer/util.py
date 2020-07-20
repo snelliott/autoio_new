@@ -88,7 +88,7 @@ def freqs_format(freqs):
     return nfreqs, freq_str
 
 
-def intens_format(intens):
+def intensities_format(intens):
     """ Formats the vibrational intenuencies of a species into a string that
         is appropriate for a MESS input file.
 
