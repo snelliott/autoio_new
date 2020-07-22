@@ -29,7 +29,7 @@ def harmonic_frequencies(output_string):
     """ _ """
     raise NotImplementedError
 
-def normal_modes(output_string):
+def normal_coords(output_string):
     """ _ """
     raise NotImplementedError
 
