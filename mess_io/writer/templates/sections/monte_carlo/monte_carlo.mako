@@ -11,11 +11,10 @@ ${levels}
 % endif
 % if nfreqs > 0:
   NonFluxionalFrequencies[1/cm]  ${nfreqs}
-${freqs}
-  NoHessian
 % endif
 % if ref_config_file_name:
-ReferenceConfiguration           ${ref_config_file_name} 
+  NoHessian
+  ReferenceConfiguration           ${ref_config_file_name} 
 % endif
 % if use_cm_shift:
   UseCMShift
