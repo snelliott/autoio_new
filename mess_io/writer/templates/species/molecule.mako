@@ -32,7 +32,7 @@ ${rovib_coups}
 % if rot_dists != '':
   RotationalDistortion[1/cm]
 ${rot_dists}
-  End
+% endif
 ## Various Keywords
 % if freq_scale_factor is not None:
   FrequencyScalingFactor    ${freq_scale_factor} 
