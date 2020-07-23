@@ -3,7 +3,7 @@ from elstruct.reader._gaussian09.energ import energy
 from elstruct.reader._gaussian09.surface import gradient
 from elstruct.reader._gaussian09.surface import hessian
 from elstruct.reader._gaussian09.surface import harmonic_frequencies
-from elstruct.reader._gaussian09.surface import normal_modes
+from elstruct.reader._gaussian09.surface import normal_coords
 from elstruct.reader._gaussian09.surface import irc_points
 from elstruct.reader._gaussian09.surface import irc_energies
 from elstruct.reader._gaussian09.surface import irc_coordinates

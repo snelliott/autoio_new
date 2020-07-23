@@ -77,7 +77,7 @@ def normal_coords(output_string):
     """
     comp_ptt = app.UNSIGNED_INTEGER + app.SPACES + app.UNSIGNED_INTEGER
     nmodes = []
-    start = 'Atom  AN      X      Y      Z'
+    start = 'Atom  AN      X      Y      Z        '
     start += 'X      Y      Z        X      Y      Z'
     for mode in apf.split('Frequencies', output_string)[1:]:
         mat = ar.matrix.read(mode,
