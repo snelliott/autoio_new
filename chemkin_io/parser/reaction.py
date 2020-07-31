@@ -19,7 +19,7 @@ CHEMKIN_PAREN_PLUS_EM = app.escape('(') + app.PLUS + 'M' + app.escape(')')
 SPECIES_NAME_PATTERN = (
     r'[^\s=+\-]' +
     app.zero_or_more(app.one_of_these(
-        [app.LETTER, app.DIGIT, app.escape('(+)'), r'[#,()\-]',
+        [app.LETTER, app.DIGIT, app.escape('(+)'), r'[#,()\-_]',
          app.escape('['), app.escape(']')])) +
     app.zero_or_more(app.PLUS)
 )
@@ -144,6 +144,9 @@ def reactant_names(rxn_dstr):
         prd_ptt=SPECIES_NAMES_PATTERN,
         param_ptt=COEFF_PATTERN
     )
+    #print(app.capturing(SPECIES_NAMES_PATTERN))
+    #print(SPECIES_NAMES_PATTERN),
+    #print(COEFF_PATTERN)
     string = apf.first_capture(pattern, rxn_dstr)
     names = _split_reagent_string(string)
 
