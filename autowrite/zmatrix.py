@@ -1,5 +1,6 @@
 """ z-matrix writers
 """
+import numpy
 
 
 def write(syms, key_mat, name_mat, val_dct, mat_delim=' ', setval_sign='='):
@@ -32,7 +33,20 @@ def matrix_block(syms, key_mat, name_mat, delim=' '):
 def setval_block(val_dct, setval_sign='='):
     """ write the .zmat setval block to a string
     """
+    char_dct = {'R': 0, 'A': 1, 'D': 2}
+
+    def _sort_priority(arg):
+        """ return a sort priority value for z-matrix variable names
+        """
+        name, _ = arg
+        char, num = name[0], name[1:]
+        char_val = char_dct[char] if char in char_dct else 99
+        num_val = int(num) if num.isdigit() else numpy.inf
+        return (char_val, num_val)
+
+    items = sorted(val_dct.items(), key=_sort_priority)
+
     setval_str = '\n'.join([
         '{:<5s}{}{:>11.6f}'.format(name, setval_sign, val)
-        for name, val in val_dct.items()])
+        for name, val in items])
     return setval_str
