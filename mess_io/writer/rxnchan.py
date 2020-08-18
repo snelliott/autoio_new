@@ -163,7 +163,7 @@ def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
         template_keys=ts_sadpt_keys)
 
 
-def ts_variational(ts_label, reac_label, prod_label, rpath_pt_strs, tunnel=''):
+def ts_variational(ts_label, reac_label, prod_label, rpath_str, tunnel=''):
     """ Writes the string that defines the `Barrier` section for
         for a given transition state, modeled using points along reaction path,
         for varational transition state theory. MESS input file string built by
@@ -183,8 +183,7 @@ def ts_variational(ts_label, reac_label, prod_label, rpath_pt_strs, tunnel=''):
     """
 
     # Concatenate all of the variational point strings and indent them
-    ts_data = '\n'.join(rpath_pt_strs)
-    ts_data = util.indent(ts_data, 4)
+    ts_data = util.indent(rpath_str, 4)
     if tunnel != '':
         tunnel = util.indent(tunnel, 4)
 

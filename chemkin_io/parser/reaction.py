@@ -142,7 +142,7 @@ def reactant_names(rxn_dstr):
     pattern = _first_line_pattern(
         rct_ptt=app.capturing(SPECIES_NAMES_PATTERN),
         prd_ptt=SPECIES_NAMES_PATTERN,
-        param_ptt=COEFF_PATTERN
+        param_ptt=app.maybe(COEFF_PATTERN)
     )
     #print(app.capturing(SPECIES_NAMES_PATTERN))
     #print(SPECIES_NAMES_PATTERN),
@@ -190,7 +190,7 @@ def pressure_region_specification(rxn_dstr):
         _first_line_pattern(
             rct_ptt=SPECIES_NAMES_PATTERN,
             prd_ptt=SPECIES_NAMES_PATTERN,
-            param_ptt=COEFF_PATTERN
+            param_ptt=app.maybe(COEFF_PATTERN)
         )
     )
     string = apf.first_capture(pattern, rxn_dstr)
@@ -445,7 +445,7 @@ def collider_enhance_factors(rxn_dstr):
     first_str = _first_line_pattern(
         rct_ptt=SPECIES_NAMES_PATTERN,
         prd_ptt=SPECIES_NAMES_PATTERN,
-        param_ptt=COEFF_PATTERN)
+        param_ptt=app.maybe(COEFF_PATTERN))
     bad_strings = ('DUP', 'LOW', 'TROE', 'CHEB', 'PLOG', first_str)
 
     species_char = app.one_of_these([
