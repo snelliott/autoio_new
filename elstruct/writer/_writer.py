@@ -498,6 +498,7 @@ def _process_theory_specifications(prog, method, basis, mult, orb_type):
     if not par.Method.is_nonstandard_dft(method):
         assert par.is_program_method(prog, method)
 
+        print('eltest', prog, method, singlet, orb_type)
         assert par.is_program_method_orbital_type(
             prog, method, singlet, orb_type)
 
