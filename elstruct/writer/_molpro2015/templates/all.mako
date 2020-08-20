@@ -57,5 +57,4 @@ status,all,crash
 % endif
 % endif
 
-molpro_energy=energy
-show[1,e25.15],molpro_energy
+${gen_lines_3}

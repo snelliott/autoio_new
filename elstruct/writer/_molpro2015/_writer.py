@@ -64,6 +64,7 @@ class TemplateKey():
     JOB_OPTIONS = 'job_options'
     GEN_LINES_1 = 'gen_lines_1'
     GEN_LINES_2 = 'gen_lines_2'
+    GEN_LINES_3 = 'gen_lines_3'
 
 
 def energy(geom, charge, mult, method, basis,
@@ -229,9 +230,11 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     if gen_lines is not None:
         gen_lines_1 = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
         gen_lines_2 = '\n'.join(gen_lines[2]) if 2 in gen_lines else ''
+        gen_lines_3 = '\n'.join(gen_lines[3]) if 3 in gen_lines else ''
     else:
         gen_lines_1 = ''
         gen_lines_2 = ''
+        gen_lines_3 = 'molpro_energy=energy\nshow[1,e25.15],molpro_energy'
 
     # Create a dictionary to fille the template
     fill_dct = {
@@ -253,7 +256,8 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.CORR_OPTIONS: ','.join(corr_options),
         TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
         TemplateKey.GEN_LINES_1: gen_lines_1,
-        TemplateKey.GEN_LINES_2: gen_lines_2
+        TemplateKey.GEN_LINES_2: gen_lines_2,
+        TemplateKey.GEN_LINES_3: gen_lines_3
     }
 
     return fill_dct
@@ -293,7 +297,7 @@ def _geometry_strings(geom):
 
         geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat, delim=', ')
         zmat_val_str = aw.zmatrix.setval_block(val_dct)
-    elif geom == 'GEOMETRY':
+    elif geom in ('GEOMETRY', 'GEOMETRY_HERE'):
         geom_str = geom
         zmat_val_str = ''
     else:
