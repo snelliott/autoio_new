@@ -1,5 +1,4 @@
 """ input writing module
-
 Calls functions from the various program modules. Each module must provide a
 function that matches one in the module template -- both the function name and
 signature are checked before calling the function. The resulting function
@@ -16,7 +15,6 @@ MODULE_NAME = par.Module.WRITER
 # energy input writers
 def programs():
     """ list of available electronic structure programs
-
     (must at least implement an energy writer)
     """
     return pm.program_modules_with_functions(
@@ -25,7 +23,6 @@ def programs():
 
 def methods(prog):
     """ list of available electronic structure methods
-
     :param prog: the electronic structure program to use as a backend
     :type prog: str
     """
@@ -34,7 +31,6 @@ def methods(prog):
 
 def bases(prog):
     """ list of available electronic structure basis sets
-
     :param prog: the electronic structure program to use as a backend
     :type prog: str
     """
@@ -43,7 +39,6 @@ def bases(prog):
 
 def method_orbital_types(prog, method, singlet):
     """ list of available orbital restrictions for a given method
-
     :param prog: the electronic structure program to use as a backend
     :type prog: str
     :param method: electronic structure method
@@ -65,7 +60,6 @@ def energy(geom, charge, mult, method, basis, prog,
            # generic options
            gen_lines=None):
     """ energy input string
-
     :param geom: cartesian or z-matrix geometry
     :type geom: tuple
     :param charge: molecular charge
@@ -135,7 +129,6 @@ def gradient(geom, charge, mult, method, basis, prog,
              # job options
              job_options=()):
     """ gradient input string
-
     :param geom: cartesian or z-matrix geometry
     :type geom: tuple
     :param charge: molecular charge
@@ -205,7 +198,6 @@ def hessian(geom, charge, mult, method, basis, prog,
             # job options
             job_options=()):
     """ hessian input string
-
     :param geom: cartesian or z-matrix geometry
     :type geom: tuple
     :param charge: molecular charge
@@ -275,7 +267,6 @@ def vpt2(geom, charge, mult, method, basis, prog,
          # job options
          job_options=()):
     """ hessian input string
-
     :param geom: cartesian or z-matrix geometry
     :type geom: tuple
     :param charge: molecular charge
@@ -346,7 +337,6 @@ def irc(geom, charge, mult, method, basis, prog,
         # job options
         job_options=(), frozen_coordinates=(), irc_direction=None):
     """ irc input string
-
     :param geom: cartesian or z-matrix geometry
     :type geom: tuple
     :param charge: molecular charge
@@ -425,7 +415,6 @@ def optimization(geom, charge, mult, method, basis, prog,
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
     """ optimization input string
-
     :param geom: cartesian or z-matrix geometry
     :type geom: tuple
     :param charge: molecular charge

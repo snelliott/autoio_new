@@ -590,7 +590,8 @@ class Option():
         OCC_ = option.create('casscf_occ', ['num'])
         CLOSED_ = option.create('casscf_closed', ['num'])
         WFN_ = option.create(
-            'casscf_wavefunction', ['nelec', 'sym', 'spin', 'charge'])
+            'casscf_wavefunction',
+                ['nelec', 'sym', 'spin', 'charge', 'nstates'])
 
     class MRCorr():
         """ Correlated multiref method options (passed to `corr_options`) """

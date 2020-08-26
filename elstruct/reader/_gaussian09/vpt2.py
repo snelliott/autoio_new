@@ -32,28 +32,25 @@ def anharmonic_frequencies_reader(output_string):
         app.capturing(app.FLOAT)
     )
     # pattern2 = (
-        # app.INTEGER +
-        # app.escape('(1)') +
-        # app.SPACE +
-        # app.maybe(app.one_or_more(app.LOWERCASE_LETTER)) +
-        # app.one_or_more(app.SPACE) +
-        # app.FLOAT +
-        # app.one_or_more(app.SPACE) +
-        # app.capturing(app.FLOAT) +
-        # app.one_or_more(app.SPACE) +
-        # app.one_or_more(app.escape('*')) +
-        # app.one_or_more(app.SPACE) +
-        # app.one_or_more(app.escape('*')) +
-        # app.one_or_more(app.SPACE) +
-        # app.FLOAT
+    # app.INTEGER +
+    # app.escape('(1)') +
+    # app.SPACE +
+    # app.maybe(app.one_or_more(app.LOWERCASE_LETTER)) +
+    # app.one_or_more(app.SPACE) +
+    # app.FLOAT +
+    # app.one_or_more(app.SPACE) +
+    # app.capturing(app.FLOAT) +
+    # app.one_or_more(app.SPACE) +
+    # app.one_or_more(app.escape('*')) +
+    # app.one_or_more(app.SPACE) +
+    # app.one_or_more(app.escape('*')) +
+    # app.one_or_more(app.SPACE) +
+    # app.FLOAT
     # )
 
     # Get list of values
     anharm_freq = [float(val)
                    for val in apf.all_captures(pattern, block)]
-    # if not anharm_freq:
-        # anharm_freq = [float(val)
-                       # for val in apf.all_captures(pattern2, block)]
 
     return sorted(anharm_freq)
 

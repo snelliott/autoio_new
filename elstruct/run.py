@@ -53,7 +53,9 @@ def from_input_string(script_str, run_dir, input_str):
                 raise err
 
         # read the output string from the run directory
-        assert os.path.isfile(OUTPUT_NAME)
+        assert os.path.isfile(OUTPUT_NAME), (
+            '{} is should be a file, but it is not'.format(OUTPUT_NAME)
+        )
         with open(OUTPUT_NAME, 'r') as output_obj:
             output_str = output_obj.read()
 

@@ -84,7 +84,6 @@ def opt_zmatrix(output_string):
                 app.one_of_these([app.EXPONENTIAL_FLOAT_D, app.NUMBER])),
             last=True,
             case=False)
-        print('val_dct:', val_dct)
 
     names = sorted(set(numpy.ravel(name_mat)) - {None})
     caps_names = list(map(str.upper, names))

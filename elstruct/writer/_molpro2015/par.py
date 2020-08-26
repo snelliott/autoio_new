@@ -14,7 +14,7 @@ MOLPRO2015_OPTION_EVAL_DCT = {
     option.name(Option.Casscf.CLOSED_):
     lambda osp: 'closed,{}'.format(*option.values(osp)),
     option.name(Option.Casscf.WFN_):
-    lambda osp: 'wf,{},{},{},{}'.format(*option.values(osp)),
+    lambda osp: 'wf,{},{},{},{};state,{}'.format(*option.values(osp)),
     option.name(Option.MRCorr.SHIFT_):
     lambda osp: 'shift={}'.format(*option.values(osp)),
     option.name(Option.Opt.MAXITER_):
