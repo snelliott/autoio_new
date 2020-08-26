@@ -7,6 +7,23 @@ from ioformat import indent
 
 
 # Format various pieces of data into strings for MESS input files
+def zero_energy_format(zero_ene):
+    """ Formats the zero point energy into a string that
+        is appropriate for a MESS input file.
+
+        :param zero_ene: zero point energy value
+        :type zero_ene: float
+        :return zero_ene_str: MESS-format string containing energy
+        :rtype string
+    """
+
+    zero_ene_str = (
+        'ZeroEnergy[kcal/mol]      {0:<8.2f}'.format(zero_ene)
+    )
+
+    return zero_ene_str
+
+
 def elec_levels_format(elec_levels):
     """ Formats the list of electronic energy levels into a string that
         is appropriate for a MESS input file.

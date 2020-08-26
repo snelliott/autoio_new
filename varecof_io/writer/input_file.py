@@ -129,7 +129,7 @@ def divsur(rdists,
     r1_string = util.format_values_string(
         'r1', rdists, conv_factor=ANG2BOHR)
     r2_string = util.format_values_string(
-        'r2', rdists, conv_factor=ANG2BOHR)
+        'r2', r2dists, conv_factor=ANG2BOHR)
     d1_string = util.format_values_string(
         'd1', d1dists, conv_factor=ANG2BOHR)
     d2_string = util.format_values_string(
@@ -222,8 +222,9 @@ def divsur(rdists,
         template_keys=divsur_keys)
 
 
-def elec_struct(exe_path, lib_path, base_name, npot,
+def elec_struct(lib_path, base_name, npot,
                 dummy_name='dummy_corr_', lib_name='libcorrpot.so',
+                exe_name='run.sh',
                 geom_ptt='GEOMETRY_HERE', ene_ptt='molpro_energy'):
     """ Writes the electronic structure code input file for VaReCoF
         Currently code only runs with Molpro
@@ -237,6 +238,9 @@ def elec_struct(exe_path, lib_path, base_name, npot,
         pot_params_str += '{0:<42s}{1:<8d}\n'.format(base_name+'_corr_', 1)
         pot_params_str += '{0:<42s}{1:<8d}\n'.format('ParameterInteger', i+1)
     pot_params_str += '{0:<42s}{1:<8d}\n'.format(dummy_name, 1)
+
+    # Set the exe path
+    exe_path = os.path.join(lib_path, exe_name)
 
     # Create dictionary to fill template
     els_keys = {
@@ -285,7 +289,7 @@ def structure(geo1, geo2):
         template_keys=struct_keys)
 
 
-def tml(memory, basis, wfn, method, inf_sep_energy):
+def tml(memory, wfn_guess, method, inf_sep_energy):
     """ writes the tml file used as the template for the electronic structure
         calculation
         currently, we assume the use of molpro
@@ -301,7 +305,6 @@ def tml(memory, basis, wfn, method, inf_sep_energy):
     # Create dictionary to fill template
     tml_keys = {
         'memory': memory_mw,
-        'basis': basis,
         'method': method,
         'wfn': wfn,
         'inf_sep_energy': inf_sep_energy

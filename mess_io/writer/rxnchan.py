@@ -163,7 +163,8 @@ def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
         template_keys=ts_sadpt_keys)
 
 
-def ts_variational(ts_label, reac_label, prod_label, rpath_pt_strs, tunnel=''):
+def ts_variational(ts_label, reac_label, prod_label, rpath_strs,
+                   zero_energies=None, tunnel=''):
     """ Writes the string that defines the `Barrier` section for
         for a given transition state, modeled using points along reaction path,
         for varational transition state theory. MESS input file string built by
@@ -182,9 +183,24 @@ def ts_variational(ts_label, reac_label, prod_label, rpath_pt_strs, tunnel=''):
         :rtype: str
     """
 
+    assert len(rpath_strs) == len(zero_energies), (
+        'Number of rpath strings ({})'.format(len(rpath_strs)),
+        'and zero energies ({}) do not match'.format(len(zero_energies))
+    )
+
+    # Build the zero energy strings and add them to the rpath strings
+    full_rpath_str = ''
+    for rpath_str, zero_ene in zip(rpath_strs, zero_energies):
+        zero_ene_str = util.zero_energy_format(zero_ene)
+        zero_ene_str = util.indent(zero_ene_str, 2)
+
+        full_rpath_str += rpath_str
+        full_rpath_str += zero_ene_str
+        full_rpath_str += '\n\n'
+        full_rpath_str += 'End\n'
+
     # Concatenate all of the variational point strings and indent them
-    ts_data = '\n'.join(rpath_pt_strs)
-    ts_data = util.indent(ts_data, 4)
+    ts_data = util.indent(full_rpath_str, 4)
     if tunnel != '':
         tunnel = util.indent(tunnel, 4)
 
@@ -203,7 +219,7 @@ def ts_variational(ts_label, reac_label, prod_label, rpath_pt_strs, tunnel=''):
         template_keys=var_keys)
 
 
-def dummy(dummy_label):
+def dummy(dummy_label, zero_ene=None):
     """ Writes the string that defines the `Dummy` section,
         for dummy reaction products, for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -213,9 +229,14 @@ def dummy(dummy_label):
         :rtype: str
     """
 
+    # Format energy string if needed
+    if zero_ene is not None:
+        zero_ene = '{0:6.2f}'.format(zero_ene)
+
     # Create dictionary to fill template
     dummy_keys = {
-        'dummy_label': dummy_label
+        'dummy_label': dummy_label,
+        'zero_ene': zero_ene
     }
 
     return build_mako_str(

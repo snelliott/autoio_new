@@ -1,9 +1,9 @@
 memory,${memory},m
 
+${wfn_guess}
+
 GEOMETRY_HERE
 
-basis = ${basis}
-${wfn}
 if (iterations.ge.0) then
    ${method}
    molpro_energy = energy + ${inf_sep_energy}
