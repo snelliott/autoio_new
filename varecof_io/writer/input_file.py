@@ -129,7 +129,7 @@ def divsur(rdists,
     r1_string = util.format_values_string(
         'r1', rdists, conv_factor=ANG2BOHR)
     r2_string = util.format_values_string(
-        'r2', rdists, conv_factor=ANG2BOHR)
+        'r2', r2dists, conv_factor=ANG2BOHR)
     d1_string = util.format_values_string(
         'd1', d1dists, conv_factor=ANG2BOHR)
     d2_string = util.format_values_string(
