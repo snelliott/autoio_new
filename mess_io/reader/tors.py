@@ -41,15 +41,26 @@ def zpves(output_str):
         :rtype: list(float)
     """
 
-    # Pattern for the ZPVE of a rotor
-    pattern = (app.escape('ground energy [kcal/mol]') +
-               app.one_or_more(app.SPACE) +
-               '=' +
-               app.one_or_more(app.SPACE) +
-               app.capturing(app.FLOAT))
+    # Patterns for the ZPVE of a rotor
+    num_patterns = (app.EXPONENTIAL_FLOAT, app.FLOAT)
+    pattern1 = (app.escape('minimum energy[kcal/mol]') +
+                app.one_or_more(app.SPACE) +
+                '=' +
+                app.one_or_more(app.SPACE) +
+                app.capturing(app.one_of_these(num_patterns)))
+
+    pattern2 = (app.escape('ground energy [kcal/mol]') +
+                app.one_or_more(app.SPACE) +
+                '=' +
+                app.one_or_more(app.SPACE) +
+                app.capturing(app.one_of_these(num_patterns)))
 
     # Obtain each ZPVE from the output string
-    tors_zpes = [float(val)
-                 for val in apf.all_captures(pattern, output_str)]
+    tmp1 = [-float(val)
+            for val in apf.all_captures(pattern1, output_str)]
+    tmp2 = [float(val)
+            for val in apf.all_captures(pattern2, output_str)]
+    tors_zpes = [sum(tmp) for tmp in zip(tmp1, tmp2)]
+    # print('tors_zpes calc test:', tmp1, tmp2, tors_zpes)
 
     return tors_zpes
