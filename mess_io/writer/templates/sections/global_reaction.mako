@@ -5,7 +5,7 @@ TemperatureList[K]                     ${temperatures}
 PressureList[atm]                      ${pressures}
 !
 EnergyStepOverTemperature              .2
-ExcessEnergyOverTemperature            40
+ExcessEnergyOverTemperature            60
 ModelEnergyLimit[kcal/mol]             400
 !
 CalculationMethod                      direct
