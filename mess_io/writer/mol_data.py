@@ -168,8 +168,10 @@ def core_rotd(sym_factor, flux_file_name, stoich):
 
 
 def rotor_hindered(group, axis, symmetry, potential,
-                   therm_pow_max=None, 
-                   remdummy=None, geom=None, use_quantum_weight=False,
+                   hmin=None, hmax=None,
+                   lvl_ene_max=None,
+                   therm_pow_max=None,
+                   remdummy=None, geom=None,
                    rotor_id=''):
     """ Writes the string that defines the `Rotor` section for a
         single hindered rotor of a species for a MESS input file by
@@ -181,6 +183,10 @@ def rotor_hindered(group, axis, symmetry, potential,
         :type axis: list(int)
         :param symmetry: overall symmetry of the torsional motion (potential)
         :type symmetry: int
+        :param hmin: minimum value for quantum phase space dimension
+        :type hmin: int
+        :param hmax: maximum value for quantum phase space dimension
+        :type hmax: int
         :param potential: value of the potential along torsion (kcal.mol-1)
         :type potential: list(float)
         :param therm_pow_max: max exp't power in Boltzmann weight
@@ -189,8 +195,6 @@ def rotor_hindered(group, axis, symmetry, potential,
         :type remdummy: list(int)
         :param geom: geometry of the species the rotor exists for
         :type geom: list
-        :param use_quantum_weight: toggle weigthing of quantum effects
-        :type use_quantum_weight: bool
         :param rotor_id: name associated with the rotor
         :type rotor_id: str
         :rtype: str
@@ -214,10 +218,12 @@ def rotor_hindered(group, axis, symmetry, potential,
         'symmetry': symmetry,
         'npotential': rotor_npotential,
         'potential': rotor_potential,
+        'hmin': hmin,
+        'hmax': hmax,
+        'lvl_ene_max': lvl_ene_max,
+        'therm_pow_max': therm_pow_max,
         'natom': natom,
         'geom': geom,
-        'use_quantum_weight': use_quantum_weight,
-        'therm_pow_max': therm_pow_max,
         'rotor_id': rotor_id
     }
 

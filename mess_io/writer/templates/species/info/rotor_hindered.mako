@@ -12,8 +12,14 @@ ${geom}
   Symmetry             ${symmetry}
   Potential[kcal/mol]  ${npotential}
 ${potential} 
-% if use_quantum_weight:
-  UseQuantumWeight
+% if hmin is not None:
+  HamiltonSizeMin            ${hmin}
+% endif
+% if hmax is not None:
+  HamiltonSizeMax            ${hmax}
+% endif
+% if lvl_ene_max is not None:
+  LevelEnergyMax[kcal/mol]   ${lvl_ene_max}
 % endif
 % if therm_pow_max is not None:
   ThermalPowerMax      ${therm_pow_max}
