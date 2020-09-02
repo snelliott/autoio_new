@@ -8,6 +8,7 @@ EnergyStepOverTemperature              .2
 % if excess_ene_temp is not None:
 ExcessEnergyOverTemperature            ${excess_ene_temp}
 % endif
+##
 ModelEnergyLimit[kcal/mol]             400
 !
 CalculationMethod                      direct
