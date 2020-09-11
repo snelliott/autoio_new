@@ -51,22 +51,28 @@ def read(string,
 
     block_strs = apf.all_captures(block_ptt_, blocks_str, case=case)
 
-    if not tril:
-        rows = numpy.concatenate(
-            [_block_rows(block_str, val_ptt, line_ptt_, case=case)
-             for block_str in block_strs], axis=1)
-        mat = _matrix(rows)
-    else:
-        rows = list(_block_rows(block_strs[0], val_ptt, line_ptt_, case=case))
-        nrows = len(rows)
-        for block_str in block_strs[1:]:
-            block_rows = _block_rows(block_str, val_ptt, line_ptt_, case=case)
-            nblock_rows = len(block_rows)
-            for block_row_idx, row_idx in enumerate(
-                    range(nrows-nblock_rows, nrows)):
-                rows[row_idx] += block_rows[block_row_idx]
+    if block_strs is not None:
+        if not tril:
+            rows = numpy.concatenate(
+                [_block_rows(block_str, val_ptt, line_ptt_, case=case)
+                 for block_str in block_strs], axis=1)
+            mat = _matrix(rows)
+        else:
+            rows = list(_block_rows(
+                block_strs[0], val_ptt, line_ptt_, case=case))
+            nrows = len(rows)
+            for block_str in block_strs[1:]:
+                block_rows = _block_rows(
+                    block_str, val_ptt, line_ptt_, case=case)
+                nblock_rows = len(block_rows)
+                for block_row_idx, row_idx in enumerate(
+                        range(nrows-nblock_rows, nrows)):
+                    rows[row_idx] += block_rows[block_row_idx]
 
-        mat = _symmetric_matrix_from_lower_triangle(rows)
+            mat = _symmetric_matrix_from_lower_triangle(rows)
+
+    else:
+        mat = None
 
     return mat
 

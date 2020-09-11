@@ -8,6 +8,7 @@ from mess_io.reader.tors import freqs
 from mess_io.reader.tors import zpves
 from mess_io.reader.rates import highp_ks
 from mess_io.reader.rates import pdep_ks
+from mess_io.reader._pes import pes
 
 
 __all__ = [
@@ -15,5 +16,6 @@ __all__ = [
     'freqs',
     'zpves',
     'highp_ks',
-    'pdep_ks'
+    'pdep_ks',
+    'pes'
 ]
