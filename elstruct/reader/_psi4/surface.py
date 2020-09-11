@@ -80,9 +80,11 @@ def irc_points(output_string):
     return geoms, grads, hessians
 
 
-def irc_coordinates(output_string):
-    """ get the coordinates relative to the saddle point
+def irc_path(output_string):
+    """ get the coordinates and energies relative to the saddle point
     """
+
+    # coordinates 
     block = apf.last_capture(
         (app.escape('@IRC              ****     IRC Steps     ****') +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
@@ -108,12 +110,7 @@ def irc_coordinates(output_string):
     else:
         coords = None
 
-    return coords
-
-
-def irc_energies(output_string):
-    """ get the energies relative to the saddle point
-    """
+    # energies
     block = apf.last_capture(
         (app.escape('@IRC            ****      IRC Report      ****') +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
@@ -132,4 +129,4 @@ def irc_energies(output_string):
     else:
         energies = None
 
-    return energies
+    return (coords, energies)

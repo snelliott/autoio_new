@@ -5,8 +5,7 @@ from elstruct.reader._gaussian09.surface import hessian
 from elstruct.reader._gaussian09.surface import harmonic_frequencies
 from elstruct.reader._gaussian09.surface import normal_coords
 from elstruct.reader._gaussian09.surface import irc_points
-from elstruct.reader._gaussian09.surface import irc_energies
-from elstruct.reader._gaussian09.surface import irc_coordinates
+from elstruct.reader._gaussian09.surface import irc_path
 from elstruct.reader._gaussian09.molecule import opt_geometry
 from elstruct.reader._gaussian09.molecule import opt_zmatrix
 from elstruct.reader._gaussian09.vpt2 import vpt2
@@ -26,8 +25,7 @@ __all__ = [
     'harmonic_frequencies',
     'normal_modes',
     'irc_points',
-    'irc_energies',
-    'irc_coordinates',
+    'irc_path',
     'opt_geometry',
     'opt_zmatrix',
     'vpt2',

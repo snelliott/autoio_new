@@ -219,8 +219,8 @@ def irc_points_(prog):
     return func
 
 
-def irc_energies(prog, output_string):
-    """ read irc_energies from the output string
+def irc_path(prog, output_string):
+    """ read irc_path from the output string
 
     :param prog: electronic structure program to use as a backend
     :type prog: str
@@ -228,42 +228,18 @@ def irc_energies(prog, output_string):
     :type output_string: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.irc_energies,
+        prog, MODULE_NAME, module_template.irc_path,
         # *args
         output_string)
 
 
-def irc_energies_(prog):
-    """ read irc_energies from the output string (callable)
+def irc_path_(prog):
+    """ read irc_path from the output string (callable)
     :param prog: electronic structure program to use as a backend
     :type prog: str
     """
-    func = functools.partial(irc_energies, prog)
-    func.__name__ = '_irc_energies_'
-    return func
-
-
-def irc_coordinates(prog, output_string):
-    """ read irc_coordinates from the output string
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
-    """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.irc_coordinates,
-        # *args
-        output_string)
-
-
-def irc_coordinates_(prog):
-    """ read irc_coordinates from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(irc_coordinates, prog)
-    func.__name__ = '_irc_coordinates_'
+    func = functools.partial(irc_path, prog)
+    func.__name__ = '_irc_path_'
     return func
 
 
