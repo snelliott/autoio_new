@@ -18,7 +18,8 @@ def gradient(output_string):
             app.padded(head_ptt, app.NONNEWLINE),
             app.LINE, '']),
         line_start_ptt=app.UNSIGNED_INTEGER)
-    assert numpy.shape(grad)[1] == 3
+    if grad is not None:
+        assert numpy.shape(grad)[1] == 3
     return grad
 
 

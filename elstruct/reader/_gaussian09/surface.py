@@ -126,13 +126,18 @@ def irc_points(output_string):
     hessians = []
     for string in pt_strs:
         geoms.append(irc_geometry(string))
-        grads.append(gradient(string))
-        hessians.append(hessian(string))
+        pt_grad = gradient(string)
+        if pt_grad is not None:
+            grads.append(pt_grad)
+        if pt_hessian is not None:
+            hessians.append(pt_hessian)
 
     # Combine with the 0 index info
     geoms = [sadpt_geom] + geoms
-    grads = [sadpt_grad] + grads
-    hessians = [sadpt_hess] + hessians
+    if grads:
+        grads = [sadpt_grad] + grads
+    if hessians:
+        hessians = [sadpt_hess] + hessians
 
     return geoms, grads, hessians
 
@@ -168,34 +173,33 @@ def irc_geometry(output_string):
     return geo
 
 
-def irc_energies(output_string):
+def irc_path(output_string):
     """ get the energies relative to the saddle point
     """
-    # Read the reference energy (the ts/sadpt)
+    
+    # Read the coordiantes
+    coordinates = _read_irc_reaction_path_summary(output_string, 'coord')
+
+    # Read the energies (the ts/sadpt)
     ptt = (
         'Energies reported relative to the TS energy of' +
         app.SPACES +
         app.capturing(app.FLOAT)
     )
     ts_energy = apf.last_capture(ptt, output_string)
-    pt_energies = _read_irc_reacion_path_summary(output_string, 'energy')
+    pt_energies = _read_irc_reaction_path_summary(output_string, 'energy')
     if ts_energy and pt_energies:
         energies = [float(ts_energy) + ene for ene in pt_energies]
-
+    
     # See if the enes need to be flipped so the ts ene is first
     if pt_energies[0] != 0.0:
+        coordinates = coordinates[::-1]
         energies = energies[::-1]
-    return energies
+
+    return (coordinates, energies)
 
 
-def irc_coordinates(output_string):
-    """ get the coordinates relative to the saddle point
-    """
-    coordinates = _read_irc_reacion_path_summary(output_string, 'coord')
-    return coordinates
-
-
-def _read_irc_reacion_path_summary(output_string, read_val):
+def _read_irc_reaction_path_summary(output_string, read_val):
     """ get the desired values from the reaction path summary block
     """
     assert read_val in ('energy', 'coord')

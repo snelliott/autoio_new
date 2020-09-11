@@ -40,12 +40,7 @@ def irc_points(output_string):
     raise NotImplementedError
 
 
-def irc_energies(output_string):
-    """ _ """
-    raise NotImplementedError
-
-
-def irc_coordinates(output_string):
+def irc_path(output_string):
     """ _ """
     raise NotImplementedError
 
