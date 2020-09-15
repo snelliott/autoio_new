@@ -13,6 +13,9 @@ from elstruct.writer._writer import hessian
 # vpt2
 from elstruct.writer._writer import vpt2_programs
 from elstruct.writer._writer import vpt2
+# molec_properties
+from elstruct.writer._writer import molec_properties_programs
+from elstruct.writer._writer import molec_properties
 # optimization
 from elstruct.writer._writer import optimization_programs
 from elstruct.writer._writer import optimization
@@ -36,6 +39,9 @@ __all__ = [
     # vpt2
     'vpt2_programs',
     'vpt2',
+    # molec_properties
+    'molec_properties_programs',
+    'molec_properties',
     # optimizations
     'optimization_programs',
     'optimization',

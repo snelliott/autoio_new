@@ -31,6 +31,7 @@ class JobKey():
     HESSIAN = 'hessian'
     VPT2 = 'vpt2'
     IRC = 'irc'
+    MOLPROP = 'molec_properties'
 
 
 class TemplateKey():
@@ -153,6 +154,33 @@ def vpt2(geom, charge, mult, method, basis,
     """ hessian input string
     """
     job_key = JobKey.VPT2
+    fill_dct = _fillvalue_dictionary(
+        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
+        memory=memory, comment=comment, machine_options=machine_options,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
+        job_options=job_options, gen_lines=gen_lines,
+    )
+    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
+    return inp_str
+
+
+def molec_properties(geom, charge, mult, method, basis,
+                     # molecule options
+                     mol_options=(),
+                     # machine options
+                     memory=1, comment='', machine_options=(),
+                     # theory options
+                     orb_restricted=None,
+                     scf_options=(), casscf_options=(), corr_options=(),
+                     # generic options
+                     gen_lines=None,
+                     # job options
+                     job_options=()):
+    """ Molecular Properties input string
+    """
+    job_key = JobKey.MOLPROP
     fill_dct = _fillvalue_dictionary(
         job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,

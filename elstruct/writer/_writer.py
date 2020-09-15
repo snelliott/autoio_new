@@ -316,6 +316,76 @@ def vpt2(geom, charge, mult, method, basis, prog,
         gen_lines=gen_lines, job_options=job_options)
 
 
+# molec_properties input writers
+def molec_properties_programs():
+    """ list of program modules implementing hessian input writers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.molec_properties)
+
+
+def molec_properties(geom, charge, mult, method, basis, prog,
+         # molecule options
+         mol_options=(),
+         # machine options
+         memory=1, comment='', machine_options=(),
+         # theory options
+         orb_type=None,
+         scf_options=(), casscf_options=(), corr_options=(),
+         # generic options
+         gen_lines=None,
+         # job options
+         job_options=()):
+    """ Molecular Properties input string
+    :param geom: cartesian or z-matrix geometry
+    :type geom: tuple
+    :param charge: molecular charge
+    :type charge: int
+    :param mult: spin multiplicity
+    :type mult: int
+    :param method: electronic structure method
+    :type method: str
+    :param basis: basis set
+    :type basis: str
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param mol_options: options for the molecule block
+    :type mol_options: tuple[str]
+    ;param memory: memory in GB
+    :type memory: int
+    :param comment: a comment string to be placed at the top of the file
+    :type comment: str
+    :param machine_options: machine directives (num procs, num threads, etc.)
+    :type machine_options: tuple[str]
+    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+        unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
+        character sets R/U for singlets and the second sets R/U for multiplets
+    :type orb_type: str
+    :param scf_options: scf method directives
+    :type scf_options: tuple[str]
+    :param casscf_options: casscf method directives
+    :type casscf_options: tuple[str]
+    :param corr_options: correlation method directives
+    :type corr_options: tuple[str]
+    :param gen_lines: generic lines for the input file
+    :type gen_lines: tuple[str]
+    :type gen_lines: dct[idx]=[str]
+    """
+    prog, method, basis, orb_restricted = _process_theory_specifications(
+        prog, method, basis, mult, orb_type)
+
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.molec_properties,
+        # *args
+        geom, charge, mult, method, basis,
+        # **kwargs
+        mol_options=mol_options, memory=memory, comment=comment,
+        machine_options=machine_options, orb_restricted=orb_restricted,
+        scf_options=scf_options, casscf_options=casscf_options,
+        corr_options=corr_options,
+        gen_lines=gen_lines, job_options=job_options)
+
+
 # irc input writers
 def irc_programs():
     """ list of program modules implementing optimization input writers
