@@ -39,6 +39,9 @@ from elstruct.reader._reader import vpt2_
 from elstruct.reader._reader import dipole_moment_programs
 from elstruct.reader._reader import dipole_moment
 from elstruct.reader._reader import dipole_moment_
+from elstruct.reader._reader import polarizability_programs
+from elstruct.reader._reader import polarizability
+from elstruct.reader._reader import polarizability_
 # status
 from elstruct.reader._reader import has_error_message
 from elstruct.reader._reader import has_normal_exit_message

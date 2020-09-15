@@ -80,7 +80,8 @@ def normal_coords(output_string):
     start = 'Atom  AN      X      Y      Z        '
     start += 'X      Y      Z        X      Y      Z'
     for mode in apf.split('Frequencies', output_string)[1:]:
-        mat = ar.matrix.read(mode,
+        mat = ar.matrix.read(
+            mode,
             start_ptt=app.padded(app.NEWLINE).join([app.escape(start), '']),
             line_start_ptt=comp_ptt)
         nmat = numpy.array(mat)
@@ -113,7 +114,7 @@ def irc_points(output_string):
     sadpt_grad = gradient(sadpt_str)
     sadpt_hess = hessian(sadpt_str)
 
-    # Now start getting other points by getting a list of each string with point info
+    # Now start getting other points by getting a list of each string with info
     pt_strs = []
     for i in range(1, len(section_starts)):
         start_line = section_starts[i-1]
@@ -127,10 +128,11 @@ def irc_points(output_string):
     for string in pt_strs:
         geoms.append(irc_geometry(string))
         pt_grad = gradient(string)
+        pt_hess = hessian(string)
         if pt_grad is not None:
             grads.append(pt_grad)
-        if pt_hessian is not None:
-            hessians.append(pt_hessian)
+        if pt_hess is not None:
+            hessians.append(pt_hess)
 
     # Combine with the 0 index info
     geoms = [sadpt_geom] + geoms
@@ -176,7 +178,7 @@ def irc_geometry(output_string):
 def irc_path(output_string):
     """ get the energies relative to the saddle point
     """
-    
+
     # Read the coordiantes
     coordinates = _read_irc_reaction_path_summary(output_string, 'coord')
 
@@ -190,7 +192,7 @@ def irc_path(output_string):
     pt_energies = _read_irc_reaction_path_summary(output_string, 'energy')
     if ts_energy and pt_energies:
         energies = [float(ts_energy) + ene for ene in pt_energies]
-    
+
     # See if the enes need to be flipped so the ts ene is first
     if pt_energies[0] != 0.0:
         coordinates = coordinates[::-1]

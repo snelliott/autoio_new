@@ -540,7 +540,7 @@ class Job():
     VPT2 = 'vpt2'
     IRCF = 'ircf'
     IRCR = 'ircr'
-    PROPERTIES = 'properties'
+    MOLPROP = 'molec_properties'
 
     @classmethod
     def contains(cls, name):

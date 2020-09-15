@@ -390,6 +390,38 @@ def dipole_moment_(prog):
     return func
 
 
+# dipole moment
+def polarizability_programs():
+    """ list of program modules implementing polarizability readers
+    """
+    return pm.program_modules_with_function(
+        MODULE_NAME, module_template.polarizability)
+
+
+def polarizability(prog, output_string):
+    """ read polarizability from the output string
+
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    :param output_string: the program output string
+    :type output_string: str
+    """
+    return pm.call_module_function(
+        prog, MODULE_NAME, module_template.polarizability,
+        # *args
+        output_string)
+
+
+def polarizability_(prog):
+    """ read polarizability from the output string (callable)
+    :param prog: electronic structure program to use as a backend
+    :type prog: str
+    """
+    func = functools.partial(polarizability, prog)
+    func.__name__ = '_polarizability_'
+    return func
+
+
 # status
 def has_normal_exit_message(prog, output_string):
     """ does this output string have a normal exit message?

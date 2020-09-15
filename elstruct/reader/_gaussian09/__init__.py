@@ -9,6 +9,8 @@ from elstruct.reader._gaussian09.surface import irc_path
 from elstruct.reader._gaussian09.molecule import opt_geometry
 from elstruct.reader._gaussian09.molecule import opt_zmatrix
 from elstruct.reader._gaussian09.vpt2 import vpt2
+from elstruct.reader._gaussian09.prop import dipole_moment
+from elstruct.reader._gaussian09.prop import polarizability
 from elstruct.reader._gaussian09.status import has_normal_exit_message
 from elstruct.reader._gaussian09.status import error_list
 from elstruct.reader._gaussian09.status import success_list
@@ -29,6 +31,8 @@ __all__ = [
     'opt_geometry',
     'opt_zmatrix',
     'vpt2',
+    'dipole_moment',
+    'polarizability',
     'has_normal_exit_message',
     'error_list',
     'success_list',
