@@ -2,15 +2,13 @@
  writes the string for the chemkin
 """
 
-import automol
+from chemkin_io.writer import util
 
 # convert wavenumbers to Kelvin (check)
 CM2K = 1.438776877
 
 
-def properties(names, geos, epsilons, sigmas,
-               tot_dip_moms, polars,
-               z_rots=None):
+def properties(trans_dct):
     """ Writes the string in containing data from several mechanism species
         used in calculating transport properties during ChemKin simulations.
 
@@ -32,61 +30,44 @@ def properties(names, geos, epsilons, sigmas,
         :rtype: str
     """
 
-    data_length = len(names)
-    assert all(len(lst) == data_length
-               for lst in [geos, epsilons, sigmas,
-                           tot_dip_moms, polars])
+    # Find the length of the longest name string for formatting
+    nameslen = util.name_column_length(list(trans_dct.keys()))
 
     # Initialize string with common header
-    chemkin_str = """! THEORETICAL TRANSPORT PROPERTIES
-!
-! (1) Shape, index denotes atom (0), linear molec. (1), nonlinear molec. (2);
-! (2) Epsilon, the Lennard-Jones well depth, in K;
-! (3) Sigma, the Lennard-Jones collision diameter, in Angstrom;
-! (4) Mu, total dipole moment, in Debye;
-! (5) Alpha, mean static polarizability, in Angstrom^3; and
-! (6) Z_rot, rotational relaxation collision number at 298 K.\n"""
-
-    # Find the length of the longest name string for formatting
-    maxlen = 0
-    for name in names:
-        maxlen = max(maxlen, len(name))
-    if maxlen <= 9:
-        maxlen = 9
-    nameslen = str(maxlen + 3)
-
-    # get the shape index
-    shape_idxs = []
-    for geo in geos:
-        if automol.geom.is_atom(geo):
-            shape_idx = 0
-        else:
-            if automol.geom.is_linear(geo):
-                shape_idx = 1
-            else:
-                shape_idx = 2
-        shape_idxs.append(shape_idx)
-
-    # Convert the cm-1 to K
-    epsilons = [epsilon * CM2K for epsilon in epsilons]
-
-    # if zrot empty make list of 1s as a defaults
-    if z_rots is None:
-        z_rots = [1.0 for i in range(data_length)]
+    chemkin_str = util.HEADER_STR
+    chemkin_str += '\n'
 
     # Add the headers for each of the columns
-    chemkin_str += ('{0:<'+nameslen+'}{1:>5s}{2:>12s}{3:>8s}' +
-                    '{4:>8s}{5:>8s}{6:>8s}\n').format(
-                        '! Species', 'Shape', 'Epsilon', 'Sigma',
-                        'Mu', 'Alpha', 'Z_Rot')
+    chemkin_str += (
+        '{0:<'+nameslen+'}'.format('! Species'),
+        '{1:>5d}'.format('Shape'),
+        '{2:>12.3f}'.format('Epsilon'),
+        '{3:>8.3f}'.format('Sigma'),
+        '{4:>8.3f}'.format('Mu'),
+        '{5:>8.3f}'.format('Alpha'),
+        '{6:>8.3f}'.format('Z_Rot'),
+    )
 
     # Add the values to the string
-    mol_data = zip(names, shape_idxs, epsilons,
-                   sigmas, tot_dip_moms, polars, z_rots)
-    for name, shape, eps, sig, dmom, polr, zrot in mol_data:
+    for name, dct in trans_dct.items():
+        shape_idx = dct.get('shape_idx', 2)
+        eps = dct.get('epsilon', 0.00) * CM2K
+        sigma = dct.get('sigma', 0.00) * BOHR2ANG
+        dip_mom = dct.get('dip_mom', 0.00)
+        polar = dct.get('polarizability', 0.00) * BOHR32ANG3
+        zrot = dct.get('zrot', 1.00) 
+
         chemkin_str += (
-            '{0:<'+nameslen+'}{1:>5d}{2:>12.3f}{3:>8.3f}' +
-            '{4:>8.3f}{5:>8.3f}{6:>8.3f}\n').format(
-                name, shape, eps, sig, dmom, polr, zrot)
+            '{0:<'+nameslen+'}'.format(name),
+            '{1:>5d}'.format(shape),
+            '{2:>12.3f}'.format(eps),
+            '{3:>8.3f}'.format(sig),
+            '{4:>8.3f}'.format(dmom),
+            '{5:>8.3f}'.format(polar),
+            '{6:>8.3f}'.format(zrot)
+        )
+        chemkin_str += '\n'
 
     return chemkin_str
+
+
