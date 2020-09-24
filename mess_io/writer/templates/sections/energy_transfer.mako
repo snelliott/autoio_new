@@ -7,10 +7,10 @@ Model
        Factor[1/cm]                     ${exp_factor}
        Power                            ${exp_power}
        ExponentCutoff                   ${exp_cutoff}
-    End
+  End
   CollisionFrequency
     LennardJones
-       Epsilons[K]                      ${epsilons}
+       Epsilons[1/cm]                   ${epsilons}
        Sigmas[angstrom]                 ${sigmas}
        Masses[amu]                      ${masses}
-    End
+  End
