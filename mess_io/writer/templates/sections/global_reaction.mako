@@ -5,12 +5,19 @@ TemperatureList[K]                     ${temperatures}
 PressureList[atm]                      ${pressures}
 !
 EnergyStepOverTemperature              .2
-ExcessEnergyOverTemperature            40
+% if excess_ene_temp is not None:
+ExcessEnergyOverTemperature            ${excess_ene_temp}
+% endif
 ModelEnergyLimit[kcal/mol]             400
 !
 CalculationMethod                      direct
 !
 WellCutoff                             10
+% if well_extend is None:
+WellExtension
+% else:
+WellExtension                          ${well_extend}
+% endif
 ChemicalEigenvalueMax                  0.2
 !
 ReductionMethod                        diagonalization 

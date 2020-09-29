@@ -45,7 +45,8 @@ def messpf_inp_str(globkey_str, spc_str):
 
 
 # Write individual sections of the input file
-def global_reaction(temperatures, pressures):
+def global_reaction(temperatures, pressures,
+                    excess_ene_temp=None, well_extend=None):
     """ Writes the global keywords section of the MESS input file by
         formatting input information into strings a filling Mako template.
 
@@ -61,10 +62,24 @@ def global_reaction(temperatures, pressures):
     temperature_list = '  '.join(str(val) for val in temperatures)
     pressure_list = '  '.join(str(val) for val in pressures)
 
+    # Format the other keywords as needed
+    if excess_ene_temp is not None:
+        assert isinstance(excess_ene_temp, float), (
+            'ExcessEnergyOverTemperature value must be a float'
+        )
+        excess_ene_temp_str = '{0:.2f}'.format(excess_ene_temp)
+    if well_extend is not None:
+        assert isinstance(well_extend, float), (
+            'WellExtension value must be a float'
+        )
+        well_extend_str = '{0:.2f}'.format(well_extend)
+
     # Create dictionary to fill template
     globrxn_keys = {
         'temperatures': temperature_list,
-        'pressures': pressure_list
+        'pressures': pressure_list,
+        'excess_ene_temp': excess_ene_temp_str,
+        'well_extend': well_extend_str,
     }
 
     return build_mako_str(
