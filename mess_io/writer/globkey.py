@@ -68,11 +68,15 @@ def global_reaction(temperatures, pressures,
             'ExcessEnergyOverTemperature value must be a float'
         )
         excess_ene_temp_str = '{0:.2f}'.format(excess_ene_temp)
+    else:
+        excess_ene_temp_str = None
     if well_extend is not None:
         assert isinstance(well_extend, float), (
             'WellExtension value must be a float'
         )
         well_extend_str = '{0:.2f}'.format(well_extend)
+    else:
+        well_extend_str = None
 
     # Create dictionary to fill template
     globrxn_keys = {
