@@ -3,10 +3,8 @@ Writes MESS input for a molecule
 """
 
 import os
-import numpy
 from ioformat import build_mako_str
 from ioformat import indent
-from ioformat import remove_trail_whitespace
 from mess_io.writer import util
 
 

@@ -4,4 +4,11 @@ ${well_data}\
 ## Zero Energy Section
       ZeroEnergy[kcal/mol]      ${zero_energy}
   End
+## Energy Transfer Sections
+% if edown_str is not None:
+${edown_str}
+% endif
+% if collid_freq_str is not None:
+${collid_freq_str}
+% endif
 End\

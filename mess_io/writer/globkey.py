@@ -1,9 +1,12 @@
 """
-Writes the global keyword section of a MESS input file
+Writes the full sections of a MESS input file
 """
 
 import os
 from ioformat import build_mako_str
+from ioformat import indent
+from ioformat import remove_trail_whitespace
+from mess_io.writer._sec import rxnchan_header_str
 
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
@@ -12,6 +15,36 @@ TEMPLATE_PATH = os.path.join(SRC_PATH, 'templates')
 SECTION_PATH = os.path.join(TEMPLATE_PATH, 'sections')
 
 
+# Write the full input file strings
+def messrates_inp_str(globkey_str, energy_trans_str, rxn_chan_str):
+    """ Combine various MESS strings together to combined MESS rates
+    """
+
+    rxn_chan_header_str = rxnchan_header_str()
+    mess_inp_str = '\n'.join(
+        [globkey_str,
+         '!',
+         '!',
+         # '! == MESS MODEL ==',
+         'Model',
+         '!',
+         energy_trans_str,
+         rxn_chan_header_str,
+         rxn_chan_str,
+         '\nEnd\n']
+    )
+    mess_inp_str = remove_trail_whitespace(mess_inp_str)
+
+    return mess_inp_str
+
+
+def messpf_inp_str(globkey_str, spc_str):
+    """ Combine various MESS strings together to combined MESSPF
+    """
+    return '\n'.join([globkey_str, spc_str]) + '\n'
+
+
+# Write individual sections of the input file
 def global_reaction(temperatures, pressures):
     """ Writes the global keywords section of the MESS input file by
         formatting input information into strings a filling Mako template.
@@ -80,3 +113,29 @@ def global_pf(temperatures=(),
         template_file_name='global_pf.mako',
         template_src_path=SECTION_PATH,
         template_keys=globpf_keys)
+
+
+def global_energy_transfer(edown_str, collid_freq_str):
+    """ Writes the global energy transfer section of the MESS input file by
+        formatting input information into strings a filling Mako template.
+
+        :param edown_str: String for the energy down parameters
+        :type edown_str: str
+        :param collid_freq_str: String for the collisional freq parameters
+        :type collid_freq_str: str
+        :rtype: str
+    """
+
+    edown_str = indent(edown_str, 2)
+    collid_freq_str = indent(collid_freq_str, 2)
+
+    # Create dictionary to fill template
+    glob_etrans_keys = {
+        'edown_str': edown_str,
+        'collid_freq_str': collid_freq_str
+    }
+
+    return build_mako_str(
+        template_file_name='global_etrans.mako',
+        template_src_path=SECTION_PATH,
+        template_keys=glob_etrans_keys)

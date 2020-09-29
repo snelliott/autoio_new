@@ -56,7 +56,7 @@ def data_block(block_str):
         map(troe_parameters, rxn_dstr_lst),
         map(chebyshev_parameters, rxn_dstr_lst),
         map(plog_parameters, rxn_dstr_lst),
-        map(collision_enhance_factors, rxn_dstr_lst)))
+        map(collider_enhance_factors, rxn_dstr_lst)))
 
     return rxn_dat_lst
 
@@ -144,9 +144,6 @@ def reactant_names(rxn_dstr):
         prd_ptt=SPECIES_NAMES_PATTERN,
         param_ptt=app.maybe(COEFF_PATTERN)
     )
-    #print(app.capturing(SPECIES_NAMES_PATTERN))
-    #print(SPECIES_NAMES_PATTERN),
-    #print(COEFF_PATTERN)
     string = apf.first_capture(pattern, rxn_dstr)
     names = _split_reagent_string(string)
 
@@ -294,6 +291,7 @@ def troe_parameters(rxn_dstr):
         :return params: Troe fitting parameters
         :rtype: list(float)
     """
+
     pattern1 = (
         'TROE' +
         app.zero_or_more(app.SPACE) + app.escape('/') +
@@ -303,19 +301,7 @@ def troe_parameters(rxn_dstr):
         app.maybe(app.SPACES + app.capturing(app.NUMBER)) +
         app.zero_or_more(app.SPACE) + app.escape('/')
     )
-    # pattern2 = (
-    #     'TROE' +
-    #     app.zero_or_more(app.SPACE) + app.escape('/') +
-    #     app.SPACES + app.capturing(app.NUMBER) +
-    #     app.SPACES + app.capturing(app.NUMBER) +
-    #     app.SPACES + app.capturing(app.NUMBER) +
-    #     app.zero_or_more(app.SPACE) + app.escape('/')
-    # )
     cap1 = apf.first_capture(pattern1, rxn_dstr)
-    # cap2 = apf.first_capture(pattern2, rxn_dstr)
-    # print('cap1', cap1)
-    # print('cap2', cap1)
-    # cap2 = apf.first_capture(pattern2, rxn_dstr)
     if cap1 is not None:
         params = []
         for val in cap1:
@@ -325,12 +311,6 @@ def troe_parameters(rxn_dstr):
                 params.append(None)
     else:
         params = None
-    # else:
-    #     if cap2 is not None:
-    #         params = [float(val) for val in cap2]
-    #         params.append(None)
-    #     else:
-    #         params = None
 
     return params
 

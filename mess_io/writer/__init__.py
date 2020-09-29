@@ -4,9 +4,13 @@
   data from electronic structure calculations
 """
 
+from mess_io.writer.globkey import messrates_inp_str
+from mess_io.writer.globkey import messpf_inp_str
 from mess_io.writer.globkey import global_reaction
 from mess_io.writer.globkey import global_pf
-from mess_io.writer.etrans import energy_transfer
+from mess_io.writer.globkey import global_energy_transfer
+from mess_io.writer.etrans import energy_down
+from mess_io.writer.etrans import collision_frequency
 from mess_io.writer.rxnchan import species
 from mess_io.writer.rxnchan import well
 from mess_io.writer.rxnchan import bimolecular
@@ -34,9 +38,13 @@ from mess_io.writer._sec import species_separation_str
 
 
 __all__ = [
+    'messrates_inp_str',
+    'messpf_inp_str'
     'global_reaction',
     'global_pf',
-    'energy_transfer',
+    'global_energy_transfer',
+    'energy_down',
+    'collision_frequency',
     'species',
     'well',
     'bimolecular',

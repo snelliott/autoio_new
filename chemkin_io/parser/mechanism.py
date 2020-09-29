@@ -1,12 +1,8 @@
 """ functions operating on the mechanism string
 """
 
-from io import StringIO
-import pandas
 import autoparse.pattern as app
 import autoparse.find as apf
-from automol.smiles import inchi as _inchi
-from automol.inchi import smiles as _smiles
 from ioformat import remove_comment_lines
 from ioformat import remove_whitespace
 

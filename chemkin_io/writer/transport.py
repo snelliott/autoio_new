@@ -69,5 +69,3 @@ def properties(trans_dct):
         chemkin_str += '\n'
 
     return chemkin_str
-
-

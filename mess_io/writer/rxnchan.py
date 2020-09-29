@@ -47,7 +47,8 @@ def species(spc_label, spc_data, zero_energy=None):
         template_keys=spc_keys)
 
 
-def well(well_label, well_data, zero_energy=None):
+def well(well_label, well_data,
+         zero_energy=None, edown_str=None, collid_freq_str=None):
     """ Writes the string that defines the `Well` section for
         for a given species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -57,6 +58,10 @@ def well(well_label, well_data, zero_energy=None):
         :param well_data: MESS string with required electronic structure data
         :type well_data: str
         :param zero_energy: elec+zpve energy relative to PES reference
+        :param edown_str: String for the energy down parameters
+        :type edown_str: str
+        :param collid_freq_str: String for the collisional freq parameters
+        :type collid_freq_str: str
         :rtype: str
     """
 
@@ -67,11 +72,19 @@ def well(well_label, well_data, zero_energy=None):
     if zero_energy is not None:
         zero_energy = '{0:<8.2f}'.format(zero_energy)
 
+    # Indent the energy transfer parameter strings if needed
+    if edown_str is not None:
+        edown_str = util.indent(edown_str, 4)
+    if collid_freq_str is not None:
+        collid_freq_str = util.indent(collid_freq_str, 4)
+
     # Create dictionary to fill template
     well_keys = {
         'well_label': well_label,
         'well_data': well_data,
-        'zero_energy': zero_energy
+        'zero_energy': zero_energy,
+        'edown_str': edown_str,
+        'collid_freq_str': collid_freq_str
     }
 
     return build_mako_str(
