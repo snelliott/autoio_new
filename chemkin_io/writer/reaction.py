@@ -2,9 +2,11 @@
 Writes strings containing the rate parameters
 """
 
+# Define the buffer between the longest reaction name and the Arr params 
+ALL_BUFFERS = 5
 
 # Functions to write the parameters in the correct format
-def troe(reaction, high_params, low_params, troe_params, colliders=()):
+def troe(reaction, high_params, low_params, troe_params, colliders, ea_units='kcal/mol', max_length=45, buffer=ALL_BUFFERS):
     """ Write the string containing the Lindemann fitting parameters
         formatted for ChemKin input files.
 
@@ -14,37 +16,53 @@ def troe(reaction, high_params, low_params, troe_params, colliders=()):
         :type high_params: list(float)
         :param low_params: Arrhenius Fitting Parameters used for low-P
         :type low_params: list(float)
-        :param troe_params: Troe alpha, T1, T2, and T3 fitting parameters
+        :param troe_params: Troe alpha, T3, T1, and T2 (T2 is optional) fitting parameters
         :type troe_params: list(float)
         :param colliders: names and collision enhancement factors for bath spc
         :type colliders: list((str, float))
         :return troe_str: ChemKin reaction string with Troe parameters
         :rtype: str
     """
+    ea_factor = _check_ea_units(ea_units)  # get the Ea conversion factor
 
-    assert len(high_params) == 3
-    assert len(low_params) == 3
-    assert len(troe_params) in (3, 4)
+    assert len(high_params) == 3, (
+        f'There are {len(high_params)} high-P params for {reaction}. Should be 3.'
+        ) 
+    assert len(low_params) == 3, (
+        f'There are {len(low_params)} low-P params for {reaction}. Should be 3.'
+        )
+    assert len(troe_params) in (3, 4), (
+        f'There are {len(troe_params)} Troe params for {reaction}. Should be 3 or 4.'
+        )
 
     [high_a, high_n, high_ea] = high_params
+    [low_a, low_n, low_ea] = low_params  
+    [alpha, ts_3, ts_1, ts_2] = troe_params
 
-    # Write reaction header (with third body added) and high-pressure params
-    reaction = _format_rxn_str_for_pdep(reaction, pressure='all')
-    troe_str = '{0:<32s}{1:>10.3E}{2:>9.3f}{3:9.0f} /\n'.format(
-        reaction, high_a, high_n, 1000*high_ea)
+    # Write reaction header and high-pressure params
+    troe_str = ('{0:<' + str(max_length+buffer) + 's}{1:>10.3E}{2:>9.3f}{3:9.0f}\n').format(
+        reaction, high_a, high_n, ea_factor * high_ea)
+
+    # Write the LOW string
+    troe_str += ('{0:>10s}{1:>' + str(max_length+buffer) + '.3E}{2:>9.3f}{3:9.0f}   /\n').format(
+        'LOW  /', low_a, low_n, ea_factor * low_ea)
+
+    # Write the TROE string
+    if ts_2:  # if the T** parameter exists
+        troe_str += ('{0:>10s}{1:>8.3f}{2:>12.3E}{3:>12.3E}{4:>12.3E} /\n').format(
+            'TROE /', alpha, ts_3, ts_1, ts_2)
+    else:
+        troe_str += ('{0:>10s}{1:>8.3f}{2:>12.3E}{3:>12.3E}   /\n').format(
+            'TROE /', alpha, ts_3, ts_1)        
 
     # Write the collider efficiencies string
     if colliders:
         troe_str += _format_collider_string(colliders)
 
-    # Now write the low-pressure and Troe params
-    troe_str += _format_params_string('LOW', low_params, newline=True)
-    troe_str += _format_params_string('TROE', troe_params, newline=False)
-
     return troe_str
 
 
-def lindemann(reaction, high_params, low_params, colliders=()):
+def lindemann(reaction, high_params, low_params, colliders, ea_units='kcal/mol', max_length=45, buffer=ALL_BUFFERS):
     """ Write the string containing the Lindemann fitting parameters
         formatted for ChemKin input files
 
@@ -56,27 +74,31 @@ def lindemann(reaction, high_params, low_params, colliders=()):
         :type low_params: list(float)
         :param colliders: names and collision enhancement factors for bath spc
         :type colliders: list((str, float))
-        :return lind_str: ChemKin reaction string with Lindemann parameters
+        :param ea_units: units of the *input* Ea; either 'kcal/mol' or 'cal/mol'
+        :type ea_units: str
+        :return lind_str: Chemkin reaction string with Lindemann parameters, Ea in cal/mol
         :rtype: str
     """
+    ea_factor = _check_ea_units(ea_units)  # get the Ea conversion factor
     [high_a, high_n, high_ea] = high_params
+    [low_a, low_n, low_ea] = low_params    
 
-    # Write reaction header (with third body added) and high-pressure params
-    reaction = _format_rxn_str_for_pdep(reaction, pressure='low')
-    lind_str = '{0:<32s}{1:>10.3E}{2:>9.3f}{3:9.0f} /\n'.format(
-        reaction, high_a, high_n, 1000*high_ea)
+    # Write reaction header and high-pressure params
+    lind_str = ('{0:<' + str(max_length+buffer) + 's}{1:>10.3E}{2:>9.3f}{3:9.0f}\n').format(
+        reaction, high_a, high_n, ea_factor * high_ea)
+
+    # Write the LOW string
+    lind_str += ('{0:>10s}{1:>' + str(max_length+buffer) + '.3E}{2:>9.3f}{3:9.0f}   /\n').format(
+        'LOW  /', low_a, low_n, ea_factor * low_ea)
 
     # Write the collider efficiencies string
     if colliders:
         lind_str += _format_collider_string(colliders)
 
-    # Now write the low-pressure and Troe params
-    lind_str += _format_params_string('LOW', low_params, newline=False)
-
     return lind_str
 
 
-def plog(reaction, rate_params_dct, temp_dct=None, err_dct=None):
+def plog(reaction, high_params, plog_params_dct, ea_units='kcal/mol', max_length=45, buffer=ALL_BUFFERS, temp_dct=None, err_dct=None):
     """ Write the string containing the PLOG fitting parameters
         formatted for ChemKin input files.
 
@@ -91,49 +113,90 @@ def plog(reaction, rate_params_dct, temp_dct=None, err_dct=None):
         :return plog_str: ChemKin reaction string with PLOG parameters
         :rtype: str
     """
-
+    ea_factor = _check_ea_units(ea_units)  # get the Ea conversion factor
+    
     # Find nparams and ensure there are correct num in each dct entry
-    nparams = len(next(iter(rate_params_dct.values())))
-    assert nparams in (3, 6)
-    assert all(len(params) == nparams for params in rate_params_dct.values())
-
-    # Obtain a list of the pressures and sort from low to high pressure
-    pressures = [pressure for pressure in rate_params_dct.keys()
-                 if pressure != 'high']
-    pressures.sort()
+    double_plog_fit = False
+    for pressure, params in plog_params_dct.items():
+        assert len(params) in (3, 6), (
+            f'In {reaction}, the length of the {pressure} entry is {len(params)}. It should be 3 or 6.'
+            )
+        if len(params) == 6:
+           double_plog_fit = True
 
     # Add fake high pressure parameters if they are not in the dictionary
-    if 'high' not in rate_params_dct:
-        if nparams == 3:
-            rate_params_dct['high'] = [1.00, 0.00, 0.00]
-        elif nparams == 6:
-            rate_params_dct['high'] = [1.00, 0.00, 0.00, 1.00, 0.00, 0.00]
+    double_highp_fit = False
+    if not high_params: 
+        high_params = [1.00, 0.00, 0.00]
+    elif len(high_params) == 6:  # if high-P params are a double fit
+        double_highp_fit = True 
 
-    # Build the reaction string with high-pressure params and any plog params
-    # Loop will build second ('DUPLICATE') section if double fit performed
-    p_str = ''
-    for i in range(nparams // 3):
-        if i == 1:
-            p_str += 'DUPLICATE\n'
+    # Obtain a list of the pressures and sort from low to high pressure
+    unsorted_pressures = plog_params_dct.keys()
+    pressures = sorted(unsorted_pressures)
 
-        # Build the initial string with the reaction and high-pressure params
-        high_a, high_n, high_ea = rate_params_dct['high'][3*i:3*i+3]
-        p_str += '{0:<32s}{1:>10.3E}{2:>9.3f}{3:9.0f} /\n'.format(
-            reaction, high_a, high_n, 1000*high_ea)
+    # If the high-P rate is a single Arrhenius fit    
+    if double_highp_fit:  
+        
+        [high_a1, high_n1, high_ea1, high_a2, high_n2, high_ea2] = high_params
 
-        # Build the PLOG string for each pressure, other than the HighP Limit
+        # Write the first set of high-P params
+        plog_str = ('{0:<' + str(max_length+buffer) + 's}{1:>10.3E}{2:>9.3f}{3:9.0f}\n').format(
+            reaction, high_a1, high_n1, ea_factor * high_ea1)
+        plog_str += '    DUP \n'
+
+        # Add the first set of PLOG params
         for pressure in pressures:
-            pdep_a, pdep_n, pdep_ea = rate_params_dct[pressure][3*i:3*i+3]
-            p_str += '{0:>18s} /{1:>10.3f}  '.format(
-                'PLOG', float(pressure))
-            p_str += '{0:>10.3E}{1:>9.3f}{2:9.0f} /\n'.format(
-                pdep_a, pdep_n, 1000*pdep_ea)
+            plog_params = plog_params_dct[pressure]
+            [a, n, ea,*other] = plog_params
+            plog_str += ('{0:<' + str(max_length+buffer-10) + 's}{1:<10.3f}{2:>10.3E}{3:>9.3f}{4:9.0f} /\n').format(
+                '    PLOG /', pressure, a, n, ea_factor * ea)
+
+        # Add the second set of high-P params
+        plog_str += ('{0:<' + str(max_length+buffer) + 's}{1:>10.3E}{2:>9.3f}{3:9.0f}\n').format(
+            reaction, high_a2, high_n2, ea_factor * high_ea2)
+        plog_str += '    DUP \n'
+        
+        # Add the second set of PLOG params
+        if double_plog_fit:  # if one (or more) PLOG params contains a double fit
+            for pressure in pressures:
+                plog_params = plog_params_dct[pressure]
+                if len(plog_params) == 6:  # if the params actually contain a double fit        
+                    [*other, a, n, ea] = plog_params
+                    plog_str += ('{0:<' + str(max_length+buffer-10) + 's}{1:<10.3f}{2:>10.3E}{3:>9.3f}{4:9.0f} /\n').format(
+                        '    PLOG /', pressure, a, n, ea_factor * ea)
+            
+        else:  # if none of the PLOG params contains a double fit, add dummy fit at the highest P
+            plog_str += ('{0:<' + str(max_length+buffer-10) + 's}{1:<10.3f}{2:>10.3E}{3:>9.3f}{4:9.0f} /\n').format(
+                '    PLOG /', pressures[-1], 1, 0, 0)
+
+    # If the high-P rate is a single Arrhenius fit
+    else:
+        
+        [high_a, high_n, high_ea] = high_params
+
+        # Write the high-P params
+        plog_str = ('{0:<' + str(max_length+buffer) + 's}{1:>10.3E}{2:>9.3f}{3:9.0f}\n').format(
+            reaction, high_a, high_n, ea_factor * high_ea)
+
+        # Loop through the PLOG params
+        for pressure in pressures:
+            plog_params = plog_params_dct[pressure]
+            [a, n, ea,*other] = plog_params
+            plog_str += ('{0:<' + str(max_length+buffer-10) + 's}{1:<10.3f}{2:>10.3E}{3:>9.3f}{4:9.0f} /\n').format(
+                '    PLOG /', pressure, a, n, ea_factor * ea)
+
+            # If the params contain a double fit
+            if len(plog_params) == 6:         
+                [*other, a, n, ea] = plog_params
+                plog_str += ('{0:<' + str(max_length+buffer-10) + 's}{1:<10.3f}{2:>10.3E}{3:>9.3f}{4:9.0f} /\n').format(
+                    '    PLOG /', pressure, a, n, ea_factor * ea)
 
     # Write string showing the temp fit range and fit errors
-    if temp_dct or err_dct:
-        p_str += _fit_info_str(pressures, temp_dct, err_dct)
+    #    if temp_dct or err_dct:
+    #       p_str += _fit_info_str(pressures, temp_dct, err_dct)
 
-    return p_str
+    return plog_str
 
 
 def chebyshev(reaction, high_params, alpha, tmin, tmax, pmin, pmax):
@@ -180,6 +243,42 @@ def chebyshev(reaction, high_params, alpha, tmin, tmax, pmin, pmax):
         cheb_str += _format_params_string('CHEB', row, newline=newline)
 
     return cheb_str
+
+
+def arrhenius(reaction, high_params, ea_units='kcal/mol', max_length=45, buffer=ALL_BUFFERS):
+    """ Write the string containing the Arrhenius fitting parameters
+        formatted for ChemKin input files
+
+        :param reaction: ChemKin formatted string with chemical equation
+        :type reaction: str
+        :param high_params: Arrhenius fitting parameters used for high-P
+        :type high_params: list(float)
+        :param ea_units: units of the *input* Ea; either 'kcal/mol' or 'cal/mol'
+        :type ea_units: str
+        :return arr_str: ChemKin reaction string with Lindemann parameters, Ea in cal/mol
+        :rtype: str
+    """
+    assert len(high_params) in (3,6), (
+        f'There are {len(high_params)} high-P params for {reaction}. Should be 3 or 6.'
+        ) 
+    ea_factor = _check_ea_units(ea_units)
+
+        
+    if len(high_params) == 3:  # single Arrhenius
+        [high_a, high_n, high_ea] = high_params
+        arr_str = ('{0:<' + str(max_length+buffer) + 's}{1:>10.3E}{2:>9.3f}{3:9.0f}\n').format(
+            reaction, high_a, high_n, ea_factor * high_ea)
+
+    else:  # double Arrhenius
+        [high_a1, high_n1, high_ea1, high_a2, high_n2, high_ea2] = high_params
+        arr_str = ('{0:<' + str(max_length+buffer) + 's}{1:>10.3E}{2:>9.3f}{3:9.0f}\n').format(
+            reaction, high_a1, high_n1, ea_factor * high_ea1)
+        arr_str += '    DUP \n'
+        arr_str += ('{0:<' + str(max_length+buffer) + 's}{1:>10.3E}{2:>9.3f}{3:9.0f}\n').format(
+            reaction, high_a2, high_n2, ea_factor * high_ea2)
+        arr_str += '    DUP \n'
+
+    return arr_str
 
 
 # Various formatting functions
@@ -268,15 +367,16 @@ def _format_collider_string(colliders):
     """ Write the string for the bath gas collider and their efficiencies
         for the Lindemann and Troe functional expressions:
 
-        :param colliders:
-        :type colliders: list(str)
-        :return: collider_str: ChemKin-format string with colliders
+        :param colliders: the {collider: efficiency} dct
+        :type colliders: dct {str: float}
+        :return: collider_str: Chemkin-format string with colliders and efficiencies
         :rtype: str
     """
 
-    collider_str = ''.join(
-        ('{0:s}/{1:4.3f}/ '.format(collider[0], collider[1])
-         for collider in colliders))
+    collider_str = '    '  # buffer
+    collider_str += ''.join(
+        ('{0:s} / {1:4.3f} /   '.format(collider, efficiency)
+         for collider, efficiency in colliders.items()))
     collider_str += '\n'
 
     return collider_str
@@ -302,3 +402,54 @@ def _format_params_string(header, params, newline=False):
         params_str += '\n'
 
     return params_str
+
+def _check_ea_units(ea_units):
+    """ This functions sets the ea_conversion factor 
+        and also checks that the units input by the 
+        user are valid.
+    """
+    if ea_units == 'kcal/mol':
+        ea_factor = 1000
+    elif ea_units == 'cal/mol':
+        ea_factor = 1
+    else:
+        raise InputError(f"The units for Ea must be either 'kcal/mol' or 'cal/mol' but were input as {ea_units}")
+    
+    return ea_factor
+
+
+def _format_rxn_name(rxn_key, param_vals):
+    """ Receives a rxn_key and the corresponding param_vals 
+        from a rxn_param_dct and writes it to a string that 
+        the above functions can handle. Adds +M or (+M) if
+        applicable.
+    """
+    rcts = rxn_key[0]
+    prds = rxn_key[1]
+
+    # Convert to list if only one species
+    if not isinstance(rcts, list):
+        rcts = [rcts]
+    if not isinstance(prds, list):
+        prds = [prds]
+
+    # Write the strings
+    for idx, rct in enumerate(rcts):
+        if idx == 0:
+            rct_str = rct
+        else:
+            rct_str += ' + ' + rct
+    for idx, prd in enumerate(prds):
+        if idx == 0:
+            prd_str = prd
+        else:
+            prd_str += ' + ' + prd
+    
+    # Add the +M or (+M) text if it is applicable
+    if param_vals[6] is not None:
+        rct_str += ' ' + param_vals[6]
+        prd_str += ' ' + param_vals[6]
+    
+    rxn_name = rct_str + ' = ' + prd_str
+    
+    return rxn_name

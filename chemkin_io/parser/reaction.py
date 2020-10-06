@@ -1,7 +1,7 @@
 """ functions operating on the reactions block string
 """
 
-
+import collections
 import itertools
 import numpy
 import autoparse.pattern as app
@@ -19,7 +19,7 @@ CHEMKIN_PAREN_PLUS_EM = app.escape('(') + app.PLUS + 'M' + app.escape(')')
 SPECIES_NAME_PATTERN = (
     r'[^\s=+\-]' +
     app.zero_or_more(app.one_of_these(
-        [app.LETTER, app.DIGIT, app.escape('(+)'), r'[#,()\-_]',
+        [app.LETTER, app.DIGIT, app.escape('*'), app.escape('(+)'), r'[#,()\-_]',
          app.escape('['), app.escape(']')])) +
     app.zero_or_more(app.PLUS)
 )
@@ -34,8 +34,12 @@ COEFF_PATTERN = (app.NUMBER + app.LINESPACES + app.NUMBER +
 BAD_STRS = ['inf', 'INF', 'nan']
 
 
-# Functions which use thermo parsers to collate the data
-def data_block(block_str):
+##################### SECTION 1 OF 3: TOP-LEVEL EVALUATION FUNCTIONS #####################
+
+# These functions are used to create param_dcts
+
+
+def param_dct(block_str):
     """ Parses all of the chemical equations and corresponding fitting
         parameters in the reactions block of the mechanism input file
         and subsequently pulls all of the species names and fitting
@@ -43,67 +47,35 @@ def data_block(block_str):
 
         :param block_str: string for reactions block
         :type block_str: str
-        :return data_block: all the data from the data string for each reaction
-        :rtype: list(list(str))
+        :return rxn_param_dct: dict{(reacs,prods): param_list}
+        :rtype: dct 
     """
 
     rxn_dstr_lst = data_strings(block_str)
-    rxn_dat_lst = tuple(zip(
+
+    reac_and_prods = list(zip(
         map(reactant_names, rxn_dstr_lst),
-        map(product_names, rxn_dstr_lst),
-        map(high_p_parameters, rxn_dstr_lst),
-        map(low_p_parameters, rxn_dstr_lst),
-        map(troe_parameters, rxn_dstr_lst),
-        map(chebyshev_parameters, rxn_dstr_lst),
-        map(plog_parameters, rxn_dstr_lst),
-        map(collider_enhance_factors, rxn_dstr_lst)))
+        map(product_names, rxn_dstr_lst)))
 
-    return rxn_dat_lst
+    params = list(
+        zip(
+            map(high_p_parameters, rxn_dstr_lst),
+            map(low_p_parameters, rxn_dstr_lst),
+            map(troe_parameters, rxn_dstr_lst),
+            map(chebyshev_parameters, rxn_dstr_lst),
+            map(plog_parameters, rxn_dstr_lst),
+            map(collider_enhance_factors, rxn_dstr_lst),
+            map(em_parameters, rxn_dstr_lst)
+        )
+    )
 
+    # Fix any duplicates in Arrhenius or PLOG reactions
+    params = fix_duplicates(reac_and_prods, params)
+    rxn_param_dct = dict(zip(reac_and_prods, params))
 
-def data_dct(block_str, data_entry='strings', remove_bad_fits=False):
-    """ Parses all of the chemical equations and corresponding fitting
-        parameters in the reactions block of the mechanism input file
-        and stores them in a dictionary.
-
-        :param block_str: string for reactions block
-        :type block_str: str
-        :return data_dct: dictionary of all the reaction data strings
-        :rtype: dict[reaction: data string]
-    """
-
-    rxn_dstr_lst = data_strings(block_str, remove_bad_fits=remove_bad_fits)
-    if data_entry == 'strings':
-        rxn_dct = {}
-        for string in rxn_dstr_lst:
-            # print(string)
-            rct_names = reactant_names(string)
-            prd_names = product_names(string)
-            key = (rct_names, prd_names)
-            # if key not in rxn_dct:
-            #     rxn_dct[key] = [string]
-            # else:
-            #     rxn_dct[key].append(string)
-            if key not in rxn_dct:
-                rxn_dct[key] = string
-            else:
-                rxn_dct[key] += '\n'+string
-    # elif data_entry == 'block':
-    #     rxn_dct = {}
-    #     for block in rxn_block_lst:
-    #         param_blocks = []
-    #         rct_names = rxn_block_lst[0]
-    #         prd_names = rxn_block_lst[1]
-    #         key = (rct_names, prd_names)
-    #         if key not in rxn_dct.keys():
-    #             rxn_dct[key] = block[2:]
-    #         else:
-    #             rxn_dct[key]
-
-    return rxn_dct
+    return rxn_param_dct
 
 
-# Functions for parsing the reactuins block or single reaction string #
 def data_strings(block_str, remove_bad_fits=False):
     """ Parses all of the chemical equations and corresponding fitting
         parameters in the reactions block of the mechanism input file
@@ -126,6 +98,11 @@ def data_strings(block_str, remove_bad_fits=False):
         rxn_dstrs = [dstr for dstr in rxn_dstrs
                      if not any(string in dstr for string in BAD_STRS)]
     return rxn_dstrs
+
+
+##################### SECTION 2 OF 3: PARSING FUNCTIONS #####################
+
+# These functions parse the reaction data strings
 
 
 def reactant_names(rxn_dstr):
@@ -231,26 +208,14 @@ def high_p_parameters(rxn_dstr):
 
     string_lst = apf.all_captures(pattern, rxn_dstr)
     if string_lst:
-        params = []
+        fake_params = []
         for string in string_lst:
-            params.append(list(ap_cast(string.split())))
+            fake_params.append(list(ap_cast(string.split())))
+            params = fake_params[0]
     else:
         params = None
 
     return params
-
-
-def are_highp_fake(highp_params):
-    """ Assess whether high-pressure parameters parsed out of a reac
-        string are fake.
-    """
-
-    are_fake = False
-    for params in highp_params:
-        if numpy.allclose(params, [1.0, 0.0, 0.0], atol=0.0000001):
-            are_fake = True
-
-    return are_fake
 
 
 def low_p_parameters(rxn_dstr):
@@ -267,14 +232,14 @@ def low_p_parameters(rxn_dstr):
     pattern = (
         'LOW' +
         app.zero_or_more(app.SPACE) + app.escape('/') +
-        app.SPACES + app.capturing(app.NUMBER) +
-        app.SPACES + app.capturing(app.NUMBER) +
-        app.SPACES + app.capturing(app.NUMBER) +
+        app.zero_or_more(app.SPACE) + app.capturing(app.NUMBER) +
+        app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
+        app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
         app.zero_or_more(app.SPACE) + app.escape('/')
     )
     cap1 = apf.first_capture(pattern, rxn_dstr)
     if cap1 is not None:
-        params = [[float(val) for val in cap1]]
+        params = [float(val) for val in cap1]
     else:
         params = None
 
@@ -291,17 +256,17 @@ def troe_parameters(rxn_dstr):
         :return params: Troe fitting parameters
         :rtype: list(float)
     """
-
-    pattern1 = (
+    pattern = (
         'TROE' +
         app.zero_or_more(app.SPACE) + app.escape('/') +
-        app.SPACES + app.capturing(app.NUMBER) +
-        app.SPACES + app.capturing(app.NUMBER) +
-        app.SPACES + app.capturing(app.NUMBER) +
-        app.maybe(app.SPACES + app.capturing(app.NUMBER)) +
+        app.zero_or_more(app.SPACE) + app.capturing(app.NUMBER) +
+        app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
+        app.one_or_more(app.SPACE)  + app.capturing(app.NUMBER) +
+        app.maybe(app.one_or_more(app.SPACE) + app.capturing(app.NUMBER)) +
         app.zero_or_more(app.SPACE) + app.escape('/')
     )
-    cap1 = apf.first_capture(pattern1, rxn_dstr)
+    cap1 = apf.first_capture(pattern, rxn_dstr)
+   
     if cap1 is not None:
         params = []
         for val in cap1:
@@ -311,7 +276,7 @@ def troe_parameters(rxn_dstr):
                 params.append(None)
     else:
         params = None
-
+    
     return params
 
 
@@ -360,27 +325,27 @@ def chebyshev_parameters(rxn_dstr):
     if not alpha_elm:
         alpha_elm = None
 
-    params_dct = {}
+    params = {}
     if all(vals is not None
            for vals in (cheb_temps, cheb_pressures, alpha_dims, alpha_elm)):
-        params_dct['t_limits'] = [float(val) for val in cheb_temps]
-        params_dct['p_limits'] = [float(val) for val in cheb_pressures]
-        params_dct['alpha_dim'] = [int(val) for val in alpha_dims]
-        params_dct['alpha_elm'] = [list(map(float, row)) for row in alpha_elm]
+        params['t_limits'] = [float(val) for val in cheb_temps]
+        params['p_limits'] = [float(val) for val in cheb_pressures]
+        params['alpha_dim'] = [int(val) for val in alpha_dims]
+        params['alpha_elm'] = [list(map(float, row)) for row in alpha_elm]
     else:
-        params_dct = None
+        params = None
 
-    return params_dct
+    return params
 
 
 def plog_parameters(rxn_dstr):
     """ Parses the data string for a reaction in the reactions block
-        for the lines containing the PLog fitting parameters,
+        for the lines containing the PLOG fitting parameters,
         then reads the parameters from these lines.
 
         :param rxn_dstr: data string for species in reaction block
         :type rxn_dstr: str
-        :return params: PLog fitting parameters
+        :return params: PLOG fitting parameters
         :rtype: dict[pressure: params]
     """
 
@@ -397,18 +362,19 @@ def plog_parameters(rxn_dstr):
 
     # Build dictionary of parameters, indexed by parameter
     if params_lst:
-        params_dct = {}
-        for params in params_lst:
-            pressure = float(params[0])
-            vals = list(map(float, params[1:]))
-            if pressure not in params_dct:
-                params_dct[pressure] = [vals]
+        params = {}
+        for param in params_lst:
+            pressure = float(param[0])
+            vals = list(map(float, param[1:]))
+            if pressure not in params:
+                params[pressure] = vals
             else:
-                params_dct[pressure].append(vals)
+                for val in vals:  # also takes care of double Arrhenius
+                    params[pressure].append(val)
     else:
-        params_dct = None
+        params = None
 
-    return params_dct
+    return params
 
 
 def collider_enhance_factors(rxn_dstr):
@@ -418,15 +384,11 @@ def collider_enhance_factors(rxn_dstr):
 
         :param rxn_dstr: data string for species in reaction block
         :type rxn_dstr: str
-        :return factors: Collision enhanncement factors for each bath gas
+        :return params: Collision enhanncement factors for each bath gas
         :rtype: dict[bath name: enhancement factors]
     """
 
-    first_str = _first_line_pattern(
-        rct_ptt=SPECIES_NAMES_PATTERN,
-        prd_ptt=SPECIES_NAMES_PATTERN,
-        param_ptt=app.maybe(COEFF_PATTERN))
-    bad_strings = ('DUP', 'LOW', 'TROE', 'CHEB', 'PLOG', first_str)
+    bad_strings = ('DUP', 'LOW', 'TROE', 'CHEB', 'PLOG', CHEMKIN_ARROW)
 
     species_char = app.one_of_these([
         app.LETTER, app.DIGIT,
@@ -435,23 +397,183 @@ def collider_enhance_factors(rxn_dstr):
     species_name = app.one_or_more(species_char)
 
     # Loop over the lines and search for string with collider facts
-    factors = {}
     if apf.has_match('LOW', rxn_dstr) or apf.has_match('TROE', rxn_dstr):
+        params = {}
         for line in rxn_dstr.splitlines():
             if not any(apf.has_match(string, line) for string in bad_strings):
                 factor_pattern = (
-                    app.capturing(species_name) +
-                    app.escape('/') + app.maybe(app.SPACE) +
-                    app.capturing(app.NUMBER) +
-                    app.escape('/')
+                    app.capturing(species_name) + app.zero_or_more(app.SPACE) +
+                    app.escape('/') + app.zero_or_more(app.SPACE) +
+                    app.capturing(app.NUMBER) + app.zero_or_more(app.SPACE) +
+                    app.escape('/') + app.zero_or_more(app.SPACE)
                 )
                 baths = apf.all_captures(factor_pattern, line)
                 if baths:
-                    factors = {}
+                    params = {}
                     for bath in baths:
-                        factors[bath[0]] = float(bath[1])
+                        params[bath[0]] = float(bath[1])
+        # If nothing was put into the dictionary, set it to None
+        if not(bool(params)):
+            params = None
+    else:
+        params = None
 
-    return factors
+    return params
+
+
+def em_parameters(rxn_dstr):
+    """ Parses the data string for a reaction in the reactions block
+        for the line containing the chemical equation in order to
+        check if a body M is given, indicating pressure dependence.
+
+        :param rxn_dstr: data string for species in reaction block
+        :type rxn_dstr: str
+        :return pressure_region: type of pressure indicated
+        :rtype: str
+    """
+
+    pattern = app.capturing(
+        _first_line_pattern(
+            rct_ptt=SPECIES_NAMES_PATTERN,
+            prd_ptt=SPECIES_NAMES_PATTERN,
+            param_ptt=COEFF_PATTERN
+        )
+    )
+    string = apf.first_capture(pattern, rxn_dstr)
+
+    if string is not None:
+        string = string.strip()
+        if '(+M)' in string:
+            params = '(+M)'
+        elif 'M' in string:
+            params = '+M'
+        else:
+            params = None
+
+    return params
+
+
+def comments(rxn_dstr, allow_newline=True):
+    """ Get the comments from the rxn_dstr
+    """
+        
+    
+
+
+
+##################### SECTION 3 OF 3: HELPER FUNCTIONS #####################
+
+# These functions help with some miscellaneous tasks
+
+
+def _first_line_pattern(rct_ptt, prd_ptt, param_ptt):
+    """ Defines the pattern for the first line in a reaction data
+        string that contains the chemical equation and high-pressure
+        fitting parameters for the reaction.
+
+        :param rct_ptt: string pattern for the reactant species
+        :type rct_ptt: str
+        :param prd_ptt: string pattern for the product species
+        :type prd_ptt: str
+        :param param_ptt: string pattern for high-pressure parameters
+        :type param_ptt: str
+        :rtype: str
+    """
+    return (rct_ptt + app.padded(CHEMKIN_ARROW) + prd_ptt +
+            app.LINESPACES + param_ptt)
+
+
+def _split_reagent_string(rgt_str):
+    """ Parses out the names of all the species given in a string with
+        the chemical equation within the reactions block.
+
+        :param rgt_str: string with the reaction chemical equation
+        :type rgt_str: str
+        :return rgts: names of the species in the reaction
+        :type rgts: list(str)
+    """
+
+    def _interpret_reagent_count(rgt_cnt_str):
+        """ Count the species in a string containing one side
+            of a chemical equation.
+
+            :param rgt_cnt_str: string of one side of chemcial equation
+            :type rgt_cnt_str: str
+            :return: rgts: names of species from string
+            :rtype: list(str)
+        """
+        _pattern = (app.STRING_START + app.capturing(app.maybe(app.DIGIT)) +
+                    app.capturing(app.one_or_more(app.NONSPACE)))
+        cnt, rgt = apf.first_capture(_pattern, rgt_cnt_str)
+        cnt = int(cnt) if cnt else 1
+        rgts = (rgt,) * cnt
+        return rgts
+
+    rgt_str = apf.remove(app.LINESPACES, rgt_str)
+    rgt_str = apf.remove(CHEMKIN_PAREN_PLUS_EM, rgt_str)
+    rgt_str = apf.remove(CHEMKIN_PLUS_EM, rgt_str)
+    pattern = app.PLUS + app.not_followed_by(app.PLUS)
+    rgt_cnt_strs = apf.split(pattern, rgt_str)
+    rgts = tuple(itertools.chain(*map(_interpret_reagent_count, rgt_cnt_strs)))
+
+    return rgts
+
+
+def fix_duplicates(rcts_prds, params):
+    """ This function finds duplicates within the list of
+        reactants and products.
+    """
+    # Get the unique entries and number of occurrences
+    unique_list = list(set(rcts_prds))
+    val = collections.Counter(rcts_prds)
+
+    # Loop through each unique item, looking for duplicates
+    for idx, rxn in enumerate(unique_list):
+        if val[rxn] == 2:  # if a duplicate reaction
+
+            # Get indices of the first and second occurrences 
+            first = rcts_prds.index(unique_list[idx])
+            second = rcts_prds.index(unique_list[idx],first+1)
+            
+            # Get param lists for both occurrences
+            params1 = params[first]
+            params2 = params[second]
+
+            # PLOG            
+            if params1[4]:
+                
+                # Deal with the high-P params                               
+                for value in params2[0]:
+                    params1[0].append(value)
+
+                # Deal with the PLOG params
+                for key2, values2 in params2[4].items():
+                    if key2 in params1[4].keys():  # if key2 in dct1
+                        for value2 in values2:
+                            params1[4][key2].append(value2)
+                    else:  # if key2 not in dct1
+                        params1[4][key2] = values2
+
+            # Arrhenius
+            else:         
+                for value in params2[0]:
+                    params1[0].append(value)
+            
+            # Insert the fixed params back into the original params 
+            params[first] = params1
+            params[second] = params1
+
+            print('first params:', params1)
+
+        if val[rxn] == 3:
+            print(f'Warning: three instances of {unique_list[idx]} detected')
+
+    return params  
+
+
+############################## ARCHIVED FUNCTIONS ###############################
+
+# None of these are called in this workflow; some are still called externally
 
 
 def ratek_fit_info(rxn_dstr):
@@ -514,55 +636,123 @@ def ratek_fit_info(rxn_dstr):
     return inf_dct
 
 
-# HELPER FUNCTIONS #
-def _first_line_pattern(rct_ptt, prd_ptt, param_ptt):
-    """ Defines the pattern for the first line in a reaction data
-        string that contains the chemical equation and high-pressure
-        fitting parameters for the reaction.
+def data_block(block_str):
+    """ Parses all of the chemical equations and corresponding fitting
+        parameters in the reactions block of the mechanism input file
+        and subsequently pulls all of the species names and fitting
+        parameters from the data string; this information is stored in a list.
 
-        :param rct_ptt: string pattern for the reactant species
-        :type rct_ptt: str
-        :param prd_ptt: string pattern for the product species
-        :type prd_ptt: str
-        :param param_ptt: string pattern for high-pressure parameters
-        :type param_ptt: str
+        :param block_str: string for reactions block
+        :type block_str: str
+        :return data_block: all the data from the data string for each reaction
+        :rtype: list(list(str))
+    """
+
+    rxn_dstr_lst = data_strings(block_str)
+    rxn_dat_lst = tuple(zip(
+        map(reactant_names, rxn_dstr_lst),
+        map(product_names, rxn_dstr_lst),
+        map(high_p_parameters, rxn_dstr_lst),
+        map(low_p_parameters, rxn_dstr_lst),
+        map(troe_parameters, rxn_dstr_lst),
+        map(chebyshev_parameters, rxn_dstr_lst),
+        map(plog_parameters, rxn_dstr_lst),
+        map(collider_enhance_factors, rxn_dstr_lst)))
+
+    return rxn_dat_lst
+
+
+def data_dct(block_str, data_entry='strings', remove_bad_fits=False):
+    """ Parses all of the chemical equations and corresponding fitting
+        parameters in the reactions block of the mechanism input file
+        and stores them in a dictionary.
+
+        :param block_str: string for reactions block
+        :type block_str: str
+        :return data_dct: dictionary of all the reaction data strings
+        :rtype: dict[reaction: data string]
+    """
+
+    rxn_dstr_lst = data_strings(block_str, remove_bad_fits=remove_bad_fits)
+    if data_entry == 'strings':
+        rxn_dct = {}
+        for string in rxn_dstr_lst:
+            # print(string)
+            rct_names = reactant_names(string)
+            prd_names = product_names(string)
+            key = (rct_names, prd_names)
+            # if key not in rxn_dct:
+            #     rxn_dct[key] = [string]
+            # else:
+            #     rxn_dct[key].append(string)
+            if key not in rxn_dct:
+                rxn_dct[key] = string
+            else:
+                rxn_dct[key] += '\n'+string
+    # elif data_entry == 'block':
+    #     rxn_dct = {}
+    #     for block in rxn_block_lst:
+    #         param_blocks = []
+    #         rct_names = rxn_block_lst[0]
+    #         prd_names = rxn_block_lst[1]
+    #         key = (rct_names, prd_names)
+    #         if key not in rxn_dct.keys():
+    #             rxn_dct[key] = block[2:]
+    #         else:
+    #             rxn_dct[key]
+
+    return rxn_dct
+
+
+def pressure_region_specification(rxn_dstr):
+    """ Parses the data string for a reaction in the reactions block
+        for the line containing the chemical equation in order to
+        check if a body M is given, indicating pressure dependence.
+
+        :param rxn_dstr: data string for species in reaction block
+        :type rxn_dstr: str
+        :return pressure_region: type of pressure indicated
         :rtype: str
     """
-    return (rct_ptt + app.padded(CHEMKIN_ARROW) + prd_ptt +
-            app.LINESPACES + param_ptt)
+
+    pattern = app.capturing(
+        _first_line_pattern(
+            rct_ptt=SPECIES_NAMES_PATTERN,
+            prd_ptt=SPECIES_NAMES_PATTERN,
+            param_ptt=COEFF_PATTERN
+        )
+    )
+    string = apf.first_capture(pattern, rxn_dstr)
+
+    if string is not None:
+        string = string.strip()
+        if 'M' in string:
+            # Presence of M denotes specific region assumptions
+            if '(+M)' in string:
+                pressure_region = 'falloff'
+            else:
+                pressure_region = 'lowp'
+        else:
+            # No M can be independent or not, depending on subsequent info
+            if 'PLOG' in rxn_dstr or 'CHEB' in rxn_dstr:
+                pressure_region = 'all'
+            else:
+                pressure_region = 'indep'
+    else:
+        pressure_region = None
+
+    return pressure_region
 
 
-def _split_reagent_string(rgt_str):
-    """ Parses out the names of all the species given in a string with
-        the chemical equation within the reactions block.
-
-        :param rgt_str: string with the reaction chemical equation
-        :type rgt_str: str
-        :return rgts: names of the species in the reaction
-        :type rgts: list(str)
+def are_highp_fake(highp_params):
+    """ Assess whether high-pressure parameters parsed out of a reac
+        string are fake.
     """
 
-    def _interpret_reagent_count(rgt_cnt_str):
-        """ Count the species in a string containing one side
-            of a chemical rquation.
+    are_fake = False
+    for params in highp_params:
+        if numpy.allclose(params, [1.0, 0.0, 0.0], atol=0.0000001):
+            are_fake = True
 
-            :param rgt_cnt_str: string of one side of chemcial equation
-            :type rgt_cnt_str: str
-            :return: rgts: names of species from string
-            :rtype: list(str)
-        """
-        _pattern = (app.STRING_START + app.capturing(app.maybe(app.DIGIT)) +
-                    app.capturing(app.one_or_more(app.NONSPACE)))
-        cnt, rgt = apf.first_capture(_pattern, rgt_cnt_str)
-        cnt = int(cnt) if cnt else 1
-        rgts = (rgt,) * cnt
-        return rgts
+    return are_fake
 
-    rgt_str = apf.remove(app.LINESPACES, rgt_str)
-    rgt_str = apf.remove(CHEMKIN_PAREN_PLUS_EM, rgt_str)
-    rgt_str = apf.remove(CHEMKIN_PLUS_EM, rgt_str)
-    pattern = app.PLUS + app.not_followed_by(app.PLUS)
-    rgt_cnt_strs = apf.split(pattern, rgt_str)
-    rgts = tuple(itertools.chain(*map(_interpret_reagent_count, rgt_cnt_strs)))
-
-    return rgts

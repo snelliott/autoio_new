@@ -68,6 +68,26 @@ def thermo_block(mech_str, remove_comments=True):
     return block_str
 
 
+def element_block(mech_str, remove_comments=True):
+    """ Parses the species block out of the mechanism input file.
+
+        :param mech_str: string of mechanism input file
+        :type mech_str: str
+        :param remove_comments: elect to remove comment liness from string
+        :type remove_comments: bool
+        :return block_str: string containing species block
+        :rtype: string
+    """
+
+    block_str = _block(
+        string=_clean_up(mech_str, remove_comments=remove_comments),
+        start_pattern=app.one_of_these(['ELEMENTS']),
+        end_pattern='END'
+    )
+
+    return block_str
+
+
 def _block(string, start_pattern, end_pattern):
     """ return a block delimited by start and end patterns
     """
@@ -138,6 +158,30 @@ def reaction_units(mech_str):
     )
 
     return units
+
+
+def spc_inchi_dct(csv_str):
+    """ Read the species.csv file and generate a dictionary that relates
+        ChemKin mechanism name to InChI string.
+        :param csv_str: string of input csv file with species information
+        :type csv_str: str
+        :return spc_dct: all species with names and InChI strings
+        :rtype: dict[InChI: name]
+    """
+
+    data = _read_csv(csv_str)
+
+    spc_dct = {}
+    if hasattr(data, 'inchi'):
+        spc_dct = dict(zip(data.name, data.inchi))
+    elif hasattr(data, 'smiles'):
+        ichs = [_inchi(smiles) for smiles in data.smiles]
+        spc_dct = dict(zip(ichs, data.name))
+    else:
+        spc_dct = {}
+
+    return spc_dct
+
 
 
 # Clean up the ChemKin mechanism strings
