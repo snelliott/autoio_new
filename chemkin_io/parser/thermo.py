@@ -105,11 +105,12 @@ def temperatures(thm_dstr):
     """
 
     headline = apf.split_lines(thm_dstr)[0]
-    pattern = (app.LINESPACES + app.capturing(app.UNSIGNED_FLOAT) +
-               app.LINESPACES + app.capturing(app.UNSIGNED_FLOAT) +
-               app.LINESPACES + app.capturing(app.UNSIGNED_FLOAT))
+    pattern = (app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
+               app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
+               app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
+               app.one_or_more(app.SPACE) + app.DIGIT + app.STRING_END)
     captures = apf.first_capture(pattern, headline)
-    assert captures
+    assert captures, (f'No temperatures were captured for the datastring {thm_dstr}')
     temps = tuple(map(float, captures))
 
     return temps
@@ -126,7 +127,9 @@ def low_coefficients(thm_dstr):
     """
 
     capture_lst = apf.all_captures(app.EXPONENTIAL_FLOAT, thm_dstr)
-    assert len(capture_lst) in (14, 15)
+    assert len(capture_lst) in (14, 15), (
+        f'Number of captured terms is {len(capture_lst)}. Should be 14 or 15.'
+        )
     cfts = tuple(map(float, capture_lst[7:14]))
 
     return cfts
