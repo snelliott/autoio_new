@@ -38,8 +38,10 @@ def troe(reaction, high_params, low_params, troe_params, colliders=()):
         troe_str += _format_collider_string(colliders)
 
     # Now write the low-pressure and Troe params
-    troe_str += _format_params_string('LOW', low_params, newline=True)
-    troe_str += _format_params_string('TROE', troe_params, newline=False)
+    troe_str += _format_params_string(
+        'LOW', low_params, newline=True, val='exp')
+    troe_str += _format_params_string(
+        'TROE', troe_params, newline=False, val='exp')
 
     return troe_str
 
@@ -71,12 +73,13 @@ def lindemann(reaction, high_params, low_params, colliders=()):
         lind_str += _format_collider_string(colliders)
 
     # Now write the low-pressure and Troe params
-    lind_str += _format_params_string('LOW', low_params, newline=False)
+    lind_str += _format_params_string(
+        'LOW', low_params, newline=False, val='exp')
 
     return lind_str
 
 
-def plog(reaction, rate_params_dct, temp_dct=None, err_dct=None):
+def plog(reaction, rate_params_dct):
     """ Write the string containing the PLOG fitting parameters
         formatted for ChemKin input files.
 
@@ -129,10 +132,6 @@ def plog(reaction, rate_params_dct, temp_dct=None, err_dct=None):
             p_str += '{0:>10.3E}{1:>9.3f}{2:9.0f} /\n'.format(
                 pdep_a, pdep_n, 1000*pdep_ea)
 
-    # Write string showing the temp fit range and fit errors
-    if temp_dct or err_dct:
-        p_str += _fit_info_str(pressures, temp_dct, err_dct)
-
     return p_str
 
 
@@ -166,8 +165,10 @@ def chebyshev(reaction, high_params, alpha, tmin, tmax, pmin, pmax):
         reaction, high_a, high_n, 1000*high_ea)
 
     # Write the temperature and pressure ranges
-    cheb_str += _format_params_string('TCHEB', (tmin, tmax), newline=True)
-    cheb_str += _format_params_string('PCHEB', (pmin, pmax), newline=True)
+    cheb_str += _format_params_string(
+        'TCHEB', (tmin, tmax), newline=True, val='float')
+    cheb_str += _format_params_string(
+        'PCHEB', (pmin, pmax), newline=True, val='float')
 
     # Write the dimensions of the alpha matrix
     nrows = len(alpha)
@@ -182,8 +183,7 @@ def chebyshev(reaction, high_params, alpha, tmin, tmax, pmin, pmax):
     return cheb_str
 
 
-# Various formatting functions
-def _fit_info_str(pressures, temp_dct, err_dct):
+def fit_info(pressures, temp_dct, err_dct):
     """ Write the string detailing the temperature ranges and fitting errors
         associated with the rate-constant fits at each pressure.
 
@@ -239,6 +239,7 @@ def _fit_info_str(pressures, temp_dct, err_dct):
     return inf_str
 
 
+# Various formatting functions
 def _format_rxn_str_for_pdep(reaction, pressure='all'):
     """ Add the bath gas M species to the reaction string for
         pressure dependent reactions in the appropriate format.
@@ -282,7 +283,7 @@ def _format_collider_string(colliders):
     return collider_str
 
 
-def _format_params_string(header, params, newline=False):
+def _format_params_string(header, params, newline=False, val='exp'):
     """ Write a string containing fitting params used for several
         functional forms.
 
@@ -295,8 +296,16 @@ def _format_params_string(header, params, newline=False):
         :return: params_str: string containing the parameters
         :rtype: str
     """
+    
+    assert val in ('exp', 'float')
+
+    if val == 'exp':
+        val_str = '{0:12.3E}'
+    else:
+        val_str = '{0:12.2f}'
+
     params_str = '{0:>10s}/ '.format(header.upper())
-    params_str += ''.join(('{0:12.3E}'.format(param) for param in params))
+    params_str += ''.join((val_str.format(param) for param in params))
     params_str += ' /'
     if newline:
         params_str += '\n'

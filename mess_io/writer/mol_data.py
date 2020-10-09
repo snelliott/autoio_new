@@ -91,7 +91,7 @@ def core_multirotor(geom, sym_factor, pot_surf_file, int_rot_str,
 
 
 def core_phasespace(geom1, geom2, sym_factor, stoich,
-                    pot_prefactor=10.0, pot_exp=6.0):
+                    pot_prefactor=10.0, pot_exp=6.0, tstlvl='e'):
     """ Writes the string that defines the `Core` section for a
         phase space theory model of a transition state for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -108,8 +108,12 @@ def core_phasespace(geom1, geom2, sym_factor, stoich,
         :type pot_prefactor: float
         :param pot_exp: power n in potential expression V = -C0/R^n (au)
         :type pot_exp: float
+        :param tstlvl: level to resolve the rate constant
+        :type tstlvl: str
         :rtype: str
     """
+
+    assert tstlvl in ('e', 'ej', 't')
 
     # Format the geometry section of each fragment
     natom1, geom1 = util.geom_format(geom1)
@@ -118,6 +122,10 @@ def core_phasespace(geom1, geom2, sym_factor, stoich,
     # Indent the geometry strings
     geom1 = indent(geom1, 2)
     geom2 = indent(geom2, 2)
+
+    # Format the tstlvl string
+    assert tstlvl in ('e', 'ej', 't')
+    tstlvl = tstlvl.upper()
 
     # Create dictionary to fill template
     core_keys = {
@@ -128,7 +136,8 @@ def core_phasespace(geom1, geom2, sym_factor, stoich,
         'geom2': geom2,
         'stoich': stoich,
         'pot_prefactor': pot_prefactor,
-        'pot_exp': pot_exp
+        'pot_exp': pot_exp,
+        'tstlvl': tstlvl
     }
 
     return build_mako_str(
