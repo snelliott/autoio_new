@@ -9,7 +9,7 @@ EnergyStepOverTemperature              .2
 ExcessEnergyOverTemperature            ${excess_ene_temp}
 % endif
 ##
-ModelEnergyLimit[kcal/mol]             400
+ModelEnergyLimit[kcal/mol]             800
 !
 CalculationMethod                      direct
 !
