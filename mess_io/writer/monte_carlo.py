@@ -30,7 +30,7 @@ def mc_species(geom, sym_factor, elec_levels,
         :type elec_levels: list(float)
         :param flux_mode_str: MESS-format `FluxionalMode` sections for rotors
         :type flux_mode_str: str
-        :param data_file_name: Name of data file w/ enes, geos, grads, hessians 
+        :param data_file_name: Name of data file with molecular info
         :type data_file_name: str
         :param ground_energy: energy relative to reference n PES (kcal.mol-1)
         :type ground_energy: float
@@ -51,7 +51,6 @@ def mc_species(geom, sym_factor, elec_levels,
     levels = indent(levels, 2)
     if freqs:
         nfreqs, freqs = util.freqs_format(freqs)
-        no_qc_corr = True
     else:
         nfreqs = 0
 
@@ -137,7 +136,7 @@ def mc_data(geos, enes, grads=(), hessians=()):
 
     return dat_str
 
- 
+
 def fluxional_mode(atom_indices, span=360.0):
     """ Writes the string that defines the `FluxionalMode` section for a
         single fluxional mode (torsion) of a species for a MESS input file by

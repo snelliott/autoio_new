@@ -160,30 +160,6 @@ def reaction_units(mech_str):
     return units
 
 
-def spc_inchi_dct(csv_str):
-    """ Read the species.csv file and generate a dictionary that relates
-        ChemKin mechanism name to InChI string.
-        :param csv_str: string of input csv file with species information
-        :type csv_str: str
-        :return spc_dct: all species with names and InChI strings
-        :rtype: dict[InChI: name]
-    """
-
-    data = _read_csv(csv_str)
-
-    spc_dct = {}
-    if hasattr(data, 'inchi'):
-        spc_dct = dict(zip(data.name, data.inchi))
-    elif hasattr(data, 'smiles'):
-        ichs = [_inchi(smiles) for smiles in data.smiles]
-        spc_dct = dict(zip(ichs, data.name))
-    else:
-        spc_dct = {}
-
-    return spc_dct
-
-
-
 # Clean up the ChemKin mechanism strings
 def _clean_up(mech_str, remove_comments=True):
     """ Cleans up mechanism input string by converting specific comment

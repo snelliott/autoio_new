@@ -80,7 +80,7 @@ def pes(input_string, read_fake=False):
                     if not read_fake:
                         rlabel = rlabel.replace('F', 'P')
                         plabel = plabel.replace('F', 'P')
-                
+
                     # Add the connection to lst
                     conn_lst += ((rlabel, tslabel),)
                     conn_lst += ((tslabel, plabel),)

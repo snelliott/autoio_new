@@ -306,7 +306,7 @@ def tml(memory, wfn_guess, method, inf_sep_energy):
     tml_keys = {
         'memory': memory_mw,
         'method': method,
-        'wfn': wfn,
+        'wfn': wfn_guess,
         'inf_sep_energy': inf_sep_energy
     }
 
