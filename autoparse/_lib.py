@@ -13,6 +13,7 @@ LINE_START = r'^'
 LINE_END = r'$'
 
 WILDCARD = r'[\s\S]'    # literally any character, including spaces
+WILDCARD2 = r'.'        # any character except newline
 NEWLINE = r'\n'
 NONNEWLINE = r'[^\n]'
 
