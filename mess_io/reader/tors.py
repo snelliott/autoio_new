@@ -22,7 +22,8 @@ def freqs(output_str):
     # Pattern for the frequency of a rotor
     pattern = (app.escape('analytic  frequency at minimum[1/cm] =') +
                app.one_or_more(app.SPACE) +
-               app.capturing(app.FLOAT))
+               app.capturing(app.NUMBER))
+               # app.capturing(app.FLOAT))
 
     # Obtain each frequency from the output string
     tors_freqs = [float(val)
