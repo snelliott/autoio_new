@@ -4,6 +4,7 @@
 import collections
 import itertools
 import numpy
+import math
 import autoparse.pattern as app
 import autoparse.find as apf
 from autoparse import cast as ap_cast
@@ -30,6 +31,7 @@ REACTION_PATTERN = (SPECIES_NAMES_PATTERN + app.padded(CHEMKIN_ARROW) +
                     SPECIES_NAMES_PATTERN)
 COEFF_PATTERN = (app.NUMBER + app.LINESPACES + app.NUMBER +
                  app.LINESPACES + app.NUMBER)
+COMMENTS_PATTERN = app.escape('!') + app.capturing(app.one_or_more(app.WILDCARD2))  
 
 BAD_STRS = ['inf', 'INF', 'nan']
 
@@ -39,7 +41,7 @@ BAD_STRS = ['inf', 'INF', 'nan']
 # These functions are used to create param_dcts
 
 
-def param_dct(block_str):
+def param_dct(block_str, ea_units='cal/mol'):
     """ Parses all of the chemical equations and corresponding fitting
         parameters in the reactions block of the mechanism input file
         and subsequently pulls all of the species names and fitting
@@ -50,8 +52,10 @@ def param_dct(block_str):
         :return rxn_param_dct: dict{(reacs,prods): param_list}
         :rtype: dct 
     """
-
     rxn_dstr_lst = data_strings(block_str)
+    
+    # Create an iterator that repeats the ea_units input
+    many_ea_units = list(itertools.repeat(ea_units, times=len(rxn_dstr_lst)))
 
     reac_and_prods = list(zip(
         map(reactant_names, rxn_dstr_lst),
@@ -59,11 +63,11 @@ def param_dct(block_str):
 
     params = list(
         zip(
-            map(high_p_parameters, rxn_dstr_lst),
-            map(low_p_parameters, rxn_dstr_lst),
+            map(high_p_parameters, rxn_dstr_lst, many_ea_units),
+            map(low_p_parameters, rxn_dstr_lst, many_ea_units),
             map(troe_parameters, rxn_dstr_lst),
             map(chebyshev_parameters, rxn_dstr_lst),
-            map(plog_parameters, rxn_dstr_lst),
+            map(plog_parameters, rxn_dstr_lst, many_ea_units),
             map(collider_enhance_factors, rxn_dstr_lst),
             map(em_parameters, rxn_dstr_lst)
         )
@@ -189,7 +193,7 @@ def pressure_region_specification(rxn_dstr):
     return pressure_region
 
 
-def high_p_parameters(rxn_dstr):
+def high_p_parameters(rxn_dstr, ea_units='cal/mol'):
     """ Parses the data string for a reaction in the reactions block
         for the line containing the chemical equation in order to
         read the fitting parameters that are on the same line.
@@ -212,13 +216,15 @@ def high_p_parameters(rxn_dstr):
         for string in string_lst:
             fake_params.append(list(ap_cast(string.split())))
             params = fake_params[0]
+        if ea_units=='kcal/mol':
+            params[2] = params[2]*1e3  # convert to cal/mol
     else:
         params = None
 
     return params
 
 
-def low_p_parameters(rxn_dstr):
+def low_p_parameters(rxn_dstr, ea_units='cal/mol'):
     """ Parses the data string for a reaction in the reactions block
         for a line containing the low-pressure fitting parameters,
         then reads the parameters from this line.
@@ -240,6 +246,8 @@ def low_p_parameters(rxn_dstr):
     cap1 = apf.first_capture(pattern, rxn_dstr)
     if cap1 is not None:
         params = [float(val) for val in cap1]
+        if ea_units=='kcal/mol':
+            params[2] = params[2]*1e3  # convert to cal/mol
     else:
         params = None
 
@@ -290,55 +298,72 @@ def chebyshev_parameters(rxn_dstr):
         :return params: Chebyshev fitting parameters
         :rtype: dict[param: value]
     """
+    original_rxn_dstr = rxn_dstr
+    rxn_dstr = apf.remove(COMMENTS_PATTERN, rxn_dstr)
 
-    temp_pattern = (
+    tcheb_pattern = (
         'TCHEB' + app.zero_or_more(app.SPACE) + app.escape('/') +
-        app.SPACES + app.capturing(app.FLOAT) +
-        app.SPACES + app.capturing(app.FLOAT) +
+        app.zero_or_more(app.SPACE) + app.capturing(app.NUMBER) +
+        app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
         app.zero_or_more(app.SPACE) + app.escape('/')
     )
-    pressure_pattern = (
+    pcheb_pattern = (
         'PCHEB' + app.zero_or_more(app.SPACE) + app.escape('/') +
-        app.SPACES + app.capturing(app.FLOAT) +
-        app.SPACES + app.capturing(app.FLOAT) +
+        app.zero_or_more(app.SPACE) + app.capturing(app.NUMBER) +
+        app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
         app.zero_or_more(app.SPACE) + app.escape('/')
     )
-    alpha_dimension_pattern = (
-        'CHEB' + app.zero_or_more(app.SPACE) + app.escape('/') +
-        app.SPACES + app.capturing(app.INTEGER) +
-        app.SPACES + app.capturing(app.INTEGER) +
-        app.zero_or_more(app.SPACE) + app.escape('/')
-    )
-    alpha_elements_pattern = (
-        'CHEB' + app.zero_or_more(app.SPACE) + app.escape('/') +
-        app.series(
-            app.capturing(app.SPACES + app.capturing(app.EXPONENTIAL_FLOAT)),
-            app.SPACES
-        ) +
-        app.zero_or_more(app.SPACE) + app.escape('/')
-    )
+    cheb_pattern = ( 
+        app.not_preceded_by(app.one_of_these(['T','P'])) + 'CHEB' + app.zero_or_more(app.SPACE) + app.escape('/') +
+        app.capturing(app.one_or_more(app.WILDCARD2)) + app.escape('/')
+    )  
 
-    cheb_temps = apf.first_capture(temp_pattern, rxn_dstr)
-    cheb_pressures = apf.first_capture(pressure_pattern, rxn_dstr)
-    alpha_dims = apf.first_capture(alpha_dimension_pattern, rxn_dstr)
-    alpha_elm = apf.all_captures(alpha_elements_pattern, rxn_dstr)
-    if not alpha_elm:
-        alpha_elm = None
+    cheb_params_raw = apf.all_captures(cheb_pattern, rxn_dstr)
 
-    params = {}
-    if all(vals is not None
-           for vals in (cheb_temps, cheb_pressures, alpha_dims, alpha_elm)):
+    if cheb_params_raw:
+        params = {}
+        # Get the temp and pressure limits; add the Chemkin default values if they don't exist
+        cheb_temps = apf.first_capture(tcheb_pattern, rxn_dstr)
+        cheb_pressures = apf.first_capture(pcheb_pattern, rxn_dstr)
+        if cheb_temps is None: 
+            cheb_temps = ('300.00', '2500.00')
+            print(f'No Chebyshev temperature limits specified for the below reaction. Assuming 300 and 2500 K. \n \n {original_rxn_dstr}\n')
+        if cheb_pressures is None: 
+            cheb_pressures = ('0.001', '100.00')
+            print(f'No Chebyshev pressure limits specified for the below reaction. Assuming 0.001 and 100 atm. \n \n {original_rxn_dstr}\n')
+    
+        # Get all the numbers from the CHEB parameters 
+        cheb_params = []
+        for cheb_line in cheb_params_raw:
+            cheb_params.extend(cheb_line.split())
+    
+        # Get the cheb array dimensions N and M, which are the first two entries of the CHEB params
+        cheb_n = int(math.floor(float(cheb_params[0])))  # rounds down to match the Chemkin parser, although it should be an integer already
+        cheb_m = int(math.floor(float(cheb_params[1]))) 
+    
+        # Start on the third value (after N and M) and get all the polynomial coefficients
+        coeffs = [] 
+        for idx, coeff in enumerate(cheb_params[2:]):
+            if idx+1 > (cheb_n*cheb_m):  # there are allowed to be extra coefficients, but just ignore them
+                break
+            coeffs.append(coeff)
+        assert len(coeffs) == (cheb_n*cheb_m), (
+            f'For the below reaction, there should be {cheb_n*cheb_m} Chebyshev polynomial coefficients, but there are only {len(coeffs)}. \n \n {original_rxn_dstr}\n'
+        ) 
+        alpha = numpy.array(list(map(float,coeffs)))
+
+        # Store the results
         params['t_limits'] = [float(val) for val in cheb_temps]
         params['p_limits'] = [float(val) for val in cheb_pressures]
-        params['alpha_dim'] = [int(val) for val in alpha_dims]
-        params['alpha_elm'] = [list(map(float, row)) for row in alpha_elm]
+        params['alpha_elm'] = alpha.reshape([cheb_n, cheb_m])
+
     else:
         params = None
 
     return params
 
 
-def plog_parameters(rxn_dstr):
+def plog_parameters(rxn_dstr, ea_units='cal/mol'):
     """ Parses the data string for a reaction in the reactions block
         for the lines containing the PLOG fitting parameters,
         then reads the parameters from these lines.
@@ -371,6 +396,10 @@ def plog_parameters(rxn_dstr):
             else:
                 for val in vals:  # also takes care of double Arrhenius
                     params[pressure].append(val)
+            if ea_units=='kcal/mol':
+                params[pressure][2] = params[pressure][2]*1e3
+                if len(params[pressure]) == 6:
+                    params[pressure][5] = params[pressure][5]*1e3
     else:
         params = None
 
@@ -522,14 +551,33 @@ def _split_reagent_string(rgt_str):
 def fix_duplicates(rcts_prds, params):
     """ This function finds duplicates within the list of
         reactants and products.
+
+        :param rcts_prds: reaction keys (i.e., reactant/product sets)
+        :type rcts_prds: list of tuples [((rct1, rct2,...),(prd1, prd2,...)), ...] 
+        :param params: reaction parameters
+        :type params: list
+        :return params: updated reaction parameters with duplicates included
+        :rtype: list
     """
     # Get the unique entries and number of occurrences
     unique_list = list(set(rcts_prds))
     val = collections.Counter(rcts_prds)
 
     # Loop through each unique item, looking for duplicates
+    three_or_more_dups = 0
     for idx, rxn in enumerate(unique_list):
-        if val[rxn] == 2:  # if a duplicate reaction
+        if val[rxn] > 1:  # if a duplicate reaction
+
+            # If more than two instances, print a warning
+            if val[rxn] > 2:
+                three_or_more_dups += 1
+                print(f'Warning: {val[rxn]} instances of {rxn} detected. Params printed below.')
+                for dup in range(val[rxn]):
+                    if dup == 0:
+                        idx2 = rcts_prds.index(unique_list[idx])
+                    else:
+                        idx2 = rcts_prds.index(unique_list[idx], idx2+1)
+                    print(params[idx2])
 
             # Get indices of the first and second occurrences 
             first = rcts_prds.index(unique_list[idx])
@@ -541,18 +589,23 @@ def fix_duplicates(rcts_prds, params):
 
             # PLOG            
             if params1[4]:
+                # Only do this if the PLOG params exist in the second case
+                if params2[4]:  
                 
-                # Deal with the high-P params                               
-                for value in params2[0]:
-                    params1[0].append(value)
+                    # Deal with the high-P params                               
+                    for value in params2[0]:
+                        params1[0].append(value)
 
-                # Deal with the PLOG params
-                for key2, values2 in params2[4].items():
-                    if key2 in params1[4].keys():  # if key2 in dct1
-                        for value2 in values2:
-                            params1[4][key2].append(value2)
-                    else:  # if key2 not in dct1
-                        params1[4][key2] = values2
+                    # Deal with the PLOG params
+                    for key2, values2 in params2[4].items():
+                        if key2 in params1[4].keys():  # if key2 in dct1
+                            for value2 in values2:
+                                params1[4][key2].append(value2)
+                        else:  # if key2 not in dct1
+                            params1[4][key2] = values2
+
+                else:
+                    print(f'For rxn {rxn}, the format of the first duplicate is PLOG, but the second is not PLOG')
 
             # Arrhenius
             else:         
@@ -563,10 +616,8 @@ def fix_duplicates(rcts_prds, params):
             params[first] = params1
             params[second] = params1
 
-            print('first params:', params1)
-
-        if val[rxn] == 3:
-            print(f'Warning: three instances of {unique_list[idx]} detected')
+    if three_or_more_dups > 0:
+        print(f'From chemkin_io.parser.reaction.fix_duplicates, there are {three_or_more_dups} reactions with 3 or more rate expressions.')
 
     return params  
 
