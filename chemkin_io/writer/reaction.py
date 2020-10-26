@@ -227,7 +227,7 @@ def chebyshev(reaction, high_params, alpha, tmin, tmax, pmin, pmax):
 
     # Write reaction header (with third body added) and high-pressure params
     reaction = _format_rxn_str_for_pdep(reaction, pressure='all')
-    cheb_str = '{0:<32s}{1:>10.3E}{2:>9.3f}{3:9.0f} /\n'.format(
+    cheb_str = '{0:<32s}{1:>10.3E}{2:>9.3f}{3:9.0f} \n'.format(
         reaction, high_a, high_n, 1000*high_ea)
 
     # Write the temperature and pressure ranges
@@ -239,7 +239,7 @@ def chebyshev(reaction, high_params, alpha, tmin, tmax, pmin, pmax):
     # Write the dimensions of the alpha matrix
     nrows = len(alpha)
     ncols = len(alpha[0])
-    cheb_str += '{0:>10s}/    {1:d} {2:d}\n'.format('CHEB', nrows, ncols)
+    cheb_str += '{0:>10s}/    {1:d} {2:d} /\n'.format('CHEB', nrows, ncols)
 
     # Write the parameters from the alpha matrix
     for idx, row in enumerate(alpha):
