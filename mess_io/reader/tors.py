@@ -49,7 +49,7 @@ def grid_min_freqs(output_string):
     """
 
     # Pattern for the frequency of a rotor
-    pattern = (app.escape('first point frequency estimate =')
+    pattern = (app.escape('first point frequency estimate =') +
                app.SPACES +
                app.capturing(app.FLOAT) + 
                app.SPACES +
