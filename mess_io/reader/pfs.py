@@ -5,7 +5,7 @@
 """
 
 
-def partition_fxn(output_str):
+def partition_fxn(output_string):
     """ Parses the MESSPF output file string for the parition function
         and related information for a single species.
 
@@ -23,7 +23,7 @@ def partition_fxn(output_str):
     """
 
     temps, logq, dq_dt, dq2_dt2 = [], [], [], []
-    for i, line in enumerate(output_str.splitlines()):
+    for i, line in enumerate(output_string.splitlines()):
         if i not in (0, 1):
             tmp = line.strip().split()
             temps.append(float(tmp[0]))

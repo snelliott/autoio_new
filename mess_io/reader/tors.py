@@ -9,12 +9,15 @@ import autoparse.pattern as app
 import autoparse.find as apf
 
 
-def freqs(output_str):
+def analytic_freqs(output_string):
     """ Reads the analytic frequencies for each of the
-        hindered rotors from MESS output file string.
+        hindered rotors from MESS output file string. 
 
-        :param output_str: string of lines of MESS output file
-        :type output_str: str
+        Frequency corresponds to the minimum from a Fourier fit to 
+        the user supplied hindered rotor potential in the input.
+
+        :param output_string: string of lines of MESS output file
+        :type output_string: str
         :return freqs: frequency for each of the rotors
         :rtype: list(float)
     """
@@ -27,17 +30,44 @@ def freqs(output_str):
 
     # Obtain each frequency from the output string
     tors_freqs = [float(val)
-                  for val in apf.all_captures(pattern, output_str)]
+                  for val in apf.all_captures(pattern, output_string)]
 
     return tors_freqs
 
 
-def zpves(output_str):
+def grid_min_freqs(output_string):
+    """ Reads the analytic frequencies for each of the
+        hindered rotors from MESS output file string.
+
+        Frequency corresponds to the minimum from the minimum on the grid
+        of the user supplied hindered rotor potential in the input.
+
+        :param output_string: string of lines of MESS output file
+        :type output_string: str
+        :return freqs: frequency for each of the rotors
+        :rtype: list(float)
+    """
+
+    # Pattern for the frequency of a rotor
+    pattern = (app.escape('first point frequency estimate =')
+               app.SPACES +
+               app.capturing(app.FLOAT) + 
+               app.SPACES +
+               app.escape('1/cm'))
+
+    # Obtain each frequency from the output string
+    tors_freqs = [float(val)
+                  for val in apf.all_captures(pattern, output_string)]
+
+    return tors_freqs
+
+
+def zpves(output_string):
     """ Reads the zero-point energies for each of the
         hindered rotors from MESS output file string.
 
-        :param output_str: string of lines of MESS output file
-        :type output_str: str
+        :param output_string: string of lines of MESS output file
+        :type output_string: str
         :return zpves: zero-point energy for each of the rotors
         :rtype: list(float)
     """
@@ -58,9 +88,9 @@ def zpves(output_str):
 
     # Obtain each ZPVE from the output string
     tmp1 = [-float(val)
-            for val in apf.all_captures(pattern1, output_str)]
+            for val in apf.all_captures(pattern1, output_string)]
     tmp2 = [float(val)
-            for val in apf.all_captures(pattern2, output_str)]
+            for val in apf.all_captures(pattern2, output_string)]
     tors_zpes = [sum(tmp) for tmp in zip(tmp1, tmp2)]
     # print('tors_zpes calc test:', tmp1, tmp2, tors_zpes)
 
