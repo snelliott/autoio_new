@@ -39,7 +39,7 @@ from mess_io.writer._sec import species_separation_str
 
 __all__ = [
     'messrates_inp_str',
-    'messpf_inp_str'
+    'messpf_inp_str',
     'global_reaction',
     'global_pf',
     'global_energy_transfer',

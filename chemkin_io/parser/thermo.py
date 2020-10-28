@@ -110,7 +110,9 @@ def temperatures(thm_dstr):
                app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
                app.one_or_more(app.SPACE) + app.DIGIT + app.STRING_END)
     captures = apf.first_capture(pattern, headline)
-    assert captures, (f'No temperatures were captured for the datastring {thm_dstr}')
+    assert captures, (
+        f'No temperatures were captured for the datastring {thm_dstr}'
+    )
     temps = tuple(map(float, captures))
 
     return temps

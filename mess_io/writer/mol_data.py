@@ -242,7 +242,6 @@ def rotor_hindered(group, axis, symmetry, potential,
 
 def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
                    pot_exp_size=5, hmin=13, hmax=101,
-                   therm_pow_max=None,
                    remdummy=None, geom=None, rotor_id=''):
     """ Writes the string that defines the `Rotor` section for a
         single internal rotor of a species for a MESS input file by

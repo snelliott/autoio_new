@@ -20,7 +20,8 @@ CHEMKIN_PAREN_PLUS_EM = app.escape('(') + app.PLUS + 'M' + app.escape(')')
 SPECIES_NAME_PATTERN = (
     r'[^\s=+\-]' +
     app.zero_or_more(app.one_of_these(
-        [app.LETTER, app.DIGIT, app.escape('*'), app.escape('(+)'), r'[#,()\-_]',
+        [app.LETTER, app.DIGIT, r'[#,()\-_]',
+         app.escape('*'), app.escape('(+)'),
          app.escape('['), app.escape(']')])) +
     app.zero_or_more(app.PLUS)
 )
@@ -36,7 +37,7 @@ COMMENTS_PATTERN = app.escape('!') + app.capturing(app.one_or_more(app.WILDCARD2
 BAD_STRS = ['inf', 'INF', 'nan']
 
 
-##################### SECTION 1 OF 3: TOP-LEVEL EVALUATION FUNCTIONS #####################
+# SECTION 1 OF 3: TOP-LEVEL EVALUATION FUNCTIONS #############
 
 # These functions are used to create param_dcts
 
@@ -50,7 +51,7 @@ def param_dct(block_str, ea_units='cal/mol'):
         :param block_str: string for reactions block
         :type block_str: str
         :return rxn_param_dct: dict{(reacs,prods): param_list}
-        :rtype: dct 
+        :rtype: dict
     """
     rxn_dstr_lst = data_strings(block_str)
     
@@ -104,7 +105,7 @@ def data_strings(block_str, remove_bad_fits=False):
     return rxn_dstrs
 
 
-##################### SECTION 2 OF 3: PARSING FUNCTIONS #####################
+# SECTION 2 OF 3: PARSING FUNCTIONS #####################
 
 # These functions parse the reaction data strings
 
@@ -269,12 +270,12 @@ def troe_parameters(rxn_dstr):
         app.zero_or_more(app.SPACE) + app.escape('/') +
         app.zero_or_more(app.SPACE) + app.capturing(app.NUMBER) +
         app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
-        app.one_or_more(app.SPACE)  + app.capturing(app.NUMBER) +
+        app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
         app.maybe(app.one_or_more(app.SPACE) + app.capturing(app.NUMBER)) +
         app.zero_or_more(app.SPACE) + app.escape('/')
     )
     cap1 = apf.first_capture(pattern, rxn_dstr)
-   
+
     if cap1 is not None:
         params = []
         for val in cap1:
@@ -284,7 +285,7 @@ def troe_parameters(rxn_dstr):
                 params.append(None)
     else:
         params = None
-    
+
     return params
 
 
@@ -442,7 +443,7 @@ def collider_enhance_factors(rxn_dstr):
                     for bath in baths:
                         params[bath[0]] = float(bath[1])
         # If nothing was put into the dictionary, set it to None
-        if not(bool(params)):
+        if not params:
             params = None
     else:
         params = None
@@ -482,15 +483,7 @@ def em_parameters(rxn_dstr):
     return params
 
 
-def comments(rxn_dstr, allow_newline=True):
-    """ Get the comments from the rxn_dstr
-    """
-        
-    
-
-
-
-##################### SECTION 3 OF 3: HELPER FUNCTIONS #####################
+# SECTION 3 OF 3: HELPER FUNCTIONS #####################
 
 # These functions help with some miscellaneous tasks
 
@@ -579,15 +572,15 @@ def fix_duplicates(rcts_prds, params):
                         idx2 = rcts_prds.index(unique_list[idx], idx2+1)
                     print(params[idx2])
 
-            # Get indices of the first and second occurrences 
+            # Get indices of the first and second occurrences
             first = rcts_prds.index(unique_list[idx])
-            second = rcts_prds.index(unique_list[idx],first+1)
-            
+            second = rcts_prds.index(unique_list[idx], first+1)
+
             # Get param lists for both occurrences
             params1 = params[first]
             params2 = params[second]
 
-            # PLOG            
+            # PLOG
             if params1[4]:
                 # Only do this if the PLOG params exist in the second case
                 if params2[4]:  
@@ -608,21 +601,21 @@ def fix_duplicates(rcts_prds, params):
                     print(f'For rxn {rxn}, the format of the first duplicate is PLOG, but the second is not PLOG')
 
             # Arrhenius
-            else:         
+            else:
                 for value in params2[0]:
                     params1[0].append(value)
-            
-            # Insert the fixed params back into the original params 
+
+            # Insert the fixed params back into the original params
             params[first] = params1
             params[second] = params1
 
     if three_or_more_dups > 0:
         print(f'From chemkin_io.parser.reaction.fix_duplicates, there are {three_or_more_dups} reactions with 3 or more rate expressions.')
 
-    return params  
+    return params
 
 
-############################## ARCHIVED FUNCTIONS ###############################
+# ARCHIVED FUNCTIONS #############
 
 # None of these are called in this workflow; some are still called externally
 
@@ -728,71 +721,15 @@ def data_dct(block_str, data_entry='strings', remove_bad_fits=False):
     if data_entry == 'strings':
         rxn_dct = {}
         for string in rxn_dstr_lst:
-            # print(string)
             rct_names = reactant_names(string)
             prd_names = product_names(string)
             key = (rct_names, prd_names)
-            # if key not in rxn_dct:
-            #     rxn_dct[key] = [string]
-            # else:
-            #     rxn_dct[key].append(string)
             if key not in rxn_dct:
                 rxn_dct[key] = string
             else:
                 rxn_dct[key] += '\n'+string
-    # elif data_entry == 'block':
-    #     rxn_dct = {}
-    #     for block in rxn_block_lst:
-    #         param_blocks = []
-    #         rct_names = rxn_block_lst[0]
-    #         prd_names = rxn_block_lst[1]
-    #         key = (rct_names, prd_names)
-    #         if key not in rxn_dct.keys():
-    #             rxn_dct[key] = block[2:]
-    #         else:
-    #             rxn_dct[key]
 
     return rxn_dct
-
-
-def pressure_region_specification(rxn_dstr):
-    """ Parses the data string for a reaction in the reactions block
-        for the line containing the chemical equation in order to
-        check if a body M is given, indicating pressure dependence.
-
-        :param rxn_dstr: data string for species in reaction block
-        :type rxn_dstr: str
-        :return pressure_region: type of pressure indicated
-        :rtype: str
-    """
-
-    pattern = app.capturing(
-        _first_line_pattern(
-            rct_ptt=SPECIES_NAMES_PATTERN,
-            prd_ptt=SPECIES_NAMES_PATTERN,
-            param_ptt=COEFF_PATTERN
-        )
-    )
-    string = apf.first_capture(pattern, rxn_dstr)
-
-    if string is not None:
-        string = string.strip()
-        if 'M' in string:
-            # Presence of M denotes specific region assumptions
-            if '(+M)' in string:
-                pressure_region = 'falloff'
-            else:
-                pressure_region = 'lowp'
-        else:
-            # No M can be independent or not, depending on subsequent info
-            if 'PLOG' in rxn_dstr or 'CHEB' in rxn_dstr:
-                pressure_region = 'all'
-            else:
-                pressure_region = 'indep'
-    else:
-        pressure_region = None
-
-    return pressure_region
 
 
 def are_highp_fake(highp_params):
@@ -806,4 +743,3 @@ def are_highp_fake(highp_params):
             are_fake = True
 
     return are_fake
-

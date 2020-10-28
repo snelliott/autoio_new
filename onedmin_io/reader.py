@@ -10,6 +10,8 @@ def lennard_jones(output_string):
     """ reads the lennard jones params from the output
     """
 
+    print('output_string\n', output_string)
+
     sigma_ptt = (app.SPACES + app.INTEGER + app.SPACES +
                  app.capturing(app.FLOAT) + app.SPACES +
                  app.FLOAT)
@@ -23,6 +25,9 @@ def lennard_jones(output_string):
         sigmas = [float(val) for val in sigmas]
     if epsilons is not None:
         epsilons = [float(val) for val in epsilons]
+    
+    print('sigs', sigmas)
+    print('eps', epsilons)
 
     return sigmas, epsilons
 
