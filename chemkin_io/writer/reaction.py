@@ -378,7 +378,7 @@ def _highp_str(reaction, params, max_name, ea_factor):
     [a_par, n_par, ea_par] = params
     highp_str = ('{0:<' + max_name + 's}').format(reaction)
     highp_str += (
-        '{0:<10.3f}{2:>9.3f}{3:9.0f} /\n'
+        '{0:<10.3f}{1:>9.3f}{2:9.0f} /\n'
     ).format(a_par, n_par, ea_factor * ea_par)
 
     return highp_str
