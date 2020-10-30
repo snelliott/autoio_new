@@ -55,7 +55,7 @@ def all_captures(pattern, string, case=True):
     """
     caps = _re_findall(pattern, string, case=case)
     if caps is not None:
-        cap_lst = tuple(_re_findall(pattern, string, case=case))
+        cap_lst = tuple(caps)
     else:
         cap_lst = None
     return cap_lst
@@ -178,12 +178,12 @@ def _re_search(pattern, string, case=True):
 
 def _re_findall(pattern, string, case=True):
     flags = _re_flags(case=case)
-    try:
-        ptt_find = re.findall(pattern, string, flags=flags)
-    except TypeError:
-        ptt_find = None
-    return ptt_find
-    # return re.findall(pattern, string, flags=flags)
+    # try:
+    #     ptt_find = re.findall(pattern, string, flags=flags)
+    # except TypeError:
+    #     ptt_find = None
+    # return ptt_find
+    return re.findall(pattern, string, flags=flags)
 
 
 def _re_split(pattern, string, case=True):
