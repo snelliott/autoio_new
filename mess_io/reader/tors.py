@@ -26,7 +26,6 @@ def analytic_freqs(output_string):
     pattern = (app.escape('analytic  frequency at minimum[1/cm] =') +
                app.one_or_more(app.SPACE) +
                app.capturing(app.NUMBER))
-               # app.capturing(app.FLOAT))
 
     # Obtain each frequency from the output string
     tors_freqs = [float(val)
@@ -50,14 +49,16 @@ def grid_min_freqs(output_string):
 
     # Pattern for the frequency of a rotor
     pattern = (app.escape('first point frequency estimate =') +
-               app.SPACES +
-               app.capturing(app.FLOAT) + 
-               app.SPACES +
+               app.one_or_more(app.SPACE) +
+               app.capturing(app.NUMBER) + 
+               app.one_or_more(app.SPACE) +
                app.escape('1/cm'))
 
     # Obtain each frequency from the output string
     tors_freqs = [float(val)
                   for val in apf.all_captures(pattern, output_string)]
+
+    print('tors freqs test in grid_min_freq:', tors_freqs)
 
     return tors_freqs
 
