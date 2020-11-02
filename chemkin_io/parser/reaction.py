@@ -9,6 +9,7 @@ import autoparse.pattern as app
 import autoparse.find as apf
 from autoparse import cast as ap_cast
 from ioformat import headlined_sections
+from ioformat import phycon
 
 
 # Various strings needed to parse the data sections of the Reaction block
@@ -42,7 +43,7 @@ BAD_STRS = ['inf', 'INF', 'nan']
 # These functions are used to create param_dcts
 
 
-def param_dct(block_str, ea_units='cal/mol'):
+def param_dct(block_str, ea_units='kcal/mole', a_units='moles'):
     """ Parses all of the chemical equations and corresponding fitting
         parameters in the reactions block of the mechanism input file
         and subsequently pulls all of the species names and fitting
@@ -55,8 +56,9 @@ def param_dct(block_str, ea_units='cal/mol'):
     """
     rxn_dstr_lst = data_strings(block_str)
     
-    # Create an iterator that repeats the ea_units input
+    # Create an iterator that repeats the units inputs
     many_ea_units = list(itertools.repeat(ea_units, times=len(rxn_dstr_lst)))
+    many_a_units = list(itertools.repeat(a_units, times=len(rxn_dstr_lst)))
 
     reac_and_prods = list(zip(
         map(reactant_names, rxn_dstr_lst),
@@ -64,11 +66,11 @@ def param_dct(block_str, ea_units='cal/mol'):
 
     params = list(
         zip(
-            map(high_p_parameters, rxn_dstr_lst, many_ea_units),
-            map(low_p_parameters, rxn_dstr_lst, many_ea_units),
+            map(high_p_parameters, rxn_dstr_lst, many_ea_units, many_a_units),
+            map(low_p_parameters, rxn_dstr_lst, many_ea_units, many_a_units),
             map(troe_parameters, rxn_dstr_lst),
-            map(chebyshev_parameters, rxn_dstr_lst),
-            map(plog_parameters, rxn_dstr_lst, many_ea_units),
+            map(chebyshev_parameters, rxn_dstr_lst, many_a_units),
+            map(plog_parameters, rxn_dstr_lst, many_ea_units, many_a_units),
             map(collider_enhance_factors, rxn_dstr_lst),
             map(em_parameters, rxn_dstr_lst)
         )
@@ -127,7 +129,11 @@ def reactant_names(rxn_dstr):
         param_ptt=app.maybe(COEFF_PATTERN)
     )
     string = apf.first_capture(pattern, rxn_dstr)
-    names = _split_reagent_string(string)
+    try: 
+        names = _split_reagent_string(string)
+    except TypeError:
+        print('Error with this reaction\n', rxn_dstr)
+        quit()
 
     return names
 
@@ -149,7 +155,11 @@ def product_names(rxn_dstr):
         param_ptt=COEFF_PATTERN
     )
     string = apf.first_capture(pattern, rxn_dstr)
-    names = _split_reagent_string(string)
+    try: 
+        names = _split_reagent_string(string)
+    except TypeError:
+        print('Error with this reaction\n', rxn_dstr)
+        quit()
 
     return names
 
@@ -194,7 +204,7 @@ def pressure_region_specification(rxn_dstr):
     return pressure_region
 
 
-def high_p_parameters(rxn_dstr, ea_units='cal/mol'):
+def high_p_parameters(rxn_dstr, ea_units='kcal/mole', a_units='moles'):
     """ Parses the data string for a reaction in the reactions block
         for the line containing the chemical equation in order to
         read the fitting parameters that are on the same line.
@@ -217,15 +227,20 @@ def high_p_parameters(rxn_dstr, ea_units='cal/mol'):
         for string in string_lst:
             fake_params.append(list(ap_cast(string.split())))
             params = fake_params[0]
-        if ea_units=='kcal/mol':
-            params[2] = params[2]*1e3  # convert to cal/mol
+
+        # Convert the units of Ea and A
+        ea_conv_factor = get_ea_conv_factor(rxn_dstr, ea_units)
+        a_conv_factor = get_a_conv_factor(rxn_dstr, a_units)
+        params[2] = params[2] * ea_conv_factor
+        params[0] = params[0] * a_conv_factor
+
     else:
         params = None
 
     return params
 
 
-def low_p_parameters(rxn_dstr, ea_units='cal/mol'):
+def low_p_parameters(rxn_dstr, ea_units='kcal/mole', a_units='moles'):
     """ Parses the data string for a reaction in the reactions block
         for a line containing the low-pressure fitting parameters,
         then reads the parameters from this line.
@@ -247,8 +262,13 @@ def low_p_parameters(rxn_dstr, ea_units='cal/mol'):
     cap1 = apf.first_capture(pattern, rxn_dstr)
     if cap1 is not None:
         params = [float(val) for val in cap1]
-        if ea_units=='kcal/mol':
-            params[2] = params[2]*1e3  # convert to cal/mol
+
+        # Convert the units of Ea and A
+        ea_conv_factor = get_ea_conv_factor(rxn_dstr, ea_units)
+        a_conv_factor = get_a_conv_factor(rxn_dstr, a_units)
+        params[2] = params[2] * ea_conv_factor
+        params[0] = params[0] * a_conv_factor
+
     else:
         params = None
 
@@ -289,7 +309,7 @@ def troe_parameters(rxn_dstr):
     return params
 
 
-def chebyshev_parameters(rxn_dstr):
+def chebyshev_parameters(rxn_dstr, a_units='moles'):
     """ Parses the data string for a reaction in the reactions block
         for the lines containing the Chebyshevs fitting parameters,
         then reads the parameters from these lines.
@@ -353,10 +373,10 @@ def chebyshev_parameters(rxn_dstr):
         ) 
         alpha = numpy.array(list(map(float,coeffs)))
 
-        # Store the results
         params['t_limits'] = [float(val) for val in cheb_temps]
         params['p_limits'] = [float(val) for val in cheb_pressures]
         params['alpha_elm'] = alpha.reshape([cheb_n, cheb_m])
+        params['a_units'] = a_units
 
     else:
         params = None
@@ -364,7 +384,7 @@ def chebyshev_parameters(rxn_dstr):
     return params
 
 
-def plog_parameters(rxn_dstr, ea_units='cal/mol'):
+def plog_parameters(rxn_dstr, ea_units='kcal/mole', a_units='moles'):
     """ Parses the data string for a reaction in the reactions block
         for the lines containing the PLOG fitting parameters,
         then reads the parameters from these lines.
@@ -388,19 +408,21 @@ def plog_parameters(rxn_dstr, ea_units='cal/mol'):
 
     # Build dictionary of parameters, indexed by parameter
     if params_lst:
+
+        # Get the Ea and A conversion factors 
+        ea_conv_factor = get_ea_conv_factor(rxn_dstr, ea_units)
+        a_conv_factor = get_a_conv_factor(rxn_dstr, a_units)
         params = {}
         for param in params_lst:
             pressure = float(param[0])
             vals = list(map(float, param[1:]))
+            vals[2] = vals[2] * ea_conv_factor
+            vals[0] = vals[0] * a_conv_factor
             if pressure not in params:
                 params[pressure] = vals
             else:
-                for val in vals:  # also takes care of double Arrhenius
-                    params[pressure].append(val)
-            if ea_units=='kcal/mol':
-                params[pressure][2] = params[pressure][2]*1e3
-                if len(params[pressure]) == 6:
-                    params[pressure][5] = params[pressure][5]*1e3
+                params[pressure].extend(vals)  # add duplicate expressions
+
     else:
         params = None
 
@@ -615,7 +637,56 @@ def fix_duplicates(rcts_prds, params):
     return params
 
 
-# ARCHIVED FUNCTIONS #############
+def get_ea_conv_factor(rxn_dstr, ea_units):
+    """ Get the factor for converting Ea to the desired units of kcal/mole
+
+    """
+    if ea_units == 'kcal/mole':
+        ea_conv_factor = 1
+    elif ea_units == 'cal/mole':
+        ea_conv_factor = phycon.CAL2KCAL  
+    elif ea_units == 'joules/mole':
+        ea_conv_factor = phycon.J2KCAL  
+    elif ea_units == 'kjoules/mole':
+        ea_conv_factor = phycon.KJ2KCAL  
+    elif ea_units == 'kelvins':
+        ea_conv_factor = phycon.KEL2KCAL  
+    else:
+        raise NotImplementedError(
+            f"Invalid ea_units: {ea_units}. Options: 'kcal/mole', 'cal/mole', 'joules/mole', 'kjoules/mole', 'kelvins'"
+        )
+
+    return ea_conv_factor
+
+
+def get_a_conv_factor(rxn_dstr, a_units):
+    """ Get the factor for converting A to the desired basis of moles 
+
+    """
+    # Get the molecularity
+    rcts = reactant_names(rxn_dstr)
+    if not isinstance(rcts, tuple):  # convert to list to avoid mistake 
+        rcts = [rcts]
+    molecularity = len(rcts)
+
+    # Find out whether there is a third body
+    em_param = em_parameters(rxn_dstr)
+    if em_param is not None and '(' not in em_param:  # if the 3rd body has parentheses, no contribution to the units
+        molecularity += 1
+
+    if a_units == 'moles':
+        a_conv_factor = 1
+    elif a_units == 'molecules':
+        a_conv_factor = phycon.NAVO**(molecularity-1)
+    else:
+        raise NotImplementedError(
+            f"Invalid a_units: {a_units}. Options: 'moles' or 'molecules'" 
+        )
+
+    return a_conv_factor 
+
+
+############################## ARCHIVED FUNCTIONS ###############################
 
 # None of these are called in this workflow; some are still called externally
 

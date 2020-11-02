@@ -254,8 +254,6 @@ def chebyshev(reaction, high_params, alpha, tmin, tmax, pmin, pmax):
         return params_str
 
     assert len(high_params) == 3
-    # assert alpha mat is a 2d matrix
-
     [high_a, high_n, high_ea] = high_params
 
     # Write reaction header (with third body added) and high-pressure params
@@ -446,7 +444,41 @@ def _check_ea_units(ea_units):
         ea_factor = 1
 
     return ea_factor
+
+
+def _format_rxn_name(rxn_key, param_vals):
+    """ Receives a rxn_key and the corresponding param_vals 
+        from a rxn_param_dct and writes it to a string that 
+        the above functions can handle. Adds +M or (+M) if
+        applicable.
+    """
+    rcts = rxn_key[0]
+    prds = rxn_key[1]
+
+    # Convert to list if only one species
+    if not isinstance(rcts, list):
+        rcts = [rcts]
+    if not isinstance(prds, list):
+        prds = [prds]
+
+    # Write the strings
+    for idx, rct in enumerate(rcts):
+        if idx == 0:
+            rct_str = rct
+        else:
+            rct_str += ' + ' + rct
+    for idx, prd in enumerate(prds):
+        if idx == 0:
+            prd_str = prd
+        else:
+            prd_str += ' + ' + prd
     
-
-
+    # Add the +M or (+M) text if it is applicable
+    if param_vals[6] is not None:
+        rct_str += param_vals[6]
+        prd_str += param_vals[6]
+    
+    rxn_name = rct_str + ' = ' + prd_str
+    
+    return rxn_name
 
