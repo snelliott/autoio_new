@@ -67,7 +67,7 @@ def rpht_input(geoms, grads, hessians,
         'nsteps': nsteps,
         'saddle_idx': saddle_idx,
         'coord_proj': coord_proj,
-        'prod_rxn_coord': proj_rxn_coord,
+        'proj_rxn_coord': proj_rxn_coord,
         'nrotors': nrotors,
         'rotors_str': rotors_str,
         'data_str': data_str
@@ -103,18 +103,19 @@ def rpht_path_coord_en(coords, energies, bnd1=(), bnd2=()):
     bnd_strs = []
     if bnd1 and bnd2:
         for bd1, bd2 in zip(bnd1, bnd2):
-            bnd_strs.append('{0:<10.5f}{1:<10.5f}'.format(bd1, bd2))
+            bnd_strs.append('{0:>10.5f}{1:>10.5f}'.format(bd1, bd2))
     else:
-        bnd_strs = ['' for i in range(len(coords))]
+        for _ in range(len(coords)):
+            bnd_strs.append('{0:>10.5f}{1:>10.5f}'.format(1.0, 1.0))
 
     # Check that all the lists are not empty and have the same length
     assert all(lst for lst in (coords, energies, bnd_strs))
     assert all(len(lst) == nsteps for lst in (coords, energies, bnd_strs))
 
-    path_str = '{0:<7s}{1:<12s}{2:<10s}{3:<10s}{4:<10s}\n'.format(
+    path_str = '{0:>7s}{1:>12s}{2:>10s}{3:>10s}{4:>10s}\n'.format(
         'Point', 'Coordinate', 'Energy', 'Bond1', 'Bond2')
     for i, (crd, ene, bnd_str) in enumerate(zip(coords, energies, bnd_strs)):
-        path_str += '{0:<7d}{1:<12.5f}{2:<10.5f}{3:<20s}'.format(
+        path_str += '{0:>7d}{1:>12.5f}{2:>10.5f}{3:>20s}'.format(
             i+1, crd, ene, bnd_str)
         if i+1 != nsteps:
             path_str += '\n'
