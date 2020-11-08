@@ -2,11 +2,11 @@
 Write various parts of a Chemkin mechanism file
 """
 
-from chemkin_io.writer import reaction_new as writer
+from chemkin_io.writer import reaction as writer
 from chemkin_io.writer import _util as util
 
 
-def write_mech_file(elem_tuple, spc_dct, rxn_param_dct, filename='mech.txt'):
+def write_mech_file(elem_tuple, spc_dct, rxn_param_dct, filename='mech.txt',comments=''):
     """ Writes the Chemkin-formatted mechanism file. Writes
         the output to a text file.
 
@@ -19,7 +19,7 @@ def write_mech_file(elem_tuple, spc_dct, rxn_param_dct, filename='mech.txt'):
     """
     elem_str = elements_block(elem_tuple)
     spc_str = species_block(spc_dct)
-    rxn_str = reactions_block(rxn_param_dct)
+    rxn_str = reactions_block(rxn_param_dct,comments=comments)
     total_str = elem_str + spc_str + rxn_str
 
     # Write to a text file
@@ -72,7 +72,7 @@ def species_block(spc_dct):
     return spc_str
 
 
-def reactions_block(rxn_param_dct, ea_units='cal/mol'):
+def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
     """ Writes the reaction block of the mechanism file
 
         :param rxn_param_dct: dct containing the reaction parameters
@@ -80,6 +80,9 @@ def reactions_block(rxn_param_dct, ea_units='cal/mol'):
         :return total_rxn_str: str containing the reaction block
         :rtype: str
     """
+    # create empty dictionary with comments if empty
+    if comments == '':
+        comments = dict(zip(rxn_param_dct.keys(),np.zeros((len(rxn_param_dct),1))))
 
     # Get the length of the longest reaction name
     max_len = 0
@@ -158,6 +161,15 @@ def reactions_block(rxn_param_dct, ea_units='cal/mol'):
                 rxn_name, highp_params,
                 max_length=max_len, ea_units=ea_units
             )
+
+            # for high P: also write inline comments
+            if isinstance(comments[rxn],dict):
+                if comments[rxn]['cmts_inline'] != '':
+                    rxn_str = rxn_str[:-1] + ' ' + comments[rxn]['cmts_inline'] 
+      
+        # check for comments: header
+        if isinstance(comments[rxn],dict):
+            total_rxn_str += comments[rxn]['cmts_top']
 
         total_rxn_str += rxn_str
 
