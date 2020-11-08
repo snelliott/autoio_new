@@ -165,7 +165,7 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
             # for high P: also write inline comments
             if isinstance(comments[rxn],dict):
                 if comments[rxn]['cmts_inline'] != '':
-                    rxn_str = rxn_str[:-1] + ' ' + comments[rxn]['cmts_inline'] 
+                    rxn_str = rxn_str[:-2] + ' ' + comments[rxn]['cmts_inline'] 
       
         # check for comments: header
         if isinstance(comments[rxn],dict):

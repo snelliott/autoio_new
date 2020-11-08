@@ -25,7 +25,7 @@ def name_column_length(names):
     return names_len
 
 
-def format_rxn_name(rxn_key, param_vals):
+def format_rxn_name_old(rxn_key, param_vals):
     """ Receives a rxn_key and the corresponding param_vals
         from a rxn_param_dct and writes it to a string that
         the above functions can handle. Adds +M or (+M) if
@@ -59,4 +59,35 @@ def format_rxn_name(rxn_key, param_vals):
 
     rxn_name = rct_str + ' = ' + prd_str
 
+    return rxn_name
+
+def format_rxn_name(rxn_key, param_vals):
+    """ Receives a rxn_key and the corresponding param_vals 
+        from a rxn_param_dct and writes it to a string that 
+        the above functions can handle. Adds +M or (+M) if
+        applicable.
+    """
+    rcts = rxn_key[0]
+    prds = rxn_key[1]
+
+    # write strings
+    if len(rcts) == 1:
+        # 1 species
+        rct_str = rcts[0]
+    elif len(rcts) == 2:
+        # 2 species
+        rct_str = rcts[0] + '+' + rcts[1]
+
+    if len(prds) == 1:
+        prd_str = prds[0]
+    elif len(prds) == 2:
+        prd_str = prds[0] + '+' + prds[1]
+
+    
+    # Add the +M or (+M) text if it is applicable
+    if param_vals[6] is not None:
+        rct_str += ' ' + param_vals[6]
+        prd_str += ' ' + param_vals[6]
+    rxn_name = rct_str + ' = ' + prd_str
+    
     return rxn_name
