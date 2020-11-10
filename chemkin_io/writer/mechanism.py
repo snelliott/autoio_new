@@ -100,7 +100,18 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
         rxn_name = util.format_rxn_name(rxn, param_dct)
 
         if param_dct[3] is not None:  # Chebyshev
-            print('Chebyshev does not work yet...')
+            assert param_dct[0] is not None, (
+                f'For {rxn}, Chebyshev params included, highP params absent'
+            )
+            highp_params = param_dct[0]
+            alpha = param_dct[3]['alpha_elm']
+            tmin = param_dct[3]['t_limits'][0]
+            tmax = param_dct[3]['t_limits'][1]
+            pmin = param_dct[3]['p_limits'][0]
+            pmax = param_dct[3]['p_limits'][1]
+            rxn_str = writer.chebyshev(rxn_name, highp_params, alpha, 
+                tmin, tmax, pmin, pmax)
+
         elif param_dct[4] is not None:  # PLOG
             assert param_dct[0] is not None, (
                 f'For {rxn}, PLOG params included, highP params absent'
@@ -162,11 +173,14 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
                 max_length=max_len, ea_units=ea_units
             )
 
-            # for high P: also write inline comments
-            if isinstance(comments[rxn],dict):
-                if comments[rxn]['cmts_inline'] != '':
-                    rxn_str = rxn_str[:-1] + ' ' + comments[rxn]['cmts_inline'] 
-      
+        # add inline comments on the first line
+        if isinstance(comments[rxn],dict):
+            if comments[rxn]['cmts_inline'] != '':
+                rxn_str_split = rxn_str.split('\n')
+                rxn_str_split[0] = rxn_str_split[0] + ' ' + comments[rxn]['cmts_inline'] 
+                # rewrite rxn_str
+                rxn_str = '\n'.join(rxn_str_split) + '\n'
+    
         # check for comments: header
         if isinstance(comments[rxn],dict):
             total_rxn_str += comments[rxn]['cmts_top']

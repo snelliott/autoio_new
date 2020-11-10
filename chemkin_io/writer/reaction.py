@@ -278,7 +278,8 @@ def chebyshev(reaction, high_params, alpha, tmin, tmax, pmin, pmax):
     for idx, row in enumerate(alpha):
         newline = bool(idx+1 != nrows)
         cheb_str += _format_troe_param_str('CHEB', row, newline=newline)
-
+    # new line at the end
+    cheb_str += '\n'
     return cheb_str
 
 
