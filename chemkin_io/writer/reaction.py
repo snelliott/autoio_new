@@ -278,7 +278,8 @@ def chebyshev(reaction, high_params, alpha, tmin, tmax, pmin, pmax):
     for idx, row in enumerate(alpha):
         newline = bool(idx+1 != nrows)
         cheb_str += _format_troe_param_str('CHEB', row, newline=newline)
-
+    # new line at the end
+    cheb_str += '\n'
     return cheb_str
 
 
@@ -305,6 +306,7 @@ def arrhenius(reaction, high_params,
 
     if len(high_params) == 3:  # single Arrhenius
         arr_str = _highp_str(reaction, high_params, max_name, ea_factor)
+        arr_str = arr_str[:-2] + '\n'
     else:  # double Arrhenius
         arr_str = _highp_str(reaction, high_params[4:], max_name, ea_factor)
         arr_str += '    DUP \n'
@@ -378,7 +380,7 @@ def _highp_str(reaction, params, max_name, ea_factor):
     [a_par, n_par, ea_par] = params
     highp_str = ('{0:<' + max_name + 's}').format(reaction)
     highp_str += (
-        '{0:<10.3f}{1:>9.3f}{2:9.0f} /\n'
+        '{0:>10.3e}{1:>9.3f}{2:9.0f} /\n'
     ).format(a_par, n_par, ea_factor * ea_par)
 
     return highp_str
