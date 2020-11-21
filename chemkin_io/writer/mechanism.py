@@ -4,7 +4,7 @@ Write various parts of a Chemkin mechanism file
 
 from chemkin_io.writer import reaction as writer
 from chemkin_io.writer import _util as util
-
+import numpy as np
 
 def write_mech_file(elem_tuple, spc_dct, rxn_param_dct, filename='mech.txt',comments=''):
     """ Writes the Chemkin-formatted mechanism file. Writes
@@ -118,7 +118,6 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
             )
             plog_dct = param_dct[4]
             highp_params = param_dct[0]
-
             rxn_str = writer.plog(
                 rxn_name, highp_params, plog_dct,
                 max_length=max_len, ea_units=ea_units)
@@ -138,7 +137,6 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
             lowp_params = param_dct[1]
             troe_params = param_dct[2]
             collid_factors = param_dct[5]
-
             rxn_str = writer.troe(
                 rxn_name, highp_params, lowp_params,
                 troe_params, collid_factors,
@@ -167,7 +165,6 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
             )
 
             highp_params = param_dct[0]
-
             rxn_str = writer.arrhenius(
                 rxn_name, highp_params,
                 max_length=max_len, ea_units=ea_units
