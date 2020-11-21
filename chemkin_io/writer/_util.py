@@ -80,14 +80,15 @@ def format_rxn_name(rxn_key, param_vals):
 
     if len(prds) == 1:
         prd_str = prds[0]
-    elif len(prds) == 2:
-        prd_str = prds[0] + '+' + prds[1]
+    elif len(prds) >= 2:
+        prd_str = '+'.join(list(prds))
 
     
     # Add the +M or (+M) text if it is applicable
     if param_vals[6] is not None:
         rct_str += ' ' + param_vals[6]
         prd_str += ' ' + param_vals[6]
+
     rxn_name = rct_str + ' = ' + prd_str
     
     return rxn_name

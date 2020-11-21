@@ -181,7 +181,7 @@ def plog(reaction, high_params, plog_params_dct,
                 pressure, plog_params[0:3], max_name2, ea_factor)
 
         # Add the second set of high-P params
-        plog_str += _highp_str(reaction, high_params[4:], max_name, ea_factor)
+        plog_str += _highp_str(reaction, high_params[3:], max_name, ea_factor)
         plog_str += '    DUP \n'
 
         # Add the second set of PLOG params
@@ -190,7 +190,7 @@ def plog(reaction, high_params, plog_params_dct,
                 plog_params = plog_params_dct[pressure]
                 if len(plog_params) == 6:
                     plog_str += _pressure_str(
-                        pressure, plog_params[4:], max_name2, ea_factor)
+                        pressure, plog_params[3:], max_name2, ea_factor)
         else:  # if no PLOG params contain dbl fit, add dummy fit at highest P
             max_pressure = pressure[-1]
             dummy_params = [1.0, 0.0, 0.0]
@@ -204,13 +204,13 @@ def plog(reaction, high_params, plog_params_dct,
         plog_str = _highp_str(reaction, high_params[0:3], max_name, ea_factor)
 
         # Add the first set of PLOG params
-        for pressure in pressures:
+        for pressure in pressures:            
             plog_params = plog_params_dct[pressure]
             plog_str += _pressure_str(
                 pressure, plog_params[0:3], max_name2, ea_factor)
             if len(plog_params) == 6:  # If params contain dbl fit
                 plog_str += _pressure_str(
-                    pressure, plog_params[4:], max_name2, ea_factor)
+                    pressure, plog_params[3:], max_name2, ea_factor)
 
     return plog_str
 
@@ -308,9 +308,9 @@ def arrhenius(reaction, high_params,
         arr_str = _highp_str(reaction, high_params, max_name, ea_factor)
         arr_str = arr_str[:-2] + '\n'
     else:  # double Arrhenius
-        arr_str = _highp_str(reaction, high_params[4:], max_name, ea_factor)
+        arr_str = _highp_str(reaction, high_params[3:], max_name, ea_factor)
         arr_str += '    DUP \n'
-        arr_str = _highp_str(reaction, high_params[0:3], max_name, ea_factor)
+        arr_str += _highp_str(reaction, high_params[0:3], max_name, ea_factor)
         arr_str += '    DUP \n'
 
     return arr_str
