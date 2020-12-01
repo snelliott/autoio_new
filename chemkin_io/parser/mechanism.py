@@ -101,17 +101,15 @@ def _block(string, start_pattern, end_pattern):
 def reaction_units(mech_str):
     """ Parses from the mechanism input file, the units of the
         pre-exponential (A) and activation enery (Ea) fitting parameter.
-
         :param mech_str: string of mechanism input file
         :type mech_str: str
-        :return units: units for fitiing parameters (A unit, Ea unit)
+        :return units: units for fitiing parameters (Ea unit, A unit)
         :rtype: list(float)
     """
 
     def _reaction_units(mech_str, start_pattern, units_pattern):
         """ Helper function used to parse the units at the head of
             the reaction block of the mechanism file string.
-
             :param mech_str: string of mechanism input file
             :type mech_str: str
             :param start_pattern: start pattern at line at head
@@ -176,6 +174,7 @@ def _clean_up(mech_str, remove_comments=True):
         mech_str = remove_comment_lines(
             mech_str, delim_pattern=app.escape('!'))
     mech_str = remove_whitespace(mech_str)
+
     return mech_str
 
 

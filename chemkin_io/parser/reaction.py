@@ -43,7 +43,7 @@ BAD_STRS = ['inf', 'INF', 'nan']
 # These functions are used to create param_dcts
 
 
-def param_dct(block_str, ea_units='kcal/mole', a_units='moles'):
+def param_dct(block_str, ea_units, a_units): 
     """ Parses all of the chemical equations and corresponding fitting
         parameters in the reactions block of the mechanism input file
         and subsequently pulls all of the species names and fitting
@@ -55,7 +55,7 @@ def param_dct(block_str, ea_units='kcal/mole', a_units='moles'):
         :rtype: dict
     """
     rxn_dstr_lst = data_strings(block_str)
-    
+
     # Create an iterator that repeats the units inputs
     many_ea_units = list(itertools.repeat(ea_units, times=len(rxn_dstr_lst)))
     many_a_units = list(itertools.repeat(a_units, times=len(rxn_dstr_lst)))
@@ -204,7 +204,7 @@ def pressure_region_specification(rxn_dstr):
     return pressure_region
 
 
-def high_p_parameters(rxn_dstr, ea_units='kcal/mole', a_units='moles'):
+def high_p_parameters(rxn_dstr, ea_units, a_units):
     """ Parses the data string for a reaction in the reactions block
         for the line containing the chemical equation in order to
         read the fitting parameters that are on the same line.
@@ -240,7 +240,7 @@ def high_p_parameters(rxn_dstr, ea_units='kcal/mole', a_units='moles'):
     return params
 
 
-def low_p_parameters(rxn_dstr, ea_units='kcal/mole', a_units='moles'):
+def low_p_parameters(rxn_dstr, ea_units, a_units):
     """ Parses the data string for a reaction in the reactions block
         for a line containing the low-pressure fitting parameters,
         then reads the parameters from this line.
@@ -384,7 +384,7 @@ def chebyshev_parameters(rxn_dstr, a_units='moles'):
     return params
 
 
-def plog_parameters(rxn_dstr, ea_units='kcal/mole', a_units='moles'):
+def plog_parameters(rxn_dstr, ea_units, a_units):
     """ Parses the data string for a reaction in the reactions block
         for the lines containing the PLOG fitting parameters,
         then reads the parameters from these lines.
@@ -449,7 +449,7 @@ def collider_enhance_factors(rxn_dstr):
     species_name = app.one_or_more(species_char)
 
     # Loop over the lines and search for string with collider facts
-    if apf.has_match('LOW', rxn_dstr) or apf.has_match('TROE', rxn_dstr):
+    if apf.has_match('LOW', rxn_dstr) or apf.has_match('TROE', rxn_dstr) or apf.has_match('M=', rxn_dstr) or apf.has_match('M =', rxn_dstr):
         params = {}
         for line in rxn_dstr.splitlines():
             if not any(apf.has_match(string, line) for string in bad_strings):
@@ -461,7 +461,6 @@ def collider_enhance_factors(rxn_dstr):
                 )
                 baths = apf.all_captures(factor_pattern, line)
                 if baths:
-                    params = {}
                     for bath in baths:
                         params[bath[0]] = float(bath[1])
         # If nothing was put into the dictionary, set it to None
