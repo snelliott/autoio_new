@@ -235,6 +235,10 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
     if colliders:
         arr_str += _format_collider_string(colliders)
 
+    # Write the collider efficiencies string
+    if colliders:
+        arr_str += _format_collider_string(colliders)
+
     return arr_str
 
 
