@@ -19,6 +19,7 @@ def pes(input_string, read_fake=False):
     # Initialize energy and connection information
     energy_dct = {}
     conn_lst = tuple()
+    pes_label_dct = {}
 
     input_lines = input_string.splitlines()
     for idx, line in enumerate(input_lines):
@@ -37,8 +38,14 @@ def pes(input_string, read_fake=False):
                             ene = float(line2.split()[-1])
                             break
 
-                    # Add value to dct
+                    # Add value to energy dct
                     energy_dct[label] = ene
+
+                    # Add value to PES dct
+                    prior_line = input_lines[idx-1]
+                    line_lst2 = prior_line.split('!')
+                    spc = line_lst2[1]
+                    pes_label_dct[spc.strip()] = label # strip gets rid of the spaces before and after
 
         if 'Bimolecular ' in line:
 
@@ -58,6 +65,12 @@ def pes(input_string, read_fake=False):
 
                 # Add value to dct
                 energy_dct[label] = ene
+
+                # Add value to PES dct
+                prior_line = input_lines[idx-1]
+                line_lst2 = prior_line.split('!')
+                spc = line_lst2[1]
+                pes_label_dct[spc.strip()] = label  # strip gets rid of the spaces before and after
 
         if 'Barrier ' in line:
 
@@ -85,4 +98,4 @@ def pes(input_string, read_fake=False):
                     conn_lst += ((rlabel, tslabel),)
                     conn_lst += ((tslabel, plabel),)
 
-    return energy_dct, conn_lst
+    return energy_dct, conn_lst, pes_label_dct

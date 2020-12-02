@@ -2,11 +2,13 @@
 Write various parts of a Chemkin mechanism file
 """
 
-from chemkin_io.writer import reaction as writer
+from chemkin_io.writer import reaction as writer_reac
+from chemkin_io.writer import thermo2 as writer_therm
 from chemkin_io.writer import _util as util
 import numpy as np
 
-def write_mech_file(elem_tuple, spc_dct, rxn_param_dct, filename='mech.txt',comments=''):
+
+def write_mech_file(elem_tuple, spc_dct, spc_nasa7_dct, rxn_param_dct, filename='written_mech.txt'):
     """ Writes the Chemkin-formatted mechanism file. Writes
         the output to a text file.
 
@@ -14,13 +16,16 @@ def write_mech_file(elem_tuple, spc_dct, rxn_param_dct, filename='mech.txt',comm
         :type elem_tuple: tuple
         :param spc_dct: dct containing the species data
         :type spc_dct: dct {spc_name:data}
+        :param spc_nasa7_dct: dct containing the NASA-7 thermo data for each species
+        :type spc_nasa7_dct: dct {spc_name:NASA-7 parameters}
         :param rxn_param_dct: dct containing the reaction parameters
         :type rxn_param_dct: dct {rxn:params}
     """
     elem_str = elements_block(elem_tuple)
     spc_str = species_block(spc_dct)
-    rxn_str = reactions_block(rxn_param_dct,comments=comments)
-    total_str = elem_str + spc_str + rxn_str
+    thermo_str = thermo_block(spc_nasa7_dct)
+    rxn_str = reactions_block(rxn_param_dct)
+    total_str = elem_str + spc_str + thermo_str + rxn_str
 
     # Write to a text file
     file = open(filename, "w")
@@ -72,7 +77,22 @@ def species_block(spc_dct):
     return spc_str
 
 
-def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
+def thermo_block(spc_nasa7_dct):
+    """ Writes the thermo block of the mechanism file
+
+    """
+    # Write the thermo str
+    thermo_str = 'THERMO \n'
+    thermo_str += '200.00    1000.00   5000.000  \n\n'
+    for spc_name, params in spc_nasa7_dct.items():
+        thermo_str += writer_therm.thermo_entry(spc_name, params) 
+
+    thermo_str += '\nEND\n\n\n'
+    
+    return thermo_str
+
+
+def reactions_block(rxn_param_dct):
     """ Writes the reaction block of the mechanism file
 
         :param rxn_param_dct: dct containing the reaction parameters
@@ -92,7 +112,7 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
             max_len = len(rxn_name)
 
     # Loop through each reaction and get the string to write to text file
-    total_rxn_str = 'REACTIONS \n\n'
+    total_rxn_str = 'REACTIONS     KCAL/MOLE     MOLES\n\n'
     for rxn, param_dct in rxn_param_dct.items():
 
         # Convert the reaction name from tuple of tuples to string
@@ -101,26 +121,20 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
 
         if param_dct[3] is not None:  # Chebyshev
             assert param_dct[0] is not None, (
-                f'For {rxn}, Chebyshev params included, highP params absent'
+                f'For {rxn}, Chebyshev params included but highP params absent'
             )
-            highp_params = param_dct[0]
+            one_atm_params = param_dct[0]  # this spot is usually high-P params, but is instead 1-atm for Chebyshev
             alpha = param_dct[3]['alpha_elm']
             tmin = param_dct[3]['t_limits'][0]
             tmax = param_dct[3]['t_limits'][1]
             pmin = param_dct[3]['p_limits'][0]
             pmax = param_dct[3]['p_limits'][1]
-            rxn_str = writer.chebyshev(rxn_name, highp_params, alpha, 
-                tmin, tmax, pmin, pmax)
+            rxn_str = writer_reac.chebyshev(rxn_name, one_atm_params, alpha, 
+                tmin, tmax, pmin, pmax, max_length=max_len)
 
         elif param_dct[4] is not None:  # PLOG
-            assert param_dct[0] is not None, (
-                f'For {rxn}, PLOG params included, highP params absent'
-            )
             plog_dct = param_dct[4]
-            highp_params = param_dct[0]
-            rxn_str = writer.plog(
-                rxn_name, highp_params, plog_dct,
-                max_length=max_len, ea_units=ea_units)
+            rxn_str = writer_reac.plog(rxn_name, plog_dct, max_length=max_len)
 
         elif param_dct[2] is not None:  # Troe
             assert param_dct[0] is not None, (
@@ -137,10 +151,9 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
             lowp_params = param_dct[1]
             troe_params = param_dct[2]
             collid_factors = param_dct[5]
-            rxn_str = writer.troe(
-                rxn_name, highp_params, lowp_params,
-                troe_params, collid_factors,
-                max_length=max_len, ea_units=ea_units)
+            rxn_str = writer_reac.troe(
+                rxn_name, highp_params, lowp_params, troe_params, collid_factors, max_length=max_len
+            )
 
         elif param_dct[1] is not None:  # Lindemann
             assert param_dct[0] is not None, (
@@ -149,26 +162,18 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
             assert param_dct[6] is not None, (
                 f'For {rxn}, highP, lowP params included, (+M) absent'
             )
-
             highp_params = param_dct[0]
             lowp_params = param_dct[1]
             collid_factors = param_dct[5]
-
-            rxn_str = writer.lindemann(
-                rxn_name, highp_params, lowp_params, collid_factors,
-                max_length=max_len, ea_units=ea_units
-            )
+            rxn_str = writer_reac.lindemann(rxn_name, highp_params, lowp_params, collid_factors, max_length=max_len)
 
         else:  # Simple Arrhenius
             assert param_dct[0] is not None, (
                 f'For {rxn}, the highP params absent'
             )
-
             highp_params = param_dct[0]
-            rxn_str = writer.arrhenius(
-                rxn_name, highp_params,
-                max_length=max_len, ea_units=ea_units
-            )
+            collid_factors = param_dct[5]
+            rxn_str = writer_reac.arrhenius(rxn_name, highp_params, collid_factors=collid_factors, max_length=max_len)
 
         # add inline comments on the first line
         if isinstance(comments[rxn],dict):
@@ -187,3 +192,4 @@ def reactions_block(rxn_param_dct,ea_units='cal/mol',comments=''):
     total_rxn_str += '\nEND \n'
 
     return total_rxn_str
+

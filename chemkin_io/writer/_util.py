@@ -35,9 +35,9 @@ def format_rxn_name_old(rxn_key, param_vals):
     prds = rxn_key[1]
 
     # Convert to list if only one species
-    if not isinstance(rcts, list):
+    if not isinstance(rcts, tuple):
         rcts = [rcts]
-    if not isinstance(prds, list):
+    if not isinstance(prds, tuple):
         prds = [prds]
 
     # Write the strings
@@ -54,9 +54,8 @@ def format_rxn_name_old(rxn_key, param_vals):
 
     # Add the +M or (+M) text if it is applicable
     if param_vals[6] is not None:
-        rct_str += ' ' + param_vals[6]
-        prd_str += ' ' + param_vals[6]
-
+        rct_str += param_vals[6]
+        prd_str += param_vals[6]
     rxn_name = rct_str + ' = ' + prd_str
 
     return rxn_name
