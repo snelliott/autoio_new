@@ -8,7 +8,7 @@ from chemkin_io.writer import _util as util
 import numpy as np
 
 
-def write_mech_file(elem_tuple, spc_dct, spc_nasa7_dct, rxn_param_dct, filename='written_mech.txt'):
+def write_mech_file(elem_tuple, spc_dct, rxn_param_dct, spc_nasa7_dct='', filename='written_mech.txt',comments=''):
     """ Writes the Chemkin-formatted mechanism file. Writes
         the output to a text file.
 
@@ -24,7 +24,7 @@ def write_mech_file(elem_tuple, spc_dct, spc_nasa7_dct, rxn_param_dct, filename=
     elem_str = elements_block(elem_tuple)
     spc_str = species_block(spc_dct)
     thermo_str = thermo_block(spc_nasa7_dct)
-    rxn_str = reactions_block(rxn_param_dct)
+    rxn_str = reactions_block(rxn_param_dct,comments)
     total_str = elem_str + spc_str + thermo_str + rxn_str
 
     # Write to a text file
@@ -81,18 +81,21 @@ def thermo_block(spc_nasa7_dct):
     """ Writes the thermo block of the mechanism file
 
     """
-    # Write the thermo str
-    thermo_str = 'THERMO \n'
-    thermo_str += '200.00    1000.00   5000.000  \n\n'
-    for spc_name, params in spc_nasa7_dct.items():
-        thermo_str += writer_therm.thermo_entry(spc_name, params) 
+    if spc_nasa7_dct!='':
+        # Write the thermo str
+        thermo_str = 'THERMO \n'
+        thermo_str += '200.00    1000.00   5000.000  \n\n'
+        for spc_name, params in spc_nasa7_dct.items():
+            thermo_str += writer_therm.thermo_entry(spc_name, params) 
 
-    thermo_str += '\nEND\n\n\n'
+        thermo_str += '\nEND\n\n\n'
+    else:
+        thermo_str = '!THERMO NOT DEFINED \n'
     
     return thermo_str
 
 
-def reactions_block(rxn_param_dct):
+def reactions_block(rxn_param_dct,comments):
     """ Writes the reaction block of the mechanism file
 
         :param rxn_param_dct: dct containing the reaction parameters
@@ -173,7 +176,7 @@ def reactions_block(rxn_param_dct):
             )
             highp_params = param_dct[0]
             collid_factors = param_dct[5]
-            rxn_str = writer_reac.arrhenius(rxn_name, highp_params, collid_factors=collid_factors, max_length=max_len)
+            rxn_str = writer_reac.arrhenius(rxn_name, highp_params, colliders=collid_factors, max_length=max_len)
 
         # add inline comments on the first line
         if isinstance(comments[rxn],dict):
@@ -181,7 +184,7 @@ def reactions_block(rxn_param_dct):
                 rxn_str_split = rxn_str.split('\n')
                 rxn_str_split[0] = rxn_str_split[0] + ' ' + comments[rxn]['cmts_inline'] 
                 # rewrite rxn_str
-                rxn_str = '\n'.join(rxn_str_split) + '\n'
+                rxn_str = '\n'.join(rxn_str_split) 
     
         # check for comments: header
         if isinstance(comments[rxn],dict):
