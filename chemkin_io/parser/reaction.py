@@ -640,16 +640,16 @@ def get_ea_conv_factor(rxn_dstr, ea_units):
     """ Get the factor for converting Ea to the desired units of kcal/mole
 
     """
-    if ea_units == 'kcal/mole':
+    if ea_units == 'cal/mole':
         ea_conv_factor = 1
-    elif ea_units == 'cal/mole':
-        ea_conv_factor = phycon.CAL2KCAL  
+    elif ea_units == 'kcal/mole':
+        ea_conv_factor = phycon.KCAL2CAL  
     elif ea_units == 'joules/mole':
-        ea_conv_factor = phycon.J2KCAL  
+        ea_conv_factor = phycon.J2CAL  
     elif ea_units == 'kjoules/mole':
-        ea_conv_factor = phycon.KJ2KCAL  
+        ea_conv_factor = phycon.KJ2CAL  
     elif ea_units == 'kelvins':
-        ea_conv_factor = phycon.KEL2KCAL  
+        ea_conv_factor = phycon.KEL2CAL  
     else:
         raise NotImplementedError(
             f"Invalid ea_units: {ea_units}. Options: 'kcal/mole', 'cal/mole', 'joules/mole', 'kjoules/mole', 'kelvins'"

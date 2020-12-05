@@ -11,7 +11,10 @@ def thermo_entry(spc_name, nasa7_params):
     composition = nasa7_params[1]
     phase = nasa7_params[2]
     temp_limits = nasa7_params[3]
-    high_coeffs = nasa7_params[4][0]
+    try: 
+        high_coeffs = nasa7_params[4][0]
+    except TypeError:
+        print(f'TypeError for the species {spc_name}')
     low_coeffs = nasa7_params[4][1]
 
     line1 = (

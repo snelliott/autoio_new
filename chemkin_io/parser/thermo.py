@@ -25,7 +25,7 @@ def create_spc_nasa7_dct(block_str):
     
     # Get the spc names, which will be the keys of the dictionary
     spc_names = list(map(get_spc_name, entry_lst))
-    
+
     # Get the NASA-7 parameters, which will be the values of the dictionary
     nasa7_params = list(
         zip(
@@ -36,7 +36,7 @@ def create_spc_nasa7_dct(block_str):
             map(get_coeffs, entry_lst)
         )
     )
-    
+
     spc_nasa7_dct = dict(zip(spc_names, nasa7_params))
 
     return spc_nasa7_dct
@@ -163,7 +163,6 @@ def get_temp_limits(entry, default_midpoint):
         high_limit = float(first_line[55:65])  # characters 56 through 65
     except ValueError:
         print(f'Error processing the high and/or low temperatures in the following entry:\n{formatted_entry}')
-        quit()
 
     # If the midpoint read fails, replace it with the default value
     try:
