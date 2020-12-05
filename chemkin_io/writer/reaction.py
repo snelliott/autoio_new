@@ -104,7 +104,7 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
         """
         plog_buffer = str(max_length+name_buffer-12) 
         [a_par, n_par, ea_par] = params
-        single_plog_str = ('{0:<' + plog_buffer + 's}{1:<12.3f}{2:<10.3E}{3:>9.3f}{4:>9.0f} /\n').format(
+        single_plog_str = ('{0:<' + plog_buffer + 's}{1:<12.3E}{2:<10.3E}{3:>9.3f}{4:>9.0f} /\n').format(
             '    PLOG /', pressure, a_par, n_par, ea_par)
 
         return single_plog_str
