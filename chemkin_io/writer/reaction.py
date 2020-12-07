@@ -203,7 +203,7 @@ def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax, max_lengt
     return cheb_str
 
 
-def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=BUFFER):
+def arrhenius(reaction, high_params, colliders, max_length=45, name_buffer=BUFFER):
     """ Write the string containing the Arrhenius fitting parameters
         formatted for Chemkin input files
 
@@ -211,6 +211,8 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
         :type reaction: str
         :param high_params: Arrhenius high-P (i.e., high-P) parameters
         :type high_params: list of floats
+        :param colliders: names and collision enhancement factors for bath gases 
+        :type colliders: list((str, float))
         :param max_length: length of the longest reaction name in the mechanism
         :type max_length: int
         :param name_buffer: buffer between the name and the Arrhenius params
@@ -230,10 +232,6 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
         arr_str += _highp_str(reaction, current_high_params, max_length=max_length, name_buffer=name_buffer)
         if num_arr_sets > 1: 
             arr_str += '    DUP \n' 
-
-    # Write the collider efficiencies string
-    if colliders:
-        arr_str += _format_collider_string(colliders)
 
     # Write the collider efficiencies string
     if colliders:
