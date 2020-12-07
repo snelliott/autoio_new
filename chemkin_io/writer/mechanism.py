@@ -24,7 +24,7 @@ def write_mech_file(elem_tuple, spc_dct, rxn_param_dct, spc_nasa7_dct='', filena
     elem_str = elements_block(elem_tuple)
     spc_str = species_block(spc_dct)
     thermo_str = thermo_block(spc_nasa7_dct)
-    rxn_str = reactions_block(rxn_param_dct,comments)
+    rxn_str = reactions_block(rxn_param_dct, comments=comments)
     total_str = elem_str + spc_str + thermo_str + rxn_str
 
     # Write to a text file
@@ -82,7 +82,6 @@ def thermo_block(spc_nasa7_dct):
 
     """
     if spc_nasa7_dct!='':
-        # Write the thermo str
         thermo_str = 'THERMO \n'
         thermo_str += '200.00    1000.00   5000.000  \n\n'
         for spc_name, params in spc_nasa7_dct.items():
@@ -95,7 +94,7 @@ def thermo_block(spc_nasa7_dct):
     return thermo_str
 
 
-def reactions_block(rxn_param_dct,comments):
+def reactions_block(rxn_param_dct, comments=None):
     """ Writes the reaction block of the mechanism file
 
         :param rxn_param_dct: dct containing the reaction parameters
@@ -115,7 +114,7 @@ def reactions_block(rxn_param_dct,comments):
             max_len = len(rxn_name)
 
     # Loop through each reaction and get the string to write to text file
-    total_rxn_str = 'REACTIONS     KCAL/MOLE     MOLES\n\n'
+    total_rxn_str = 'REACTIONS     CAL/MOLE     MOLES\n\n'
     for rxn, param_dct in rxn_param_dct.items():
 
         # Convert the reaction name from tuple of tuples to string
@@ -176,19 +175,20 @@ def reactions_block(rxn_param_dct,comments):
             )
             highp_params = param_dct[0]
             collid_factors = param_dct[5]
-            rxn_str = writer_reac.arrhenius(rxn_name, highp_params, colliders=collid_factors, max_length=max_len)
+            rxn_str = writer_reac.arrhenius(rxn_name, highp_params, collid_factors, max_length=max_len)
 
-        # add inline comments on the first line
-        if isinstance(comments[rxn],dict):
-            if comments[rxn]['cmts_inline'] != '':
-                rxn_str_split = rxn_str.split('\n')
-                rxn_str_split[0] = rxn_str_split[0] + ' ' + comments[rxn]['cmts_inline'] 
-                # rewrite rxn_str
-                rxn_str = '\n'.join(rxn_str_split) 
-    
-        # check for comments: header
-        if isinstance(comments[rxn],dict):
-            total_rxn_str += comments[rxn]['cmts_top']
+        if comments:
+            # add inline comments on the first line
+            if isinstance(comments[rxn],dict):
+                if comments[rxn]['cmts_inline'] != '':
+                    rxn_str_split = rxn_str.split('\n')
+                    rxn_str_split[0] = rxn_str_split[0] + ' ' + comments[rxn]['cmts_inline'] 
+                    # rewrite rxn_str
+                    rxn_str = '\n'.join(rxn_str_split) 
+        
+            # check for comments: header
+            if isinstance(comments[rxn],dict):
+                total_rxn_str += comments[rxn]['cmts_top']
 
         total_rxn_str += rxn_str
 
