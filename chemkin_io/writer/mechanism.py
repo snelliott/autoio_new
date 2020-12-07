@@ -22,15 +22,19 @@ def write_chemkin_file(elem_tuple=None, spc_dct=None, spc_nasa7_dct=None, rxn_pa
         :param rxn_param_dct: dct containing the reaction parameters
         :type rxn_param_dct: dct {rxn:params}
     """
+    total_str = ''
     if elem_tuple:
         elem_str = elements_block(elem_tuple)
+        total_str += elem_str
     if spc_dct:
         spc_str = species_block(spc_dct)
+        total_str += spc_str
     if spc_nasa7_dct:
         thermo_str = thermo_block(spc_nasa7_dct)
+        total_str += thermo_str
     if rxn_param_dct:
         rxn_str = reactions_block(rxn_param_dct, comments=comments)
-    total_str = elem_str + spc_str + thermo_str + rxn_str
+        total_str += rxn_str
 
     # Write to a text file
     file = open(filename, "w")
@@ -107,9 +111,6 @@ def reactions_block(rxn_param_dct, comments=None):
         :return total_rxn_str: str containing the reaction block
         :rtype: str
     """
-    # create empty dictionary with comments if empty
-    if comments == '':
-        comments = dict(zip(rxn_param_dct.keys(),np.zeros((len(rxn_param_dct),1))))
 
     # Get the length of the longest reaction name
     max_len = 0
