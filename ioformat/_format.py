@@ -46,6 +46,30 @@ def indent(string, nspaces):
     return indented_string
 
 
+def addchar(string, char, side='pre'):
+    """ Pre- or Post-pends a character to a string.
+
+        :param string: Input string to add a character to
+        :type string: str
+        :param char: character to to prepend to string
+        :type char: str
+        :return new_string: string with new character
+        :rtype string
+    """
+
+    assert side in ('pre', 'post'), (
+        'side must be pre or post'
+    )
+    char = str(char).strip()
+
+    if side == 'pre':
+        new_string = char + ' ' + string
+    else:
+        new_string = string + ' ' + char
+
+    return new_string
+
+
 # Parsing methods for generic strings
 def headlined_sections(string, headline_pattern):
     """ Returns sections with headlines matching a pattern.

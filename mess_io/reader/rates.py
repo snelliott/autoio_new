@@ -4,7 +4,11 @@
   corresponding to a given reaction.
 """
 
+from io import StringIO
+import pandas
 
+
+# Functions for getting k(T,P) values from main MESS `RateOut` file
 def highp_ks(output_str, reactant, product):
     """ Parses the MESS output file string for the rate constants [k(T)]s
         for a single reaction at the high-pressure limit.
@@ -253,3 +257,32 @@ def get_pressures_input(input_str):
     pressures.append('high')
 
     return pressures, pressure_unit
+
+
+# Functions for getting k(E) values from main MESS `MicroRateOut` file
+def microcan_ks(output_str, reactant, product):
+    """ Read the microcanonical
+    """
+
+    # Form string for reaction header using reactant and product name
+    reaction = _reaction_header(reactant, product)
+
+    # Have to edit the 1st of string to remove the whitespace in headers
+    outlines = output_str.split('\n')
+    head = outlines[0].replace('E, kcal/mol', 'E').replace('D, mol/kcal', 'D')
+    outlines[0] = head
+    new_out_str = '\n'.join(outlines)
+
+    # Get data frame with the energies and rate constants`
+    ke_file = StringIO(new_out_str)
+    data = pandas.read_table(ke_file, delim_whitespace=True, index_col=0)
+
+    # Build a dct, indexed by energy for the reaction k(E) values
+    ke_dct = dict(data[reaction])
+
+    return ke_dct
+
+
+# Helper functions
+def _reaction_header(reactant, product):
+    return reactant + '->' + product

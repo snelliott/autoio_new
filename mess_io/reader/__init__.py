@@ -9,6 +9,7 @@ from mess_io.reader.tors import grid_min_freqs
 from mess_io.reader.tors import zpves
 from mess_io.reader.rates import highp_ks
 from mess_io.reader.rates import pdep_ks
+from mess_io.reader.rates import microcan_ks
 from mess_io.reader._pes import pes
 
 
@@ -19,5 +20,6 @@ __all__ = [
     'zpves',
     'highp_ks',
     'pdep_ks',
+    'microcan_ks',
     'pes'
 ]
