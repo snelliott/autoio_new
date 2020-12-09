@@ -377,13 +377,13 @@ class Basis():
                             Program.ORCA4: None,
                             Program.PSI4: None})
         P6311SS = ('6-311g**', {Program.CFOUR2: None,
-                            Program.GAUSSIAN09: None,
-                            Program.GAUSSIAN16: None,
-                            Program.MOLPRO2015: None,
-                            Program.MRCC2018: None,
-                            Program.NWCHEM6: None,
-                            Program.ORCA4: None,
-                            Program.PSI4: None})
+                                Program.GAUSSIAN09: None,
+                                Program.GAUSSIAN16: None,
+                                Program.MOLPRO2015: None,
+                                Program.MRCC2018: None,
+                                Program.NWCHEM6: None,
+                                Program.ORCA4: None,
+                                Program.PSI4: None})
         P631PS = ('6-31+g*', {Program.CFOUR2: None,
                               Program.GAUSSIAN09: None,
                               Program.GAUSSIAN16: None,
@@ -591,7 +591,7 @@ class Option():
         CLOSED_ = option.create('casscf_closed', ['num'])
         WFN_ = option.create(
             'casscf_wavefunction',
-                ['nelec', 'sym', 'spin', 'charge', 'nstates'])
+            ['nelec', 'sym', 'spin', 'charge', 'nstates'])
 
     class MRCorr():
         """ Correlated multiref method options (passed to `corr_options`) """

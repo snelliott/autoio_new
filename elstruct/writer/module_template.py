@@ -94,7 +94,7 @@ def vpt2(geom, charge, mult, method, basis,
         job_options,
     )
 
-    
+
 def molec_properties(geom, charge, mult, method, basis,
                      # molecule options
                      mol_options=(),
@@ -130,7 +130,7 @@ def irc(geom, charge, mult, method, basis,
         # generic options
         gen_lines=None,
         # job options
-        job_options=(), frozen_coordinates=(), irc_direction=None):
+        job_options=(), frozen_coordinates=()):
     """ _ """
 
     raise NotImplementedError(
@@ -139,7 +139,7 @@ def irc(geom, charge, mult, method, basis,
         memory, comment, machine_options,
         scf_options, casscf_options, corr_options,
         gen_lines,
-        job_options, frozen_coordinates, irc_direction
+        job_options, frozen_coordinates
     )
 
 

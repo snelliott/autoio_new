@@ -56,7 +56,6 @@ class TemplateKey():
     FROZEN_ANG_STRS = 'frozen_ang_strs'
     FROZEN_DIH_STRS = 'frozen_dih_strs'
     GEN_LINES = 'gen_lines'
-    IRC_DIRECTION = 'irc_direction'
 
 
 def energy(geom, charge, mult, method, basis,
@@ -180,7 +179,7 @@ def irc(geom, charge, mult, method, basis,
         # generic options
         gen_lines=None,
         # job options
-        job_options=(), frozen_coordinates=(), irc_direction=None):
+        job_options=(), frozen_coordinates=()):
     """ optimization input string
     """
     job_key = JobKey.IRC
@@ -191,7 +190,7 @@ def irc(geom, charge, mult, method, basis,
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
-        irc_direction=irc_direction, gen_lines=gen_lines,
+        gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -203,7 +202,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           machine_options,
                           scf_options, casscf_options, corr_options,
                           job_options=(), frozen_coordinates=(),
-                          saddle=False, irc_direction=None,
+                          saddle=False,
                           gen_lines=None):
 
     frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (

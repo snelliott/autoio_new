@@ -84,7 +84,7 @@ def irc_path(output_string):
     """ get the coordinates and energies relative to the saddle point
     """
 
-    # coordinates 
+    # coordinates
     block = apf.last_capture(
         (app.escape('@IRC              ****     IRC Steps     ****') +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +

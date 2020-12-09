@@ -25,7 +25,7 @@ __all__ = [
     'gradient',
     'hessian',
     'harmonic_frequencies',
-    'normal_modes',
+    'normal_coords',
     'irc_points',
     'irc_path',
     'opt_geometry',

@@ -325,17 +325,17 @@ def molec_properties_programs():
 
 
 def molec_properties(geom, charge, mult, method, basis, prog,
-         # molecule options
-         mol_options=(),
-         # machine options
-         memory=1, comment='', machine_options=(),
-         # theory options
-         orb_type=None,
-         scf_options=(), casscf_options=(), corr_options=(),
-         # generic options
-         gen_lines=None,
-         # job options
-         job_options=()):
+                     # molecule options
+                     mol_options=(),
+                     # machine options
+                     memory=1, comment='', machine_options=(),
+                     # theory options
+                     orb_type=None,
+                     scf_options=(), casscf_options=(), corr_options=(),
+                     # generic options
+                     gen_lines=None,
+                     # job options
+                     job_options=()):
     """ Molecular Properties input string
     :param geom: cartesian or z-matrix geometry
     :type geom: tuple
@@ -405,7 +405,7 @@ def irc(geom, charge, mult, method, basis, prog,
         # generic options
         gen_lines=None,
         # job options
-        job_options=(), frozen_coordinates=(), irc_direction=None):
+        job_options=(), frozen_coordinates=()):
     """ irc input string
     :param geom: cartesian or z-matrix geometry
     :type geom: tuple
@@ -442,8 +442,6 @@ def irc(geom, charge, mult, method, basis, prog,
     :param frozen_coordinates: only with z-matrix geometries; list of
         coordinate names to freeze
     :type fozen_coordinates: tuple[str]
-    :param irc_direction: direction along imaginary mode eigenvector to move
-    :type irc_direction: string
     :param gen_lines: generic lines for the input file
     :type gen_lines: dct[idx]=[str]
     """
@@ -460,8 +458,7 @@ def irc(geom, charge, mult, method, basis, prog,
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
         gen_lines=gen_lines,
-        job_options=job_options, frozen_coordinates=frozen_coordinates,
-        irc_direction=irc_direction)
+        job_options=job_options, frozen_coordinates=frozen_coordinates)
 
 
 # optimization input writers
