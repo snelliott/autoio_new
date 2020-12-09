@@ -56,6 +56,29 @@ def hessian(output_string):
     return mat
 
 
+def hessian2(output_string):
+    """ read hessian from the output string
+    """
+    comp_ptt = app.UNSIGNED_INTEGER
+    mat = ar.matrix.read(
+        output_string,
+        val_ptt=app.EXPONENTIAL_FLOAT_D,
+        start_ptt=(
+            app.escape('Force constants in Cartesian coordinates:') +
+            app.lpadded(app.NEWLINE)),
+        block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
+                         app.padded(app.NEWLINE)),
+        line_start_ptt=comp_ptt,
+        tril=True)
+
+    mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
+           for row in mat]
+
+    mat = tuple(map(tuple, mat))
+    return mat
+
+
+
 def harmonic_frequencies(output_string):
     """ read harmonic frequencies from the output string
     """
@@ -111,8 +134,8 @@ def irc_points(output_string):
     # Get the TS info first
     sadpt_str = '\n'.join(output_lines[0:section_starts[0]])
     sadpt_geom = sadpt_geometry(sadpt_str)
-    sadpt_grad = gradient(sadpt_str)
-    sadpt_hess = hessian(sadpt_str)
+    # sadpt_grad = gradient(sadpt_str)
+    # sadpt_hess = hessian2(sadpt_str)
 
     # Now start getting other points by getting a list of each string with info
     pt_strs = []
@@ -127,12 +150,12 @@ def irc_points(output_string):
     hessians = []
     for string in pt_strs:
         geoms.append(irc_geometry(string))
-        pt_grad = gradient(string)
-        pt_hess = hessian(string)
-        if pt_grad is not None:
-            grads.append(pt_grad)
-        if pt_hess is not None:
-            hessians.append(pt_hess)
+        # pt_grad = gradient(string)
+        # pt_hess = hessian2(string)
+        # if pt_grad is not None:
+        #     grads.append(pt_grad)
+        # if pt_hess is not None:
+        #     hessians.append(pt_hess)
 
     # Combine with the 0 index info
     geoms = [sadpt_geom] + geoms

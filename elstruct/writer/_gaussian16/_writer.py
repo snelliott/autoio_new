@@ -58,7 +58,6 @@ class TemplateKey():
     JOB_KEY = 'job_key'
     JOB_OPTIONS = 'job_options'
     GEN_LINES = 'gen_lines'
-    IRC_DIRECTION = 'irc_direction'
 
 
 def energy(geom, charge, mult, method, basis,
@@ -178,7 +177,7 @@ def irc(geom, charge, mult, method, basis,
         # generic options
         gen_lines=None,
         # job options
-        job_options=(), frozen_coordinates=(), irc_direction=None):
+        job_options=(), frozen_coordinates=()):
     """ optimization input string
     """
     job_key = JobKey.IRC
@@ -189,7 +188,7 @@ def irc(geom, charge, mult, method, basis,
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
         job_options=job_options, frozen_coordinates=frozen_coordinates,
-        irc_direction=irc_direction, gen_lines=gen_lines,
+        gen_lines=gen_lines,
     )
     inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
     return inp_str
@@ -229,7 +228,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
                           machine_options,
                           scf_options, casscf_options, corr_options,
                           job_options=(), frozen_coordinates=(),
-                          saddle=False, irc_direction=None,
+                          saddle=False,
                           gen_lines=None):
 
     reference = _reference(method, mult, orb_restricted)
@@ -260,11 +259,6 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
 
     if saddle:
         job_options += ('CALCFC', 'TS', 'NOEIGEN',)
-
-    if irc_direction is not None:
-        assert (irc_direction.upper() == 'FORWARD' or
-                irc_direction.upper() == 'REVERSE')
-        job_options = (irc_direction.upper(),) + job_options
 
     # Set the gen lines blocks
     if gen_lines is not None:
