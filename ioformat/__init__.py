@@ -8,6 +8,7 @@ from ioformat._format import headlined_sections
 from ioformat._format import remove_whitespace
 from ioformat._format import remove_trail_whitespace
 from ioformat._format import remove_comment_lines
+from ioformat import pathtools
 from ioformat import phycon
 
 
@@ -18,5 +19,6 @@ __all__ = [
     'remove_whitespace',
     'remove_trail_whitespace',
     'remove_comment_lines',
+    'pathtools',
     'phycon'
 ]

@@ -36,32 +36,33 @@ def properties(trans_dct):
     # Add the headers for each of the columns
     # '{0:<'+nameslen+'}'.format('! Species'),
     chemkin_str += (
-        '{0:20s}'.format('! Species'),
-        '{0:>5d}'.format('Shape'),
-        '{0:>12.3f}'.format('Epsilon'),
-        '{0:>8.3f}'.format('Sigma'),
-        '{0:>8.3f}'.format('Mu'),
-        '{0:>8.3f}'.format('Alpha'),
-        '{0:>8.3f}'.format('Z_Rot'),
+        '{0:20s}'.format('! Species') +
+        '{0:>5s}'.format('Shape') +
+        '{0:>12s}'.format('Epsilon') +
+        '{0:>8s}'.format('Sigma') +
+        '{0:>8s}'.format('Mu') +
+        '{0:>8s}'.format('Alpha') +
+        '{0:>8s}'.format('Z_Rot')
     )
+    chemkin_str += '\n'
 
     # Add the values to the string
     for name, dct in trans_dct.items():
         shape_idx = dct.get('shape_idx', 2)
         eps = dct.get('epsilon', 0.00) * CM2K
         sig = dct.get('sigma', 0.00) * BOHR2ANG
-        dmom = dct.get('dip_mom', 0.00)
+        dmom = dct.get('dipole_moment', 0.00)
         polar = dct.get('polarizability', 0.00) * BOHR2ANG_3
         zrot = dct.get('zrot', 1.00)
 
         # '{0:<'+nameslen+'}'.format(name),
         chemkin_str += (
-            '{0:20s}'.format(name),
-            '{0:>5d}'.format(shape_idx),
-            '{0:>12.3f}'.format(eps),
-            '{0:>8.3f}'.format(sig),
-            '{0:>8.3f}'.format(dmom),
-            '{0:>8.3f}'.format(polar),
+            '{0:20s}'.format(name) +
+            '{0:>5d}'.format(shape_idx) +
+            '{0:>12.3f}'.format(eps) +
+            '{0:>8.3f}'.format(sig) +
+            '{0:>8.3f}'.format(dmom) +
+            '{0:>8.3f}'.format(polar) +
             '{0:>8.3f}'.format(zrot)
         )
         chemkin_str += '\n'
