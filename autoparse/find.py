@@ -53,7 +53,12 @@ def matcher(pattern, case=True):
 def all_captures(pattern, string, case=True):
     """ capture(s) for all matches of a capturing pattern
     """
-    return tuple(_re_findall(pattern, string, case=case))
+    caps = _re_findall(pattern, string, case=case)
+    if caps is not None:
+        cap_lst = tuple(caps)
+    else:
+        cap_lst = None
+    return cap_lst
 
 
 def first_capture(pattern, string, case=True):
@@ -173,7 +178,21 @@ def _re_search(pattern, string, case=True):
 
 def _re_findall(pattern, string, case=True):
     flags = _re_flags(case=case)
+<<<<<<< HEAD
+    # try:
+    #     ptt_find = re.findall(pattern, string, flags=flags)
+    # except TypeError:
+    #     ptt_find = None
+    # return ptt_find
     return re.findall(pattern, string, flags=flags)
+=======
+    try:
+        ptt_find = re.findall(pattern, string, flags=flags)
+    except TypeError:
+        ptt_find = None
+    return ptt_find
+    # return re.findall(pattern, string, flags=flags)
+>>>>>>> c8ee5d599db425aa9054193d143937d529da38af
 
 
 def _re_split(pattern, string, case=True):
