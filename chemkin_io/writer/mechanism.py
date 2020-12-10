@@ -160,7 +160,7 @@ def reactions_block(rxn_param_dct, comments=None):
             troe_params = param_dct[2]
             collid_factors = param_dct[5]
             rxn_str = writer_reac.troe(
-                rxn_name, highp_params, lowp_params, troe_params, collid_factors, max_length=max_len
+                rxn_name, highp_params, lowp_params, troe_params, colliders=collid_factors, max_length=max_len
             )
 
         elif param_dct[1] is not None:  # Lindemann
@@ -173,7 +173,9 @@ def reactions_block(rxn_param_dct, comments=None):
             highp_params = param_dct[0]
             lowp_params = param_dct[1]
             collid_factors = param_dct[5]
-            rxn_str = writer_reac.lindemann(rxn_name, highp_params, lowp_params, collid_factors, max_length=max_len)
+            rxn_str = writer_reac.lindemann(
+                rxn_name, highp_params, lowp_params, colliders=collid_factors, max_length=max_len
+            )
 
         else:  # Simple Arrhenius
             assert param_dct[0] is not None, (
@@ -181,7 +183,7 @@ def reactions_block(rxn_param_dct, comments=None):
             )
             highp_params = param_dct[0]
             collid_factors = param_dct[5]
-            rxn_str = writer_reac.arrhenius(rxn_name, highp_params, collid_factors, max_length=max_len)
+            rxn_str = writer_reac.arrhenius(rxn_name, highp_params, colliders=collid_factors, max_length=max_len)
 
         if comments:
             # add inline comments on the first line
