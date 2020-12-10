@@ -11,3 +11,5 @@ disable=
     assignment-from-no-return,
     duplicate-code,
     arguments-out-of-order
+    too-many-locals,
+    too-many-arguments
