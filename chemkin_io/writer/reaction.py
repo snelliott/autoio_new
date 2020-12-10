@@ -7,7 +7,7 @@ BUFFER = 5
 
 
 # Functions to write the parameters in the correct format
-def troe(reaction, high_params, low_params, troe_params, colliders,
+def troe(reaction, high_params, low_params, troe_params, colliders=None,
          max_length=45, name_buffer=BUFFER):
     """ Write the string containing the Lindemann fitting parameters
         formatted for Chemkin input files.
@@ -46,7 +46,7 @@ def troe(reaction, high_params, low_params, troe_params, colliders,
     return troe_str
 
 
-def lindemann(reaction, high_params, low_params, colliders,
+def lindemann(reaction, high_params, low_params, colliders=None,
               max_length=45, name_buffer=BUFFER):
     """ Write the string containing the Lindemann fitting parameters
         formatted for Chemkin input files
@@ -203,7 +203,7 @@ def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax, max_lengt
     return cheb_str
 
 
-def arrhenius(reaction, high_params, colliders, max_length=45, name_buffer=BUFFER):
+def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=BUFFER):
     """ Write the string containing the Arrhenius fitting parameters
         formatted for Chemkin input files
 
