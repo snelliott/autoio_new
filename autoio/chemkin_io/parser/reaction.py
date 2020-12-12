@@ -9,7 +9,7 @@ import autoparse.pattern as app
 import autoparse.find as apf
 from autoparse import cast as ap_cast
 from ioformat import headlined_sections
-from lib.phydat import phycon
+from phydat import phycon
 
 # Various strings needed to parse the data sections of the Reaction block
 CHEMKIN_ARROW = (app.maybe(app.escape('<')) + app.escape('=') +

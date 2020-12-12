@@ -178,21 +178,12 @@ def _re_search(pattern, string, case=True):
 
 def _re_findall(pattern, string, case=True):
     flags = _re_flags(case=case)
-<<<<<<< HEAD
     # try:
     #     ptt_find = re.findall(pattern, string, flags=flags)
     # except TypeError:
     #     ptt_find = None
     # return ptt_find
     return re.findall(pattern, string, flags=flags)
-=======
-    try:
-        ptt_find = re.findall(pattern, string, flags=flags)
-    except TypeError:
-        ptt_find = None
-    return ptt_find
-    # return re.findall(pattern, string, flags=flags)
->>>>>>> c8ee5d599db425aa9054193d143937d529da38af
 
 
 def _re_split(pattern, string, case=True):
