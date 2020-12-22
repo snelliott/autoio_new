@@ -2,11 +2,10 @@
  tests writing of projrot inumpyut
 """
 
-import numpy
 import projrot_io
 
 
-# Set info for inumpyut
+# Set info for input
 GEOM = (('C', (-4.0048955763, -0.3439866053, -0.0021431734)),
         ('O', (-1.3627056155, -0.3412713280, 0.0239463418)),
         ('H', (-4.7435343957, 1.4733340928, 0.7491098889)),
@@ -19,10 +18,23 @@ GRAD = ((-4.0048955763, -0.3439866053, -0.0021431734),
         (-4.7435373042, -1.9674678465, 1.1075144307),
         (-4.6638955748, -0.5501793084, -1.9816675556),
         (-0.8648060003, -0.1539639444, 1.8221471090))
-HESS = numpy.random.rand(33, 33)
+HESS = ((0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+        (0.0, 0.959, 0.0, 0.0, -0.452, 0.519, 0.0, -0.477, -0.23),
+        (0.0, 0.0, 0.371, 0.0, 0.222, -0.555, 0.0, -0.279, -0.128),
+        (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+        (0.0, -0.479, 0.279, 0.0, 0.455, -0.256, 0.0, -0.017, 0.051),
+        (0.0, 0.251, -0.185, 0.0, -0.247, 0.607, 0.0, -0.012, 0.09),
+        (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+        (0.0, -0.479, -0.279, 0.0, -0.003, -0.263, 0.0, 0.494, 0.279),
+        (0.0, -0.251, -0.185, 0.0, 0.025, 0.947, 0.0, 0.292, 0.137))
 GEOMS = [GEOM for i in range(21)]
 GRADS = [GRAD for i in range(21)]
 HESSES = [HESS for i in range(21)]
+AXIS1 = [3, 4]
+GROUP1 = [1, 2]
+AXIS2 = [5, 6]
+GROUP2 = [7, 8, 9, 10, 11, 12]
+
 CART_PROJ = 'cartesian'
 
 # Set info for coord_en
@@ -50,6 +62,45 @@ PRD_DISTS = [
     1.24880,
     1.26522, 1.28171, 1.29821, 1.31466, 1.33097,
     1.34701, 1.36265, 1.37782, 1.39250, 1.40671]
+
+
+def test_rt_projections():
+    """ test projrot_io.writer.rpht_input
+    """
+    # Write the string for the ProjRot input
+    inp_str = projrot_io.writer.rpht_input(
+        [GEOM], [GRAD], [HESS],
+        saddle_idx=1,
+        rotors_str='',
+        coord_proj=CART_PROJ,
+        proj_rxn_coord=False)
+
+    # Print the string
+    print(inp_str)
+
+
+def test_rt_hr_projections():
+    """ test projrot_io.writer.rotors_str
+        test projrot_io.writer.rpht_inumpyut
+    """
+
+    # Write the rotors string
+    rotors_str = (
+        projrot_io.writer.rotors(AXIS1, GROUP1, remdummy=None) +
+        '\n' +
+        projrot_io.writer.rotors(AXIS2, GROUP2, remdummy=None)
+    )
+
+    # Write the string for the ProjRot inumpyut
+    inp_str = projrot_io.writer.rpht_input(
+        [GEOM], [GRAD], [HESS],
+        saddle_idx=1,
+        rotors_str=rotors_str,
+        coord_proj=CART_PROJ,
+        proj_rxn_coord=False)
+
+    # Print the string
+    print(inp_str)
 
 
 def test_sct_rpht_input():
@@ -88,5 +139,7 @@ def test_sct_coord_en():
 
 
 if __name__ == '__main__':
+    test_rt_projections()
+    test_rt_hr_projections()
     test_sct_rpht_input()
     test_sct_coord_en()
