@@ -2,15 +2,11 @@
  tests rates reader
 """
 
-import os
 import mess_io.reader
+from _util import read_text_file
 
 
-PATH = os.path.dirname(os.path.realpath(__file__))
-DATA_PATH = os.path.join(PATH, 'data')
-DATA_NAME = 'rates.txt'
-with open(os.path.join(DATA_PATH, DATA_NAME), 'r') as datfile:
-    OUT_STR = datfile.read()
+OUT_STR = read_text_file(['data'], 'rates.out')
 
 # Set the REACTANT and PRODUCT
 REACTANT = 'REACS'

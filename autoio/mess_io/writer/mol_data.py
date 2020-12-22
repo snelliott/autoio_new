@@ -500,7 +500,7 @@ def tunnel_eckart(imag_freq, well_depth1, well_depth2):
         template_keys=tunnel_keys)
 
 
-def tunnel_sct(imag_freq, tunnel_file, cutoff_energy=2500):
+def tunnel_sct(imag_freq, tunnel_file, cutoff_energy=2500.0):
     """ Writes the string that defines the 'Tunneling' section for a
         small curvature tunneling model for a transition state
         for a MESS input file by formatting input information into

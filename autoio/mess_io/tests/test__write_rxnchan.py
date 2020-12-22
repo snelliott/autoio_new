@@ -1,10 +1,18 @@
 """ Tests the writing of the species section
 """
 
-import mess_io
+import mess_io.writer
+from _util import read_text_file
 
 
-MOLECULE_MESS_STRING = """RRHO
+SPC1_LABEL = 'Mol1'
+SPC2_LABEL = 'Mol1'
+WELL_LABEL = 'W1'
+BIMOL_LABEL = 'P1'
+TS_LABEL = 'B1'
+
+# Data Strings
+MOL_MESS_STR = """RRHO
   Core RigidRotor
     SymmetryFactor          1.0
   End
@@ -20,7 +28,7 @@ MOLECULE_MESS_STRING = """RRHO
     3  50.0
 """
 
-ATOM_MESS_STRING = """Atom
+ATOM_MESS_STR = """Atom
   Name O
   ElectronicLevels[1/cm]    3
     1  0.0
@@ -28,152 +36,129 @@ ATOM_MESS_STRING = """Atom
     9  450.0
 """
 
-ZERO_ENERGY = -35.0
+ENE = -35.0
+PATH_ENES = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
+TUNNEL_STR = """Tunneling  Eckart
+  ImaginaryFrequency[1/cm]  2000
+  WellDepth[kcal/mol]       10
+  WellDepth[kcal/mol]       20"""
+EDOWN_STR = """EnergyRelaxation
+  Exponential
+     Factor[1/cm]                     150.000
+     Power                            50.000
+     ExponentCutoff                   80.000
+End"""
+COLLID_STR = """CollisionFrequency
+  LennardJones
+     Epsilons[1/cm]                   100.000    200.000
+     Sigmas[angstrom]                 10.000     20.000
+     Masses[amu]                      15.000     25.000
+End"""
 
 
 def test__species_writer():
     """ Writes the MESS input for a Well
     """
 
-    # Set a label for the well
-    species_label = 'TEST'
+    spc1_str = mess_io.writer.rxnchan.species(
+        SPC1_LABEL, MOL_MESS_STR, zero_ene=None)
+    assert spc1_str == read_text_file(['data', 'inp'], 'spc1.inp')
 
-    # Set the data string to the global molecule section
-    species_data = MOLECULE_MESS_STRING
-
-    # Use the writer to create a string for well section
-    species_section_str = mess_io.writer.rxnchan.species(
-        species_label, species_data, ZERO_ENERGY)
-
-    # Print the well section string
-    print('\n'+species_section_str)
+    spc2_str = mess_io.writer.rxnchan.species(
+        SPC2_LABEL, MOL_MESS_STR, zero_ene=ENE)
+    assert spc2_str == read_text_file(['data', 'inp'], 'spc2.inp')
 
 
 def test__well_writer():
     """ Writes the MESS input for a Well
     """
+    # fix
 
-    # Set a label for the well
-    well_label = 'W1'
+    well1_str = mess_io.writer.rxnchan.well(
+        WELL_LABEL, MOL_MESS_STR)
+    assert well1_str == read_text_file(['data', 'inp'], 'well1.inp')
 
-    # Set the data string to the global molecule section
-    well_data = MOLECULE_MESS_STRING
-
-    # Use the writer to create a string for well section
-    well_section_str = mess_io.writer.rxnchan.well(
-        well_label, well_data, ZERO_ENERGY)
-
-    # Print the well section string
-    print('\n'+well_section_str)
+    well2_str = mess_io.writer.rxnchan.well(
+        WELL_LABEL, MOL_MESS_STR,
+        zero_ene=ENE,
+        edown_str=EDOWN_STR,
+        collid_freq_str=COLLID_STR)
+    assert well2_str == read_text_file(['data', 'inp'], 'well2.inp')
 
 
 def test__bimolecular_writer():
     """ Writes the MESS input for a bimolecular set
     """
 
-    # Set a label for the bimolecular set
-    bimol_label = 'R1'
-
-    # Set labels for the two species in the bimolecular set
-    species1_label = 'Mol1'
-    species2_label = 'Mol2'
-
-    # Set the data strings to the global atom and molecule strings
-    species1_data = ATOM_MESS_STRING
-    species2_data = MOLECULE_MESS_STRING
-
-    # Set the ground energy variable
-    ground_energy = 50.0
-
-    # Use the writer to create a string for the molecule section
-    bimolecular_str = mess_io.writer.rxnchan.bimolecular(
-        bimol_label,
-        species1_label, species1_data,
-        species2_label, species2_data,
-        ground_energy)
-
-    # Print the bimol section string
-    print('\n'+bimolecular_str)
+    bimol_str = mess_io.writer.rxnchan.bimolecular(
+        BIMOL_LABEL,
+        SPC1_LABEL, ATOM_MESS_STR,
+        SPC2_LABEL, MOL_MESS_STR,
+        ENE)
+    assert bimol_str == read_text_file(['data', 'inp'], 'bimol.inp')
 
 
 def test__ts_sadpt_writer():
     """ ts sadpt writer
     """
+    # fix
 
-    # Set the data string to the global molecule section
-    ts_data = MOLECULE_MESS_STRING
+    ts_sadpt1_str = mess_io.writer.rxnchan.ts_sadpt(
+        TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR)
+    assert ts_sadpt1_str == read_text_file(['data', 'inp'], 'ts_sadpt1.inp')
 
-    # Set labels for TS
-    ts_label = 'B1'
-    reac_label = 'R1'
-    prod_label = 'P1'
-
-    tunnel_string = """Tunneling  Eckart
-  ImaginaryFrequency[1/cm]  2000
-  WellDepth[kcal/mol]       10
-  WellDepth[kcal/mol]       20"""
-
-    # Use the writer to create a string for the ts sadpt section
-    ts_sadpt_str = mess_io.writer.rxnchan.ts_sadpt(
-        ts_label, reac_label, prod_label, ts_data, ZERO_ENERGY,
-        tunnel=tunnel_string)
-
-    # Print the ts sadpoint section
-    print('\n'+ts_sadpt_str)
+    ts_sadpt2_str = mess_io.writer.rxnchan.ts_sadpt(
+        TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR,
+        zero_ene=ENE, tunnel=TUNNEL_STR)
+    assert ts_sadpt2_str == read_text_file(['data', 'inp'], 'ts_sadpt2.inp')
 
 
 def test__ts_variational_writer():
     """ ts mess_io.writer.rxnchan.ts_variational
     """
-
-    # Set the number of points along the var
-    nvar = 21
-
-    # Loop over all the points of the var and build MESS strings
+    # fix
     var_pt_strings = []
-    for i in range(nvar):
+    for i in range(10):
         var_pt_string = '+++++++++++++++++++++++++++++++++++'
-        var_pt_string += '! IRC Point {0}\n'.format(str(i+1))
-        var_pt_string += MOLECULE_MESS_STRING
+        var_pt_string += '! Path Point {0}\n'.format(str(i+1))
+        var_pt_string += MOL_MESS_STR
         var_pt_strings.append(var_pt_string)
 
-    # Set labels for TS
-    ts_label = 'B1'
-    reac_label = 'R1'
-    prod_label = 'P1'
+    ts_var1_str = mess_io.writer.rxnchan.ts_variational(
+        TS_LABEL, WELL_LABEL, BIMOL_LABEL,
+        var_pt_strings,
+        zero_enes=PATH_ENES, tunnel='')
+    assert ts_var1_str == read_text_file(['data', 'inp'], 'ts_var1.inp')
 
-    tunnel_string = """Tunneling  Eckart
-  ImaginaryFrequency[1/cm]  2000
-  WellDepth[kcal/mol]       10
-  WellDepth[kcal/mol]       20"""
+    ts_var2_str = mess_io.writer.rxnchan.ts_variational(
+        TS_LABEL, WELL_LABEL, BIMOL_LABEL,
+        var_pt_strings,
+        zero_enes=PATH_ENES, tunnel=TUNNEL_STR)
+    assert ts_var2_str == read_text_file(['data', 'inp'], 'ts_var2.inp')
 
-    # Use the writer to create a string for the ts variational section
-    ts_var_str = mess_io.writer.rxnchan.ts_variational(
-        ts_label, reac_label, prod_label,
-        var_pt_strings, tunnel=tunnel_string)
 
-    # Print the ts sadpoint section
-    print('\n'+ts_var_str)
+def test__dummy_writer():
+    """ tests mess_io.writer.dummy
+    """
+
+    dummy1_str = mess_io.writer.rxnchan.dummy(
+        BIMOL_LABEL)
+    assert dummy1_str == read_text_file(['data', 'inp'], 'dummy1.inp')
+
+    dummy2_str = mess_io.writer.rxnchan.dummy(
+        BIMOL_LABEL, zero_ene=ENE)
+    assert dummy2_str == read_text_file(['data', 'inp'], 'dummy2.inp')
 
 
 def test__configs_union_writer():
     """ tests mess_io.writer.rxnchan.configs_union
     """
 
-    # Set the number of points along the var
-    nmol = 3
+    mol_strings = [MOL_MESS_STR for _ in range(3)]
 
-    # Loop over all the points of the var and build MESS strings
-    mol_strings = []
-    for _ in range(nmol):
-        mol_strings.append(MOLECULE_MESS_STRING)
-
-    # Use the writer to create a string for the union section
     union_str = mess_io.writer.rxnchan.configs_union(
         mol_strings)
-
-    # Print the ts sadpoint section
-    print('\n'+union_str)
+    assert union_str == read_text_file(['data', 'inp'], 'union.inp')
 
 
 if __name__ == '__main__':
@@ -182,4 +167,5 @@ if __name__ == '__main__':
     test__bimolecular_writer()
     test__ts_sadpt_writer()
     test__ts_variational_writer()
+    test__dummy_writer()
     test__configs_union_writer()

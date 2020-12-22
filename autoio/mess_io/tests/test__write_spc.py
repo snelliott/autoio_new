@@ -1,78 +1,76 @@
 """ Tests the writing of the energy transfer section
 """
 
-import mess_io
+import mess_io.writer
+from _util import read_text_file
+
+
+# Atom/Molecule Data
+CORE_STR = """  Geometry[angstrom]        8
+    C         -0.75583       0.00710      -0.01604
+    C          0.75582      -0.00710       0.01604
+    H         -1.16275      -0.10176       0.99371
+    H         -1.12255       0.94866      -0.43557
+    H         -1.13499      -0.81475      -0.63070
+    H          1.13499       0.81475       0.63070
+    H          1.16275       0.10176      -0.99371
+    H          1.12255      -0.94866       0.43557
+  Core RigidRotor
+    SymmetryFactor          3.0
+  End"""
+FREQS = (10.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0,
+         1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0)
+INF_INTENS = (1.0, 11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0,
+              110.0, 120.0, 130.0, 140.0, 150.0, 160.0, 170.0, 180.0)
+MASS = 16.0
+ELEC_LEVELS1 = ((1, 0.00), (3, 150.0), (9, 450.0))
+ELEC_LEVELS2 = ((1, 0.00),)
+HR_STR = """Rotor  Hindered
+  Group                11  10  9   8   7   6
+  Axis                 3   2   1
+  Symmetry             1
+  Potential[kcal/mol]  12
+    0.00    2.91    9.06    12.63   9.97    3.51
+    0.03    3.49    9.96    12.63   9.08    2.93
+End"""
+XMAT = ((10000, 2000, 4000),
+        (2000, 3000, 5000),
+        (4000, 5000, 6000))
+ROVIB_COUPS = (100, 200, 300)
+ROT_DISTS = (('aaaa', 1000), ('bbaa', 2000), ('bbbb', 3000))
 
 
 def test__atom_writer():
     """ Writes a string containing all info for an atom in MESS style
     """
 
-    # Set the name and electronic levels for the atom
-    atom_mass = '16.0'
-    atom_elec_levels = ((1, 0.00), (3, 150.0), (9, 450.0))
-
-    # Use the writer to create a string for the atom section
-    atom_section_str = mess_io.writer.species.atom(
-        atom_mass, atom_elec_levels)
-
-    # Print the atom section string
-    print(atom_section_str)
+    atom_str = mess_io.writer.spc.atom(MASS, ELEC_LEVELS1)
+    assert atom_str == read_text_file(['data', 'inp'], 'atom_data.inp')
 
 
 def test__molecule_writer():
     """ Writes a string containing all info for a molecule in MESS style
     """
 
-    # Set the information for a molecule
-    mol_geom = (('O', (1.911401284, 0.16134481659, -0.05448080419)),
-                ('N', (4.435924209, 0.16134481659, -0.05448080419)),
-                ('N', (6.537299661, 0.16134481659, -0.05448080419)))
-    mol_symfactor = 1.000
-    mol_freqs = (100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0)
-    mol_elec_levels = ((1, 0.0), (3, 50.0))
-    interp_emax = ''
+    mol1_str = mess_io.writer.spc.molecule(
+        CORE_STR, ELEC_LEVELS2)
+    assert mol1_str == read_text_file(['data', 'inp'], 'mol1_data.inp')
 
-    # Get the string for the core using the geometry
-    mol_core = mess_io.writer.mol_data.core_rigidrotor(
-        mol_geom, mol_symfactor, interp_emax=interp_emax)
+    mol2_str = mess_io.writer.spc.molecule(
+        CORE_STR, ELEC_LEVELS2,
+        freqs=FREQS,
+        freq_scale_factor=1.833,
+        use_harmfreqs_key=True)
+    assert mol2_str == read_text_file(['data', 'inp'], 'mol2_data.inp')
 
-    # Use the writer to create a string for the molecule section
-    molecule_section_str1 = mess_io.writer.species.molecule(
-        mol_core, mol_freqs,
-        mol_elec_levels,
-        hind_rot='',
-        rovib_coups='', rot_dists='')
-
-    ## Set the additional optional keywords for
-    hind_rot = """Rotor  Hindered
-  Group                11  10  9   8   7   6
-  Axis                 3   2   1
-  Symmetry             1
-  Potential[kcal/mol]  12
-    0.00    2.91    9.06    12.63   9.97    3.51
-    -0.03   3.49    9.96    12.63   9.08    2.93
-End"""
-
-    xmat = [[10000, 2000, 4000],
-            [2000, 3000, 5000],
-            [4000, 5000, 6000]]
-    rovib_coups = [100, 200, 300]
-    rot_dists = [['aaaa', 1000], ['bbaa', 2000], ['bbbb', 3000]]
-
-    # Use the writer to create a string for the molecule section
-    molecule_section_str2 = mess_io.writer.species.molecule(
-        mol_core, mol_freqs,
-        mol_elec_levels,
-        hind_rot=hind_rot,
-        xmat=xmat,
-        rovib_coups=rovib_coups,
-        rot_dists=rot_dists)
-
-    # Print the molecule section string
-    print(molecule_section_str1)
-    print('\n')
-    print(molecule_section_str2)
+    mol3_str = mess_io.writer.spc.molecule(
+        CORE_STR, ELEC_LEVELS2,
+        freqs=FREQS, hind_rot=HR_STR,
+        xmat=XMAT,
+        rovib_coups=ROVIB_COUPS,
+        rot_dists=ROT_DISTS,
+        inf_intens=INF_INTENS)
+    assert mol3_str == read_text_file(['data', 'inp'], 'mol3_data.inp')
 
 
 if __name__ == '__main__':

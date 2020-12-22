@@ -14,7 +14,7 @@ SECTION_PATH = os.path.join(TEMPLATE_PATH, 'sections')
 RXNCHAN_PATH = os.path.join(SECTION_PATH, 'reaction_channel')
 
 
-def species(spc_label, spc_data, zero_energy=None):
+def species(spc_label, spc_data, zero_ene=None):
     """ Writes the string that defines the `Species` section for
         for a given species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -23,7 +23,7 @@ def species(spc_label, spc_data, zero_energy=None):
         :type spc_label: str
         :param spc_data: MESS string with required electronic structure data
         :type spc_data: str
-        :param zero_energy: elec+zpve energy relative to PES reference
+        :param zero_ene: elec+zpve energy relative to PES reference
         :rtype: str
     """
 
@@ -31,14 +31,14 @@ def species(spc_label, spc_data, zero_energy=None):
     spc_data = util.indent(spc_data, 2)
 
     # Format the precision of the zero energy
-    if zero_energy is not None:
-        zero_energy = '{0:<8.2f}'.format(zero_energy)
+    if zero_ene is not None:
+        zero_ene = '{0:<8.2f}'.format(zero_ene)
 
     # Create dictionary to fill template
     spc_keys = {
         'spc_label': spc_label,
         'spc_data': spc_data,
-        'zero_energy': zero_energy
+        'zero_ene': zero_ene
     }
 
     return build_mako_str(
@@ -48,7 +48,7 @@ def species(spc_label, spc_data, zero_energy=None):
 
 
 def well(well_label, well_data,
-         zero_energy=None, edown_str=None, collid_freq_str=None):
+         zero_ene=None, edown_str=None, collid_freq_str=None):
     """ Writes the string that defines the `Well` section for
         for a given species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -57,7 +57,7 @@ def well(well_label, well_data,
         :type well_label: str
         :param well_data: MESS string with required electronic structure data
         :type well_data: str
-        :param zero_energy: elec+zpve energy relative to PES reference
+        :param zero_ene: elec+zpve energy relative to PES reference
         :param edown_str: String for the energy down parameters
         :type edown_str: str
         :param collid_freq_str: String for the collisional freq parameters
@@ -69,8 +69,8 @@ def well(well_label, well_data,
     well_data = util.indent(well_data, 4)
 
     # Format the precision of the zero energy
-    if zero_energy is not None:
-        zero_energy = '{0:<8.2f}'.format(zero_energy)
+    if zero_ene is not None:
+        zero_ene = '{0:<8.2f}'.format(zero_ene)
 
     # Indent the energy transfer parameter strings if needed
     if edown_str is not None:
@@ -82,7 +82,7 @@ def well(well_label, well_data,
     well_keys = {
         'well_label': well_label,
         'well_data': well_data,
-        'zero_energy': zero_energy,
+        'zero_ene': zero_ene,
         'edown_str': edown_str,
         'collid_freq_str': collid_freq_str
     }
@@ -130,7 +130,7 @@ def bimolecular(bimol_label,
 
 
 def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
-             zero_energy=None, tunnel=''):
+             zero_ene=None, tunnel=''):
     """ Writes the string that defines the `Barrier` section for
         for a given transition state, modeled as a PES saddle point,
         for fixed transition state theory. MESS input file string built by
@@ -144,8 +144,8 @@ def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
         :type prod_label: str
         :param ts_data: MESS string with required electronic structure data
         :type ts_data: str
-        :param zero_energy: elec+zpve energy relative to PES reference
-        :type zero_energy: float
+        :param zero_ene: elec+zpve energy relative to PES reference
+        :type zero_ene: float
         :param tunnel: `Tunnel` section MESS-string for TS
         :type tunnel: str
         :rtype: str
@@ -157,8 +157,8 @@ def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
         tunnel = util.indent(tunnel, 4)
 
     # Format the precision of the zero energy
-    if zero_energy is not None:
-        zero_energy = '{0:<8.2f}'.format(zero_energy)
+    if zero_ene is not None:
+        zero_ene = '{0:<8.2f}'.format(zero_ene)
 
     # Create dictionary to fill template
     ts_sadpt_keys = {
@@ -166,7 +166,7 @@ def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
         'reac_label': reac_label,
         'prod_label': prod_label,
         'ts_data': ts_data,
-        'zero_energy': zero_energy,
+        'zero_ene': zero_ene,
         'tunnel': tunnel
     }
 
@@ -177,7 +177,7 @@ def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
 
 
 def ts_variational(ts_label, reac_label, prod_label, rpath_strs,
-                   zero_energies=None, tunnel=''):
+                   zero_enes=None, tunnel=''):
     """ Writes the string that defines the `Barrier` section for
         for a given transition state, modeled using points along reaction path,
         for varational transition state theory. MESS input file string built by
@@ -196,14 +196,14 @@ def ts_variational(ts_label, reac_label, prod_label, rpath_strs,
         :rtype: str
     """
 
-    assert len(rpath_strs) == len(zero_energies), (
+    assert len(rpath_strs) == len(zero_enes), (
         'Number of rpath strings ({})'.format(len(rpath_strs)),
-        'and zero energies ({}) do not match'.format(len(zero_energies))
+        'and zero energies ({}) do not match'.format(len(zero_enes))
     )
 
     # Build the zero energy strings and add them to the rpath strings
     full_rpath_str = ''
-    for rpath_str, zero_ene in zip(rpath_strs, zero_energies):
+    for rpath_str, zero_ene in zip(rpath_strs, zero_enes):
         zero_ene_str = util.zero_energy_format(zero_ene)
         zero_ene_str = util.indent(zero_ene_str, 2)
 
