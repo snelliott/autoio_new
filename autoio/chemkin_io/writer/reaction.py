@@ -178,7 +178,7 @@ def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax, max_lengt
     )
 
     # Write reaction header (with third body added) and high-pressure params
-    reaction = _format_rxn_str_for_pdep(reaction, pressure='all')
+    # reaction = _format_rxn_str_for_pdep(reaction, pressure='all') #LPM this adds unrequired (+M)
     if one_atm_params != [1.0, 0.0, 0.0]:  # if the params look real 
         comment = 'Arrhenius parameters at 1 atm'
     else:  # if the params look fake
@@ -405,11 +405,12 @@ def _format_rxn_str_for_pdep(reaction, pressure='all'):
     # Determine format of M string to be added to reaction string
     assert pressure in ('low', 'all')
     if pressure == 'all':
-        m_str = ' (+M)'
+        m_str = '(+M) '
     else:
         m_str = ' + M'
 
     # Add the M string to both sides of the reaction string
+    print(reaction)
     [lhs, rhs] = reaction.split('=')
     three_body_reaction = lhs + m_str + ' = ' + rhs + m_str
 
