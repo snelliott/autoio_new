@@ -85,7 +85,7 @@ def read(string,
 
     lines = block_str.splitlines()
     nrows = len(lines)
-    syms = []
+    symbs = []
     key_mat = numpy.empty((nrows, 3), dtype=numpy.object_)
     name_mat = numpy.empty((nrows, 3), dtype=numpy.object_)
     for row_idx, line in enumerate(lines):
@@ -95,14 +95,14 @@ def read(string,
         keys = caps[1::2]
         names = caps[2::2]
 
-        syms.append(sym)
+        symbs.append(sym)
         key_mat[row_idx, :ncols] = keys
         name_mat[row_idx, :ncols] = names
 
-    syms = tuple(syms)
+    symbs = tuple(symbs)
     key_mat = tuple(map(tuple, key_mat))
     name_mat = tuple(map(tuple, name_mat))
-    return syms, key_mat, name_mat
+    return symbs, key_mat, name_mat
 
 
 def block_pattern(sym_ptt=par.Pattern.ATOM_SYMBOL,

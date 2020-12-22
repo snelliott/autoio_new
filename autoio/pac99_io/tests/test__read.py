@@ -2,34 +2,23 @@
 """
 
 import pac99_io
+from _util import read_text_file
 
 
-def _read_file(file_name):
-    with open(file_name, encoding='utf8', errors='ignore') as file_obj:
-        file_str = file_obj.read()
-    return file_str
-
-
-# Set paths
-PATH = os.path.dirname(os.path.realpath(__file__))
-DATA_PATH = os.path.join(PATH, 'data')
-PAC99_OUT_NAME = 'CH4.o97'
-
-# Read mechanism files
-PAC99_OUT_STR = _read_file(
-    os.path.join(DATA_PATH, PAC99_OUT_NAME))
+OUT_STR = read_text_file(['data'], 'mol.c97')
 
 
 def test__polynomial():
     """ test pac99_io.reader.__
     """
 
-    nasa_poly = pac99_io.reader.nasa_polynomial(output_str)
+    pac99_poly = pac99_io.reader.nasa_polynomial(OUT_STR)
+    assert pac99_poly == read_text_file(['data'], 'pac99_poly.dat')
 
-    ref_nasa_poly = """
-    """
-
-    assert nasa_poly == ref_nasa_poly
+    name = 'mol'
+    atom_dct = {'C': 2, 'H': 4, 'N': 2, 'O': 6}
+    ckin_poly = pac99_io.pac2ckin_poly(name, atom_dct, pac99_poly)
+    assert ckin_poly == read_text_file(['data'], 'ckin_poly.dat')
 
 
 if __name__ == '__main__':

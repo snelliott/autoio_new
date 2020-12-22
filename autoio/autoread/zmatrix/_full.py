@@ -107,7 +107,7 @@ def read(string,
         strs = cap if cap is not None else []
         mat_str, setv_str = strs
 
-    syms, key_mat, name_mat = _matrix_read(
+    symbs, key_mat, name_mat = _matrix_read(
         mat_str,
         sym_ptt=sym_ptt,
         key_ptt=key_ptt,
@@ -118,7 +118,7 @@ def read(string,
         line_start_ptt=mat_line_start_ptt,
         line_end_ptt=mat_line_end_ptt)
 
-    if len(syms) == 1:
+    if len(symbs) == 1:
         val_dct = {}
     else:
         val_dct = _setval_read(
@@ -129,7 +129,7 @@ def read(string,
             entry_start_ptt=setv_entry_start_ptt,
             sep_ptt=setv_sep_ptt)
 
-    return syms, key_mat, name_mat, val_dct
+    return symbs, key_mat, name_mat, val_dct
 
 
 def block_pattern(sym_ptt=par.Pattern.ATOM_SYMBOL,

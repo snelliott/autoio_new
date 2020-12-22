@@ -48,9 +48,9 @@ def read(string,
                  apf.first_capture(block_ptt_, string, case=case))
 
     caps = apf.all_captures(line_ptt_, block_str)
-    syms, xcomps, ycomps, zcomps = zip(*_cast(caps))
+    symbs, xcomps, ycomps, zcomps = zip(*_cast(caps))
     xyzs = tuple(zip(xcomps, ycomps, zcomps))
-    return syms, xyzs
+    return symbs, xyzs
 
 
 def read_xyz(string, sym_ptt=par.Pattern.ATOM_SYMBOL,
@@ -64,8 +64,8 @@ def read_xyz(string, sym_ptt=par.Pattern.ATOM_SYMBOL,
         raise ValueError('Invalid xyz string')
 
     geo_str = '\n'.join(lines[2:natms+2])
-    syms, xyzs = read(geo_str, sym_ptt=sym_ptt, val_ptt=val_ptt)
-    return syms, xyzs
+    symbs, xyzs = read(geo_str, sym_ptt=sym_ptt, val_ptt=val_ptt)
+    return symbs, xyzs
 
 
 def block_pattern(sym_ptt=par.Pattern.ATOM_SYMBOL,
