@@ -4,6 +4,7 @@
 import mess_io.writer
 from _util import read_text_file
 
+
 # Core Data
 GEO1 = (
     ('C', (-1.4283035320563338, 0.013425343735546437, -0.030302158896694683)),
@@ -20,7 +21,8 @@ GEO2 = (
 SYM_FACTOR1 = 3.0
 SYM_FACTOR2 = 1.0
 INTERP_EMAX = 1500
-POT_SURF_FILE = 'pot_surf.dat'
+QUANT_LVL_EMAX = 11
+POT_SURF_FILE = 'surf.dat'
 FLUX_FILE = 'flux.dat'
 STOICH = 'C2O1H7'
 POT_PREFACTOR = 12.0
@@ -29,14 +31,38 @@ TSTLVL = 'ej'
 
 # Rotor Data
 HR_GROUP = (6, 7, 8, 9, 10, 11)
-HR_AXIS = (1, 2, 3)
+HR_AXIS = (2, 3)
 HR_SYMMETRY = 1.0
 HR_ID = 'D5'
+HR_GRID_SIZE = 100
+HR_MASS_EXP_SIZE = 5
+THERM_POW_MAX = 50.0
+LVL_ENE_MAX = 1000.0
+POT_EXP_SIZE = 7
+HMIN = 15
+HMAX = 110
 UMBR_GROUP = (4, 5, 6)
 UMBR_PLANE = (4, 5, 6)
 UMBR_REF = 4
-POTENTIAL = (0.00, 2.91, 9.06, 12.63, 9.97, 3.51,
-             0.03, 3.49, 9.96, 12.63, 9.08, 2.93)
+ONEDPOT = {(0,): 0.00, (1,): 2.91, (2,): 9.06, (3,): 12.63,
+           (4,): 9.97, (5,): 3.51, (6,): 0.03, (7,): 3.49,
+           (8,): 9.96, (9,): 12.63, (10,): 9.08, (11,): 2.93}
+REMDUMMY = (0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
+
+# MDHR Data
+FLST = (10., 50., 100., 200., 300., 400., 500., 600., 700., 800., 900.)
+TWODPOT = {(0, 0): 1.0, (0, 1): 2.0, (0, 2): 3.0, (0, 3): 4.0,
+           (1, 1): 6.0, (1, 2): 7.0, (1, 3): 8.0,
+           (2, 2): 2.1, (2, 3): 3.1,
+           (3, 3): 7.1}
+TWODFREQ = {(0, 0): FLST, (0, 1): FLST, (0, 2): FLST, (0, 3): FLST,
+            (1, 1): FLST, (1, 2): FLST, (1, 3): FLST,
+            (2, 2): FLST, (2, 3): FLST,
+            (3, 3): FLST}
+THREEDPOT = {(0, 0, 0): 1.0, (0, 0, 1): 2.0, (0, 0, 2): 3.0, (0, 0, 3): 4.0,
+             (0, 1, 0): 1.0, (0, 1, 1): 2.0, (0, 1, 2): 3.0, (0, 1, 3): 4.0,
+             (0, 2, 0): 1.0, (0, 2, 1): 2.0, (0, 2, 2): 3.0, (0, 2, 3): 4.0,
+             (0, 3, 0): 1.0, (0, 3, 1): 2.0, (0, 3, 2): 3.0, (0, 3, 3): 4.0}
 
 # Tunnel Data
 IMAG_FREQ = 2000.0
@@ -44,7 +70,6 @@ WELL_DEPTH1 = 10.0
 WELL_DEPTH2 = 20.0
 CUTOFF_ENE = 3000.0
 TUNNEL_FILE = 'tunnel.dat'
-
 
 
 def test__core_rigidrotor_writer():
@@ -58,42 +83,64 @@ def test__core_rigidrotor_writer():
         GEO1, SYM_FACTOR1,
         interp_emax=INTERP_EMAX)
 
+    with open('mol/core_rigrot1.inp', 'w') as f:
+        f.write(core_rigrot1_str)
+    with open('mol/core_rigrot2.inp', 'w') as f:
+        f.write(core_rigrot2_str)
+
 
 def test__core_multirotor_writer():
-    """ core test
+    """ test mess_io.writer.mol_data.rotor_internal
+        test mess_io.writer.mol_data.core_multirotor
     """
 
-    # Set the base values needed for each of the core sections
-    sym_factor = 1.000
-    geom = (('O', (1.911401284, 0.16134481659, -0.05448080419)),
-            ('N', (4.435924209, 0.16134481659, -0.05448080419)),
-            ('N', (6.537299661, 0.16134481659, -0.05448080419)))
-    pot_surf_file = 'surf.dat'
+    # Internal Rotor Sections
+    rotor_int1_str = mess_io.writer.mol_data.rotor_internal(
+        HR_GROUP, HR_AXIS, HR_SYMMETRY, HR_GRID_SIZE, HR_MASS_EXP_SIZE)
+    rotor_int2_str = mess_io.writer.mol_data.rotor_internal(
+        HR_GROUP, HR_AXIS, HR_SYMMETRY, HR_GRID_SIZE, HR_MASS_EXP_SIZE,
+        pot_exp_size=POT_EXP_SIZE,
+        hmin=HMIN,
+        hmax=HMAX,
+        remdummy=REMDUMMY,
+        geom=GEO1,
+        rotor_id=HR_ID)
 
-    # Write a string for the internal rotor
-    group = [11, 10, 9, 8, 7, 6]
-    axis = [3, 2, 1]
-    symmetry = 1
-    rotor_int_str = mess_io.writer.mol_data.rotor_internal(
-        group=group,
-        axis=axis,
-        symmetry=symmetry,
-        rotor_id='CH3',
-        mass_exp_size=5, pot_exp_size=5,
-        hmin=13, hmax=101,
-        grid_size=100)
+    with open('mol/rotor_int1.inp', 'w') as f:
+        f.write(rotor_int1_str)
+    with open('mol/rotor_int2.inp', 'w') as f:
+        f.write(rotor_int2_str)
 
-    # Use the writer to create a string for each of the core sections
-    core_multirotor_str = mess_io.writer.mol_data.core_multirotor(
-        geom=geom,
-        sym_factor=sym_factor,
-        pot_surf_file=pot_surf_file,
-        int_rot_str=rotor_int_str,
-        interp_emax=100,
-        quant_lvl_emax=9)
+    mdhr_dat_1d_str = mess_io.writer.mol_data.mdhr_data(
+        ONEDPOT)
+    mdhr_dat_2dfr_str = mess_io.writer.mol_data.mdhr_data(
+        TWODPOT, freqs=TWODFREQ, nrot=3)
+    # mdhr_dat_3dfr_str = mess_io.writer.mol_data.mdhr_data(
+    #     THREEDPOT, freqs=THREEDFREQ, nrot=3)
+    # mdhr_dat_4dfr_str = mess_io.writer.mol_data.mdhr_data(
+    #     FOURDPOT, freqs=FOURDFREQ, nrot=3)
 
-    # Print the core string
-    print(core_multirotor_str)
+    with open('mol/mdhr_dat_1d.inp', 'w') as f:
+        f.write(mdhr_dat_1d_str)
+    with open('mol/mdhr_dat_2dfr.inp', 'w') as f:
+        f.write(mdhr_dat_2dfr_str)
+    # with open('mol/mdhr_dat_3dfr.inp', 'w') as f:
+    #     f.write(mdhr_dat_3dfr_str)
+    # with open('mol/mdhr_dat_4dfr.inp', 'w') as f:
+    #     f.write(mdhr_dat_4dfr_str)
+
+    # MultiRotor Core Sections
+    core_multirot1_str = mess_io.writer.mol_data.core_multirotor(
+        GEO1, SYM_FACTOR1, POT_SURF_FILE, rotor_int1_str)
+    core_multirot2_str = mess_io.writer.mol_data.core_multirotor(
+        GEO1, SYM_FACTOR1, POT_SURF_FILE, rotor_int1_str,
+        interp_emax=INTERP_EMAX,
+        quant_lvl_emax=QUANT_LVL_EMAX)
+
+    with open('mol/core_multirot1.inp', 'w') as f:
+        f.write(core_multirot1_str)
+    with open('mol/core_multirot2.inp', 'w') as f:
+        f.write(core_multirot2_str)
 
 
 def test__core_phasespace_writer():
@@ -110,6 +157,11 @@ def test__core_phasespace_writer():
         pot_exp=POT_EXP,
         tstlvl=TSTLVL)
 
+    with open('mol/core_phasespace1.inp', 'w') as f:
+        f.write(core_phasespace1_str)
+    with open('mol/core_phasespace2.inp', 'w') as f:
+        f.write(core_phasespace2_str)
+
 
 def test__core_rotd_writer():
     """ core test
@@ -118,51 +170,31 @@ def test__core_rotd_writer():
     core_rotd_str = mess_io.writer.mol_data.core_rotd(
         SYM_FACTOR1, FLUX_FILE, STOICH)
 
+    with open('mol/core_rotd.inp', 'w') as f:
+        f.write(core_rotd_str)
+
 
 def test__rotor_hindered_writer():
     """ hr test
     """
 
     rot_hind1_str = mess_io.writer.mol_data.rotor_hindered(
-        HR_GROUP, HR_AXIS, HR_SYMMETRY, POTENTIAL,
-        remdummy=None,
-        geom=None,
-        use_quantum_weight=False)
-    
+        HR_GROUP, HR_AXIS, HR_SYMMETRY, ONEDPOT)
+
     rot_hind2_str = mess_io.writer.mol_data.rotor_hindered(
-        HR_GROUP, HR_AXIS, HR_SYMMETRY, POTENTIAL,
-        remdummy=None,
-        geom=None,
-        use_quantum_weight=False)
+        HR_GROUP, HR_AXIS, HR_SYMMETRY, ONEDPOT,
+        hmin=HMIN,
+        hmax=HMAX,
+        lvl_ene_max=LVL_ENE_MAX,
+        therm_pow_max=THERM_POW_MAX,
+        remdummy=REMDUMMY,
+        geom=GEO1,
+        rotor_id=HR_ID)
 
-
-    # Need tests for other keywords being on
-
-    # Print the hindered rotor section string
-    print(rot_hind_str)
-
-
-def test__rotor_internal_writer():
-    """ hr test
-    """
-
-    # Set the keywords internal rotor section
-    group = [11, 10, 9, 8, 7, 6]
-    axis = [3, 2, 1]
-    symmetry = 1
-
-    # Use the writer to create a string for the molecule section
-    rotor_int_str = mess_io.writer.mol_data.rotor_internal(
-        group=group,
-        axis=axis,
-        symmetry=symmetry,
-        rotor_id='CH3',
-        mass_exp_size=5, pot_exp_size=5,
-        hmin=13, hmax=101,
-        grid_size=100)
-
-    # Print the internal rotor string
-    print(rotor_int_str)
+    with open('mol/rot_hind1.inp', 'w') as f:
+        f.write(rot_hind1_str)
+    with open('mol/rot_hind2.inp', 'w') as f:
+        f.write(rot_hind2_str)
 
 
 def test__umbrella_writer():
@@ -171,24 +203,16 @@ def test__umbrella_writer():
 
     # Use the writer to create a string for the molecule section
     umbrella1_str = mess_io.writer.mol_data.umbrella_mode(
-        group=UMBR_GROUP,
-        plane=UMBR_PLANE,
-        ref_atom=UMBR_REF,
-        potential=POTENTIAL,
-        remdummy=None,
-        geom=None)
+        UMBR_GROUP, UMBR_PLANE, UMBR_REF, ONEDPOT)
     umbrella2_str = mess_io.writer.mol_data.umbrella_mode(
-        group=UMBR_GROUP,
-        plane=UMBR_PLANE,
-        ref_atom=UMBR_REF,
-        potential=POTENTIAL,
-        remdummy=None,
-        geo=GEO1)
+        UMBR_GROUP, UMBR_PLANE, UMBR_REF, ONEDPOT,
+        remdummy=REMDUMMY,
+        geom=GEO1)
 
-    # Need tests for other keywords being on
-
-    # Print the hindered rotor section string
-    print(umbrella_str)
+    with open('mol/umbrella1.inp', 'w') as f:
+        f.write(umbrella1_str)
+    with open('mol/umbrella2.inp', 'w') as f:
+        f.write(umbrella2_str)
 
 
 def test__tunnel_eckart_writer():
@@ -198,7 +222,7 @@ def test__tunnel_eckart_writer():
     tunnel_eckart_str = mess_io.writer.mol_data.tunnel_eckart(
         IMAG_FREQ, WELL_DEPTH1, WELL_DEPTH2)
 
-    with open('tunnel_eckart.inp', 'w') as f:
+    with open('mol/tunnel_eckart.inp', 'w') as f:
         f.write(tunnel_eckart_str)
 
 
@@ -210,11 +234,11 @@ def test__tunnel_sct_writer():
     tunnel_sct1_str = mess_io.writer.mol_data.tunnel_sct(
         IMAG_FREQ, TUNNEL_FILE)
     tunnel_sct2_str = mess_io.writer.mol_data.tunnel_sct(
-        IMAG_FREQ, TUNNEL_FILE, cutoff_energy=CUTOFF_ENERGY)
+        IMAG_FREQ, TUNNEL_FILE, cutoff_energy=CUTOFF_ENE)
 
-    with open('tunnel_sct1.inp', 'w') as f:
+    with open('mol/tunnel_sct1.inp', 'w') as f:
         f.write(tunnel_sct1_str)
-    with open('tunnel_sct2.inp', 'w') as f:
+    with open('mol/tunnel_sct2.inp', 'w') as f:
         f.write(tunnel_sct2_str)
 
 
@@ -224,7 +248,6 @@ if __name__ == '__main__':
     test__core_phasespace_writer()
     test__core_rotd_writer()
     test__rotor_hindered_writer()
-    test__rotor_internal_writer()
     test__umbrella_writer()
     test__tunnel_eckart_writer()
     test__tunnel_sct_writer()

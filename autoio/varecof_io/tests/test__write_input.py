@@ -5,22 +5,39 @@
 import varecof_io
 
 
+# Input parameters
+NSAMP_MAX = 2000
+NSAMP_MIN = 500
+FLUX_ERR = 5
+PES_SIZE = 1
+ENER_GRID = [0, 20, 1.05, 179]
+AMOM_GRID = [0, 3, 1.10, 50]
+
+# divsur parameters
+FORTRAN_COMPILER = 'gfortran'
+SPC_NAME = 'mol'
+MEMORY = 4.0
+R1DISTS_LR = [8., 6., 5., 4.5, 4.]
+R1DISTS_SR = [4., 3.8, 3.6, 3.4, 3.2, 3., 2.8, 2.6, 2.4, 2.2]
+R2DISTS_SR = [4., 3.8, 3.6, 3.4, 3.2, 3., 2.8, 2.6, 2.4, 2.2]
+D1DISTS = [0.01, 0.5, 1.]
+D2DISTS = [0.01, 0.5, 1.]
+CONDITIONS = {}
+FLUX_ERR = 10
+PES_SIZE = 2
+EXE_PATH = '/blues/gpfs/home/sjklipp/bin/molpro'
+
+
 def test__tst_writer():
     """ tests varecof_io.writer.input_file.tst
     """
 
     # Write the tst input string
-    nsamp_max = 2000
-    nsamp_min = 500
-    flux_err = 5
-    pes_size = 1
-    ener_grid = [0, 20, 1.05, 179]
-    amom_grid = [0, 3, 1.10, 50]
     tst_inp_str = varecof_io.writer.input_file.tst(
-        nsamp_max, nsamp_min, flux_err, pes_size)
+        NSAMP_MAX, NSAMP_MIN, FLUX_ERR, PES_SIZE)
     tst_inp_str2 = varecof_io.writer.input_file.tst(
-        nsamp_max, nsamp_min, flux_err, pes_size,
-        ener_grid=ener_grid, amom_grid=amom_grid)
+        NSAMP_MAX, NSAMP_MIN, FLUX_ERR, PES_SIZE,
+        ener_grid=ENER_GRID, amom_grid=AMOM_GRID)
     print('\n\ntst.inp (default grid):')
     print(tst_inp_str)
     print('\n\ntst.inp (user-defined grid):')
