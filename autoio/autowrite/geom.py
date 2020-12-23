@@ -3,7 +3,15 @@
 
 
 def write(symbs, xyzs):
-    """ write a geometry to a string
+    """ Write a molecular geometry to a string:
+           symb1  xyz1 xyz2 xyz3
+           symbn  xyzn xyzn xyzn
+
+        :param symbs: atomic symbols of the atoms
+        :type symbs: tuple(str)
+        :param xyzs: xyz coordinates of the atoms
+        :type xyzs: tuple(float)
+        :rtype: str
     """
 
     natms = len(symbs)
@@ -16,7 +24,19 @@ def write(symbs, xyzs):
 
 
 def write_xyz(symbs, xyzs, comment=None):
-    """ write a geometry to a .xyz string
+    """ Write a molecular geometry to a string:
+           natom
+           comment
+           symb1  xyz1 xyz2 xyz3
+           symbn  xyzn xyzn xyzn
+
+        :param symbs: atomic symbols of the atoms
+        :type symbs: tuple(str)
+        :param xyzs: xyz coordinates of the atoms
+        :type xyzs: tuple(float)
+        :param comment: string to place in the comment line of string
+        :type comment: str
+        :rtype: str
     """
 
     comment = '' if comment is None else comment
@@ -31,7 +51,16 @@ def write_xyz(symbs, xyzs, comment=None):
 
 
 def write_xyz_trajectory(symbs, xyzs_lst, comments=None):
-    """ write a series of geometries to an .xyz trajectory file
+    """ Write a series of molecular geometries to trajectory file which
+        is a string that collated by several xyz-file format geometry strings.
+
+        :param symbs: atomic symbols of the atoms
+        :type symbs: tuple(str)
+        :param xyzs_lst: xyz coordinates for a set of molecular geometries
+        :type xyzs_lst: tuple(automol geometry data structure)
+        :param comments: list of comments for each of the molecular geometries
+        :type comments: tuple(str)
+        :rtype: str
     """
 
     ngeos = len(xyzs_lst)
