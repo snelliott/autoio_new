@@ -3,6 +3,7 @@
 """
 
 import projrot_io
+from _util import read_text_file
 
 
 # Set info for input
@@ -67,16 +68,14 @@ PRD_DISTS = [
 def test_rt_projections():
     """ test projrot_io.writer.rpht_input
     """
-    # Write the string for the ProjRot input
+
     inp_str = projrot_io.writer.rpht_input(
         [GEOM], [GRAD], [HESS],
         saddle_idx=1,
         rotors_str='',
         coord_proj=CART_PROJ,
         proj_rxn_coord=False)
-
-    # Print the string
-    print(inp_str)
+    assert inp_str == read_text_file(['data'], 'rpht.inp')
 
 
 def test_rt_hr_projections():
@@ -84,23 +83,19 @@ def test_rt_hr_projections():
         test projrot_io.writer.rpht_inumpyut
     """
 
-    # Write the rotors string
     rotors_str = (
         projrot_io.writer.rotors(AXIS1, GROUP1, remdummy=None) +
         '\n' +
         projrot_io.writer.rotors(AXIS2, GROUP2, remdummy=None)
     )
 
-    # Write the string for the ProjRot inumpyut
     inp_str = projrot_io.writer.rpht_input(
         [GEOM], [GRAD], [HESS],
         saddle_idx=1,
         rotors_str=rotors_str,
         coord_proj=CART_PROJ,
         proj_rxn_coord=False)
-
-    # Print the string
-    print(inp_str)
+    assert inp_str == read_text_file(['data'], 'rpht_hr.inp')
 
 
 def test_sct_rpht_input():
@@ -108,34 +103,28 @@ def test_sct_rpht_input():
         test projrot_io.writer.rpht_path_coord_en
     """
 
-    # Write the string for the ProjRot inumpyut
-    inumpy_str = projrot_io.writer.rpht_input(
+    inp_str = projrot_io.writer.rpht_input(
         GEOMS, GRADS, HESSES,
-        saddle_idx=11, rotors_str='',
-        coord_proj=CART_PROJ)
-
-    # Print the string
-    print(inumpy_str)
+        saddle_idx=11,
+        rotors_str='',
+        coord_proj=CART_PROJ,
+        proj_rxn_coord=True)
+    assert inp_str == read_text_file(['data'], 'rpht_sct.inp')
 
 
 def test_sct_coord_en():
     """ test projrot_io.writer.rpht_path_coord_en
     """
-    # Write the string withoutp bnd1 and bnd2 vals
-    en_str = projrot_io.writer.rpht_path_coord_en(
+
+    en1_str = projrot_io.writer.rpht_path_coord_en(
         RXN_PATH_COORDS, RXN_PATH_ENERGIES,
         bnd1=(), bnd2=())
+    assert en1_str == read_text_file(['data'], 'rpht_en1.inp')
 
-    # Print the string
-    print(en_str)
-
-    # Write the string with bnd1 and bnd2 vals
-    en_str = projrot_io.writer.rpht_path_coord_en(
+    en2_str = projrot_io.writer.rpht_path_coord_en(
         RXN_PATH_COORDS, RXN_PATH_ENERGIES,
         bnd1=RCT_DISTS, bnd2=PRD_DISTS)
-
-    # Print the string
-    print(en_str)
+    assert en2_str == read_text_file(['data'], 'rpht_en2.inp')
 
 
 if __name__ == '__main__':
