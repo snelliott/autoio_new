@@ -80,6 +80,8 @@ def first_named_capture(pattern, string, case=True):
     """ capture dictionary from first match for a pattern with named captures
     """
     match = _re_search(pattern, string, case=case)
+    print(match)
+    print(match.groupdict())
     return match.groupdict() if match and match.groupdict() else None
 
 
@@ -180,9 +182,13 @@ def _re_findall(pattern, string, case=True):
     if pattern and string is not None:
         flags = _re_flags(case=case)
         ptt = re.findall(pattern, string, flags=flags)
+        if ptt:
+            ret = ptt
+        else:
+            ret = None
     else:
-        ptt = None
-    return ptt
+        ret = None
+    return ret
 
 
 def _re_split(pattern, string, case=True):
