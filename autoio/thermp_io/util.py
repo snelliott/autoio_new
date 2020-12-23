@@ -9,9 +9,9 @@ def get_atom_counts_dict(formula):
     """ Obtain the atom symbols and counts from a forumla.
 
         :param formula: stoichiometry of species
-        :type formula: string
-        :return atom_counts_dct: dct separating symbols and counts
-        :rtype: dict[symbol: count]
+        :type formula: str
+        :return atom_counts_dct: dct containing the number of each atom
+        :rtype: dict[str: int]
     """
 
     # Search for alpha-integer pairs

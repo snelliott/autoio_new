@@ -4,15 +4,16 @@
 
 
 def rpht_output(output_str):
-    """ Parses the ProjRot frequency output file strings for
-        the projected frequencies.
+    """ Parses ProjRot frequency output file strings for the
+        projected vibrational frequencies, sorted in ascending order.
 
-        :param output_str: string of lines of MESS output file
+        Works for the output of both
+            (1) rotation-translation projections and
+            (2) rotation-translation/hindered-rotor projections.
+
+        :param output_str: string of lines of ProjRot output file
         :type output_str: str
-        :return real_freqs: real vibrational frequencies
-        :rtype: list(float)
-        :return imag_freqs: imaginary vibrational frequencies
-        :rtype: list(float)
+        :rtype: (list(float), list(float)
     """
 
     # Read the file and read in the non-zero frequencies
