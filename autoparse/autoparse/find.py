@@ -80,8 +80,6 @@ def first_named_capture(pattern, string, case=True):
     """ capture dictionary from first match for a pattern with named captures
     """
     match = _re_search(pattern, string, case=case)
-    print(match)
-    print(match.groupdict())
     return match.groupdict() if match and match.groupdict() else None
 
 

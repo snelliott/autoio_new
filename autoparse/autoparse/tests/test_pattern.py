@@ -12,12 +12,8 @@ print(name, Age, has_W2)
 Bob 54 True
 1099_filed = False
 SyntaxError: invalid token'''
-
-STRING2 = (
-    'q1a2z3\n'
-    'e1a2r3\n'
-)
-STRING3 = '11111ybnfkw2l40-1'
+STRING2 = 'a1y'
+STRING3 = '  AbbAbbA123245'
 
 
 def test__variable_name():
@@ -40,19 +36,29 @@ def test__position_checks():
         test autoparse.pattern.not_followed_by
     """
 
-    pattern = (
-        autoparse.pattern.preceded_by('q1') +
-        autoparse.pattern.capturing(autoparse.pattern.NONNEWLINE)
-    )
-    assert autoparse.find.first_capture(pattern, STRING2) == 'a'
+    ptt1 = autoparse.pattern.preceded_by('1') + 'a'
+    assert not autoparse.find.has_match(ptt1, STRING2)
 
-    pattern = (
-        autoparse.pattern.not_preceded_by('q') +
-        autoparse.pattern.capturing(autoparse.pattern.NONNEWLINE)
-    )
-    print(autoparse.find.first_capture(pattern, STRING3))
-    # autoparse.pattern.followed_by(pattern)
-    # autoparse.pattern.not_followed_by(pattern)
+    ptt2 = autoparse.pattern.preceded_by('1') + 'y'
+    assert autoparse.find.has_match(ptt2, STRING2)
+
+    ptt3 = autoparse.pattern.not_preceded_by('1') + 'a'
+    assert autoparse.find.has_match(ptt3, STRING2)
+
+    ptt4 = autoparse.pattern.not_preceded_by('1') + 'y'
+    assert not autoparse.find.has_match(ptt4, STRING2)
+
+    ptt5 = 'a' + autoparse.pattern.followed_by('1')
+    assert autoparse.find.has_match(ptt5, STRING2)
+
+    ptt6 = 'y' + autoparse.pattern.followed_by('1')
+    assert not autoparse.find.has_match(ptt6, STRING2)
+
+    ptt7 = 'a' + autoparse.pattern.not_followed_by('1')
+    assert not autoparse.find.has_match(ptt7, STRING2)
+
+    ptt8 = 'y' + autoparse.pattern.not_followed_by('1')
+    assert autoparse.find.has_match(ptt8, STRING2)
 
 
 def test__padded():
@@ -61,13 +67,36 @@ def test__padded():
         test autoparse.pattern.padded
     """
 
-    pattern = 'AAA'
-    assert autoparse.pattern.lpadded(pattern) == '(?:[ \\t])*AAA'
-    assert autoparse.pattern.rpadded(pattern) == 'AAA(?:[ \\t])*'
-    assert autoparse.pattern.padded(pattern) == '(?:[ \\t])*AAA(?:[ \\t])*'
+    ptt = 'AAA'
+    lmatch_ptt = '            AAAA'
+    mmatch_ptt = '            AAAA            '
+    rmatch_ptt = 'AAAA            '
+    assert autoparse.find.has_match(
+        autoparse.pattern.lpadded(ptt),
+        lmatch_ptt
+    )
+    assert autoparse.find.has_match(
+        autoparse.pattern.padded(ptt),
+        mmatch_ptt
+    )
+    assert autoparse.find.has_match(
+        autoparse.pattern.rpadded(ptt),
+        rmatch_ptt
+    )
 
 
-if __name__ == '__main__':
-    test__variable_name()
-    test__position_checks()
-    test__padded()
+def test__named_capturing():
+    """ test autoparse.pattern.named_capturing
+    """
+
+    ptt = autoparse.pattern.named_capturing('Abb', 'mol')
+    assert autoparse.find.first_named_capture(ptt, STRING3) == {'mol': 'Abb'}
+
+
+def test__series():
+    """ test autoparse.pattern.series
+    """
+
+    ptt = autoparse.pattern.capturing(
+        autoparse.pattern.series('A', 'bb'))
+    assert autoparse.find.first_capture(ptt, STRING3) == 'AbbAbbA'

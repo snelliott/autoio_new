@@ -107,12 +107,13 @@ def test__simple_finders():
         autoparse.pattern.capturing(autoparse.pattern.NUMBER))
     assert autoparse.find.all_captures(pattern, XYZ_STRING, case=True) is None
 
+    pattern = None
+    assert autoparse.find.all_captures(pattern, XYZ_STRING, case=True) is None
+
     pattern = (
         'charge: ' +
         autoparse.pattern.capturing(autoparse.pattern.NUMBER))
     assert autoparse.find.all_captures(pattern, XYZ_STRING) == ('0',)
-
-    print(autoparse.find.first_named_capture(XYZ_LINE_PATTERN, XYZ_STRING, case=True))
 
 
 def test__advanced_finders():
@@ -204,16 +205,3 @@ def test__multis():
                      ('Cl', -1.602333, 0.736678, -0.026051),
                      ('H', 0.916321, 1.229946, -0.227127),
                      ('H', -0.8823, -1.224388, -0.229636))
-
-
-
-if __name__ == '__main__':
-    # test__is_number()
-    # test__remove_empty_lines()
-    # test__split()
-    test__simple_finders()
-    # test__advanced_finders()
-    # test__single()
-    # test__singles()
-    # test__multi()
-    # test__multis()
