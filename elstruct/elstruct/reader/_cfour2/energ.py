@@ -47,7 +47,7 @@ def _mp2_energy(output_str):
 
 
 def _ccsd_energy(output_str):
-    """ Reads the CCSD/UCCSD energy from the output file string.
+    """ Reads the CCSD energy from the output file string.
         Returns the energy in Hartrees.
 
         :param output_str: string of the program's output file
@@ -64,7 +64,7 @@ def _ccsd_energy(output_str):
 
 
 def _ccsd_t_energy(output_str):
-    """ Reads the CCSD/UCCSD energy from the output file string.
+    """ Reads the CCSD energy from the output file string.
         Returns the energy in Hartrees.
 
         :param output_str: string of the program's output file
