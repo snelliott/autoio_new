@@ -251,6 +251,12 @@ METHODS = elstruct.par.program_methods(PROG)
 assert all(method in ENERGY_READER_DCT for method in METHODS)
 
 
+def method_list():
+    """ Constructs a list of available electronic structure methods.
+    """
+    return tuple(sorted(ENERGY_READER_DCT.keys()))
+
+
 def energy(method, output_str):
     """ Reads the the total electronic energy from the output file string.
         Returns the energy in Hartrees.
@@ -262,7 +268,7 @@ def energy(method, output_str):
         :rtype: float
     """
 
-    assert method in tuple(sorted(ENERGY_READER_DCT.keys()))
+    assert method in method_list()
 
     # First try and grab the energy printed at the end of the file
     ene = _end_file_energy(output_str)

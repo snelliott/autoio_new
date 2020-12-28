@@ -108,13 +108,13 @@ SUCCESS_READER_DCT = {
 
 
 def error_list():
-    """ list of errors that be identified from the output file
+    """ Constructs a list of errors that be identified from the output file.
     """
     return tuple(sorted(ERROR_READER_DCT.keys()))
 
 
 def success_list():
-    """ list of successs that be identified from the output file
+    """ Constructs a list of successes that be identified from the output file.
     """
     return tuple(sorted(SUCCESS_READER_DCT.keys()))
 

@@ -256,7 +256,7 @@ def irc_path(output_str):
     """ Reads the coordinates and electronic energies (relative to saddple point)
         of the Intrinsic Reaction Coordinate summarized at the end of
         the output file.
-        oint. Returns the energy in Hartress.
+        Returns the energy in Hartress.
 
         :param output_str: string of the program's output file
         :type output_str: str

@@ -6,15 +6,20 @@ import autoparse.pattern as app
 import autoparse.find as apf
 
 
-def gradient(output_string):
-    """ read gradient from the output string
+def gradient(output_str):
+    """ Reads the molecular gradient (in Cartesian coordinates) from
+        the output file string. Returns the gradient in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
 
     # Grab a block of text containing the gradient
     block_ptt = ('Molecular gradient' +
                  app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
                  'Molecular gradient norm')
-    block = apf.last_capture(block_ptt, output_string)
+    block = apf.last_capture(block_ptt, output_str)
 
     # Trim the block to start it at the gradient lines
     blank_count = 0
@@ -33,16 +38,22 @@ def gradient(output_string):
             app.LETTER,
             app.escape('#') + app.UNSIGNED_INTEGER,
             app.maybe(app.UNSIGNED_INTEGER)]))
-    print(grad)
+
     assert numpy.shape(grad)[1] == 3
     return grad
-# def hessian(output_string):
-#     """ read hessian from the output string
+
+# def hessian(output_str):
+#     """ Reads the molecular Hessian (in Cartesian coordinates) from
+#         the output file string. Returns the Hessian in atomic units.
+#
+#         :param output_str: string of the program's output file
+#         :type output_str: str
+#         :rtype: tuple(tuple(float))
 #     """
 #     try:
 #         comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
 #         mat = ar.matrix.read(
-#             output_string,
+#             output_str,
 #             start_ptt=(app.escape('The second derivative matrix:') +
 #                        app.lpadded(app.NEWLINE)),
 #             block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
@@ -52,7 +63,7 @@ def gradient(output_string):
 #     except TypeError:
 #         comp_ptt = app.UNSIGNED_INTEGER
 #         mat = ar.matrix.read(
-#             output_string,
+#             output_str,
 #             val_ptt=app.EXPONENTIAL_FLOAT_D,
 #             start_ptt=(
 #                 app.escape('Force constants in Cartesian coordinates:') +

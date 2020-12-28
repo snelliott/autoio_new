@@ -6,61 +6,113 @@ import autoparse.find as apf
 import elstruct.par
 
 
-def has_normal_exit_message(output_string):
-    """ does this output string have a normal exit message?
+# Exit message for the program
+def has_normal_exit_message(output_str):
+    """ Assess whether the output file string contains the
+        normal program exit message.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     pattern = ('The final electronic energy is' +
                app.one_or_more(app.WILDCARD) +
                'This computation required')
-    return apf.has_match(pattern, output_string, case=False)
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
-def _has_scf_nonconvergence_error_message(output_string):
-    """ does this output string have an SCF non-convergence message?
+# Parsers for convergence success messages
+def _has_scf_convergence_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling successful convergence of the SCF procedure.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
-    pattern = 'SCF failed to converge'
-    return apf.has_match(pattern, output_string, case=False)
 
-
-def _has_scf_convergence_message(output_string):
-    """ does this output string have an SCF convergence message?
-    """
     pattern = 'SCF has converged.'
-    return apf.has_match(pattern, output_string, case=False)
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
-def _has_cc_nonconvergence_error_message(output_string):
-    """ does this output string have an CC non-convergence message?
+def _has_cc_convergence_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling the failure of the coupled-cluster iterations.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
-    pattern = app.escape('CC did not converge !!!')
-    return apf.has_match(pattern, output_string, case=False)
 
-
-def _has_cc_convergence_message(output_string):
-    """ does this output string have an CC convergence message?
-    """
     pattern = app.escape('timing for (T)')
-    match = apf.has_match(pattern, output_string, case=False)
+    match = apf.has_match(pattern, output_str, case=False)
     if match is None:
         pattern = (
             'A miracle come to pass. The CC iterations have converged.')
-        match = apf.has_match(pattern, output_string, case=False)
+        match = apf.has_match(pattern, output_str, case=False)
+
     return match
 
 
-def _has_opt_nonconvergence_error_message(output_string):
-    """ does this output string have an optimization non-convergence message?
-    """
-    pattern = app.escape('*Maximum number of optimization steps exceeded.')
-    return apf.has_match(pattern, output_string, case=False)
+def _has_opt_convergence_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling successful convergence of the geometry optimization.
 
-
-def _has_opt_convergence_message(output_string):
-    """ does this output string have an optimization convergence message?
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     pattern = app.escape(
         'Convergence criterion satisfied.  Optimization completed.')
-    return apf.has_match(pattern, output_string, case=False)
+
+    return apf.has_match(pattern, output_str, case=False)
+
+
+# Parsers for various error messages
+def _has_scf_nonconvergence_error_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling the failure of the SCF procedure.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
+    """
+
+    pattern = 'SCF failed to converge'
+
+    return apf.has_match(pattern, output_str, case=False)
+
+
+def _has_cc_nonconvergence_error_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling the failure of the coupled-cluster iterations.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
+    """
+
+    pattern = app.escape('CC did not converge !!!')
+
+    return apf.has_match(pattern, output_str, case=False)
+
+
+def _has_opt_nonconvergence_error_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling the failure of the geometry optimization.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
+    """
+
+    pattern = app.escape('*Maximum number of optimization steps exceeded.')
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
 ERROR_READER_DCT = {
@@ -76,34 +128,48 @@ SUCCESS_READER_DCT = {
 
 
 def error_list():
-    """ list of errors that be identified from the output file
+    """ Constructs a list of errors that be identified from the output file.
     """
     return tuple(sorted(ERROR_READER_DCT.keys()))
 
 
 def success_list():
-    """ list of sucesss that be identified from the output file
+    """ Constructs a list of successes that be identified from the output file.
     """
     return tuple(sorted(SUCCESS_READER_DCT.keys()))
 
 
-def has_error_message(error, output_string):
-    """ does this output string have an error message?
+def has_error_message(error, output_str):
+    """ Assess whether the output file string contains error messages
+        for any of the procedures in the job.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     assert error in error_list()
-    # get the appropriate reader and call it
+
+    # Get the appropriate reader and call it
     error_reader = ERROR_READER_DCT[error]
-    return error_reader(output_string)
+
+    return error_reader(output_str)
 
 
-def check_convergence_messages(error, success, output_string):
-    """ check if error messages should trigger job success or failure
+def check_convergence_messages(error, success, output_str):
+    """ Assess whether the output file string contains messages
+        denoting all of the requested procedures in the job have converged.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     assert error in error_list()
     assert success in success_list()
 
     job_success = True
-    has_error = ERROR_READER_DCT[error](output_string)
+    has_error = ERROR_READER_DCT[error](output_str)
     if has_error:
         job_success = False
 

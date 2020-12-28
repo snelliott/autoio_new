@@ -114,6 +114,12 @@ for METHOD in METHODS:
 assert all(method in ENERGY_READER_DCT for method in METHODS)
 
 
+def method_list():
+    """ Constructs a list of available electronic structure methods.
+    """
+    return tuple(sorted(ENERGY_READER_DCT.keys()))
+
+
 def energy(method, output_str):
     """ Reads the the total electronic energy from the output file string.
         Returns the energy in Hartrees.
@@ -125,7 +131,7 @@ def energy(method, output_str):
         :rtype: float
     """
 
-    assert method in tuple(sorted(ENERGY_READER_DCT.keys()))
+    assert method in method_list()
 
     # Get the appropriate reader and call it
     if elstruct.par.Method.is_nonstandard_dft(method):

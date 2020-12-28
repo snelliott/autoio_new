@@ -33,8 +33,8 @@ def opt_geometry(output_str):
 
 
 def opt_zmatrix(output_str):
-    """ Reads the optimized Z-Matrix (in Cartesian coordinates) from
-        the output file string. Returns the Z-Matrix in Bohr and Radians.
+    """ Reads the optimized Z-Matrix from the output file string.
+        Returns the Z-Matrix in Bohr and Radians.
 
         :param output_str: string of the program's output file
         :type output_str: str

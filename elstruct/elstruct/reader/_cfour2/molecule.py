@@ -8,11 +8,17 @@ import autoparse.find as apf
 import automol
 
 
-def opt_geometry(output_string):
-    """ get optimized geometry from output
+def opt_geometry(output_str):
+    """ Reads the optimized molecular geometry (in Cartesian coordinates) from
+        the output file string. Returns the geometry in Bohr.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: automol molecular geometry data structure
     """
+
     syms, xyzs = ar.geom.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Coordinates (in bohr)'),
             app.LINE, app.LINE, '']),
@@ -22,8 +28,13 @@ def opt_geometry(output_string):
     return geo
 
 
-def opt_zmatrix(output_string):
-    """ get optimized z-matrix geometry from output
+def opt_zmatrix(output_str):
+    """ Reads the optimized Z-Matrix from the output file string.
+        Returns the Z-Matrix in Bohr and Radians.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: automol molecular geometry data structure
     """
 
     # complicated string patterns for the initial matrix read
@@ -39,9 +50,9 @@ def opt_zmatrix(output_string):
 
     # read the matrix from the beginning of the output
     syms, key_mat, name_mat = ar.zmatrix.matrix.read(
-        output_string,
+        output_str,
         start_ptt=mat_ptt,
-        sym_ptt=ar.par.Pattern.ATOM_SYMBOL + app.maybe(app.UNSIGNED_INTEGER),
+        symb_ptt=ar.par.Pattern.ATOM_SYMBOL + app.maybe(app.UNSIGNED_INTEGER),
         key_ptt=app.one_of_these([app.UNSIGNED_INTEGER, app.VARIABLE_NAME]),
         name_ptt=nam_ptt,
         last=False)
@@ -61,7 +72,7 @@ def opt_zmatrix(output_string):
         val_dct = {}
     else:
         val_dct = ar.zmatrix.setval.read(
-            output_string,
+            output_str,
             start_ptt=start_ptt,
             entry_sep_ptt='=',
             last=True)

@@ -5,7 +5,7 @@ import autoread as ar
 import autoparse.pattern as app
 
 
-def gradient(output_string):
+def gradient(output_str):
     """ Reads the molecular gradient (in Cartesian coordinates) from
         the output file string. Returns the gradient in atomic units.
 
@@ -19,7 +19,7 @@ def gradient(output_string):
                 app.escape('dE/dy') + app.SPACES +
                 app.escape('dE/dz'))
     grad = ar.matrix.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded(head_ptt, app.NONNEWLINE),
             app.LINE, '']),
@@ -30,7 +30,7 @@ def gradient(output_string):
     return grad
 
 
-def hessian(output_string):
+def hessian(output_str):
     """ Reads the molecular Hessian (in Cartesian coordinates) from
         the output file string. Returns the Hessian in atomic units.
 
@@ -45,7 +45,7 @@ def hessian(output_string):
         app.UNSIGNED_INTEGER
     )
     mat = ar.matrix.read(
-        output_string,
+        output_str,
         start_ptt=(
             app.escape('Force Constants (Second Derivatives of the Energy) ') +
             app.escape('in [a.u.]') +

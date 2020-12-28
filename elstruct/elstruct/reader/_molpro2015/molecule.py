@@ -17,7 +17,7 @@ MOLPRO_ENTRY_START_PATTERN = (
 # 'SETTING' + app.not_followed_by(app.padded('CHARGE'))
 
 
-def opt_geometry(output_string):
+def opt_geometry(output_str):
     """ Reads the optimized molecular geometry (in Cartesian coordinates) from
         the output file string. Returns the geometry in Bohr.
 
@@ -36,14 +36,14 @@ def opt_geometry(output_string):
     ])
 
     syms, xyzs = ar.geom.read(
-        output_string,
+        output_str,
         start_ptt=ptt)
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
 
     return geo
 
 
-def hess_geometry(output_string):
+def hess_geometry(output_str):
     """ Reads the optimized molecular geometry (in Cartesian coordinates) from
         the output file string that is associated with a Hessian calculation
         so that the two are in the same coordinate system.
@@ -55,7 +55,7 @@ def hess_geometry(output_string):
     """
 
     syms, xyzs = ar.geom.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('ATOMIC COORDINATES'),
             app.LINE, app.LINE, app.LINE, '']),
@@ -66,9 +66,9 @@ def hess_geometry(output_string):
     return geo
 
 
-def opt_zmatrix(output_string):
-    """ Reads the optimized Z-Matrix (in Cartesian coordinates) from
-        the output file string. Returns the Z-Matrix in Bohr and Radians.
+def opt_zmatrix(output_str):
+    """ Reads the optimized Z-Matrix from the output file string.
+        Returns the Z-Matrix in Bohr and Radians.
 
         :param output_str: string of the program's output file
         :type output_str: str
@@ -77,7 +77,7 @@ def opt_zmatrix(output_string):
 
     # Reads the matrix from the beginning of the output
     syms, key_mat, name_mat = ar.zmatrix.matrix.read(
-        output_string,
+        output_str,
         start_ptt=app.maybe(app.SPACES).join([
             'geometry', app.escape('='), app.escape('{'), '']),
         entry_start_ptt=app.maybe(','),
@@ -90,7 +90,7 @@ def opt_zmatrix(output_string):
         val_dct = {}
     else:
         val_dct = ar.zmatrix.setval.read(
-            output_string,
+            output_str,
             # entry_start_ptt=MOLPRO_ENTRY_START_PATTERN,
             entry_start_ptt='SETTING',
             name_ptt=(
@@ -114,7 +114,7 @@ def opt_zmatrix(output_string):
         app.padded('Current variables')
     ])
     opt_val_dct = ar.zmatrix.setval.read(
-        output_string,
+        output_str,
         start_ptt=var_string + app.NEWLINE,
         entry_end_ptt=app.one_of_these(['ANGSTROM', 'DEGREE']),
         last=True,
