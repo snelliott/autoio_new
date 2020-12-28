@@ -250,7 +250,6 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
         TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
         TemplateKey.GEN_LINES: '\n'.join(gen_lines),
-        TemplateKey.IRC_DIRECTION: irc_direction,
     }
     return fill_dct
 

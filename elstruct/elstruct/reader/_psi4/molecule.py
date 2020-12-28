@@ -32,8 +32,3 @@ def opt_zmatrix(output_string):
         syms, key_mat, name_mat, val_dct,
         one_indexed=True, angstrom=True, degree=True)
     return zma
-
-
-if __name__ == '__main__':
-    OUT_STR = open('run.out').read()
-    print(opt_zmatrix(OUT_STR))

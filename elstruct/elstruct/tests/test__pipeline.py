@@ -51,7 +51,7 @@ def test__energy():
                                 elstruct.Option.Scf.MAXITER_, 2)
                         ]},
                     )
-                    print(vals)
+                    print('ene\n', vals)
 
 
 def test__gradient():
@@ -86,7 +86,7 @@ def test__gradient():
                         args=(geom, charge, mult, method, basis, prog),
                         kwargs={'orb_type': orb_type},
                     )
-                    print(vals)
+                    print('grad\n', vals)
 
 
 def test__hessian():
@@ -121,7 +121,7 @@ def test__hessian():
                         args=(geom, charge, mult, method, basis, prog),
                         kwargs={'orb_type': orb_type},
                     )
-                    print(vals)
+                    print('hess\n', vals)
 
 
 def test__optimization():
@@ -170,7 +170,6 @@ def test__optimization():
                     elstruct.Option.Opt.MAXITER_, 2)
             ]},
         )
-        print(vals)
 
         if script_str is not None:
             # check that the frozen coordinates didn't change

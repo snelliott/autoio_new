@@ -18,8 +18,14 @@ MOLPRO_ENTRY_START_PATTERN = (
 
 
 def opt_geometry(output_string):
-    """ get optimized geometry from output
+    """ Reads the optimized molecular geometry (in Cartesian coordinates) from
+        the output file string. Returns the geometry in Bohr.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: automol molecular geometry data structure
     """
+
     ptt = app.padded(app.NEWLINE).join([
         app.escape('Current geometry (xyz format, in Angstrom)'),
         '',
@@ -28,23 +34,26 @@ def opt_geometry(output_string):
          'ENERGY=' + app.FLOAT),
         ''
     ])
-    # app.padded(app.NEWLINE).join([
-    #     app.escape('ATOMIC COORDINATES'),
-    #     app.LINE, app.LINE, app.LINE, '']),
 
     syms, xyzs = ar.geom.read(
         output_string,
         start_ptt=ptt)
-    # line_start_ptt=(app.LETTER + app.maybe(app.LETTER)))
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
+
     return geo
 
 
 def hess_geometry(output_string):
-    """ get the geometry associated with a hessian calculation
+    """ Reads the optimized molecular geometry (in Cartesian coordinates) from
+        the output file string that is associated with a Hessian calculation
         so that the two are in the same coordinate system.
-        this is needed to project properly
+        Returns the geometry in Bohr.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: automol molecular geometry data structure
     """
+
     syms, xyzs = ar.geom.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
@@ -53,13 +62,20 @@ def hess_geometry(output_string):
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.FLOAT,)
     geo = automol.geom.from_data(syms, xyzs, angstrom=False)
+
     return geo
 
 
 def opt_zmatrix(output_string):
-    """ get optimized z-matrix geometry from output
+    """ Reads the optimized Z-Matrix (in Cartesian coordinates) from
+        the output file string. Returns the Z-Matrix in Bohr and Radians.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: automol molecular geometry data structure
     """
-    # read the matrix from the beginning of the output
+
+    # Reads the matrix from the beginning of the output
     syms, key_mat, name_mat = ar.zmatrix.matrix.read(
         output_string,
         start_ptt=app.maybe(app.SPACES).join([
@@ -69,7 +85,7 @@ def opt_zmatrix(output_string):
         last=False,
         case=False)
 
-    # read the initial z-matrix values from the beginning out the output
+    # Read the initial z-matrix values from the beginning out the output
     if len(syms) == 1:
         val_dct = {}
     else:
@@ -92,7 +108,7 @@ def opt_zmatrix(output_string):
     val_dct = {name_dct[caps_name]: val_dct[caps_name]
                for caps_name in caps_names}
 
-    # read optimized z-matrix values from the end of the output
+    # Read optimized z-matrix values from the end of the output
     var_string = app.one_of_these([
         app.padded('Optimized variables'),
         app.padded('Current variables')
@@ -108,7 +124,7 @@ def opt_zmatrix(output_string):
     assert set(opt_val_dct) <= set(val_dct)
     val_dct.update(opt_val_dct)
 
-    # call the automol constructor
+    # Call the automol constructor
     zma = automol.zmatrix.from_data(
         syms, key_mat, name_mat, val_dct,
         one_indexed=True, angstrom=True, degree=True)

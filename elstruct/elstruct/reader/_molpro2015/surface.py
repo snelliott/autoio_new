@@ -6,8 +6,14 @@ import autoparse.pattern as app
 
 
 def gradient(output_string):
-    """ read gradient from the output string
+    """ Reads the molecular gradient (in Cartesian coordinates) from
+        the output file string. Returns the gradient in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     head_ptt = ('Atom' + app.SPACES +
                 app.escape('dE/dx') + app.SPACES +
                 app.escape('dE/dy') + app.SPACES +
@@ -20,12 +26,19 @@ def gradient(output_string):
         line_start_ptt=app.UNSIGNED_INTEGER)
     if grad is not None:
         assert numpy.shape(grad)[1] == 3
+
     return grad
 
 
 def hessian(output_string):
-    """ read hessian from the output string
+    """ Reads the molecular Hessian (in Cartesian coordinates) from
+        the output file string. Returns the Hessian in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     comp_ptt = (
         app.one_or_more(app.LETTER) +
         app.one_of_these(['X', 'Y', 'Z']) +
@@ -44,10 +57,3 @@ def hessian(output_string):
 
     mat = tuple(map(tuple, mat))
     return mat
-
-
-if __name__ == '__main__':
-    with open('run.out', 'r') as f:
-        OUTPUT_STRING = f.read()
-    print(gradient(OUTPUT_STRING))
-    print(hessian(OUTPUT_STRING))

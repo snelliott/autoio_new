@@ -1,4 +1,4 @@
-""" empty functions defining the function signatures for each program module
+""" Empty functions defining the function signatures for each program module
 """
 
 
@@ -29,7 +29,8 @@ def harmonic_frequencies(output_string):
     """ _ """
     raise NotImplementedError
 
-def normal_coords(output_string):
+
+def normal_coordinates(output_string):
     """ _ """
     raise NotImplementedError
 

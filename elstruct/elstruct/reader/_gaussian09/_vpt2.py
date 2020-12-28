@@ -1,5 +1,4 @@
-"""
-Obtain information from VPT2 calculations
+""" Obtain information from VPT2 calculations
 """
 
 from qcelemental import constants as qcc
@@ -11,15 +10,19 @@ import autoparse.find as apf
 KJ2EH = qcc.conversion_factor('kJ/mol', 'hartree')
 
 
-def anharmonic_frequencies_reader(output_string):
-    """ Get the anharmonic vibrational frequencies
+def anharmonic_frequencies(output_str):
+    """ Reads the anharmonic vibrational frequencies from
+        the output file string. Returns the frequencies in cm-1.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(float)
     """
 
-    # block
     block = apf.last_capture(
         (app.escape('Fundamental Bands (DE w.r.t. Ground State)') +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
-         app.escape('Overtones (DE w.r.t. Ground State)')), output_string)
+         app.escape('Overtones (DE w.r.t. Ground State)')), output_str)
 
     pattern = (
         app.INTEGER +
@@ -31,22 +34,6 @@ def anharmonic_frequencies_reader(output_string):
         app.one_or_more(app.SPACE) +
         app.capturing(app.FLOAT)
     )
-    # pattern2 = (
-    # app.INTEGER +
-    # app.escape('(1)') +
-    # app.SPACE +
-    # app.maybe(app.one_or_more(app.LOWERCASE_LETTER)) +
-    # app.one_or_more(app.SPACE) +
-    # app.FLOAT +
-    # app.one_or_more(app.SPACE) +
-    # app.capturing(app.FLOAT) +
-    # app.one_or_more(app.SPACE) +
-    # app.one_or_more(app.escape('*')) +
-    # app.one_or_more(app.SPACE) +
-    # app.one_or_more(app.escape('*')) +
-    # app.one_or_more(app.SPACE) +
-    # app.FLOAT
-    # )
 
     # Get list of values
     anharm_freq = [float(val)
@@ -55,8 +42,13 @@ def anharmonic_frequencies_reader(output_string):
     return sorted(anharm_freq)
 
 
-def anharm_zpve_reader(output_string):
-    """ Get the anharmonic ZPVE
+def anharmonic_zpve(output_str):
+    """ Reads the VPT2-computed anharmonic zero-point vibrational energy from
+        the output file string. Returns the energy in Hartrees.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: float
     """
 
     anharm_zpve_pattern = (
@@ -87,41 +79,29 @@ def anharm_zpve_reader(output_string):
         app.capturing(app.FLOAT)
     )
 
-    # Set the string pattern containing the anharm ZPVE
-    # anharm_zpve_pattern = (
-    #     app.escape('ZPE(harm) = ') +
-    #     app.EXPONENTIAL_FLOAT_D +
-    #     app.one_or_more(app.SPACE) +
-    #     'kJ/mol' +
-    #     app.one_or_more(app.SPACE) +
-    #     app.escape('ZPE(anh)=') +
-    #     app.one_or_more(app.SPACE) +
-    #     app.capturing(app.EXPONENTIAL_FLOAT_D) +
-    #     app.one_or_more(app.SPACE) +
-    #     'kJ/mol'
-    # )
-
     # Retrieve the anharm ZPVE
-    anh_zpve = apf.last_capture(anharm_zpve_pattern, output_string)
+    anh_zpve = apf.last_capture(anharm_zpve_pattern, output_str)
 
-    # Format the ZPVE
+    # Convert the ZPVE units
     anh_zpve = float(anh_zpve.replace('D', 'E'))
     anh_zpve *= KJ2EH
 
     return anh_zpve
 
 
-def anharmonicity_matrix_reader(output_string):
-    """ Get the Anharmonicity Matrix
+def anharmonicity_matrix(output_str):
+    """ Reads the VPT2-computed anharmonicity matrix from the output file string.
+        Returns the matrix in _.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
 
-    # Set strings to find anharm matrix
     start_string = 'Total Anharmonic X Matrix (in cm^-1)'
     comp_ptt = app.UNSIGNED_INTEGER
-
-    # Obtain the matrix
     mat = ar.matrix.read(
-        output_string,
+        output_str,
         val_ptt=app.EXPONENTIAL_FLOAT_D,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded(app.escape(start_string), app.NONNEWLINE),
@@ -130,21 +110,27 @@ def anharmonicity_matrix_reader(output_string):
                          app.padded(app.NEWLINE)),
         line_start_ptt=comp_ptt,
         tril=True)
+
     mat = tuple([tuple([float(val.replace('D', 'E')) for val in row])
                  for row in mat])
 
     return mat
 
 
-def vibro_rot_alpha_matrix_reader(output_string):
-    """ Get the Vibration-Rotation Alpha Matrix
+def vibrorot_alpha_matrix(output_str):
+    """ Reads the VPT2-computed Vibrational-Rotational Alpha matrix
+        from the output file string. Returns the matrix in _.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
 
     begin_string = 'Vibro-Rot alpha Matrix (in cm^-1)'
     end_string = app.escape('Q( ') + app.UNSIGNED_INTEGER + app.escape(')')
 
     vib_rot_mat = ar.matrix.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded(app.escape(begin_string), app.NONNEWLINE),
             app.LINE, app.LINE, '']),
@@ -153,30 +139,35 @@ def vibro_rot_alpha_matrix_reader(output_string):
     return vib_rot_mat
 
 
-def cent_dist_const_reader(output_string):
-    """ Get the quartic centrifugal distortion constants
+def centrifugal_distortion_constants(output_str):
+    """ Reads the VPT2-computed quartic centrifugal distortion constants
+        from the output file string. Returns the constants in _.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
 
-    # block
+    # Set patterns for all molecule types and symmetries
     block = apf.last_capture(
         ('Quartic Centrifugal Distortion Constants Tau Prime' +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          'Asymmetric Top Reduction'),
-        output_string)
+        output_str)
     if not block:
         block = apf.last_capture(
             ('Quartic Centrifugal Distortion Constants Tau Prime' +
              app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
              'Constants in the Symmetrically Reduced Hamiltonian'),
-            output_string)
+            output_str)
     if not block:
         block = apf.last_capture(
             ('Quartic Centrifugal Distortion Constants Tau Prime' +
              app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
              'Rotational l-type doubling constants'),
-            output_string)
+            output_str)
 
-    # pattern
+    # Read values
     pattern = (
         'TauP' +
         app.SPACE +
@@ -187,24 +178,27 @@ def cent_dist_const_reader(output_string):
         app.EXPONENTIAL_FLOAT_D
     )
 
-    # Get list of values
     cent_dist_const = [[lbl, float(val.replace('D', 'E'))]
                        for (lbl, val) in apf.all_captures(pattern, block)]
 
     return cent_dist_const
 
 
-def vpt2(output_string):
-    """ read various pieces of anharm data from output string
+def vpt2(output_str):
+    """ Reads out various pieces data from the output string of a
+        VPT2 calculations.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: dict[str: obj]
     """
 
-    # Initialize dictionary to store information dictionary
-    anharm_dict = {
-        'freqs': anharmonic_frequencies_reader(output_string),
-        'zpve': anharm_zpve_reader(output_string),
-        'x_mat': anharmonicity_matrix_reader(output_string),
-        'vibrot_mat': vibro_rot_alpha_matrix_reader(output_string),
-        'cent_dist_const': cent_dist_const_reader(output_string)
+    anharm_dct = {
+        'freqs': anharmonic_frequencies(output_str),
+        'zpve': anharmonic_zpve(output_str),
+        'x_mat': anharmonicity_matrix(output_str),
+        'vibrot_mat': vibrorot_alpha_matrix(output_str),
+        'cent_dist_const': centrifugal_distortion_constants(output_str)
     }
 
-    return anharm_dict
+    return anharm_dct

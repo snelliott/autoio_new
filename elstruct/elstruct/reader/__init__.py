@@ -1,4 +1,6 @@
-""" output reading module """
+""" Electronic structure program output reading module
+"""
+
 # energy
 from elstruct.reader._reader import programs
 from elstruct.reader._reader import methods
@@ -15,9 +17,9 @@ from elstruct.reader._reader import hessian_
 from elstruct.reader._reader import harmonic_frequencies_programs
 from elstruct.reader._reader import harmonic_frequencies
 from elstruct.reader._reader import harmonic_frequencies_
-from elstruct.reader._reader import normal_coords_programs
-from elstruct.reader._reader import normal_coords
-from elstruct.reader._reader import normal_coords_
+from elstruct.reader._reader import normal_coordinates_programs
+from elstruct.reader._reader import normal_coordinates
+from elstruct.reader._reader import normal_coordinates_
 # irc
 from elstruct.reader._reader import irc_programs
 from elstruct.reader._reader import irc_points
@@ -67,9 +69,12 @@ __all__ = [
     'hessian_programs',
     'hessian',
     'hessian_',
-    'normal_coords_programs',
-    'normal_coords',
-    'normal_coords_',
+    'harmonic_frequencies_programs',
+    'harmonic_frequencies',
+    'harmonic_frequencies_',
+    'normal_coordinates_programs',
+    'normal_coordinates',
+    'normal_coordinates_',
     # irc
     'irc_programs',
     'irc_points',
@@ -87,6 +92,13 @@ __all__ = [
     'vpt2_programs',
     'vpt2',
     'vpt2_',
+    # properties
+    'dipole_moment_programs',
+    'dipole_moment',
+    'dipole_moment_',
+    'polarizability_programs',
+    'polarizability',
+    'polarizability_',
     # status
     'has_error_message',
     'has_normal_exit_message',
