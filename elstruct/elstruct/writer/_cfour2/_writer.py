@@ -54,7 +54,7 @@ class TemplateKey():
     COORD_SYS = 'coord_sys'
 
 
-def energy(geom, charge, mult, method, basis,
+def energy(geo, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options
@@ -64,11 +64,46 @@ def energy(geom, charge, mult, method, basis,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=None):
-    """ energy input string
+    """ Writes an input file string for an electronic energy calculation
+        for a specified electronic structure program.
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     job_key = JobKey.ENERGY
     fill_dct = _fillvalue_dictionary(
-        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        job_key=job_key, method=method, basis=basis, geo=geo, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, casscf_options=casscf_options,
@@ -79,7 +114,7 @@ def energy(geom, charge, mult, method, basis,
     return inp_str
 
 
-def gradient(geom, charge, mult, method, basis,
+def gradient(geo, charge, mult, method, basis,
              # molecule options
              mol_options=(),
              # machine options
@@ -91,11 +126,46 @@ def gradient(geom, charge, mult, method, basis,
              gen_lines=None,
              # job options
              job_options=()):
-    """ gradient input string
+    """ Writes an input file string for a gradient calculation
+        for a specified electronic structure program.
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     job_key = JobKey.GRADIENT
     fill_dct = _fillvalue_dictionary(
-        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        job_key=job_key, method=method, basis=basis, geo=geo, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, casscf_options=casscf_options,
@@ -107,7 +177,7 @@ def gradient(geom, charge, mult, method, basis,
     return inp_str
 
 
-def hessian(geom, charge, mult, method, basis,
+def hessian(geo, charge, mult, method, basis,
             # molecule options
             mol_options=(),
             # machine options
@@ -119,11 +189,46 @@ def hessian(geom, charge, mult, method, basis,
             gen_lines=None,
             # job options
             job_options=()):
-    """ hessian input string
+    """ Writes an input file string for a Hessian calculation
+        for a specified electronic structure program.
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     job_key = JobKey.HESSIAN
     fill_dct = _fillvalue_dictionary(
-        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        job_key=job_key, method=method, basis=basis, geo=geo, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, casscf_options=casscf_options,
@@ -135,7 +240,7 @@ def hessian(geom, charge, mult, method, basis,
     return inp_str
 
 
-def optimization(geom, charge, mult, method, basis,
+def optimization(geo, charge, mult, method, basis,
                  # molecule options
                  mol_options=(),
                  # machine options
@@ -147,11 +252,53 @@ def optimization(geom, charge, mult, method, basis,
                  gen_lines=None,
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
-    """ optimization input string
+    """ Writes an input file string for a geometry optimization
+        calculation for a specified electronic structure program.
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param job_options: geometry optimization routine directives
+        :type job_options: tuple[str]
+        :param frozen_coordinates: only with z-matrix geometries; list of
+            coordinate names to freeze
+        :type fozen_coordinates: tuple[str]
+        :param saddle: optimize a saddle point?
+        :type saddle: bool
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     job_key = JobKey.OPTIMIZATION
     fill_dct = _fillvalue_dictionary(
-        job_key=job_key, method=method, basis=basis, geom=geom, mult=mult,
+        job_key=job_key, method=method, basis=basis, geo=geo, mult=mult,
         charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
         memory=memory, comment=comment, machine_options=machine_options,
         scf_options=scf_options, casscf_options=casscf_options,
@@ -165,16 +312,59 @@ def optimization(geom, charge, mult, method, basis,
 
 
 # helper functions
-def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
+def _fillvalue_dictionary(job_key, method, basis, geo, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options,
                           scf_options, casscf_options, corr_options,
                           gen_lines=None,
                           job_options=(), frozen_coordinates=(), saddle=False):
+    """ Build a Python dictionary with parameters and values
+        that can be used to fill a Mako template for writing
+        an electronic structure input file.
+
+        :param job_key: job contained in the inpit file
+        :type job_key: str
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param mult: spin multiplicity
+        :type mult: int
+        :param charge: molecular charge
+        :type charge: int
+        :param orb_restricted: parameter designating if restriced refrence used
+        :type orb_restricted: bool
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param job_options: geometry optimization routine directives
+        :type job_options: tuple[str]
+        :param frozen_coordinates: only with z-matrix geometries; list of
+            coordinate names to freeze
+        :type fozen_coordinates: tuple[str]
+        :param saddle: optimize a saddle point?
+        :type saddle: bool
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
+    """
 
     reference = _reference(mult, orb_restricted)
-    geom_str, zmat_val_str = _geometry_strings(
-        geom, frozen_coordinates, job_key)
+    geo_str, zmat_val_str = _geometry_strings(
+        geo, frozen_coordinates, job_key)
 
     # Set options for coupled cluster
     if method in ('ccsd', 'ccsd(t)'):
@@ -201,9 +391,9 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     cfour2_method = elstruct.par.program_method_name(PROG, method)
     cfour2_basis = elstruct.par.program_basis_name(PROG, basis)
 
-    if automol.geom.is_valid(geom):
+    if automol.geom.is_valid(geo):
         coord_sys = 'CARTESIAN'
-    elif automol.zmatrix.is_valid(geom):
+    elif automol.zmatrix.is_valid(geo):
         coord_sys = 'INTERNAL'
 
     # Set the gen lines blocks
@@ -217,7 +407,7 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
         TemplateKey.MEMORY: memory,
         TemplateKey.CHARGE: charge,
         TemplateKey.MULT: mult,
-        TemplateKey.GEOM: geom_str,
+        TemplateKey.GEOM: geo_str,
         TemplateKey.COORD_SYS: coord_sys,
         TemplateKey.ZMAT_VAR_VALS: zmat_val_str,
         TemplateKey.BASIS: cfour2_basis.upper(),
@@ -234,31 +424,43 @@ def _fillvalue_dictionary(job_key, method, basis, geom, mult, charge,
     return fill_dct
 
 
-def _geometry_strings(geom, frozen_coordinates, job_key):
+def _geometry_strings(geo, frozen_coordinates, job_key):
+    """ Build the string for the input geometry
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param frozen_coordinates: only with z-matrix geometries; list of
+            coordinate names to freeze
+        :type fozen_coordinates: tuple[str]
+        :param job_key: job contained in the inpit file
+        :type job_key: str
+        :rtype: (str, str)
+    """
+
     if automol.geom.is_valid(geom):
-        geom_str = automol.geom.string(geom)
+        geo_str = automol.geom.string(geo)
         zmat_val_str = ''
-    elif automol.zmatrix.is_valid(geom):
-        zma = geom
-        syms = automol.zmatrix.symbols(zma)
+    elif automol.zmatrix.is_valid(geo):
+        zma = geo
+        symbs = automol.zmatrix.symbols(zma)
         key_mat = automol.zmatrix.key_matrix(zma, shift=1)
         name_mat = _name_mat(zma, frozen_coordinates, job_key)
         val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
 
-        geom_str = aw.zmatrix.matrix_block(syms, key_mat, name_mat)
+        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat)
         zmat_val_str = aw.zmatrix.setval_block(val_dct)
 
         # Substituite multiple whitespaces for single whitespace
-        geom_str = '\n'.join([' '.join(string.split())
-                              for string in geom_str.splitlines()])
+        geo_str = '\n'.join([' '.join(string.split())
+                              for string in geo_str.splitlines()])
         zmat_val_str = '\n'.join([' '.join(string.split())
                                   for string in zmat_val_str.splitlines()])
         zmat_val_str += '\n'
 
     else:
-        raise ValueError("Invalid geometry value:\n{0}".format(geom))
+        raise ValueError("Invalid geometry value:\n{0}".format(geo))
 
-    return geom_str, zmat_val_str
+    return geo_str, zmat_val_str
 
 
 def _name_mat(zma, frozen_coordinates, job_key):

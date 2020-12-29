@@ -2,7 +2,7 @@
 """
 
 
-def energy(geom, charge, mult, method, basis,
+def energy(geo, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options
@@ -15,7 +15,7 @@ def energy(geom, charge, mult, method, basis,
     """ _ """
 
     raise NotImplementedError(
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         scf_options, casscf_options, corr_options,
@@ -23,7 +23,7 @@ def energy(geom, charge, mult, method, basis,
     )
 
 
-def gradient(geom, charge, mult, method, basis,
+def gradient(geo, charge, mult, method, basis,
              # molecule options
              mol_options=(),
              # machine options
@@ -38,7 +38,7 @@ def gradient(geom, charge, mult, method, basis,
     """ _ """
 
     raise NotImplementedError(
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         scf_options, casscf_options, corr_options,
@@ -47,7 +47,7 @@ def gradient(geom, charge, mult, method, basis,
     )
 
 
-def hessian(geom, charge, mult, method, basis,
+def hessian(geo, charge, mult, method, basis,
             # molecule options
             mol_options=(),
             # machine options
@@ -62,7 +62,7 @@ def hessian(geom, charge, mult, method, basis,
     """ _ """
 
     raise NotImplementedError(
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         scf_options, casscf_options, corr_options,
@@ -71,7 +71,7 @@ def hessian(geom, charge, mult, method, basis,
     )
 
 
-def vpt2(geom, charge, mult, method, basis,
+def vpt2(geo, charge, mult, method, basis,
          # molecule options
          mol_options=(),
          # machine options
@@ -86,7 +86,7 @@ def vpt2(geom, charge, mult, method, basis,
     """ _ """
 
     raise NotImplementedError(
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         scf_options, casscf_options, corr_options,
@@ -95,7 +95,7 @@ def vpt2(geom, charge, mult, method, basis,
     )
 
 
-def molec_properties(geom, charge, mult, method, basis,
+def molec_properties(geo, charge, mult, method, basis,
                      # molecule options
                      mol_options=(),
                      # machine options
@@ -110,7 +110,7 @@ def molec_properties(geom, charge, mult, method, basis,
     """ _ """
 
     raise NotImplementedError(
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         scf_options, casscf_options, corr_options,
@@ -119,7 +119,7 @@ def molec_properties(geom, charge, mult, method, basis,
     )
 
 
-def irc(geom, charge, mult, method, basis,
+def irc(geo, charge, mult, method, basis,
         # molecule options
         mol_options=(),
         # machine options
@@ -134,7 +134,7 @@ def irc(geom, charge, mult, method, basis,
     """ _ """
 
     raise NotImplementedError(
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         scf_options, casscf_options, corr_options,
@@ -143,7 +143,7 @@ def irc(geom, charge, mult, method, basis,
     )
 
 
-def optimization(geom, charge, mult, method, basis,
+def optimization(geo, charge, mult, method, basis,
                  # molecule options
                  mol_options=(),
                  # machine options
@@ -158,7 +158,7 @@ def optimization(geom, charge, mult, method, basis,
     """ _ """
 
     raise NotImplementedError(
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         mol_options,
         memory, comment, machine_options,
         scf_options, casscf_options, corr_options,

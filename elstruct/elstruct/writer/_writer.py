@@ -1,28 +1,33 @@
-""" input writing module
-Calls functions from the various program modules. Each module must provide a
-function that matches one in the module template -- both the function name and
-signature are checked before calling the function. The resulting function
-signatures are exactly those in module_template.py with `prog` inserted as the
-first required argument.
+""" Electronic structure program input writing module.
+
+    Calls functions from the various program modules. Each module must provide
+    a function that matches one in the module template --
+    both the function name and signature are checked
+    before calling the function.
+    
+    The resulting function signatures are exactly those in module_template.py
+    with `prog` inserted as the first required argument.
 """
+
 from elstruct import program_modules as pm
 from elstruct import par
 from elstruct.writer import module_template
+
 
 MODULE_NAME = par.Module.WRITER
 
 
 # energy input writers
 def programs():
-    """ list of available electronic structure programs
-    (must at least implement an energy writer)
+    """ Constructs a list of available electronic structure programs.
+        At minimum, each program must have an energy reader to be enumerated.
     """
     return pm.program_modules_with_functions(
         MODULE_NAME, [module_template.energy])
 
 
 def methods(prog):
-    """ list of available electronic structure methods
+    """ Constructs a list of available electronic structure methods.
 
         :param prog: the electronic structure program to use as a backend
         :type prog: str
@@ -31,7 +36,7 @@ def methods(prog):
 
 
 def bases(prog):
-    """ list of available electronic structure basis sets
+    """ Constructs a list of available electronic structure basis sets.
 
         :param prog: the electronic structure program to use as a backend
         :type prog: str
@@ -40,7 +45,7 @@ def bases(prog):
 
 
 def method_orbital_types(prog, method, singlet):
-    """ list of available orbital restrictions for a given method
+    """ Constructs a list of available orbital restrictions for a given method.
 
         :param prog: the electronic structure program to use as a backend
         :type prog: str
@@ -52,7 +57,7 @@ def method_orbital_types(prog, method, singlet):
     return par.program_method_orbital_types(prog, method, singlet)
 
 
-def energy(geom, charge, mult, method, basis, prog,
+def energy(geo, charge, mult, method, basis, prog,
            # molecule options
            mol_options=(),
            # machine options
@@ -62,10 +67,11 @@ def energy(geom, charge, mult, method, basis, prog,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=None):
-    """ energy input string
+    """ Writes an input file string for an electronic energy calculation
+        for a specified electronic structure program.
 
-        :param geom: cartesian or z-matrix geometry
-        :type geom: tuple
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
         :param charge: molecular charge
         :type charge: int
         :param mult: spin multiplicity
@@ -104,7 +110,7 @@ def energy(geom, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.energy,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
@@ -115,13 +121,14 @@ def energy(geom, charge, mult, method, basis, prog,
 
 # gradient input writers
 def gradient_programs():
-    """ list of program modules implementing gradient input writers
+    """ Constructs a list of program modules implementing
+        gradient input writers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.gradient)
 
 
-def gradient(geom, charge, mult, method, basis, prog,
+def gradient(geo, charge, mult, method, basis, prog,
              # molecule options
              mol_options=(),
              # machine options
@@ -133,10 +140,11 @@ def gradient(geom, charge, mult, method, basis, prog,
              gen_lines=None,
              # job options
              job_options=()):
-    """ gradient input string
+    """ Writes an input file string for a gradient calculation
+        for a specified electronic structure program.
 
-        :param geom: cartesian or z-matrix geometry
-        :type geom: tuple
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
         :param charge: molecular charge
         :type charge: int
         :param mult: spin multiplicity
@@ -175,7 +183,7 @@ def gradient(geom, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.gradient,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
@@ -186,13 +194,14 @@ def gradient(geom, charge, mult, method, basis, prog,
 
 # hessian input writers
 def hessian_programs():
-    """ list of program modules implementing hessian input writers
+    """ Constructs a list of program modules implementing
+        Hessian input writers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.hessian)
 
 
-def hessian(geom, charge, mult, method, basis, prog,
+def hessian(geo, charge, mult, method, basis, prog,
             # molecule options
             mol_options=(),
             # machine options
@@ -204,10 +213,11 @@ def hessian(geom, charge, mult, method, basis, prog,
             gen_lines=None,
             # job options
             job_options=()):
-    """ hessian input string
+    """ Writes an input file string for a Hessian calculation
+        for a specified electronic structure program.
 
-        :param geom: cartesian or z-matrix geometry
-        :type geom: tuple
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
         :param charge: molecular charge
         :type charge: int
         :param mult: spin multiplicity
@@ -246,7 +256,7 @@ def hessian(geom, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.hessian,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
@@ -257,13 +267,14 @@ def hessian(geom, charge, mult, method, basis, prog,
 
 # vpt2 input writers
 def vpt2_programs():
-    """ list of program modules implementing hessian input writers
+    """ Constructs a list of program modules implementing
+        2nd-order vibrational perturbation theory (VPT2) input writers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.vpt2)
 
 
-def vpt2(geom, charge, mult, method, basis, prog,
+def vpt2(geo, charge, mult, method, basis, prog,
          # molecule options
          mol_options=(),
          # machine options
@@ -275,10 +286,12 @@ def vpt2(geom, charge, mult, method, basis, prog,
          gen_lines=None,
          # job options
          job_options=()):
-    """ hessian input string
+    """ Writes an input file string for a
+        2nd-order vibrational perturbation theory calculation
+        for a specified electronic structure program.
 
-        :param geom: cartesian or z-matrix geometry
-        :type geom: tuple
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
         :param charge: molecular charge
         :type charge: int
         :param mult: spin multiplicity
@@ -317,7 +330,7 @@ def vpt2(geom, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.vpt2,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
@@ -328,13 +341,15 @@ def vpt2(geom, charge, mult, method, basis, prog,
 
 # molec_properties input writers
 def molec_properties_programs():
-    """ list of program modules implementing hessian input writers
+    """ Constructs a list of program modules implementing
+        molecular properties, including the
+        dipole moment and polarizability, input writers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.molec_properties)
 
 
-def molec_properties(geom, charge, mult, method, basis, prog,
+def molec_properties(geo, charge, mult, method, basis, prog,
                      # molecule options
                      mol_options=(),
                      # machine options
@@ -346,10 +361,12 @@ def molec_properties(geom, charge, mult, method, basis, prog,
                      gen_lines=None,
                      # job options
                      job_options=()):
-    """ Molecular Properties input string
+    """ Writes an input file string for molecular properties calculations,
+        including the dipole moment and polarizability,
+        for a specified electronic structure program.
 
-        :param geom: cartesian or z-matrix geometry
-        :type geom: tuple
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
         :param charge: molecular charge
         :type charge: int
         :param mult: spin multiplicity
@@ -388,7 +405,7 @@ def molec_properties(geom, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.molec_properties,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
@@ -399,13 +416,14 @@ def molec_properties(geom, charge, mult, method, basis, prog,
 
 # irc input writers
 def irc_programs():
-    """ list of program modules implementing optimization input writers
+    """ Constructs a list of program modules implementing
+        Intrinsic Reaction Coordinate input writers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.irc)
 
 
-def irc(geom, charge, mult, method, basis, prog,
+def irc(geo, charge, mult, method, basis, prog,
         # molecule options
         mol_options=(),
         # machine options
@@ -417,10 +435,11 @@ def irc(geom, charge, mult, method, basis, prog,
         gen_lines=None,
         # job options
         job_options=(), frozen_coordinates=()):
-    """ irc input string
+    """ Writes an input file string for an Intrinsic Reaction Coordinate
+        calculation for a specified electronic structure program.
 
-        :param geom: cartesian or z-matrix geometry
-        :type geom: tuple
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
         :param charge: molecular charge
         :type charge: int
         :param mult: spin multiplicity
@@ -464,7 +483,7 @@ def irc(geom, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.irc,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,
@@ -476,13 +495,14 @@ def irc(geom, charge, mult, method, basis, prog,
 
 # optimization input writers
 def optimization_programs():
-    """ list of program modules implementing optimization input writers
+    """ Constructs a list of program modules implementing
+        geometry optimization input writers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.optimization)
 
 
-def optimization(geom, charge, mult, method, basis, prog,
+def optimization(geo, charge, mult, method, basis, prog,
                  # molecule options
                  mol_options=(),
                  # machine options
@@ -494,10 +514,11 @@ def optimization(geom, charge, mult, method, basis, prog,
                  gen_lines=None,
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
-    """ optimization input string
+    """ Writes an input file string for a geometry optimization
+        calculation for a specified electronic structure program.
 
-        :param geom: cartesian or z-matrix geometry
-        :type geom: tuple
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
         :param charge: molecular charge
         :type charge: int
         :param mult: spin multiplicity
@@ -543,7 +564,7 @@ def optimization(geom, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, MODULE_NAME, module_template.optimization,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,

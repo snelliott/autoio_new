@@ -1,8 +1,9 @@
-""" Electronic structure program output reading module
+""" Electronic structure program output reading module.
 
     Calls functions from the various program modules. Each module must provide
     a function that matches one in the module template --
-    both the function name and signature are checked.
+    both the function name and signature are checked
+    before calling the function.
 
     The resulting function signatures are exactly those in module_template.py
     with `prog` inserted as the first argument.
@@ -70,7 +71,8 @@ def energy_(prog, method):
 
 # gradient
 def gradient_programs():
-    """ Constructs a list of program modules implementing gradient readers.
+    """ Constructs a list of program modules implementing
+        gradient output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.gradient)
@@ -105,7 +107,8 @@ def gradient_(prog):
 
 # hessian
 def hessian_programs():
-    """ Constructs a list of program modules implementing hessian readers.
+    """ Constructs a list of program modules implementing
+        Hessian output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.hessian)
@@ -139,7 +142,7 @@ def hessian_(prog):
 
 def harmonic_frequencies_programs():
     """ Constructs a list of program modules implementing
-        harmonic vibrarional frequency readers.
+        harmonic vibrarional frequency output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.harmonic_frequencies)
@@ -175,7 +178,7 @@ def harmonic_frequencies_(prog):
 
 def normal_coordinates_programs():
     """ Constructs a list of program modules implementing
-        normal coordinate readers.
+        normal coordinate output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.normal_coordinates)
@@ -212,7 +215,7 @@ def normal_coordinates_(prog):
 # irc_information
 def irc_programs():
     """ Constructs a list of program modules implementing
-        Intrinsic Reaction Coordinate readers.
+        Intrinsic Reaction Coordinate output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.irc_points)
@@ -273,7 +276,7 @@ def irc_path_(prog):
 # optimization
 def opt_geometry_programs():
     """ Constructs a list of program modules implementing
-        optimized geometry readers.
+        optimized geometry output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.opt_geometry)
@@ -328,7 +331,8 @@ def opt_geometry_(prog):
 
 # z-matrix geometry optimizations
 def opt_zmatrix_programs():
-    """ Contucts a list of program modules implementing optimized Z-Matrix readers.
+    """ Contucts a list of program modules implementing
+        optimized Z-Matrix output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.opt_zmatrix)
@@ -364,7 +368,7 @@ def opt_zmatrix_(prog):
 # vpt2
 def vpt2_programs():
     """ Constructs a list of program modules implementing
-        2nd-order vibrational perturbation theory (VPT2) readers.
+        2nd-order vibrational perturbation theory (VPT2) output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.vpt2)
@@ -398,7 +402,7 @@ def vpt2_(prog):
 # dipole moment
 def dipole_moment_programs():
     """ Constructs a list of program modules implementing
-        static dipole moment readers.
+        static dipole moment output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.dipole_moment)
@@ -434,7 +438,7 @@ def dipole_moment_(prog):
 # dipole moment
 def polarizability_programs():
     """ Constructs a list of program modules implementing
-        polarizability tensor readers.
+        polarizability tensor output readers.
     """
     return pm.program_modules_with_function(
         MODULE_NAME, module_template.polarizability)
