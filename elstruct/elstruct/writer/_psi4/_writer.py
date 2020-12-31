@@ -2,7 +2,6 @@
 
 import os
 import automol
-import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
@@ -97,25 +96,25 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         gen_lines = ''
 
     fill_dct = {
-        TemplateKey.COMMENT: comment,
-        TemplateKey.MEMORY: memory,
-        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
-        TemplateKey.CHARGE: charge,
-        TemplateKey.MULT: mult,
-        TemplateKey.GEOM: geo_str,
-        TemplateKey.ZMAT_VALS: zmat_val_str,
-        TemplateKey.BASIS: psi4_basis,
-        TemplateKey.METHOD: psi4_method,
-        TemplateKey.REFERENCE: reference,
-        TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
-        TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
-        TemplateKey.JOB_KEY: job_key,
-        TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
-        TemplateKey.FROZEN_DIS_STRS: frozen_dis_strs,
-        TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
-        TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
-        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        fill.TemplateKey.COMMENT: comment,
+        fill.TemplateKey.MEMORY: memory,
+        fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
+        fill.TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
+        fill.TemplateKey.CHARGE: charge,
+        fill.TemplateKey.MULT: mult,
+        fill.TemplateKey.GEOM: geo_str,
+        fill.TemplateKey.ZMAT_VALS: zmat_val_str,
+        fill.TemplateKey.BASIS: psi4_basis,
+        fill.TemplateKey.METHOD: psi4_method,
+        fill.TemplateKey.REFERENCE: reference,
+        fill.TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
+        fill.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
+        fill.TemplateKey.JOB_KEY: job_key,
+        fill.TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
+        fill.TemplateKey.FROZEN_DIS_STRS: frozen_dis_strs,
+        fill.TemplateKey.FROZEN_ANG_STRS: frozen_ang_strs,
+        fill.TemplateKey.FROZEN_DIH_STRS: frozen_dih_strs,
+        fill.TemplateKey.GEN_LINES: '\n'.join(gen_lines),
     }
 
     return build_mako_str(
@@ -124,37 +123,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         template_keys=fill_dct)
 
 
-def _geometry_strings(geo):
-    """ Build the string for the input geometry
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param frozen_coordinates: only with z-matrix geometries; list of
-            coordinate names to freeze
-        :type fozen_coordinates: tuple[str]
-        :param job_key: job contained in the inpit file
-        :type job_key: str
-        :rtype: (str, str)
-    """
-
-    if automol.geom.is_valid(geo):
-        geo_str = automol.geom.string(geo)
-        zmat_val_str = ''
-    elif automol.zmatrix.is_valid(geo):
-        zma = geo
-        symbs = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = automol.zmatrix.name_matrix(zma)
-        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
-
-        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat)
-        zmat_val_str = aw.zmatrix.setval_block(val_dct)
-    else:
-        raise ValueError("Invalid geometry value:\n{0}".format(geo))
-
-    return geo_str, zmat_val_str
-
-
+# Helper functions
 def _frozen_coordinate_strings(geo, frozen_coordinates):
     if not frozen_coordinates:
         dis_strs = ang_strs = dih_strs = ()
@@ -191,13 +160,3 @@ def _reference(method, mult, orb_restricted):
         reference = Psi4Reference.RHF
 
     return reference
-
-
-def _evaluate_options(options):
-    options = list(options)
-    for idx, option in enumerate(options):
-        if elstruct.option.is_valid(option):
-            name = elstruct.option.name(option)
-            assert name in par.OPTION_NAMES
-            options[idx] = par.PSI4_OPTION_EVAL_DCT[name](option)
-    return tuple(options)

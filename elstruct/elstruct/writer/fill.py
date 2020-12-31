@@ -26,14 +26,28 @@ class TemplateKey():
     GEOM = 'geom'
     ZMAT_VAR_VALS = 'zmat_var_vals'
     ZMAT_CONST_VALS = 'zmat_const_vals'
+    FROZEN_DIS_STRS = 'frozen_dis_strs'
+    FROZEN_ANG_STRS = 'frozen_ang_strs'
+    FROZEN_DIH_STRS = 'frozen_dih_strs'
     # job
     COMMENT = 'comment'
     JOB_KEY = 'job_key'
     JOB_OPTIONS = 'job_options'
     GEN_LINES = 'gen_lines'
+    GEN_LINES_1 = 'gen_lines_1'
+    GEN_LINES_2 = 'gen_lines_2'
+    GEN_LINES_3 = 'gen_lines_3'
+    # theoretical method
+    BASIS = 'basis'
+    SCF_METHOD = 'scf_method'
+    SCF_OPTIONS = 'scf_options'
+    ISMULTIREF = 'ismultiref'
+    CASSCF_OPTIONS = 'casscf_options'
+    CORR_METHOD = 'corr_method'
+    CORR_OPTIONS = 'corr_options'
 
 
-def _geometry_strings(geo, frozen_coordinates):
+def geometry_strings(geo, frozen_coordinates):
     """ Build the string for the input geometry
 
         :param geo: cartesian or z-matrix geometry
@@ -65,6 +79,9 @@ def _geometry_strings(geo, frozen_coordinates):
             vval_dct, setval_sign=' ').strip()
         zmat_cval_str = aw.zmatrix.setval_block(
             cval_dct, setval_sign=' ').strip()
+    elif geo in ('GEOMETRY', 'GEOMETRY_HERE'):
+        geo_str = geo
+        zmat_vval_str = ''
     else:
         raise ValueError("Invalid geometry value:\n{0}".format(geo))
 
@@ -73,6 +90,8 @@ def _geometry_strings(geo, frozen_coordinates):
 
 def _name_mat(zma, frozen_coordinates, job_key):
     """ Build the name matrix for a Z-Matrix data structure:
+
+        used for cfour optimizations
 
         :param zma: cartesian or z-matrix geometry
         :type zma: tuple
@@ -94,19 +113,38 @@ def _name_mat(zma, frozen_coordinates, job_key):
     return name_mat
 
 
-def _reference(method, mult, orb_restricted):
+def set_reference(method, mult, orb_restricted, ref_dct, prog):
     if elstruct.par.Method.is_dft(method):
-        reference = ''
+        if prog == '':
+            reference = ref_dct[Reference.ROHF]
+
+        else:
+            reference = ''
     elif mult != 1:
-        reference = (GAUSSIAN09Reference.ROHF
-                     if orb_restricted else GAUSSIAN09Reference.UHF)
+        if orb_restricted:
+            reference = ref_dct[Reference.ROHF]
+        else:
+            reference = ref_dct[Reference.UHF]
     else:
         assert mult == 1 and orb_restricted is True
-        reference = GAUSSIAN09Reference.RHF
+        reference = ref_dct[Reference.RHF]
+
     return reference
 
 
-def _intercept_scf_guess_option(scf_opts):
+def evaluate_options(opts, opt_eval_dct):
+    opts = list(opts)
+    for idx, opt in enumerate(opts):
+        if elstruct.option.is_valid(opt):
+            name = elstruct.option.name(opt)
+            assert name in elstruct.par.OPTION_NAMES
+            opts[idx] = opt_eval_dct[name](opt)
+    return tuple(opts)
+
+
+# Program specific?
+# gaussian, orca
+def intercept_scf_guess_option(scf_opts):
     guess_opts = []
     ret_scf_opts = []
     for opt in scf_opts:
@@ -118,11 +156,24 @@ def _intercept_scf_guess_option(scf_opts):
     return guess_opts, ret_scf_opts
 
 
-def _evaluate_options(opts, opt_eval_dct):
-    opts = list(opts)
-    for idx, opt in enumerate(opts):
-        if elstruct.option.is_valid(opt):
-            name = elstruct.option.name(opt)
-            assert name in elstruct.par.OPTION_NAMES
-            opts[idx] = opt_eval_dct[name](opt)
-    return tuple(opts)
+# molpro
+def set_method(method, singlet):
+    # Check if MultiReference Method; then check if casscf
+    if elstruct.par.Method.is_multiref(method):
+        ismultiref = True
+        if elstruct.par.Method.is_casscf(method):
+            corr_method = ''
+        else:
+            corr_method = elstruct.par.program_method_name(
+                PROG, method, singlet)
+    # Set methods if single reference
+    else:
+        ismultiref = False
+        if elstruct.par.Method.is_correlated(method):
+            corr_method = elstruct.par.program_method_name(
+                PROG, method, singlet)
+        else:
+            corr_method = ''
+
+    return corr_method, ismultiref
+

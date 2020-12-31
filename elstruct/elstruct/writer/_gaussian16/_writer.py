@@ -7,6 +7,7 @@ import elstruct.par
 import elstruct.option
 from elstruct import template
 from elstruct import pclass
+from elstruct.writer import fill
 from elstruct.writer._gaussian16 import par as prog_par
 
 
@@ -108,23 +109,23 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         gen_lines = ''
 
     fill_dct = {
-        TemplateKey.MEMORY: memory,
-        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        TemplateKey.REFERENCE: reference,
-        TemplateKey.METHOD: gaussian16_method,
-        TemplateKey.BASIS: gaussian16_basis,
-        TemplateKey.SCF_OPTIONS: ','.join(scf_options),
-        TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
-        TemplateKey.MOL_OPTIONS: ','.join(mol_options),
-        TemplateKey.COMMENT: comment,
-        TemplateKey.CHARGE: charge,
-        TemplateKey.MULT: mult,
-        TemplateKey.GEOM: geo_str,
-        TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
-        TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
-        TemplateKey.JOB_KEY: job_key,
-        TemplateKey.JOB_OPTIONS: ','.join(job_options),
-        TemplateKey.GEN_LINES: gen_lines,
+        fill.TemplateKey.MEMORY: memory,
+        fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
+        fill.TemplateKey.REFERENCE: reference,
+        fill.TemplateKey.METHOD: gaussian16_method,
+        fill.TemplateKey.BASIS: gaussian16_basis,
+        fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        fill.TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
+        fill.TemplateKey.MOL_OPTIONS: ','.join(mol_options),
+        fill.TemplateKey.COMMENT: comment,
+        fill.TemplateKey.CHARGE: charge,
+        fill.TemplateKey.MULT: mult,
+        fill.TemplateKey.GEOM: geo_str,
+        fill.TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
+        fill.TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
+        fill.TemplateKey.JOB_KEY: job_key,
+        fill.TemplateKey.JOB_OPTIONS: ','.join(job_options),
+        fill.TemplateKey.GEN_LINES: gen_lines,
     }
 
     return build_mako_str(

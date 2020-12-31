@@ -41,6 +41,15 @@ def is_program(prog):
     return prog in programs()
 
 
+class Reference():
+    """ electronic structure references """
+    RHF = 'rhf'
+    UHF = 'uhf'
+    ROHF = 'rohf'
+    RKS = 'rks'
+    UKS = 'uks'
+
+
 class Method():
     """ electronic structure methods
 

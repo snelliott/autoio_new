@@ -2,10 +2,9 @@
 
 import os
 import automol
-import autowrite as aw
-import elstruct.par
+from ioformat import build_mako_str
 import elstruct.option
-from elstruct import template
+from elstruct.writer import fill
 from elstruct.writer._cfour2 import par as prog_par
 
 
@@ -74,6 +73,12 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     reference = _reference(mult, orb_restricted)
     geo_str, zmat_val_str = _geometry_strings(
         geo, frozen_coordinates, job_key)
+    # Substituite multiple whitespaces for single whitespace
+    geo_str = '\n'.join([' '.join(string.split())
+                         for string in geo_str.splitlines()])
+    zmat_val_str = '\n'.join([' '.join(string.split())
+                              for string in zmat_val_str.splitlines()])
+    zmat_val_str += '\n'
 
     # Set options for coupled cluster
     if method in ('ccsd', 'ccsd(t)'):
@@ -113,109 +118,26 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
 
     # Write the input file string
     fill_dct = {
-        TemplateKey.COMMENT: comment,
-        TemplateKey.MEMORY: memory,
-        TemplateKey.CHARGE: charge,
-        TemplateKey.MULT: mult,
-        TemplateKey.GEOM: geo_str,
-        TemplateKey.COORD_SYS: coord_sys,
-        TemplateKey.ZMAT_VAR_VALS: zmat_val_str,
-        TemplateKey.BASIS: cfour2_basis.upper(),
-        TemplateKey.METHOD: cfour2_method.upper(),
-        TemplateKey.REFERENCE: reference.upper(),
-        TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
-        TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
-        TemplateKey.JOB_KEY: job_key,
-        TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
-        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
-        TemplateKey.SADDLE: saddle,
-        TemplateKey.NUMERICAL: numerical
+        fill.TemplateKey.COMMENT: comment,
+        fill.TemplateKey.MEMORY: memory,
+        fill.TemplateKey.CHARGE: charge,
+        fill.TemplateKey.MULT: mult,
+        fill.TemplateKey.GEOM: geo_str,
+        fill.TemplateKey.COORD_SYS: coord_sys,
+        fill.TemplateKey.ZMAT_VAR_VALS: zmat_val_str,
+        fill.TemplateKey.BASIS: cfour2_basis.upper(),
+        fill.TemplateKey.METHOD: cfour2_method.upper(),
+        fill.TemplateKey.REFERENCE: reference.upper(),
+        fill.TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
+        fill.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
+        fill.TemplateKey.JOB_KEY: job_key,
+        fill.TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
+        fill.TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        fill.TemplateKey.SADDLE: saddle,
+        fill.TemplateKey.NUMERICAL: numerical
     }
 
     return build_mako_str(
         template_file_name='all.mako',
         template_src_path=TEMPLATE_DIR,
         template_keys=fill_dct)
-
-
-def _geometry_strings(geo, frozen_coordinates, job_key):
-    """ Build the string for the input geometry
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param frozen_coordinates: only with z-matrix geometries; list of
-            coordinate names to freeze
-        :type fozen_coordinates: tuple[str]
-        :param job_key: job contained in the inpit file
-        :type job_key: str
-        :rtype: (str, str)
-    """
-
-    if automol.geom.is_valid(geo):
-        geo_str = automol.geom.string(geo)
-        zmat_val_str = ''
-    elif automol.zmatrix.is_valid(geo):
-        zma = geo
-        symbs = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = _name_mat(zma, frozen_coordinates, job_key)
-        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
-
-        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat)
-        zmat_val_str = aw.zmatrix.setval_block(val_dct)
-
-        # Substituite multiple whitespaces for single whitespace
-        geo_str = '\n'.join([' '.join(string.split())
-                             for string in geo_str.splitlines()])
-        zmat_val_str = '\n'.join([' '.join(string.split())
-                                  for string in zmat_val_str.splitlines()])
-        zmat_val_str += '\n'
-
-    else:
-        raise ValueError("Invalid geometry value:\n{0}".format(geo))
-
-    return geo_str, zmat_val_str
-
-
-def _name_mat(zma, frozen_coordinates, job_key):
-    """ Build the name matrix for a Z-Matrix data structure:
-
-        :param zma: cartesian or z-matrix geometry
-        :type zma: tuple
-        :param frozen_coordinates: only with z-matrix geometries; list of
-            coordinate names to freeze
-        :type fozen_coordinates: tuple[str]
-        :param job_key: job contained in the inpit file
-        :type job_key: str
-    """
-    if job_key == 'optimization':
-        name_mat = [
-            [name+'*'
-             if name is not None and name not in frozen_coordinates else name
-             for name in row]
-            for row in automol.zmatrix.name_matrix(zma)]
-    else:
-        name_mat = automol.zmatrix.name_matrix(zma)
-
-    return name_mat
-
-
-def _reference(mult, orb_restricted):
-    if mult != 1:
-        reference = (prog_par.ROHF if orb_restricted else
-                     prog_par.UHF)
-    else:
-        assert mult == 1 and orb_restricted is True
-        reference = prog_par.RHF
-
-    return reference
-
-
-def _evaluate_options(options):
-    options = list(options)
-    for idx, option in enumerate(options):
-        if elstruct.option.is_valid(option):
-            name = elstruct.option.name(option)
-            assert name in prog_par.OPTION_NAMES
-            options[idx] = prog_par.CFOUR2_OPTION_EVAL_DCT[name](option)
-    return tuple(options)

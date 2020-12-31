@@ -6,7 +6,6 @@ from ioformat import build_mako_str
 import autowrite as aw
 import elstruct.par
 import elstruct.option
-from elstruct import template
 from elstruct import pclass
 from elstruct.writer import fill
 from elstruct.writer._gaussian09 import par as prog_par
@@ -110,67 +109,29 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         gen_lines = ''
 
     fill_dct = {
-        TemplateKey.MEMORY: memory,
-        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        TemplateKey.REFERENCE: reference,
-        TemplateKey.METHOD: gaussian09_method,
-        TemplateKey.BASIS: gaussian09_basis,
-        TemplateKey.SCF_OPTIONS: ','.join(scf_options),
-        TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
-        TemplateKey.MOL_OPTIONS: ','.join(mol_options),
-        TemplateKey.COMMENT: comment,
-        TemplateKey.CHARGE: charge,
-        TemplateKey.MULT: mult,
-        TemplateKey.GEOM: geo_str,
-        TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
-        TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
-        TemplateKey.JOB_KEY: job_key,
-        TemplateKey.JOB_OPTIONS: ','.join(job_options),
-        TemplateKey.GEN_LINES: gen_lines,
+        fill.TemplateKey.MEMORY: memory,
+        fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
+        fill.TemplateKey.REFERENCE: reference,
+        fill.TemplateKey.METHOD: gaussian09_method,
+        fill.TemplateKey.BASIS: gaussian09_basis,
+        fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        fill.TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
+        fill.TemplateKey.MOL_OPTIONS: ','.join(mol_options),
+        fill.TemplateKey.COMMENT: comment,
+        fill.TemplateKey.CHARGE: charge,
+        fill.TemplateKey.MULT: mult,
+        fill.TemplateKey.GEOM: geo_str,
+        fill.TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
+        fill.TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
+        fill.TemplateKey.JOB_KEY: job_key,
+        fill.TemplateKey.JOB_OPTIONS: ','.join(job_options),
+        fill.TemplateKey.GEN_LINES: gen_lines,
     }
 
     return build_mako_str(
         template_file_name='all.mako',
         template_src_path=TEMPLATE_DIR,
         template_keys=fill_dct)
-
-
-def _geometry_strings(geo, frozen_coordinates):
-    """ Build the string for the input geometry
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param frozen_coordinates: only with z-matrix geometries; list of
-            coordinate names to freeze
-        :type fozen_coordinates: tuple[str]
-        :rtype: (str, str)
-    """
-
-    if automol.geom.is_valid(geo):
-        geo_str = automol.geom.string(geo)
-        zmat_vval_str = ''
-        zmat_cval_str = ''
-    elif automol.zmatrix.is_valid(geo):
-        zma = geo
-        symbs = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = automol.zmatrix.name_matrix(zma)
-        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
-        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat)
-
-        vval_dct = {key: val for key, val in val_dct.items()
-                    if key not in frozen_coordinates}
-        cval_dct = {key: val for key, val in val_dct.items()
-                    if key in frozen_coordinates}
-
-        zmat_vval_str = aw.zmatrix.setval_block(
-            vval_dct, setval_sign=' ').strip()
-        zmat_cval_str = aw.zmatrix.setval_block(
-            cval_dct, setval_sign=' ').strip()
-    else:
-        raise ValueError("Invalid geometry value:\n{0}".format(geo))
-
-    return geo_str, zmat_vval_str, zmat_cval_str
 
 
 def _reference(method, mult, orb_restricted):
@@ -195,13 +156,3 @@ def _intercept_scf_guess_option(scf_opts):
         else:
             ret_scf_opts.append(opt)
     return guess_opts, ret_scf_opts
-
-
-def _evaluate_options(opts):
-    opts = list(opts)
-    for idx, opt in enumerate(opts):
-        if elstruct.option.is_valid(opt):
-            name = elstruct.option.name(opt)
-            assert name in prog_par.OPTION_NAMES
-            opts[idx] = prog_par.GAUSSIAN09_OPTION_EVAL_DCT[name](opt)
-    return tuple(opts)
