@@ -16,30 +16,33 @@ THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 
-# helper functions
-def write_input(job_key, method, basis, geo, mult, charge,
-                          orb_restricted, mol_options, memory, comment,
-                          machine_options,
-                          scf_options, casscf_options, corr_options,
-                          job_options=(), frozen_coordinates=(),
-                          saddle=False,
-                          gen_lines=None):
-    """ Build a Python dictionary with parameters and values
-        that can be used to fill a Mako template for writing
-        an electronic structure input file.
+def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
+                # molecule options
+                mol_options=(),
+                # machine options
+                memory=1, comment='', machine_options=(),
+                # theory options
+                scf_options=(), casscf_options=(), corr_options=(),
+                # generic options
+                gen_lines=None,
+                # job options
+                job_options=(), frozen_coordinates=(), saddle=False):
+    """ Write an input file string for an electronic structure calculation
+        by processing all of the information and using it to fill in
+        a Mako template of the input file.
 
-        :param job_key: job contained in the inpit file
+        :param job_key: job contained in the input file
         :type job_key: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
         :param method: electronic structure method
         :type method: str
         :param basis: basis set
         :type basis: str
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param mult: spin multiplicity
-        :type mult: int
-        :param charge: molecular charge
-        :type charge: int
         :param orb_restricted: parameter designating if restriced refrence used
         :type orb_restricted: bool
         :param mol_options: options for the molecule block
@@ -62,7 +65,7 @@ def write_input(job_key, method, basis, geo, mult, charge,
         :param frozen_coordinates: only with z-matrix geometries; list of
             coordinate names to freeze
         :type fozen_coordinates: tuple[str]
-        :param saddle: optimize a saddle point?
+        :param saddle: parameter signifiying a saddle point calculation
         :type saddle: bool
         :param gen_lines: generic lines for the input file
         :type gen_lines: dict[idx:str]

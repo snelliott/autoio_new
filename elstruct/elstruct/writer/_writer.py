@@ -3,7 +3,6 @@
 
 from elstruct import par
 from elstruct.writer import program_modules as pm
-from elstruct.writer import module_template
 
 
 # energy input writers
@@ -11,8 +10,7 @@ def programs():
     """ Constructs a list of available electronic structure programs.
         At minimum, each program must have an energy reader to be enumerated.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, pm.Job.energy)
+    return pm.program_modules_with_function(pm.Job.energy)
 
 
 def energy(prog, geo, charge, mult, method, basis,
@@ -28,6 +26,8 @@ def energy(prog, geo, charge, mult, method, basis,
     """ Writes an input file string for an electronic energy calculation
         for a specified electronic structure program.
 
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
         :param geo: cartesian or z-matrix geometry
         :type geo: tuple
         :param charge: molecular charge
@@ -38,8 +38,6 @@ def energy(prog, geo, charge, mult, method, basis,
         :type method: str
         :param basis: basis set
         :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
         :param mol_options: options for the molecule block
         :type mol_options: tuple[str]
         ;param memory: memory in GB
@@ -68,13 +66,20 @@ def energy(prog, geo, charge, mult, method, basis,
     return pm.call_module_function(
         prog, pm.Job.ENERGY,
         # *args
-        geo, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=(), frozen_coordinates=(),
+        saddle=False)
 
 
 # gradient input writers
@@ -82,11 +87,10 @@ def gradient_programs():
     """ Constructs a list of program modules implementing
         gradient input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, pm.Job.GRADIENT)
+    return pm.program_modules_with_function(pm.Job.GRADIENT)
 
 
-def gradient(geo, charge, mult, method, basis, prog,
+def gradient(prog, geo, charge, mult, method, basis,
              # molecule options
              mol_options=(),
              # machine options
@@ -101,6 +105,8 @@ def gradient(geo, charge, mult, method, basis, prog,
     """ Writes an input file string for a gradient calculation
         for a specified electronic structure program.
 
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
         :param geo: cartesian or z-matrix geometry
         :type geo: tuple
         :param charge: molecular charge
@@ -111,8 +117,6 @@ def gradient(geo, charge, mult, method, basis, prog,
         :type method: str
         :param basis: basis set
         :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
         :param mol_options: options for the molecule block
         :type mol_options: tuple[str]
         ;param memory: memory in GB
@@ -141,13 +145,20 @@ def gradient(geo, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, pm.Job.GRADIENT,
         # *args
-        geo, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines, job_options=job_options)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=job_options, frozen_coordinates=(),
+        saddle=False)
 
 
 # hessian input writers
@@ -155,11 +166,10 @@ def hessian_programs():
     """ Constructs a list of program modules implementing
         Hessian input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, pm.Job.HESSIAN)
+    return pm.program_modules_with_function(pm.Job.HESSIAN)
 
 
-def hessian(geo, charge, mult, method, basis, prog,
+def hessian(prog, geo, charge, mult, method, basis,
             # molecule options
             mol_options=(),
             # machine options
@@ -174,6 +184,8 @@ def hessian(geo, charge, mult, method, basis, prog,
     """ Writes an input file string for a Hessian calculation
         for a specified electronic structure program.
 
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
         :param geo: cartesian or z-matrix geometry
         :type geo: tuple
         :param charge: molecular charge
@@ -184,8 +196,6 @@ def hessian(geo, charge, mult, method, basis, prog,
         :type method: str
         :param basis: basis set
         :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
         :param mol_options: options for the molecule block
         :type mol_options: tuple[str]
         ;param memory: memory in GB
@@ -214,13 +224,20 @@ def hessian(geo, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, pm.Job.HESSIAN,
         # *args
-        geo, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines, job_options=job_options)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=job_options, frozen_coordinates=(),
+        saddle=False)
 
 
 # vpt2 input writers
@@ -228,17 +245,16 @@ def vpt2_programs():
     """ Constructs a list of program modules implementing
         2nd-order vibrational perturbation theory (VPT2) input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, pm.Job.VPT2)
+    return pm.program_modules_with_function(pm.Job.VPT2)
 
 
-def vpt2(geo, charge, mult, method, basis, prog,
+def vpt2(prog, geo, charge, mult, method, basis,
          # molecule options
          mol_options=(),
          # machine options
          memory=1, comment='', machine_options=(),
          # theory options
-         orb_type=None,
+         orb_type='RU',
          scf_options=(), casscf_options=(), corr_options=(),
          # generic options
          gen_lines=None,
@@ -248,6 +264,8 @@ def vpt2(geo, charge, mult, method, basis, prog,
         2nd-order vibrational perturbation theory calculation
         for a specified electronic structure program.
 
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
         :param geo: cartesian or z-matrix geometry
         :type geo: tuple
         :param charge: molecular charge
@@ -258,8 +276,6 @@ def vpt2(geo, charge, mult, method, basis, prog,
         :type method: str
         :param basis: basis set
         :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
         :param mol_options: options for the molecule block
         :type mol_options: tuple[str]
         ;param memory: memory in GB
@@ -288,13 +304,20 @@ def vpt2(geo, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, pm.Job.VPT2,
         # *args
-        geo, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines, job_options=job_options)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=job_options, frozen_coordinates=(),
+        saddle=False)
 
 
 # molec_properties input writers
@@ -303,26 +326,27 @@ def molec_properties_programs():
         molecular properties, including the
         dipole moment and polarizability, input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, pm.Job.MOLPROP)
+    return pm.program_modules_with_function(pm.Job.MOLPROP)
 
 
-def molec_properties(geo, charge, mult, method, basis, prog,
-                     # molecule options
-                     mol_options=(),
-                     # machine options
-                     memory=1, comment='', machine_options=(),
-                     # theory options
-                     orb_type=None,
-                     scf_options=(), casscf_options=(), corr_options=(),
-                     # generic options
-                     gen_lines=None,
-                     # job options
-                     job_options=()):
+def molecular_properties(prog, geo, charge, mult, method, basis,
+                         # molecule options
+                         mol_options=(),
+                         # machine options
+                         memory=1, comment='', machine_options=(),
+                         # theory options
+                         orb_type='RU',
+                         scf_options=(), casscf_options=(), corr_options=(),
+                         # generic options
+                         gen_lines=None,
+                         # job options
+                         job_options=()):
     """ Writes an input file string for molecular properties calculations,
         including the dipole moment and polarizability,
         for a specified electronic structure program.
 
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
         :param geo: cartesian or z-matrix geometry
         :type geo: tuple
         :param charge: molecular charge
@@ -333,8 +357,6 @@ def molec_properties(geo, charge, mult, method, basis, prog,
         :type method: str
         :param basis: basis set
         :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
         :param mol_options: options for the molecule block
         :type mol_options: tuple[str]
         ;param memory: memory in GB
@@ -363,13 +385,20 @@ def molec_properties(geo, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, pm.Job.MOLPROP,
         # *args
-        geo, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines, job_options=job_options)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=job_options, frozen_coordinates=(),
+        saddle=False)
 
 
 # irc input writers
@@ -377,17 +406,16 @@ def irc_programs():
     """ Constructs a list of program modules implementing
         Intrinsic Reaction Coordinate input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, pm.Job.IRC)
+    return pm.program_modules_with_function(pm.Job.IRC)
 
 
-def irc(geo, charge, mult, method, basis, prog,
+def irc(prog, geo, charge, mult, method, basis,
         # molecule options
         mol_options=(),
         # machine options
         memory=1, comment='', machine_options=(),
         # theory options
-        orb_type=None,
+        orb_type='RU',
         scf_options=(), casscf_options=(), corr_options=(),
         # generic options
         gen_lines=None,
@@ -396,6 +424,8 @@ def irc(geo, charge, mult, method, basis, prog,
     """ Writes an input file string for an Intrinsic Reaction Coordinate
         calculation for a specified electronic structure program.
 
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
         :param geo: cartesian or z-matrix geometry
         :type geo: tuple
         :param charge: molecular charge
@@ -406,8 +436,6 @@ def irc(geo, charge, mult, method, basis, prog,
         :type method: str
         :param basis: basis set
         :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
         :param mol_options: options for the molecule block
         :type mol_options: tuple[str]
         ;param memory: memory in GB
@@ -441,14 +469,20 @@ def irc(geo, charge, mult, method, basis, prog,
     return pm.call_module_function(
         prog, pm.Job.IRC,
         # *args
-        geo, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
+        # generic options
         gen_lines=gen_lines,
-        job_options=job_options, frozen_coordinates=frozen_coordinates)
+        # job options
+        job_options=job_options, frozen_coordinates=frozen_coordinates,
+        saddle=True)
 
 
 # optimization input writers
@@ -456,8 +490,7 @@ def optimization_programs():
     """ Constructs a list of program modules implementing
         geometry optimization input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, pm.Job.OPTIMIZATION)
+    return pm.program_modules_with_function(pm.Job.OPTIMIZATION)
 
 
 def optimization(prog, geo, charge, mult, method, basis,
@@ -466,7 +499,7 @@ def optimization(prog, geo, charge, mult, method, basis,
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_type=None,
+                 orb_type='RU',
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=None,
@@ -475,6 +508,8 @@ def optimization(prog, geo, charge, mult, method, basis,
     """ Writes an input file string for a geometry optimization
         calculation for a specified electronic structure program.
 
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
         :param geo: cartesian or z-matrix geometry
         :type geo: tuple
         :param charge: molecular charge
@@ -485,8 +520,6 @@ def optimization(prog, geo, charge, mult, method, basis,
         :type method: str
         :param basis: basis set
         :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
         :param mol_options: options for the molecule block
         :type mol_options: tuple[str]
         ;param memory: memory in GB
@@ -524,11 +557,16 @@ def optimization(prog, geo, charge, mult, method, basis,
         # *args
         geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
+        # generic options
         gen_lines=gen_lines,
+        # job options
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         saddle=saddle)
 

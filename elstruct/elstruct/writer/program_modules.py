@@ -1,6 +1,7 @@
 """ helpers for importing and managing program modules
 """
 
+import importlib
 from elstruct import par
 from elstruct import pclass
 
@@ -17,13 +18,12 @@ def call_module_function(prog, function, *args, **kwargs):
 
     assert prog in pclass.values(par.Program)
     assert prog in program_modules_with_function(function)
-    assert typ in pclass.values(par.Module)
 
     name = '_{}'.format(prog)
     module = importlib.import_module('elstruct.writer.{:s}'.format(name))
-    writer = getattr(module, 'fillvalue_dictionary'))
+    writer = getattr(module, 'write_input')
 
-    return writer(*args, **kwargs)
+    return writer(function, *args, **kwargs)
 
 
 def program_modules_with_function(function):
@@ -55,24 +55,24 @@ class Job():
 
 # Dictionaries that dictate what writer/reader functionality
 WRITER_MODULE_DCT = {
-    elstruct.par.Program.CFOUR2: (
+    par.Program.CFOUR2: (
         Job.ENERGY, Job.GRADIENT, Job.HESSIAN, Job.OPTIMIZATION),
-    elstruct.par.Program.GAUSSIAN09: (
+    par.Program.GAUSSIAN09: (
         Job.ENERGY, Job.GRADIENT, Job.HESSIAN, Job.OPTIMIZATION,
         Job.MOLPROP, Job.IRC, Job.VPT2),
-    elstruct.par.Program.GAUSSIAN16: (
+    par.Program.GAUSSIAN16: (
         Job.ENERGY, Job.GRADIENT, Job.HESSIAN, Job.OPTIMIZATION,
         Job.MOLPROP, Job.IRC, Job.VPT2),
-    elstruct.par.Program.MOLPRO2015: (
+    par.Program.MOLPRO2015: (
         Job.ENERGY, Job.GRADIENT, Job.HESSIAN, Job.OPTIMIZATION,
         Job.MOLPROP, Job.IRC, Job.VPT2),
-    elstruct.par.Program.MRCC2018: (
+    par.Program.MRCC2018: (
         Job.ENERGY, Job.HESSIAN, Job.OPTIMIZATION),
-    elstruct.par.Program.NWCHEM6: (
+    par.Program.NWCHEM6: (
         Job.ENERGY, Job.OPTIMIZATION),
-    elstruct.par.Program.ORCA4: (
+    par.Program.ORCA4: (
         Job.ENERGY, Job.GRADIENT, Job.HESSIAN, Job.OPTIMIZATION),
-    elstruct.par.Program.PSI4: (
+    par.Program.PSI4: (
         Job.ENERGY, Job.GRADIENT, Job.HESSIAN, Job.OPTIMIZATION,
         Job.IRC)
 }
