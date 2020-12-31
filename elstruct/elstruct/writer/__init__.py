@@ -22,6 +22,8 @@ from elstruct.writer._writer import optimization
 # irc
 from elstruct.writer._writer import irc_programs
 from elstruct.writer._writer import irc
+# mako fill utility functions 
+from elstruct.writer._writer import fill
 
 
 __all__ = [
@@ -47,5 +49,7 @@ __all__ = [
     'optimization',
     # irc
     'irc_programs',
-    'irc'
+    'irc',
+    # fill
+    'fill'
 ]

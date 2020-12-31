@@ -4,6 +4,13 @@ from elstruct import Option
 from elstruct import option
 
 
+class Reference():
+    """ _ """
+    RHF = 'rhf'
+    UHF = 'uhf'
+    ROHF = 'rohf'
+
+
 GAUSSIAN09_OPTION_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'MaxCycle={}'.format(*option.values(osp)),

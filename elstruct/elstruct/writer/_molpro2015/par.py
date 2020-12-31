@@ -1,8 +1,23 @@
 """ elstruct.writer._molpro2015 parameters
 """
+
 from elstruct import Option
 from elstruct import option
 
+
+class Reference():
+    """ _ """
+    RHF = 'rhf'
+    UHF = 'uhf'
+
+
+class MultiReference():
+    """ _ """
+    CASSCF = 'casscf'
+    CASPT2 = 'rs2'
+    CASPT2I = 'rs2'
+    CASPT2C = 'rs2c'
+    MRCI_Q = 'mrci'
 
 MOLPRO2015_OPTION_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):

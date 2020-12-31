@@ -1,7 +1,15 @@
 """ elstruct.writer._gaussian16 parameters
 """
+
 from elstruct import Option
 from elstruct import option
+
+
+class Reference():
+    """ _ """
+    RHF = 'rhf'
+    UHF = 'uhf'
+    ROHF = 'rohf'
 
 
 GAUSSIAN09_OPTION_EVAL_DCT = {

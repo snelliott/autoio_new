@@ -5,7 +5,7 @@ import autowrite as aw
 import elstruct.par
 import elstruct.option
 from elstruct import template
-from elstruct.writer._molpro2015 import par
+from elstruct.writer._molpro2015 import par as prog_par
 
 PROG = elstruct.par.Program.MOLPRO2015
 
@@ -14,317 +14,8 @@ THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 
-# mako template keys
-class Molpro2015Reference():
-    """ _ """
-    RHF = 'rhf'
-    UHF = 'uhf'
-
-
-class Molpro2015MultiReference():
-    """ _ """
-    CASSCF = 'casscf'
-    CASPT2 = 'rs2'
-    CASPT2I = 'rs2'
-    CASPT2C = 'rs2c'
-    MRCI_Q = 'mrci'
-
-
-class JobKey():
-    """ _ """
-    ENERGY = 'energy'
-    OPTIMIZATION = 'optimization'
-    GRADIENT = 'gradient'
-    HESSIAN = 'hessian'
-
-
-class TemplateKey():
-    """ mako template keys """
-    # machine
-    COMMENT = 'comment'
-    MEMORY_MW = 'memory_mw'
-    MACHINE_OPTIONS = 'machine_options'
-    # theoretical method
-    BASIS = 'basis'
-    SCF_METHOD = 'scf_method'
-    SCF_OPTIONS = 'scf_options'
-    ISMULTIREF = 'ismultiref'
-    CASSCF_OPTIONS = 'casscf_options'
-    CORR_METHOD = 'corr_method'
-    CORR_OPTIONS = 'corr_options'
-    # molecule / state
-    MOL_OPTIONS = 'mol_options'
-    CHARGE = 'charge'
-    SPIN = 'spin'
-    GEOM = 'geom'
-    ZMAT_VALS = 'zmat_vals'
-    # job
-    COMMENT = 'comment'
-    JOB_KEY = 'job_key'
-    JOB_OPTIONS = 'job_options'
-    GEN_LINES_1 = 'gen_lines_1'
-    GEN_LINES_2 = 'gen_lines_2'
-    GEN_LINES_3 = 'gen_lines_3'
-
-
-def energy(geo, charge, mult, method, basis,
-           # molecule options
-           mol_options=(),
-           # machine options
-           memory=1, comment='', machine_options=(),
-           # theory options
-           orb_restricted=None,
-           scf_options=(), casscf_options=(), corr_options=(),
-           # generic options
-           gen_lines=None):
-    """ Writes an input file string for an electronic energy calculation
-        for a specified electronic structure program.
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param charge: molecular charge
-        :type charge: int
-        :param mult: spin multiplicity
-        :type mult: int
-        :param method: electronic structure method
-        :type method: str
-        :param basis: basis set
-        :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
-        :param mol_options: options for the molecule block
-        :type mol_options: tuple[str]
-        ;param memory: memory in GB
-        :type memory: int
-        :param comment: a comment string to be placed at the top of the file
-        :type comment: str
-        :param machine_options: machine directives
-            (num procs, num threads, etc.)
-        :type machine_options: tuple[str]
-        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
-            Where first (second) character sets R/U for singlets (multiplets)
-        :type orb_type: str
-        :param scf_options: scf method directives
-        :type scf_options: tuple[str]
-        :param casscf_options: casscf method directives
-        :type casscf_options: tuple[str]
-        :param corr_options: correlation method directives
-        :type corr_options: tuple[str]
-        :param gen_lines: generic lines for the input file
-        :type gen_lines: dict[idx:str]
-    """
-    job_key = JobKey.ENERGY
-    fill_dct = _fillvalue_dictionary(
-        job_key=job_key, method=method, basis=basis, geo=geo, mult=mult,
-        charge=charge, orb_restricted=orb_restricted,
-        mol_options=mol_options,
-        memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options,
-        corr_options=corr_options,
-        gen_lines=gen_lines,
-    )
-    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
-    return inp_str
-
-
-def gradient(geo, charge, mult, method, basis,
-             # molecule options
-             mol_options=(),
-             # machine options
-             memory=1, comment='', machine_options=(),
-             # theory options
-             orb_restricted=None,
-             scf_options=(), casscf_options=(), corr_options=(),
-             # generic options
-             gen_lines=None,
-             # job options
-             job_options=()):
-    """ Writes an input file string for a gradient calculation
-        for a specified electronic structure program.
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param charge: molecular charge
-        :type charge: int
-        :param mult: spin multiplicity
-        :type mult: int
-        :param method: electronic structure method
-        :type method: str
-        :param basis: basis set
-        :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
-        :param mol_options: options for the molecule block
-        :type mol_options: tuple[str]
-        ;param memory: memory in GB
-        :type memory: int
-        :param comment: a comment string to be placed at the top of the file
-        :type comment: str
-        :param machine_options: machine directives
-            (num procs, num threads, etc.)
-        :type machine_options: tuple[str]
-        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
-            Where first (second) character sets R/U for singlets (multiplets)
-        :type orb_type: str
-        :param scf_options: scf method directives
-        :type scf_options: tuple[str]
-        :param casscf_options: casscf method directives
-        :type casscf_options: tuple[str]
-        :param corr_options: correlation method directives
-        :type corr_options: tuple[str]
-        :param gen_lines: generic lines for the input file
-        :type gen_lines: dict[idx:str]
-    """
-    job_key = JobKey.GRADIENT
-    fill_dct = _fillvalue_dictionary(
-        job_key=job_key, method=method, basis=basis, geo=geo, mult=mult,
-        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
-        memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options,
-        corr_options=corr_options,
-        job_options=job_options, gen_lines=gen_lines,
-    )
-    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
-    return inp_str
-
-
-def hessian(geo, charge, mult, method, basis,
-            # molecule options
-            mol_options=(),
-            # machine options
-            memory=1, comment='', machine_options=(),
-            # theory options
-            orb_restricted=None,
-            scf_options=(), casscf_options=(), corr_options=(),
-            # generic options
-            gen_lines=None,
-            # job options
-            job_options=()):
-    """ Writes an input file string for a Hessian calculation
-        for a specified electronic structure program.
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param charge: molecular charge
-        :type charge: int
-        :param mult: spin multiplicity
-        :type mult: int
-        :param method: electronic structure method
-        :type method: str
-        :param basis: basis set
-        :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
-        :param mol_options: options for the molecule block
-        :type mol_options: tuple[str]
-        ;param memory: memory in GB
-        :type memory: int
-        :param comment: a comment string to be placed at the top of the file
-        :type comment: str
-        :param machine_options: machine directives
-            (num procs, num threads, etc.)
-        :type machine_options: tuple[str]
-        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
-            Where first (second) character sets R/U for singlets (multiplets)
-        :type orb_type: str
-        :param scf_options: scf method directives
-        :type scf_options: tuple[str]
-        :param casscf_options: casscf method directives
-        :type casscf_options: tuple[str]
-        :param corr_options: correlation method directives
-        :type corr_options: tuple[str]
-        :param gen_lines: generic lines for the input file
-        :type gen_lines: dict[idx:str]
-    """
-    job_key = JobKey.HESSIAN
-    fill_dct = _fillvalue_dictionary(
-        job_key=job_key, method=method, basis=basis, geo=geo, mult=mult,
-        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
-        memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options,
-        corr_options=corr_options,
-        job_options=job_options, gen_lines=gen_lines,
-    )
-    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
-    return inp_str
-
-
-def optimization(geo, charge, mult, method, basis,
-                 # molecule options
-                 mol_options=(),
-                 # machine options
-                 memory=1, comment='', machine_options=(),
-                 # theory options
-                 orb_restricted=None,
-                 scf_options=(), casscf_options=(), corr_options=(),
-                 # generic options
-                 gen_lines=None,
-                 # job options
-                 job_options=(), frozen_coordinates=(), saddle=False):
-    """ Writes an input file string for a geometry optimization
-        calculation for a specified electronic structure program.
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param charge: molecular charge
-        :type charge: int
-        :param mult: spin multiplicity
-        :type mult: int
-        :param method: electronic structure method
-        :type method: str
-        :param basis: basis set
-        :type basis: str
-        :param prog: electronic structure program to use as a backend
-        :type prog: str
-        :param mol_options: options for the molecule block
-        :type mol_options: tuple[str]
-        ;param memory: memory in GB
-        :type memory: int
-        :param comment: a comment string to be placed at the top of the file
-        :type comment: str
-        :param machine_options: machine directives
-            (num procs, num threads, etc.)
-        :type machine_options: tuple[str]
-        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
-            Where first (second) character sets R/U for singlets (multiplets)
-        :type orb_type: str
-        :param scf_options: scf method directives
-        :type scf_options: tuple[str]
-        :param casscf_options: casscf method directives
-        :type casscf_options: tuple[str]
-        :param corr_options: correlation method directives
-        :type corr_options: tuple[str]
-        :param job_options: geometry optimization routine directives
-        :type job_options: tuple[str]
-        :param frozen_coordinates: only with z-matrix geometries; list of
-            coordinate names to freeze
-        :type fozen_coordinates: tuple[str]
-        :param saddle: optimize a saddle point?
-        :type saddle: bool
-        :param gen_lines: generic lines for the input file
-        :type gen_lines: dict[idx:str]
-    """
-    job_key = JobKey.OPTIMIZATION
-    fill_dct = _fillvalue_dictionary(
-        job_key=job_key, method=method, basis=basis, geo=geo, mult=mult,
-        charge=charge, orb_restricted=orb_restricted, mol_options=mol_options,
-        memory=memory, comment=comment, machine_options=machine_options,
-        scf_options=scf_options, casscf_options=casscf_options,
-        corr_options=corr_options,
-        gen_lines=gen_lines,
-        frozen_coordinates=frozen_coordinates, job_options=job_options,
-        saddle=saddle
-    )
-    inp_str = template.read_and_fill(TEMPLATE_DIR, 'all.mako', fill_dct)
-    return inp_str
-
-
 # helper functions
-def _fillvalue_dictionary(job_key, method, basis, geo, mult, charge,
+def write_input(job_key, method, basis, geo, mult, charge,
                           orb_restricted, mol_options, memory, comment,
                           machine_options,
                           scf_options, casscf_options, corr_options,
@@ -380,8 +71,8 @@ def _fillvalue_dictionary(job_key, method, basis, geo, mult, charge,
     spin = mult - 1
 
     # Set the reference
-    molpro_scf_method = (Molpro2015Reference.RHF if orb_restricted else
-                         Molpro2015Reference.UHF)
+    molpro_scf_method = (prog_par.Reference.RHF if orb_restricted else
+                         prog_par.Reference.UHF)
 
     # set correlated method; check if multiref
     molpro_corr_method, ismultiref = _set_method(method, singlet)
@@ -450,7 +141,10 @@ def _fillvalue_dictionary(job_key, method, basis, geo, mult, charge,
         TemplateKey.GEN_LINES_3: gen_lines_3
     }
 
-    return fill_dct
+    return build_mako_str(
+        template_file_name='all.mako',
+        template_src_path=TEMPLATE_DIR,
+        template_keys=fill_dct)
 
 
 def _set_method(method, singlet):
@@ -511,6 +205,6 @@ def _evaluate_options(opts):
     for idx, opt in enumerate(opts):
         if elstruct.option.is_valid(opt):
             name = elstruct.option.name(opt)
-            assert name in par.OPTION_NAMES
-            opts[idx] = par.MOLPRO2015_OPTION_EVAL_DCT[name](opt)
+            assert name in prog_par.OPTION_NAMES
+            opts[idx] = prog_par.MOLPRO2015_OPTION_EVAL_DCT[name](opt)
     return tuple(opts)

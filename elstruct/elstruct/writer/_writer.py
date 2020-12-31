@@ -1,20 +1,9 @@
 """ Electronic structure program input writing module.
-
-    Calls functions from the various program modules. Each module must provide
-    a function that matches one in the module template --
-    both the function name and signature are checked
-    before calling the function.
-    
-    The resulting function signatures are exactly those in module_template.py
-    with `prog` inserted as the first required argument.
 """
 
-from elstruct import program_modules as pm
 from elstruct import par
+from elstruct.writer import program_modules as pm
 from elstruct.writer import module_template
-
-
-MODULE_NAME = par.Module.WRITER
 
 
 # energy input writers
@@ -22,42 +11,11 @@ def programs():
     """ Constructs a list of available electronic structure programs.
         At minimum, each program must have an energy reader to be enumerated.
     """
-    return pm.program_modules_with_functions(
-        MODULE_NAME, [module_template.energy])
+    return pm.program_modules_with_function(
+        MODULE_NAME, pm.Job.energy)
 
 
-def methods(prog):
-    """ Constructs a list of available electronic structure methods.
-
-        :param prog: the electronic structure program to use as a backend
-        :type prog: str
-    """
-    return par.program_methods(prog)
-
-
-def bases(prog):
-    """ Constructs a list of available electronic structure basis sets.
-
-        :param prog: the electronic structure program to use as a backend
-        :type prog: str
-    """
-    return par.program_bases(prog)
-
-
-def method_orbital_types(prog, method, singlet):
-    """ Constructs a list of available orbital restrictions for a given method.
-
-        :param prog: the electronic structure program to use as a backend
-        :type prog: str
-        :param method: electronic structure method
-        :type method: str
-        :param singlet: whether or not the target is a singlet (closed shell)
-        :type singlet: bool
-    """
-    return par.program_method_orbital_types(prog, method, singlet)
-
-
-def energy(geo, charge, mult, method, basis, prog,
+def energy(prog, geo, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options
@@ -108,7 +66,7 @@ def energy(geo, charge, mult, method, basis, prog,
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.energy,
+        prog, pm.Job.ENERGY,
         # *args
         geo, charge, mult, method, basis,
         # **kwargs
@@ -125,7 +83,7 @@ def gradient_programs():
         gradient input writers.
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.gradient)
+        MODULE_NAME, pm.Job.GRADIENT)
 
 
 def gradient(geo, charge, mult, method, basis, prog,
@@ -181,7 +139,7 @@ def gradient(geo, charge, mult, method, basis, prog,
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.gradient,
+        prog, pm.Job.GRADIENT,
         # *args
         geo, charge, mult, method, basis,
         # **kwargs
@@ -198,7 +156,7 @@ def hessian_programs():
         Hessian input writers.
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.hessian)
+        MODULE_NAME, pm.Job.HESSIAN)
 
 
 def hessian(geo, charge, mult, method, basis, prog,
@@ -254,7 +212,7 @@ def hessian(geo, charge, mult, method, basis, prog,
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.hessian,
+        prog, pm.Job.HESSIAN,
         # *args
         geo, charge, mult, method, basis,
         # **kwargs
@@ -271,7 +229,7 @@ def vpt2_programs():
         2nd-order vibrational perturbation theory (VPT2) input writers.
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.vpt2)
+        MODULE_NAME, pm.Job.VPT2)
 
 
 def vpt2(geo, charge, mult, method, basis, prog,
@@ -328,7 +286,7 @@ def vpt2(geo, charge, mult, method, basis, prog,
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.vpt2,
+        prog, pm.Job.VPT2,
         # *args
         geo, charge, mult, method, basis,
         # **kwargs
@@ -346,7 +304,7 @@ def molec_properties_programs():
         dipole moment and polarizability, input writers.
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.molec_properties)
+        MODULE_NAME, pm.Job.MOLPROP)
 
 
 def molec_properties(geo, charge, mult, method, basis, prog,
@@ -403,7 +361,7 @@ def molec_properties(geo, charge, mult, method, basis, prog,
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.molec_properties,
+        prog, pm.Job.MOLPROP,
         # *args
         geo, charge, mult, method, basis,
         # **kwargs
@@ -420,7 +378,7 @@ def irc_programs():
         Intrinsic Reaction Coordinate input writers.
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.irc)
+        MODULE_NAME, pm.Job.IRC)
 
 
 def irc(geo, charge, mult, method, basis, prog,
@@ -481,7 +439,7 @@ def irc(geo, charge, mult, method, basis, prog,
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.irc,
+        prog, pm.Job.IRC,
         # *args
         geo, charge, mult, method, basis,
         # **kwargs
@@ -499,10 +457,10 @@ def optimization_programs():
         geometry optimization input writers.
     """
     return pm.program_modules_with_function(
-        MODULE_NAME, module_template.optimization)
+        MODULE_NAME, pm.Job.OPTIMIZATION)
 
 
-def optimization(geo, charge, mult, method, basis, prog,
+def optimization(prog, geo, charge, mult, method, basis,
                  # molecule options
                  mol_options=(),
                  # machine options
@@ -562,9 +520,9 @@ def optimization(geo, charge, mult, method, basis, prog,
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.optimization,
+        prog, pm.Job.OPTIMIZATION,
         # *args
-        geo, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
         mol_options=mol_options, memory=memory, comment=comment,
         machine_options=machine_options, orb_restricted=orb_restricted,

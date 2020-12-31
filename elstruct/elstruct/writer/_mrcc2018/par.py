@@ -4,6 +4,13 @@ from elstruct import Option
 from elstruct import option
 
 
+class Reference():
+    """ _ """
+    RHF = 'rhf'
+    UHF = 'uhf'
+    ROHF = 'rohf'
+
+
 MRCC2018_OPTION_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'scfmaxit={}'.format(*option.values(osp)),

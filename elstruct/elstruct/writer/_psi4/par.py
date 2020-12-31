@@ -4,6 +4,15 @@ import elstruct.par
 import elstruct.option
 
 
+class Reference():
+    """ _ """
+    RHF = 'rhf'
+    UHF = 'uhf'
+    ROHF = 'rohf'
+    RKS = 'rks'
+    UKS = 'uks'
+
+
 PSI4_OPTION_EVAL_DCT = {
     elstruct.option.name(elstruct.par.Option.Scf.MAXITER_):
     lambda osp: 'set scf maxiter {}'.format(*elstruct.option.values(osp)),
