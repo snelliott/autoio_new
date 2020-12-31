@@ -8,7 +8,7 @@ import elstruct.par
 import elstruct.option
 from elstruct import template
 from elstruct import pclass
-from elstruct.writer. import fill
+from elstruct.writer import fill
 from elstruct.writer._gaussian09 import par as prog_par
 
 
