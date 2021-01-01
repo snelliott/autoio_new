@@ -1,7 +1,7 @@
 """ test the writing of the global keyword section for reactions and messpf
 """
 
-import mess_io
+import mess_io.writer
 from _util import read_text_file
 
 

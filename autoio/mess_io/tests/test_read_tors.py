@@ -2,33 +2,42 @@
  tests torsional mode reader
 """
 
-import os
 import numpy
-import mess_io
+import mess_io.reader
+from _util import read_text_file
 
 
-PATH = os.path.dirname(os.path.realpath(__file__))
-DATA_PATH = os.path.join(PATH, 'data')
-DATA_NAME = 'mess.log'
-with open(os.path.join(DATA_PATH, DATA_NAME), 'r') as datfile:
-    OUT_STR = datfile.read()
+OUT_STR = read_text_file(['data', 'out'], 'freq.log')
 
 
-def test__tors():
-    """ test mess_io.reader.tors
+def test__freqs():
+    """ test mess_io.reader.tors.analytic_frequencies
+        test mess_io.reader.tors.grid_minimum_frequencies
     """
 
-    freqs = mess_io.reader.tors.freqs(
-        output_string=OUT_STR)
-    zpves = mess_io.reader.tors.zpves(
-        output_string=OUT_STR)
+    ref_analyt_freqs = (219.082, 118.148, 124.148, 222.028, 209.659, 420.967)
+    ref_gridmin_freqs = (211.585, 115.404, 104.018, 185.075, 144.794, 412.947)
 
-    ref_freqs = (235.630, 152.547, 227.806)
-    ref_zpves = (0.33087, 1.28022, 0.03015)
+    analyt_freqs = mess_io.reader.tors.analytic_frequencies(OUT_STR)
+    gridmin_freqs = mess_io.reader.tors.grid_minimum_frequencies(OUT_STR)
 
-    assert numpy.allclose(freqs, ref_freqs)
+    assert numpy.allclose(analyt_freqs, ref_analyt_freqs)
+    assert numpy.allclose(gridmin_freqs, ref_gridmin_freqs)
+
+
+def test__zpves():
+    """ test mess_io.reader.tors.zpves
+    """
+
+    ref_zpves = (0.00048053637212001904, 0.0002661216076862006,
+                 0.0002676518953394201, 0.0004898094974562318,
+                 0.0004479208868480696, 0.000917415142012805)
+
+    zpves = mess_io.reader.tors.zero_point_vibrational_energies(OUT_STR)
+
     assert numpy.allclose(zpves, ref_zpves)
 
 
 if __name__ == '__main__':
-    test__tors()
+    test__freqs()
+    test__zpves()

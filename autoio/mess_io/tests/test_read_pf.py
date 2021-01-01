@@ -3,7 +3,7 @@
 """
 
 import numpy
-import mess_io
+import mess_io.reader
 from _util import read_text_file
 
 
