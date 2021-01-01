@@ -112,14 +112,9 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         job_directives.append('print,hessian,low=5')
 
     # Set the gen lines blocks
-    if gen_lines is not None:
-        gen_lines_1 = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
-        gen_lines_2 = '\n'.join(gen_lines[2]) if 2 in gen_lines else ''
-        gen_lines_3 = '\n'.join(gen_lines[3]) if 3 in gen_lines else ''
-    else:
-        gen_lines_1 = ''
-        gen_lines_2 = ''
-        gen_lines_3 = 'molpro_energy=energy\nshow[1,e25.15],molpro_energy'
+    gen_lines_1, gen_lines_2, gen_lines_3 = fill.build_gen_lines(
+        gen_lines,
+        line3='molpro_energy=energy\nshow[1,e25.15],molpro_energy')
 
     # Create a dictionary to fille the template
     fill_dct = {
@@ -170,45 +165,3 @@ def _set_method(method, singlet):
             corr_method = ''
 
     return corr_method, ismultiref
-
-
-def _geometry_strings(geo):
-    """ Build the string for the input geometry
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param frozen_coordinates: only with z-matrix geometries; list of
-            coordinate names to freeze
-        :type fozen_coordinates: tuple[str]
-        :rtype: (str, str)
-    """
-
-    if automol.geom.is_valid(geo):
-        geo_str = automol.geom.string(geo)
-        zmat_val_str = ''
-    elif automol.zmatrix.is_valid(geo):
-        zma = geo
-        symbs = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = automol.zmatrix.name_matrix(zma)
-        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
-
-        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat, delim=', ')
-        zmat_val_str = aw.zmatrix.setval_block(val_dct)
-    elif geo in ('GEOMETRY', 'GEOMETRY_HERE'):
-        geo_str = geo
-        zmat_val_str = ''
-    else:
-        raise ValueError("Invalid geometry value:\n{}".format(geo))
-
-    return geo_str, zmat_val_str
-
-
-def _evaluate_options(opts):
-    opts = list(opts)
-    for idx, opt in enumerate(opts):
-        if elstruct.option.is_valid(opt):
-            name = elstruct.option.name(opt)
-            assert name in prog_par.OPTION_NAMES
-            opts[idx] = prog_par.MOLPRO2015_OPTION_EVAL_DCT[name](opt)
-    return tuple(opts)

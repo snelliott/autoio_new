@@ -71,9 +71,11 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     """
 
     reference = _reference(mult, orb_restricted)
+
+    # Build the geometry object for the job
     geo_str, zmat_val_str = _geometry_strings(
         geo, frozen_coordinates, job_key)
-    # Substituite multiple whitespaces for single whitespace
+
     geo_str = '\n'.join([' '.join(string.split())
                          for string in geo_str.splitlines()])
     zmat_val_str = '\n'.join([' '.join(string.split())
@@ -81,16 +83,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     zmat_val_str += '\n'
 
     # Set options for coupled cluster
-    if method in ('ccsd', 'ccsd(t)'):
-        corr_options = (('ABCDTYPE=AOBASIS'),)
-    if method in ('ccsd', 'ccsd(t)') and reference in ('rhf', 'uhf'):
-        corr_options += (('CC_PROG=ECC'),)
-    elif method in ('ccsd', 'ccsd(t)') and reference in ('rohf'):
-        corr_options += (('CC_PROG=VCC'),)
-    elif method in ('ccsdt', 'ccsdt(q)') and reference in ('rhf'):
-        corr_options += (('CC_PROG=NCC'),)
-    elif method in ('ccsdt', 'ccsdt(q)') and reference in ('uhf', 'rohf'):
-        raise NotImplementedError("CFOUR ONLY ALLOWS CLOSED-SHELL")
+    corr_options = _set_cc_prog(method, reference)
 
     # Unused options
     _ = mol_options
@@ -141,3 +134,22 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         template_file_name='all.mako',
         template_src_path=TEMPLATE_DIR,
         template_keys=fill_dct)
+
+
+# Helper functions for CFOUR
+def _set_cc_prog(method, reference):
+    """ Set the appropriate CC_PROG keyword based on method requested
+    """
+
+    if method in ('ccsd', 'ccsd(t)'):
+        corr_options = (('ABCDTYPE=AOBASIS'),)
+    if method in ('ccsd', 'ccsd(t)') and reference in ('rhf', 'uhf'):
+        corr_options += (('CC_PROG=ECC'),)
+    elif method in ('ccsd', 'ccsd(t)') and reference in ('rohf'):
+        corr_options += (('CC_PROG=VCC'),)
+    elif method in ('ccsdt', 'ccsdt(q)') and reference in ('rhf'):
+        corr_options += (('CC_PROG=NCC'),)
+    elif method in ('ccsdt', 'ccsdt(q)') and reference in ('uhf', 'rohf'):
+        raise NotImplementedError("CFOUR ONLY ALLOWS CLOSED-SHELL")
+
+    return corr_options

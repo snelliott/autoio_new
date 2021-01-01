@@ -13,7 +13,7 @@
       O         -1.28365       3.21728       0.00000
       H         -0.43308       2.71019       0.00000
     SymmetryFactor                  1.0
-    PotentialPrefactor[au] 	      12.0
-    PotentialPowerExponent 	      4.0
-    TSTLevel EJ
+    PotentialPrefactor[au]          10.0
+    PotentialPowerExponent          6.0
+    TSTLevel E
   End

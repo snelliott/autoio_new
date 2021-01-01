@@ -7,6 +7,7 @@ from ioformat import build_mako_str
 from ioformat import indent
 from ioformat import remove_trail_whitespace
 from mess_io.writer._sec import rxnchan_header_str
+from phydat import phycon
 
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
@@ -94,7 +95,7 @@ def global_reaction(temperatures, pressures,
 
 def global_pf(temperatures=(),
               temp_step=100, ntemps=30,
-              rel_temp_inc=0.001, atom_dist_min=0.6):
+              rel_temp_inc=0.001, atom_dist_min=1.13384):
     """ Writes the global keywords section of the MESS input file by
         formatting input information into strings a filling Mako template.
 
@@ -106,7 +107,7 @@ def global_pf(temperatures=(),
         :type ntemps: int
         :param rel_temp_inc: increment for temps
         :type rel_temp_inc: float
-        :param atom_dist_min: cutoff for atom distances (Angstrom)
+        :param atom_dist_min: cutoff for atom distances (Bohr)
         :type atom_dist_min: float
         :return global_pf_str: string for section
         :rtype: string
@@ -118,6 +119,9 @@ def global_pf(temperatures=(),
         ntemps = None
     else:
         temperature_list = ''
+
+    # Convert the atom distance minimum
+    atom_dist_min = '{0:.2f}'.format(atom_dist_min * phycon.BOHR2ANG)
 
     # Create dictionary to fill template
     globpf_keys = {

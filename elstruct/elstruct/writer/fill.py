@@ -47,6 +47,7 @@ class TemplateKey():
     CORR_OPTIONS = 'corr_options'
 
 
+# Format strings
 def geometry_strings(geo, frozen_coordinates):
     """ Build the string for the input geometry
 
@@ -113,23 +114,81 @@ def _name_mat(zma, frozen_coordinates, job_key):
     return name_mat
 
 
-def set_reference(method, mult, orb_restricted, ref_dct, prog):
-    if elstruct.par.Method.is_dft(method):
-        if prog == '':
-            reference = ref_dct[Reference.ROHF]
+def build_gen_lines(gen_lines, line1=None, line2=None, line3=None):
+    """ Set three lines for writing in various blocks of files.
+        Function either grabs lines from the dictionary and if nothing
+        present, then uses value provided by function
+    """
 
-        else:
+    if gen_lines is not None:
+        gen_lines_1 = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
+        gen_lines_2 = '\n'.join(gen_lines[2]) if 2 in gen_lines else ''
+        gen_lines_3 = '\n'.join(gen_lines[3]) if 3 in gen_lines else ''
+    else:
+        gen_lines_1 = ''
+        gen_lines_2 = ''
+        gen_lines_3 = ''
+
+    if not gen_lines_1:
+        gen_lines_1 = line1 if line1 is not None else ''
+    if not gen_lines_2:
+        gen_lines_2 = line2 if line2 is not None else ''
+    if not gen_lines_3:
+        gen_lines_3 = line3 if line3 is not None else ''
+
+    return gen_lines_1, gen_lines_2, gen_lines_3
+
+
+def _geometry_strings(geo):
+    """ Build the string for the input geometry
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param frozen_coordinates: only with z-matrix geometries; list of
+            coordinate names to freeze
+        :type fozen_coordinates: tuple[str]
+        :rtype: (str, str)
+    """
+
+    if automol.geom.is_valid(geo):
+        geo_str = automol.geom.string(geo)
+        zmat_val_str = ''
+    elif automol.zmatrix.is_valid(geo):
+        zma = geo
+        symbs = automol.zmatrix.symbols(zma)
+        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
+        name_mat = automol.zmatrix.name_matrix(zma)
+        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
+
+        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat, delim=', ')
+        zmat_val_str = aw.zmatrix.setval_block(val_dct)
+    elif geo in ('GEOMETRY', 'GEOMETRY_HERE'):
+        geo_str = geo
+        zmat_val_str = ''
+    else:
+        raise ValueError("Invalid geometry value:\n{}".format(geo))
+
+    return geo_str, zmat_val_str
+
+
+
+
+
+def set_reference(prog, prog_ref_dct, method, mult, orb_restrited):
+    if elstruct.par.Method.is_dft(method):
+        if prog in (par.Program.GAUSSIAN09, par.Program.GAUSSIAN16):
             reference = ''
-    elif mult != 1:
-        if orb_restricted:
-            reference = ref_dct[Reference.ROHF]
         else:
-            reference = ref_dct[Reference.UHF]
+            reference = (Reference.RKS if orb_restricted else
+                         Reference.UKS)
+    elif mult != 1:
+        reference = (Reference.ROHF if orb_restricted else
+                     Reference.UHF)
     else:
         assert mult == 1 and orb_restricted is True
-        reference = ref_dct[Reference.RHF]
+        reference = Reference.RHF
 
-    return reference
+    return prog_ref_dct[reference]
 
 
 def evaluate_options(opts, opt_eval_dct):

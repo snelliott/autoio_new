@@ -73,41 +73,36 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         :type gen_lines: dict[idx:str]
     """
 
-    reference = _reference(method, mult, orb_restricted)
-    geo_str, zmat_var_val_str, zmat_const_val_str = _geometry_strings(
+    # Build the geometry object for the job 
+    geo_str, zmat_var_val_str, zmat_const_val_str = fill.geometry_strings(
         geo, frozen_coordinates)
 
+    # Set theory methods and options
     if elstruct.par.Method.is_correlated(method):
         assert not corr_options
 
-    if (reference == par.Reference.ROHF and
-            job_key in (JobKey.GRADIENT, JobKey.HESSIAN)):
-        job_options = list(job_options)
-        job_options.insert(0, 'EnOnly')
-
     gaussian09_method = elstruct.par.program_method_name(PROG, method)
     gaussian09_basis = elstruct.par.program_basis_name(PROG, basis)
-
-    # in the case of Hartree-Fock, swap the method for the reference name
+    
     if method == elstruct.par.Method.HF[0]:
         gaussian09_method = reference
         reference = ''
-
+    else:
+        reference = set_reference(
+            elstruct.par.GAUSSIAN09, prog_par.
+            method, mult, orb_restricted)
+    
+    # Build various options
     scf_guess_options, scf_options = _intercept_scf_guess_option(scf_options)
-    scf_guess_options = _evaluate_options(scf_guess_options)
-    scf_options = _evaluate_options(scf_options)
-    casscf_options = _evaluate_options(casscf_options)
-    job_options = _evaluate_options(job_options)
-
+    casscf_options = fill.evaluate_options(casscf_options)
+    job_options = fill.evaluate_options(job_options)
     if saddle:
         job_options += ('CALCFC', 'TS', 'NOEIGEN', 'MAXCYCLES=60')
 
     # Set the gen lines blocks
-    if gen_lines is not None:
-        gen_lines = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
-    else:
-        gen_lines = ''
+    gen_lines_1, _, _ = fill.build_gen_lines(gen_lines)
 
+    # Build the dictionary to fill the Mako template
     fill_dct = {
         fill.TemplateKey.MEMORY: memory,
         fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
@@ -125,7 +120,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         fill.TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
         fill.TemplateKey.JOB_KEY: job_key,
         fill.TemplateKey.JOB_OPTIONS: ','.join(job_options),
-        fill.TemplateKey.GEN_LINES: gen_lines,
+        fill.TemplateKey.GEN_LINES: gen_lines_1,
     }
 
     return build_mako_str(
@@ -134,19 +129,11 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         template_keys=fill_dct)
 
 
-def _reference(method, mult, orb_restricted):
-    if elstruct.par.Method.is_dft(method):
-        reference = ''
-    elif mult != 1:
-        reference = (prog_par.Reference.ROHF
-                     if orb_restricted else prog_par.Reference.UHF)
-    else:
-        assert mult == 1 and orb_restricted is True
-        reference = prog_par.Reference.RHF
-    return reference
-
-
+# Helper functions
 def _intercept_scf_guess_option(scf_opts):
+    """ Set SCF guess options
+    """
+
     guess_opts = []
     ret_scf_opts = []
     for opt in scf_opts:
@@ -155,4 +142,8 @@ def _intercept_scf_guess_option(scf_opts):
             guess_opts.append(opt)
         else:
             ret_scf_opts.append(opt)
-    return guess_opts, ret_scf_opts
+
+    scf_guess_options = _evaluate_options(guess_opts)
+    scf_options = _evaluate_options(ref_scf_opts)
+
+    return scf_guess_options, ret_scf_options
