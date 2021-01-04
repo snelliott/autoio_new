@@ -1,19 +1,15 @@
 """ gaussian09 writer module """
 
 import os
-import automol
 from ioformat import build_mako_str
-import autowrite as aw
-import elstruct.par
 import elstruct.option
-from elstruct import pclass
+import elstruct.par
 from elstruct.writer import fill
-from elstruct.writer._gaussian09 import par as prog_par
+from elstruct.writer._gaussian09._par import REF_DCT, OPTION_EVAL_DCT
 
 
 PROG = elstruct.par.Program.GAUSSIAN09
 
-# set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
@@ -73,7 +69,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         :type gen_lines: dict[idx:str]
     """
 
-    # Build the geometry object for the job 
+    # Build the geometry object for the job
     geo_str, zmat_var_val_str, zmat_const_val_str = fill.geometry_strings(
         geo, frozen_coordinates)
 
@@ -83,7 +79,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
 
     gaussian09_method = elstruct.par.program_method_name(PROG, method)
     gaussian09_basis = elstruct.par.program_basis_name(PROG, basis)
-    
+
     if method == elstruct.par.Method.HF[0]:
         gaussian09_method = reference
         reference = ''
@@ -91,11 +87,12 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         reference = set_reference(
             elstruct.par.GAUSSIAN09, prog_par.
             method, mult, orb_restricted)
-    
+
     # Build various options
-    scf_guess_options, scf_options = _intercept_scf_guess_option(scf_options)
-    casscf_options = fill.evaluate_options(casscf_options)
-    job_options = fill.evaluate_options(job_options)
+    scf_guess_options, scf_options = fill.intercept_scf_guess_option(
+        scf_options, OPTION_EVAL_DCT)
+    casscf_options = fill.evaluate_options(casscf_options, OPTION_EVAL_DCT)
+    job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
     if saddle:
         job_options += ('CALCFC', 'TS', 'NOEIGEN', 'MAXCYCLES=60')
 
@@ -127,23 +124,3 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         template_file_name='all.mako',
         template_src_path=TEMPLATE_DIR,
         template_keys=fill_dct)
-
-
-# Helper functions
-def _intercept_scf_guess_option(scf_opts):
-    """ Set SCF guess options
-    """
-
-    guess_opts = []
-    ret_scf_opts = []
-    for opt in scf_opts:
-        if (elstruct.option.is_valid(opt) and opt in
-                pclass.values(elstruct.par.Option.Scf.Guess)):
-            guess_opts.append(opt)
-        else:
-            ret_scf_opts.append(opt)
-
-    scf_guess_options = _evaluate_options(guess_opts)
-    scf_options = _evaluate_options(ref_scf_opts)
-
-    return scf_guess_options, ret_scf_options

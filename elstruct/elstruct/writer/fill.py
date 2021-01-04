@@ -13,6 +13,7 @@ class TemplateKey():
     # machine
     MEMORY = 'memory'
     MACHINE_OPTIONS = 'machine_options'
+    NPROCS = 'nprocs'
     # theoretical method
     REFERENCE = 'reference'
     METHOD = 'method'
@@ -29,6 +30,9 @@ class TemplateKey():
     FROZEN_DIS_STRS = 'frozen_dis_strs'
     FROZEN_ANG_STRS = 'frozen_ang_strs'
     FROZEN_DIH_STRS = 'frozen_dih_strs'
+    COORD_SYS = 'coord_sys'
+    SADDLE = 'saddle'
+    NUMERICAL = 'numerical'
     # job
     COMMENT = 'comment'
     JOB_KEY = 'job_key'
@@ -171,9 +175,6 @@ def _geometry_strings(geo):
     return geo_str, zmat_val_str
 
 
-
-
-
 def set_reference(prog, prog_ref_dct, method, mult, orb_restrited):
     if elstruct.par.Method.is_dft(method):
         if prog in (par.Program.GAUSSIAN09, par.Program.GAUSSIAN16):
@@ -193,17 +194,18 @@ def set_reference(prog, prog_ref_dct, method, mult, orb_restrited):
 
 def evaluate_options(opts, opt_eval_dct):
     opts = list(opts)
+    option_names = tuple(sorted(opt_eval_dct.keys()))
     for idx, opt in enumerate(opts):
         if elstruct.option.is_valid(opt):
             name = elstruct.option.name(opt)
-            assert name in elstruct.par.OPTION_NAMES
+            assert name in option_names
             opts[idx] = opt_eval_dct[name](opt)
     return tuple(opts)
 
 
 # Program specific?
 # gaussian, orca
-def intercept_scf_guess_option(scf_opts):
+def intercept_scf_guess_option(scf_opts, option_eval_dct):
     guess_opts = []
     ret_scf_opts = []
     for opt in scf_opts:
@@ -212,7 +214,10 @@ def intercept_scf_guess_option(scf_opts):
             guess_opts.append(opt)
         else:
             ret_scf_opts.append(opt)
-    return guess_opts, ret_scf_opts
+    scf_guess_options = evaluate_options(scf_guess_opts, option_eval_dct)
+    scf_options = evaluate_options(scf_options, option_eval_dct)
+
+    return scf_guess_options, scf_options
 
 
 # molpro

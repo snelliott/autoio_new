@@ -2,19 +2,18 @@
 """
 from elstruct import Option
 from elstruct import option
+import elstruct.par
 
 
-class Reference():
-    """ _ """
-    RHF = 'rhf'
-    UHF = 'uhf'
-    ROHF = 'rohf'
+REF_DCT = {
+    elstruct.par.Reference.RHF: 'rhf',
+    elstruct.par.Reference.UHF: 'uhf',
+    elstruct.par.Reference.ROHF: 'rohf'
+}
 
-
-MRCC2018_OPTION_EVAL_DCT = {
+OPTION_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'scfmaxit={}'.format(*option.values(osp)),
     option.name(Option.Opt.MAXITER_):
     lambda osp: 'optmaxit'.format(*option.values(osp)),
 }
-OPTION_NAMES = tuple(sorted(MRCC2018_OPTION_EVAL_DCT.keys()))

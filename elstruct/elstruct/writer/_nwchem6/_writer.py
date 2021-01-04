@@ -1,15 +1,14 @@
 """ NWChem 6.0 writer module """
+
 import os
-import automol
-import autowrite as aw
+from ioformat import build_mako_str
 import elstruct.par
 import elstruct.option
-from elstruct import template
-from elstruct.writer._nwchem6 import par
+from elstruct.writer import fill
+from elstruct.writer._nwchem6._par import REF_DCT, OPTION_EVAL_DCT
 
 PROG = elstruct.par.Program.NWCHEM6
 
-# set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
@@ -78,12 +77,12 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         if elstruct.par.Method.is_correlated(method) else '')
 
     nwchem6_basis = elstruct.par.program_basis_name(PROG, basis)
-    geo_str, zmat_val_str = _geometry_strings(geo)
+    geo_str, zmat_val_str = fill.geometry_strings(geo, frozen_coordinates)
     memory_mw = int(memory * (1000.0 / 8.0))  # convert gb to mw
     spin = mult - 1
-    scf_options = _evaluate_options(scf_options)
+    scf_options = fill.evaluate_options(scf_options, OPTION_EVAL_DCT)
     _ = casscf_options
-    job_options = _evaluate_options(job_options)
+    job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
 
     if saddle:
         job_options += ('root=2',)
@@ -96,70 +95,28 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         job_directives.append('print,hessian,low=5')
 
     # Set the gen lines blocks
-    if gen_lines is not None:
-        gen_lines = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
-    else:
-        gen_lines = ''
+    gen_lines_1, _, _ = fill.build_gen_lines(gen_lines)
 
     fill_dct = {
-        TemplateKey.JOB_KEY: job_key,
-        TemplateKey.COMMENT: comment,
-        TemplateKey.MEMORY_MW: memory_mw,
-        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
-        TemplateKey.GEOM: geo_str,
-        TemplateKey.ZMAT_VALS: zmat_val_str,
-        TemplateKey.CHARGE: charge,
-        TemplateKey.SPIN: spin,
-        TemplateKey.BASIS: nwchem6_basis,
-        TemplateKey.SCF_METHOD: nwchem6_scf_method,
-        TemplateKey.SCF_OPTIONS: ','.join(scf_options),
-        TemplateKey.CORR_METHOD: nwchem6_corr_method,
-        TemplateKey.CORR_OPTIONS: ','.join(corr_options),
-        TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
-        TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        fill.TemplateKey.JOB_KEY: job_key,
+        fill.TemplateKey.COMMENT: comment,
+        fill.TemplateKey.MEMORY_MW: memory_mw,
+        fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
+        fill.TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
+        fill.TemplateKey.GEOM: geo_str,
+        fill.TemplateKey.ZMAT_VALS: zmat_val_str,
+        fill.TemplateKey.CHARGE: charge,
+        fill.TemplateKey.SPIN: spin,
+        fill.TemplateKey.BASIS: nwchem6_basis,
+        fill.TemplateKey.SCF_METHOD: nwchem6_scf_method,
+        fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        fill.TemplateKey.CORR_METHOD: nwchem6_corr_method,
+        fill.TemplateKey.CORR_OPTIONS: ','.join(corr_options),
+        fill.TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
+        fill.TemplateKey.GEN_LINES: gen_lines_1,
     }
 
     return build_mako_str(
         template_file_name='all.mako',
         template_src_path=TEMPLATE_DIR,
         template_keys=fill_dct)
-
-
-def _geometry_strings(geo):
-    """ Build the string for the input geometry
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param frozen_coordinates: only with z-matrix geometries; list of
-            coordinate names to freeze
-        :type fozen_coordinates: tuple[str]
-        :rtype: (str, str)
-    """
-
-    if automol.geom.is_valid(geo):
-        geo_str = automol.geom.string(geo)
-        zmat_val_str = ''
-    elif automol.zmatrix.is_valid(geo):
-        zma = geo
-        symbs = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = automol.zmatrix.name_matrix(zma)
-        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
-
-        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat, delim=', ')
-        zmat_val_str = aw.zmatrix.setval_block(val_dct)
-    else:
-        raise ValueError("Invalid geometry value:\n{0}".format(geo))
-
-    return geo_str, zmat_val_str
-
-
-def _evaluate_options(opts):
-    opts = list(opts)
-    for idx, opt in enumerate(opts):
-        if elstruct.option.is_valid(opt):
-            name = elstruct.option.name(opt)
-            assert name in par.OPTION_NAMES
-            opts[idx] = par.MOLPRO_OPTION_EVAL_DCT[name](opt)
-    return tuple(opts)

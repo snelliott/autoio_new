@@ -1,19 +1,19 @@
 """ elstruct.writer._psi4 parameters
 """
-import elstruct.par
+
 import elstruct.option
+import elstruct.par
 
 
-class Reference():
-    """ _ """
-    RHF = 'rhf'
-    UHF = 'uhf'
-    ROHF = 'rohf'
-    RKS = 'rks'
-    UKS = 'uks'
+REF_DCT = {
+    elstruct.par.Reference.RHF: 'rhf',
+    elstruct.par.Reference.UHF: 'uhf',
+    elstruct.par.Reference.ROHF: 'rohf',
+    elstruct.par.Reference.RKS: 'rks',
+    elstruct.par.Reference.UKS: 'uks'
+}
 
-
-PSI4_OPTION_EVAL_DCT = {
+OPTION_EVAL_DCT = {
     elstruct.option.name(elstruct.par.Option.Scf.MAXITER_):
     lambda osp: 'set scf maxiter {}'.format(*elstruct.option.values(osp)),
     elstruct.option.name(elstruct.par.Option.Scf.DIIS_):
@@ -31,4 +31,3 @@ PSI4_OPTION_EVAL_DCT = {
     elstruct.option.name(elstruct.par.Option.Opt.Coord.REDUNDANT):
     lambda osp: 'set opt_coordinates redundant',
 }
-OPTION_NAMES = tuple(sorted(PSI4_OPTION_EVAL_DCT.keys()))

@@ -3,16 +3,17 @@
 
 from elstruct import Option
 from elstruct import option
+import elstruct.par
 
 
-class Reference():
-    """ _ """
-    RHF = 'rhf'
-    UHF = 'uhf'
-    ROHF = 'rohf'
+REF_DCT = {
+    elstruct.par.Reference.RHF: 'rhf',
+    elstruct.par.Reference.UHF: 'uhf',
+    elstruct.par.Reference.ROHF: 'rohf'
+}
 
 
-GAUSSIAN09_OPTION_EVAL_DCT = {
+OPTION_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'MaxCycle={}'.format(*option.values(osp)),
     option.name(Option.Scf.DIIS_):
@@ -33,4 +34,3 @@ GAUSSIAN09_OPTION_EVAL_DCT = {
     option.name(Option.Opt.Coord.REDUNDANT):
     lambda osp: 'Redundant',
 }
-OPTION_NAMES = tuple(sorted(GAUSSIAN09_OPTION_EVAL_DCT.keys()))

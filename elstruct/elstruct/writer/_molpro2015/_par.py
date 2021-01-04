@@ -3,12 +3,13 @@
 
 from elstruct import Option
 from elstruct import option
+import elstruct.par
 
 
-class Reference():
-    """ _ """
-    RHF = 'rhf'
-    UHF = 'uhf'
+REF_DCT = {
+    elstruct.par.Reference.RHF: 'rhf'
+    elstruct.par.Reference.UHF: 'uhf'
+}
 
 
 class MultiReference():
@@ -19,7 +20,8 @@ class MultiReference():
     CASPT2C = 'rs2c'
     MRCI_Q = 'mrci'
 
-MOLPRO2015_OPTION_EVAL_DCT = {
+
+OPTIONS_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
     option.name(Option.Scf.DIIS_):
@@ -35,4 +37,3 @@ MOLPRO2015_OPTION_EVAL_DCT = {
     option.name(Option.Opt.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
 }
-OPTION_NAMES = tuple(sorted(MOLPRO2015_OPTION_EVAL_DCT.keys()))

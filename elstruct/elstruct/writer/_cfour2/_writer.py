@@ -3,14 +3,13 @@
 import os
 import automol
 from ioformat import build_mako_str
-import elstruct.option
+import elstruct.par
 from elstruct.writer import fill
-from elstruct.writer._cfour2 import par as prog_par
+from elstruct.writer._cfour2._par import REF_DCT, OPTION_EVAL_DCT
 
 
 PROG = elstruct.par.Program.CFOUR2
 
-# Set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
@@ -70,11 +69,12 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         :type gen_lines: dict[idx:str]
     """
 
-    reference = _reference(mult, orb_restricted)
+    reference = fill.set_reference(
+        PROG, REF_DCT, method, mult, orb_restricted)
 
     # Build the geometry object for the job
-    geo_str, zmat_val_str = _geometry_strings(
-        geo, frozen_coordinates, job_key)
+    geo_str, zmat_val_str, _ = fill.geometry_strings(
+        geo, frozen_coordinates)
 
     geo_str = '\n'.join([' '.join(string.split())
                          for string in geo_str.splitlines()])
@@ -89,9 +89,9 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     _ = mol_options
     _ = machine_options
 
-    scf_options = _evaluate_options(scf_options)
-    casscf_options = _evaluate_options(casscf_options)
-    job_options = _evaluate_options(job_options)
+    scf_options = fill.evaluate_options(scf_options, OPTION_EVAL_DCT)
+    casscf_options = fill.evaluate_options(casscf_options, OPTION_EVAL_DCT)
+    job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
 
     numerical = None
 
@@ -104,10 +104,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         coord_sys = 'INTERNAL'
 
     # Set the gen lines blocks
-    if gen_lines is not None:
-        gen_lines = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
-    else:
-        gen_lines = ''
+    gen_lines_1, _, _ = fill.build_gen_lines(gen_lines)
 
     # Write the input file string
     fill_dct = {
@@ -125,7 +122,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         fill.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
         fill.TemplateKey.JOB_KEY: job_key,
         fill.TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
-        fill.TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        fill.TemplateKey.GEN_LINES: gen_lines_1,
         fill.TemplateKey.SADDLE: saddle,
         fill.TemplateKey.NUMERICAL: numerical
     }
@@ -145,9 +142,9 @@ def _set_cc_prog(method, reference):
         corr_options = (('ABCDTYPE=AOBASIS'),)
     if method in ('ccsd', 'ccsd(t)') and reference in ('rhf', 'uhf'):
         corr_options += (('CC_PROG=ECC'),)
-    elif method in ('ccsd', 'ccsd(t)') and reference in ('rohf'):
+    elif method in ('ccsd', 'ccsd(t)') and reference == 'rohf':
         corr_options += (('CC_PROG=VCC'),)
-    elif method in ('ccsdt', 'ccsdt(q)') and reference in ('rhf'):
+    elif method in ('ccsdt', 'ccsdt(q)') and reference == 'rhf':
         corr_options += (('CC_PROG=NCC'),)
     elif method in ('ccsdt', 'ccsdt(q)') and reference in ('uhf', 'rohf'):
         raise NotImplementedError("CFOUR ONLY ALLOWS CLOSED-SHELL")

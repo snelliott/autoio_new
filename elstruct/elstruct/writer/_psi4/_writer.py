@@ -2,10 +2,11 @@
 
 import os
 import automol
+from ioformat import build_mako_str
 import elstruct.par
 import elstruct.option
-from elstruct import template
-from elstruct.writer._psi4 import par
+from elstruct.writer import fill
+from elstruct.writer._psi4._par import REF_DCT, OPTION_EVAL_DCT
 
 
 PROG = elstruct.par.Program.PSI4
@@ -74,14 +75,14 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         _frozen_coordinate_strings(geo, frozen_coordinates))
 
     reference = _reference(method, mult, orb_restricted)
-    geo_str, zmat_val_str = _geometry_strings(geo)
+    geo_str, zmat_val_str, _ = fill.geometry_strings(geo, frozen_coordinates)
 
     if not elstruct.par.Method.is_correlated(method):
         assert not corr_options
 
-    scf_options = _evaluate_options(scf_options)
-    casscf_options = _evaluate_options(casscf_options)
-    job_options = _evaluate_options(job_options)
+    scf_options = fill.evaluate_options(scf_options, OPTION_EVAL_DCT)
+    casscf_options = fill.evaluate_options(casscf_options, OPTION_EVAL_DCT)
+    job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
 
     if saddle:
         job_options += ('set full_hess_every 0', 'set opt_type ts',)
@@ -146,17 +147,3 @@ def _frozen_coordinate_strings(geo, frozen_coordinates):
         dih_strs = _coordinate_strings(
             automol.zmatrix.dihedral_angle_names(geo))
     return dis_strs, ang_strs, dih_strs
-
-
-def _reference(method, mult, orb_restricted):
-    if elstruct.par.Method.is_dft(method):
-        reference = (Psi4Reference.RKS if orb_restricted else
-                     Psi4Reference.UKS)
-    elif mult != 1:
-        reference = (Psi4Reference.ROHF if orb_restricted else
-                     Psi4Reference.UHF)
-    else:
-        assert mult == 1 and orb_restricted is True
-        reference = Psi4Reference.RHF
-
-    return reference

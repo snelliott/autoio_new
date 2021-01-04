@@ -1,21 +1,18 @@
 """ orca4 writer module """
 
 import os
-import automol
-import autowrite as aw
+from ioformat import build_mako_str
 import elstruct.par
 import elstruct.option
-from elstruct import template
-
+from elstruct.writer import fill
+from elstruct.writer._orca4._par import REF_DCT, OPTION_EVAL_DCT
 
 PROG = elstruct.par.Program.ORCA4
 
-# set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 
-# helper functions
 def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
                 # molecule options
                 mol_options=(),
@@ -72,15 +69,15 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     """
 
     reference = _reference(method, mult, orb_restricted)
-    geo_str, zmat_var_val_str, zmat_const_val_str = _geometry_strings(
+    geo_str, zmat_var_val_str, zmat_const_val_str = fill.geometry_strings(
         geo, frozen_coordinates)
 
     _ = machine_options
     _ = casscf_options
     _ = job_options
-    _ = irc_direction
     _ = zmat_var_val_str
     _ = zmat_const_val_str
+    _ = gen_lines
 
     memory = memory * 1000.0
 
@@ -95,11 +92,6 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         orca4_method = reference
         reference = ''
 
-    # scf_guess_options, scf_options = _intercept_scf_guess_option(scf_options)
-    # scf_guess_options = _evaluate_options(scf_guess_options)
-    # scf_options = _evaluate_options(scf_options)
-    # casscf_options = _evaluate_options(casscf_options)
-    # job_options = _evaluate_options(job_options)
     numerical = False
     nprocs = 1
     coord_sys = 'xyz'
@@ -107,98 +99,24 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     if saddle:
         raise NotImplementedError
 
-    # Set the gen lines blocks
-    if gen_lines is not None:
-        gen_lines = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
-    else:
-        gen_lines = ''
-
     fill_dct = {
-        'nprocs': nprocs,
-        'numerical': numerical,
-        'coord_sys': coord_sys,
-        TemplateKey.MEMORY: memory,
-        # TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        TemplateKey.REFERENCE: reference,
-        TemplateKey.METHOD: orca4_method,
-        TemplateKey.BASIS: orca4_basis,
-        TemplateKey.SCF_OPTIONS: ','.join(scf_options),
-        # TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
-        TemplateKey.MOL_OPTIONS: ','.join(mol_options),
-        TemplateKey.COMMENT: comment,
-        TemplateKey.CHARGE: charge,
-        TemplateKey.MULT: mult,
-        TemplateKey.GEOM: geo_str,
-        # TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
-        # TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
-        TemplateKey.JOB_KEY: job_key,
-        # TemplateKey.JOB_OPTIONS: ','.join(job_options),
-        # TemplateKey.GEN_LINES: '\n'.join(gen_lines),
+        fill.TemplateKey.NPROCS: nprocs,
+        fill.TemplateKey.NUMERICAL: numerical,
+        fill.TemplateKey.COORD_SYS: coord_sys,
+        fill.TemplateKey.MEMORY: memory,
+        fill.TemplateKey.REFERENCE: reference,
+        fill.TemplateKey.METHOD: orca4_method,
+        fill.TemplateKey.BASIS: orca4_basis,
+        fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        fill.TemplateKey.MOL_OPTIONS: ','.join(mol_options),
+        fill.TemplateKey.COMMENT: comment,
+        fill.TemplateKey.CHARGE: charge,
+        fill.TemplateKey.MULT: mult,
+        fill.TemplateKey.GEOM: geo_str,
+        fill.TemplateKey.JOB_KEY: job_key,
     }
 
     return build_mako_str(
         template_file_name='all.mako',
         template_src_path=TEMPLATE_DIR,
         template_keys=fill_dct)
-
-
-def _geometry_strings(geo, frozen_coordinates):
-    """ Build the string for the input geometry
-
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param frozen_coordinates: only with z-matrix geometries; list of
-            coordinate names to freeze
-        :type fozen_coordinates: tuple[str]
-        :param job_key: job contained in the inpit file
-        :type job_key: str
-        :rtype: (str, str)
-    """
-
-    if automol.geom.is_valid(geo):
-        geo_str = automol.geom.string(geo)
-        zmat_vval_str = ''
-        zmat_cval_str = ''
-    elif automol.zmatrix.is_valid(geo):
-        zma = geo
-        symbs = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = automol.zmatrix.name_matrix(zma)
-        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
-        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat)
-
-        vval_dct = {key: val for key, val in val_dct.items()
-                    if key not in frozen_coordinates}
-        cval_dct = {key: val for key, val in val_dct.items()
-                    if key in frozen_coordinates}
-
-        zmat_vval_str = aw.zmatrix.setval_block(
-            vval_dct, setval_sign=' ').strip()
-        zmat_cval_str = aw.zmatrix.setval_block(
-            cval_dct, setval_sign=' ').strip()
-    else:
-        raise ValueError("Invalid geometry value:\n{0}".format(geo))
-
-    return geo_str, zmat_vval_str, zmat_cval_str
-
-
-def _reference(method, mult, orb_restricted):
-    if elstruct.par.Method.is_dft(method):
-        reference = ''
-    elif mult != 1:
-        reference = (Orca4Reference.ROHF
-                     if orb_restricted else Orca4Reference.UHF)
-    else:
-        assert mult == 1 and orb_restricted is True
-        reference = Orca4Reference.RHF
-    return reference
-
-
-# def _evaluate_options(opts):
-#     opts = list(opts)
-#     for idx, opt in enumerate(opts):
-#         if elstruct.option.is_valid(opt):
-#             name = elstruct.option.name(opt)
-#             assert name in par.OPTION_NAMES
-#             opts[idx] = par.Orca4_OPTION_EVAL_DCT[name](opt)
-#     return tuple(opts)

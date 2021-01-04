@@ -1,15 +1,14 @@
 """ molpro2015 writer module """
+
 import os
-import automol
-import autowrite as aw
+from ioformat import build_mako_str
 import elstruct.par
 import elstruct.option
-from elstruct import template
-from elstruct.writer._molpro2015 import par as prog_par
+from elstruct.writer import fill
+from elstruct.writer._molpro2015._par import REF_DCT, OPTION_EVAL_DCT
 
 PROG = elstruct.par.Program.MOLPRO2015
 
-# set the path to the template files
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
@@ -74,10 +73,6 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     singlet = (mult == 1)
     spin = mult - 1
 
-    # Set the reference
-    molpro_scf_method = (prog_par.Reference.RHF if orb_restricted else
-                         prog_par.Reference.UHF)
-
     # set correlated method; check if multiref
     molpro_corr_method, ismultiref = _set_method(method, singlet)
 
@@ -85,16 +80,16 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     molpro_basis = elstruct.par.program_basis_name(PROG, basis)
 
     # Set the geometry
-    geo_str, zmat_val_str = _geometry_strings(geo)
+    geo_str, zmat_val_str, _ = fill.geometry_strings(geo, frozen_coordinates)
 
     # Set the memory; convert from GB to MW
     memory_mw = int(memory * (1024.0 / 8.0))
 
     # Set the job directives and options
-    scf_options = _evaluate_options(scf_options)
-    casscf_options = _evaluate_options(casscf_options)
-    corr_options = _evaluate_options(corr_options)
-    job_options = _evaluate_options(job_options)
+    scf_options = fill.evaluate_options(scf_options, OPTION_EVAL_DCT)
+    casscf_options = fill.evaluate_options(casscf_options, OPTION_EVAL_DCT)
+    corr_options = fill.evaluate_options(corr_options, OPTION_EVAL_DCT)
+    job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
 
     # Make no scf method if calling a multiref method
     if ismultiref:
@@ -118,26 +113,26 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
 
     # Create a dictionary to fille the template
     fill_dct = {
-        TemplateKey.JOB_KEY: job_key,
-        TemplateKey.COMMENT: comment,
-        TemplateKey.MEMORY_MW: memory_mw,
-        TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
-        TemplateKey.GEOM: geo_str,
-        TemplateKey.ZMAT_VALS: zmat_val_str,
-        TemplateKey.CHARGE: charge,
-        TemplateKey.SPIN: spin,
-        TemplateKey.BASIS: molpro_basis,
-        TemplateKey.SCF_METHOD: molpro_scf_method,
-        TemplateKey.SCF_OPTIONS: ','.join(scf_options),
-        TemplateKey.ISMULTIREF: ismultiref,
-        TemplateKey.CASSCF_OPTIONS: '\n'.join(casscf_options),
-        TemplateKey.CORR_METHOD: molpro_corr_method,
-        TemplateKey.CORR_OPTIONS: ','.join(corr_options),
-        TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
-        TemplateKey.GEN_LINES_1: gen_lines_1,
-        TemplateKey.GEN_LINES_2: gen_lines_2,
-        TemplateKey.GEN_LINES_3: gen_lines_3
+        fill.TemplateKey.JOB_KEY: job_key,
+        fill.TemplateKey.COMMENT: comment,
+        fill.TemplateKey.MEMORY_MW: memory_mw,
+        fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
+        fill.TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
+        fill.TemplateKey.GEOM: geo_str,
+        fill.TemplateKey.ZMAT_VALS: zmat_val_str,
+        fill.TemplateKey.CHARGE: charge,
+        fill.TemplateKey.SPIN: spin,
+        fill.TemplateKey.BASIS: molpro_basis,
+        fill.TemplateKey.SCF_METHOD: molpro_scf_method,
+        fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        fill.TemplateKey.ISMULTIREF: ismultiref,
+        fill.TemplateKey.CASSCF_OPTIONS: '\n'.join(casscf_options),
+        fill.TemplateKey.CORR_METHOD: molpro_corr_method,
+        fill.TemplateKey.CORR_OPTIONS: ','.join(corr_options),
+        fill.TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
+        fill.TemplateKey.GEN_LINES_1: gen_lines_1,
+        fill.TemplateKey.GEN_LINES_2: gen_lines_2,
+        fill.TemplateKey.GEN_LINES_3: gen_lines_3
     }
 
     return build_mako_str(
