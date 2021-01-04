@@ -10,7 +10,7 @@ def programs():
     """ Constructs a list of available electronic structure programs.
         At minimum, each program must have an energy reader to be enumerated.
     """
-    return pm.program_modules_with_function(pm.Job.energy)
+    return pm.program_modules_with_function(pm.Job.ENERGY)
 
 
 def energy(prog, geo, charge, mult, method, basis,
@@ -321,7 +321,7 @@ def vpt2(prog, geo, charge, mult, method, basis,
 
 
 # molec_properties input writers
-def molec_properties_programs():
+def molecular_properties_programs():
     """ Constructs a list of program modules implementing
         molecular properties, including the
         dipole moment and polarizability, input writers.

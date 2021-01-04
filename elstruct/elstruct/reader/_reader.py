@@ -244,7 +244,7 @@ def vpt2(prog, output_str):
         :type output_str: str
     """
     return pm.call_module_function(
-        prog, pm.Job.vpt2,
+        prog, pm.Job.VPT2,
         # *args
         output_str)
 

@@ -200,9 +200,11 @@ def irc_points(output_str):
     # Combine with the 0 index info
     geoms = [sadpt_geom] + geoms
     if grads:
-        grads = [sadpt_grad] + grads
+        grads = [] + grads
+        # grads = [sadpt_grad] + grads
     if hessians:
-        hessians = [sadpt_hess] + hessians
+        hessians = [] + hessians
+        # hessians = [sadpt_hess] + hessians
 
     return geoms, grads, hessians
 

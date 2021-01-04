@@ -35,7 +35,7 @@ def program_modules_with_function(function):
     progs = []
     for prog in pclass.values(par.Program):
         if function in WRITER_MODULE_DCT[prog]:
-            progs.append(function)
+            progs.append(prog)
 
     return progs
 
