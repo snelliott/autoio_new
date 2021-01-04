@@ -8,6 +8,8 @@ from elstruct.par import Error
 from elstruct.par import Success
 from elstruct.par import Job
 from elstruct.par import Option
+from elstruct.par import Program
+from elstruct.par import Reference
 from elstruct.par import Method
 from elstruct.par import Basis
 from elstruct.par import programs
@@ -28,6 +30,8 @@ __all__ = [
     'Success',
     'Job',
     'Option',
+    'Program',
+    'Reference',
     'Method',
     'Basis',
     'programs',

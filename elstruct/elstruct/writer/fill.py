@@ -6,6 +6,7 @@
 import automol
 import autowrite as aw
 import elstruct
+from elstruct.par import Reference, Program
 
 
 class TemplateKey():
@@ -24,7 +25,9 @@ class TemplateKey():
     MOL_OPTIONS = 'mol_options'
     CHARGE = 'charge'
     MULT = 'mult'
+    SPIN = 'spin'
     GEOM = 'geom'
+    ZMAT_VALS = 'zmat_vals'
     ZMAT_VAR_VALS = 'zmat_var_vals'
     ZMAT_CONST_VALS = 'zmat_const_vals'
     FROZEN_DIS_STRS = 'frozen_dis_strs'
@@ -143,41 +146,106 @@ def build_gen_lines(gen_lines, line1=None, line2=None, line3=None):
     return gen_lines_1, gen_lines_2, gen_lines_3
 
 
-def _geometry_strings(geo):
-    """ Build the string for the input geometry
+# Handle setting options for various programs
+def evaluate_options(options, option_eval_dct):
+    """ Build a list of program specific options.
 
-        :param geo: cartesian or z-matrix geometry
-        :type geo: tuple
-        :param frozen_coordinates: only with z-matrix geometries; list of
-            coordinate names to freeze
-        :type fozen_coordinates: tuple[str]
-        :rtype: (str, str)
+        :param options: requested options.
+        :type options: tuple(str)
+        :param option_eval_dct: program specific values for an options
+        :type option_eval_dct: dict[str: str]
+        :type: dict[str: str]
     """
 
-    if automol.geom.is_valid(geo):
-        geo_str = automol.geom.string(geo)
-        zmat_val_str = ''
-    elif automol.zmatrix.is_valid(geo):
-        zma = geo
-        symbs = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = automol.zmatrix.name_matrix(zma)
-        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
+    options = list(options)
+    option_names = tuple(sorted(option_eval_dct.keys()))
+    for idx, option in enumerate(options):
+        if elstruct.option.is_valid(option):
+            name = elstruct.option.name(option)
+            assert name in option_names
+            options[idx] = option_eval_dct[name](option)
 
-        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat, delim=', ')
-        zmat_val_str = aw.zmatrix.setval_block(val_dct)
-    elif geo in ('GEOMETRY', 'GEOMETRY_HERE'):
-        geo_str = geo
-        zmat_val_str = ''
+    return tuple(options)
+
+
+def intercept_scf_guess_option(options, option_eval_dct):
+    """ Set SCF guess options
+
+        :param options: requested options.
+        :type options: tuple(str)
+        :param option_eval_dct: program specific values for an options
+        :type option_eval_dct: dict[str: str]
+        :rtype: (tuple(str), tuple(str))
+    """
+
+    guess_options = []
+    scf_options = []
+    for opt in options:
+        if (elstruct.option.is_valid(opt) and opt in
+                elstruct.pclass.values(elstruct.par.Option.Scf.Guess)):
+            guess_options.append(opt)
+        else:
+            scf_options.append(opt)
+    scf_guess_options = evaluate_options(guess_options, option_eval_dct)
+    scf_options = evaluate_options(scf_options, option_eval_dct)
+
+    return scf_guess_options, scf_options
+
+
+# Set the full description of the theoretical method with
+def program_method_names(prog, method, basis, mult, orb_restricted):
+    """ Sets all the names of all the components of a theoretical method
+        to those specific to the program of interest so that a proper input
+        file can be written.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param mult: spin multiplicity
+        :type mult: int
+        :param orb_restricted: parameter designating if restriced refrence used
+        :type orb_restricted: bool
+        :rtype: (str, str, str)
+    """
+
+    # Determine the reference for the given method
+    reference = _reference(prog, method, mult, orb_restricted)
+
+    # Determine if the method is a single-reference, correlated method
+    if elstruct.par.Method.is_multiref(method):
+        corr = method if elstruct.par.Method.is_casscf(method) else ''
     else:
-        raise ValueError("Invalid geometry value:\n{}".format(geo))
+        corr = reference if elstruct.par.Method.is_correlated(method) else ''
 
-    return geo_str, zmat_val_str
+    # Set the program specific names for all of the methods
+    prog_method = elstruct.par.program_method_name(prog, corr)
+    prog_reference = elstruct.par.program_method_name(prog, reference)
+    prog_basis = elstruct.par.program_basis_name(prog, basis)
+
+    return prog_method, prog_reference, prog_basis
 
 
-def set_reference(prog, prog_ref_dct, method, mult, orb_restrited):
+def _reference(prog, method, mult, orb_restricted):
+    """ Determine the string for what the Hartree-Fock or Kohn-Sham
+        reference should be based on the electronic structure method
+        and electronic structure program is.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param method: electronic structure method
+        :type method: str
+        :param mult: spin multiplicity
+        :type mult: int
+        :param orb_restricted: parameter designating if restriced refrence used
+        :type orb_restricted: bool
+        :rtype: str
+    """
+
     if elstruct.par.Method.is_dft(method):
-        if prog in (par.Program.GAUSSIAN09, par.Program.GAUSSIAN16):
+        if prog in (Program.GAUSSIAN09, Program.GAUSSIAN16):
             reference = ''
         else:
             reference = (Reference.RKS if orb_restricted else
@@ -189,55 +257,4 @@ def set_reference(prog, prog_ref_dct, method, mult, orb_restrited):
         assert mult == 1 and orb_restricted is True
         reference = Reference.RHF
 
-    return prog_ref_dct[reference]
-
-
-def evaluate_options(opts, opt_eval_dct):
-    opts = list(opts)
-    option_names = tuple(sorted(opt_eval_dct.keys()))
-    for idx, opt in enumerate(opts):
-        if elstruct.option.is_valid(opt):
-            name = elstruct.option.name(opt)
-            assert name in option_names
-            opts[idx] = opt_eval_dct[name](opt)
-    return tuple(opts)
-
-
-# Program specific?
-# gaussian, orca
-def intercept_scf_guess_option(scf_opts, option_eval_dct):
-    guess_opts = []
-    ret_scf_opts = []
-    for opt in scf_opts:
-        if (elstruct.option.is_valid(opt) and opt in
-                elstruct.pclass.values(elstruct.par.Option.Scf.Guess)):
-            guess_opts.append(opt)
-        else:
-            ret_scf_opts.append(opt)
-    scf_guess_options = evaluate_options(scf_guess_opts, option_eval_dct)
-    scf_options = evaluate_options(scf_options, option_eval_dct)
-
-    return scf_guess_options, scf_options
-
-
-# molpro
-def set_method(method, singlet):
-    # Check if MultiReference Method; then check if casscf
-    if elstruct.par.Method.is_multiref(method):
-        ismultiref = True
-        if elstruct.par.Method.is_casscf(method):
-            corr_method = ''
-        else:
-            corr_method = elstruct.par.program_method_name(
-                PROG, method, singlet)
-    # Set methods if single reference
-    else:
-        ismultiref = False
-        if elstruct.par.Method.is_correlated(method):
-            corr_method = elstruct.par.program_method_name(
-                PROG, method, singlet)
-        else:
-            corr_method = ''
-
-    return corr_method, ismultiref
-
+    return reference

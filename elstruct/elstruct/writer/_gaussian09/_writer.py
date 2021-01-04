@@ -5,7 +5,7 @@ from ioformat import build_mako_str
 import elstruct.option
 import elstruct.par
 from elstruct.writer import fill
-from elstruct.writer._gaussian09._par import REF_DCT, OPTION_EVAL_DCT
+from elstruct.writer._gaussian09._par import OPTION_EVAL_DCT
 
 
 PROG = elstruct.par.Program.GAUSSIAN09
@@ -76,17 +76,8 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     # Set theory methods and options
     if elstruct.par.Method.is_correlated(method):
         assert not corr_options
-
-    gaussian09_method = elstruct.par.program_method_name(PROG, method)
-    gaussian09_basis = elstruct.par.program_basis_name(PROG, basis)
-
-    if method == elstruct.par.Method.HF[0]:
-        gaussian09_method = reference
-        reference = ''
-    else:
-        reference = set_reference(
-            elstruct.par.GAUSSIAN09, prog_par.
-            method, mult, orb_restricted)
+    prog_method, prog_reference, prog_basis = fill.program_method_names(
+        PROG, method, basis, mult, orb_restricted)
 
     # Build various options
     scf_guess_options, scf_options = fill.intercept_scf_guess_option(
@@ -103,9 +94,9 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     fill_dct = {
         fill.TemplateKey.MEMORY: memory,
         fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
-        fill.TemplateKey.REFERENCE: reference,
-        fill.TemplateKey.METHOD: gaussian09_method,
-        fill.TemplateKey.BASIS: gaussian09_basis,
+        fill.TemplateKey.REFERENCE: prog_reference,
+        fill.TemplateKey.METHOD: prog_method,
+        fill.TemplateKey.BASIS: prog_basis,
         fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
         fill.TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
         fill.TemplateKey.MOL_OPTIONS: ','.join(mol_options),

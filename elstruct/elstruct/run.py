@@ -1,25 +1,46 @@
 """ core run function
 """
+
 import os
 import stat
 import subprocess
 import warnings
+
 
 SCRIPT_NAME = 'run.sh'
 INPUT_NAME = 'run.inp'
 OUTPUT_NAME = 'run.out'
 
 
-def direct(input_writer, script_str, run_dir,
-           geom, charge, mult, method, basis, prog, **kwargs):
-    """ Generate an input file from arguments and run it directly.
+def direct(input_writer, script_str, run_dir, prog,
+           geo, charge, mult, method, basis, **kwargs):
+    """ Generates an input file for an electronic structure job and
+        runs it directly.
 
-    :returns: the input string, the output string, and the run directory
-    :rtype: (str, str)
+        :param input_writer: elstruct writer module function for desired job
+        :type input_writer: elstruct function
+        :param script_str: string of bash script that contains
+            execution instructions electronic structure job
+        :type script_str: str
+        :param run_dir: name of directory to run electronic structure job
+        :type run_dir: str
+        :param prog: electronic structure program to run
+        :type prog: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :returns: the input string, the output string, and the run directory
+        :rtype: (str, str)
     """
     input_str = input_writer(
-        geom=geom, charge=charge, mult=mult, method=method, basis=basis,
-        prog=prog, **kwargs)
+        prog=prog,
+        geo=geo, charge=charge, mult=mult, method=method, basis=basis,
+        **kwargs)
     output_str = from_input_string(script_str, run_dir, input_str)
     return input_str, output_str
 
@@ -27,9 +48,17 @@ def direct(input_writer, script_str, run_dir,
 def from_input_string(script_str, run_dir, input_str):
     """ run the program in a temporary directory and return the output
 
-    :returns: the output string and the run directory
-    :rtype: str
+        :param script_str: string of bash script that contains
+            execution instructions electronic structure job
+        :type script_str: str
+        :param run_dir: name of directory to run electronic structure job
+        :type run_dir: str
+        :param input_str: string of input file for electronic structure job
+        :type input_str: str
+        :returns: the output string and the run directory
+        :rtype: str
     """
+
     with _EnterDirectory(run_dir):
         # write the submit script to the run directory
         with open(SCRIPT_NAME, 'w') as script_obj:
@@ -63,6 +92,8 @@ def from_input_string(script_str, run_dir, input_str):
 
 
 class _EnterDirectory():
+    """ Controls entering and exiting directories for running calculations.
+    """
 
     def __init__(self, directory):
         assert os.path.isdir(directory)

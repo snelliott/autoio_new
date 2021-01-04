@@ -5,7 +5,7 @@ import automol
 from ioformat import build_mako_str
 import elstruct.par
 from elstruct.writer import fill
-from elstruct.writer._cfour2._par import REF_DCT, OPTION_EVAL_DCT
+from elstruct.writer._cfour2._par import OPTION_EVAL_DCT
 
 
 PROG = elstruct.par.Program.CFOUR2
@@ -69,8 +69,9 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         :type gen_lines: dict[idx:str]
     """
 
-    reference = fill.set_reference(
-        PROG, REF_DCT, method, mult, orb_restricted)
+    # set correlated method; check if multiref
+    prog_method, prog_reference, prog_basis = fill.program_method_names(
+        PROG, method, basis, mult, orb_restricted)
 
     # Build the geometry object for the job
     geo_str, zmat_val_str, _ = fill.geometry_strings(
@@ -83,7 +84,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     zmat_val_str += '\n'
 
     # Set options for coupled cluster
-    corr_options = _set_cc_prog(method, reference)
+    corr_options = _set_cc_prog(method, prog_reference)
 
     # Unused options
     _ = mol_options
@@ -94,9 +95,6 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
 
     numerical = None
-
-    cfour2_method = elstruct.par.program_method_name(PROG, method)
-    cfour2_basis = elstruct.par.program_basis_name(PROG, basis)
 
     if automol.geom.is_valid(geo):
         coord_sys = 'CARTESIAN'
@@ -115,9 +113,9 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         fill.TemplateKey.GEOM: geo_str,
         fill.TemplateKey.COORD_SYS: coord_sys,
         fill.TemplateKey.ZMAT_VAR_VALS: zmat_val_str,
-        fill.TemplateKey.BASIS: cfour2_basis.upper(),
-        fill.TemplateKey.METHOD: cfour2_method.upper(),
-        fill.TemplateKey.REFERENCE: reference.upper(),
+        fill.TemplateKey.BASIS: prog_basis.upper(),
+        fill.TemplateKey.METHOD: prog_method.upper(),
+        fill.TemplateKey.REFERENCE: prog_reference.upper(),
         fill.TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
         fill.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
         fill.TemplateKey.JOB_KEY: job_key,

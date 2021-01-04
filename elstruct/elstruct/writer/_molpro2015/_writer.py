@@ -5,7 +5,7 @@ from ioformat import build_mako_str
 import elstruct.par
 import elstruct.option
 from elstruct.writer import fill
-from elstruct.writer._molpro2015._par import REF_DCT, OPTION_EVAL_DCT
+from elstruct.writer._molpro2015._par import OPTION_EVAL_DCT
 
 PROG = elstruct.par.Program.MOLPRO2015
 
@@ -13,7 +13,6 @@ THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
 
 
-# helper functions
 def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
                 # molecule options
                 mol_options=(),
@@ -70,14 +69,11 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     """
 
     # Set the spin
-    singlet = (mult == 1)
     spin = mult - 1
 
     # set correlated method; check if multiref
-    molpro_corr_method, ismultiref = _set_method(method, singlet)
-
-    # Set the basis
-    molpro_basis = elstruct.par.program_basis_name(PROG, basis)
+    prog_method, prog_reference, prog_basis = fill.program_method_names(
+        PROG, method, basis, mult, orb_restricted)
 
     # Set the geometry
     geo_str, zmat_val_str, _ = fill.geometry_strings(geo, frozen_coordinates)
@@ -92,8 +88,8 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
 
     # Make no scf method if calling a multiref method
+    ismultiref = elstruct.par.Method.is_multiref(method)
     if ismultiref:
-        molpro_scf_method = ''
         scf_options = []
 
     if saddle:
@@ -115,19 +111,19 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     fill_dct = {
         fill.TemplateKey.JOB_KEY: job_key,
         fill.TemplateKey.COMMENT: comment,
-        fill.TemplateKey.MEMORY_MW: memory_mw,
+        fill.TemplateKey.MEMORY: memory_mw,
         fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
         fill.TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
         fill.TemplateKey.GEOM: geo_str,
         fill.TemplateKey.ZMAT_VALS: zmat_val_str,
         fill.TemplateKey.CHARGE: charge,
         fill.TemplateKey.SPIN: spin,
-        fill.TemplateKey.BASIS: molpro_basis,
-        fill.TemplateKey.SCF_METHOD: molpro_scf_method,
+        fill.TemplateKey.BASIS: prog_basis,
+        fill.TemplateKey.SCF_METHOD: prog_reference,
         fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
         fill.TemplateKey.ISMULTIREF: ismultiref,
         fill.TemplateKey.CASSCF_OPTIONS: '\n'.join(casscf_options),
-        fill.TemplateKey.CORR_METHOD: molpro_corr_method,
+        fill.TemplateKey.CORR_METHOD: prog_method,
         fill.TemplateKey.CORR_OPTIONS: ','.join(corr_options),
         fill.TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
         fill.TemplateKey.GEN_LINES_1: gen_lines_1,
@@ -139,24 +135,3 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         template_file_name='all.mako',
         template_src_path=TEMPLATE_DIR,
         template_keys=fill_dct)
-
-
-def _set_method(method, singlet):
-    # Check if MultiReference Method; then check if casscf
-    if elstruct.par.Method.is_multiref(method):
-        ismultiref = True
-        if elstruct.par.Method.is_casscf(method):
-            corr_method = ''
-        else:
-            corr_method = elstruct.par.program_method_name(
-                PROG, method, singlet)
-    # Set methods if single reference
-    else:
-        ismultiref = False
-        if elstruct.par.Method.is_correlated(method):
-            corr_method = elstruct.par.program_method_name(
-                PROG, method, singlet)
-        else:
-            corr_method = ''
-
-    return corr_method, ismultiref

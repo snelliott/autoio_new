@@ -5,7 +5,7 @@ from ioformat import build_mako_str
 import elstruct.par
 import elstruct.option
 from elstruct.writer import fill
-from elstruct.writer._orca4._par import REF_DCT, OPTION_EVAL_DCT
+from elstruct.writer._orca4._par import OPTION_EVAL_DCT
 
 PROG = elstruct.par.Program.ORCA4
 
@@ -68,7 +68,10 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         :type gen_lines: dict[idx:str]
     """
 
-    reference = _reference(method, mult, orb_restricted)
+    # Set the theoretical method
+    prog_method, prog_reference, prog_basis = fill.program_method_names(
+        PROG, method, basis, mult, orb_restricted)
+
     geo_str, zmat_var_val_str, zmat_const_val_str = fill.geometry_strings(
         geo, frozen_coordinates)
 
@@ -84,14 +87,6 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     if elstruct.par.Method.is_correlated(method):
         assert not corr_options
 
-    orca4_method = elstruct.par.program_method_name(PROG, method)
-    orca4_basis = elstruct.par.program_basis_name(PROG, basis)
-
-    # in the case of Hartree-Fock, swap the method for the reference name
-    if method == elstruct.par.Method.HF[0]:
-        orca4_method = reference
-        reference = ''
-
     numerical = False
     nprocs = 1
     coord_sys = 'xyz'
@@ -104,9 +99,9 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         fill.TemplateKey.NUMERICAL: numerical,
         fill.TemplateKey.COORD_SYS: coord_sys,
         fill.TemplateKey.MEMORY: memory,
-        fill.TemplateKey.REFERENCE: reference,
-        fill.TemplateKey.METHOD: orca4_method,
-        fill.TemplateKey.BASIS: orca4_basis,
+        fill.TemplateKey.REFERENCE: prog_reference,
+        fill.TemplateKey.METHOD: prog_method,
+        fill.TemplateKey.BASIS: prog_basis,
         fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
         fill.TemplateKey.MOL_OPTIONS: ','.join(mol_options),
         fill.TemplateKey.COMMENT: comment,

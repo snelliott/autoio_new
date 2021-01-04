@@ -68,31 +68,16 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         :type gen_lines: dict[idx:str]
     """
 
-    singlet = (mult == 1)
-    nwchem6_scf_method = (NWChem6Reference.RHF if orb_restricted else
-                          NWChem6Reference.UHF)
-    # add in the multireference method stuff
-    nwchem6_corr_method = (
-        elstruct.par.program_method_name(PROG, method, singlet)
-        if elstruct.par.Method.is_correlated(method) else '')
+    _ = saddle
 
-    nwchem6_basis = elstruct.par.program_basis_name(PROG, basis)
-    geo_str, zmat_val_str = fill.geometry_strings(geo, frozen_coordinates)
-    memory_mw = int(memory * (1000.0 / 8.0))  # convert gb to mw
-    spin = mult - 1
+    prog_method, prog_reference, prog_basis = fill.program_method_names(
+        PROG, method, basis, mult, orb_restricted)
+
+    geo_str, zmat_val_str, _ = fill.geometry_strings(geo, frozen_coordinates)
+
     scf_options = fill.evaluate_options(scf_options, OPTION_EVAL_DCT)
     _ = casscf_options
     job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
-
-    if saddle:
-        job_options += ('root=2',)
-
-    job_directives = [','.join(job_options)]
-    if frozen_coordinates:
-        job_directives.append('inactive,' + ','.join(frozen_coordinates))
-
-    if job_key == 'hessian':
-        job_directives.append('print,hessian,low=5')
 
     # Set the gen lines blocks
     gen_lines_1, _, _ = fill.build_gen_lines(gen_lines)
@@ -100,19 +85,19 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     fill_dct = {
         fill.TemplateKey.JOB_KEY: job_key,
         fill.TemplateKey.COMMENT: comment,
-        fill.TemplateKey.MEMORY_MW: memory_mw,
+        fill.TemplateKey.MEMORY: memory,
         fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
         fill.TemplateKey.MOL_OPTIONS: '\n'.join(mol_options),
         fill.TemplateKey.GEOM: geo_str,
         fill.TemplateKey.ZMAT_VALS: zmat_val_str,
         fill.TemplateKey.CHARGE: charge,
-        fill.TemplateKey.SPIN: spin,
-        fill.TemplateKey.BASIS: nwchem6_basis,
-        fill.TemplateKey.SCF_METHOD: nwchem6_scf_method,
+        fill.TemplateKey.MULT: mult,
+        fill.TemplateKey.BASIS: prog_basis,
+        fill.TemplateKey.SCF_METHOD: prog_reference,
         fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
-        fill.TemplateKey.CORR_METHOD: nwchem6_corr_method,
+        fill.TemplateKey.CORR_METHOD: prog_method,
         fill.TemplateKey.CORR_OPTIONS: ','.join(corr_options),
-        fill.TemplateKey.JOB_OPTIONS: ';'.join(job_directives),
+        fill.TemplateKey.JOB_OPTIONS: ';'.join(job_options),
         fill.TemplateKey.GEN_LINES: gen_lines_1,
     }
 

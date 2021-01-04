@@ -24,9 +24,9 @@ def test__energy():
     """ test the energy pipeline
     """
     basis = '6-31g'
-    geom = (('O', (0.0, 0.0, -0.110)),
-            ('H', (0.0, -1.635, 0.876)),
-            ('H', (-0.0, 1.635, 0.876)))
+    geo = (('O', (0.0, 0.0, -0.110)),
+           ('H', (0.0, -1.635, 0.876)),
+           ('H', (-0.0, 1.635, 0.876)))
     mult_vals = [1, 2]
     charge_vals = [0, 1]
 
@@ -41,9 +41,9 @@ def test__energy():
                         script_str=SCRIPT_DCT[prog],
                         writer=elstruct.writer.energy,
                         readers=(
-                            elstruct.reader.energy_(prog, method),
+                            elstruct.reader.energy,
                         ),
-                        args=(geom, charge, mult, method, basis, prog),
+                        args=(prog, geo, charge, mult, method, basis),
                         kwargs={'orb_type': orb_type},
                         error=elstruct.Error.SCF_NOCONV,
                         error_kwargs={'scf_options': [
@@ -58,9 +58,9 @@ def test__gradient():
     """ test the gradient pipeline
     """
     basis = 'sto-3g'
-    geom = (('O', (0.0, 0.0, -0.110)),
-            ('H', (0.0, -1.635, 0.876)),
-            ('H', (-0.0, 1.635, 0.876)))
+    geo = (('O', (0.0, 0.0, -0.110)),
+           ('H', (0.0, -1.635, 0.876)),
+           ('H', (-0.0, 1.635, 0.876)))
     mult_vals = [1, 2]
     charge_vals = [0, 1]
 
@@ -80,10 +80,10 @@ def test__gradient():
                         script_str=SCRIPT_DCT[prog],
                         writer=elstruct.writer.gradient,
                         readers=(
-                            elstruct.reader.energy_(prog, method),
-                            elstruct.reader.gradient_(prog),
+                            elstruct.reader.energy,
+                            elstruct.reader.gradient,
                         ),
-                        args=(geom, charge, mult, method, basis, prog),
+                        args=(prog, geo, charge, mult, method, basis),
                         kwargs={'orb_type': orb_type},
                     )
                     print('grad\n', vals)
@@ -93,9 +93,9 @@ def test__hessian():
     """ test the hessian pipeline
     """
     basis = 'sto-3g'
-    geom = (('O', (0.0, 0.0, -0.110)),
-            ('H', (0.0, -1.635, 0.876)),
-            ('H', (-0.0, 1.635, 0.876)))
+    geo = (('O', (0.0, 0.0, -0.110)),
+           ('H', (0.0, -1.635, 0.876)),
+           ('H', (-0.0, 1.635, 0.876)))
     mult_vals = [1, 2]
     charge_vals = [0, 1]
 
@@ -115,10 +115,10 @@ def test__hessian():
                         script_str=SCRIPT_DCT[prog],
                         writer=elstruct.writer.hessian,
                         readers=(
-                            elstruct.reader.energy_(prog, method),
-                            elstruct.reader.hessian_(prog),
+                            elstruct.reader.energy,
+                            elstruct.reader.hessian,
                         ),
-                        args=(geom, charge, mult, method, basis, prog),
+                        args=(prog, geo, charge, mult, method, basis),
                         kwargs={'orb_type': orb_type},
                     )
                     print('hess\n', vals)
@@ -129,16 +129,16 @@ def test__optimization():
     """
     method = 'hf'
     basis = 'sto-3g'
-    geom = ((('C', (None, None, None), (None, None, None)),
-             ('O', (0, None, None), ('R1', None, None)),
-             ('H', (0, 1, None), ('R2', 'A2', None)),
-             ('H', (0, 1, 2), ('R3', 'A3', 'D3')),
-             ('H', (0, 1, 2), ('R4', 'A4', 'D4')),
-             ('H', (1, 0, 2), ('R5', 'A5', 'D5'))),
-            {'R1': 2.6, 'R2': 2.0, 'A2': 1.9,
-             'R3': 2.0, 'A3': 1.9, 'D3': 2.1,
-             'R4': 2.0, 'A4': 1.9, 'D4': 4.1,
-             'R5': 1.8, 'A5': 1.8, 'D5': 5.2})
+    geo = ((('C', (None, None, None), (None, None, None)),
+            ('O', (0, None, None), ('R1', None, None)),
+            ('H', (0, 1, None), ('R2', 'A2', None)),
+            ('H', (0, 1, 2), ('R3', 'A3', 'D3')),
+            ('H', (0, 1, 2), ('R4', 'A4', 'D4')),
+            ('H', (1, 0, 2), ('R5', 'A5', 'D5'))),
+           {'R1': 2.6, 'R2': 2.0, 'A2': 1.9,
+            'R3': 2.0, 'A3': 1.9, 'D3': 2.1,
+            'R4': 2.0, 'A4': 1.9, 'D4': 4.1,
+            'R5': 1.8, 'A5': 1.8, 'D5': 5.2})
     mult = 1
     charge = 0
     orb_type = 'R'
@@ -158,11 +158,11 @@ def test__optimization():
             script_str=script_str,
             writer=elstruct.writer.optimization,
             readers=(
-                elstruct.reader.energy_(prog, method),
-                elstruct.reader.opt_geometry_(prog),
-                elstruct.reader.opt_zmatrix_(prog),
+                elstruct.reader.energy,
+                elstruct.reader.opt_geoetry,
+                elstruct.reader.opt_zmatrix,
             ),
-            args=(geom, charge, mult, method, basis, prog),
+            args=(prog, geo, charge, mult, method, basis),
             kwargs=opt_kwargs,
             error=elstruct.Error.OPT_NOCONV,
             error_kwargs={'job_options': [
@@ -183,8 +183,11 @@ def test__optimization():
 
 def _test_pipeline(script_str, writer, readers,
                    args, kwargs, error=None, error_kwargs=None):
+    """ pipe
+    """
+
     read_vals = []
-    prog = args[-1]
+    prog, method = args[0], args[4]
 
     # for programs with no run test, ensure input file generated
     _ = writer(*args, **kwargs)
@@ -196,8 +199,11 @@ def _test_pipeline(script_str, writer, readers,
 
         assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
-        for reader in readers:
-            val = reader(out_str)
+        for i, reader in enumerate(readers):
+            if i == 0:
+                val = reader(prog, out_str)
+            else:
+                val = reader(prog, method, out_str)
             read_vals.append(val)
 
         if error is not None:

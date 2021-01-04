@@ -1,0 +1,20 @@
+method rhf
+prog_dct {'ccsd': ('ccsd', 'ccsd', ('R',), ('R',)), 'ccsd(t)': ('ccsd(t)', 'ccsd(t)', ('R',), ('R',)), 'mp2': ('mp2', 'mp2', ('R',), ('U', 'R')), 'hf': ('rhf', 'hf', ('R',), ('U', 'R'))}
+Traceback (most recent call last):
+  File "test__pipeline.py", line 228, in <module>
+    test__energy()
+  File "test__pipeline.py", line 51, in test__energy
+    elstruct.Option.Scf.MAXITER_, 2)
+  File "test__pipeline.py", line 193, in _test_pipeline
+    _ = writer(*args, **kwargs)
+  File "/lcrc/project/CMRP/amech/autoio/elstruct/elstruct/writer/_writer.py", line 82, in energy
+    saddle=False)
+  File "/lcrc/project/CMRP/amech/autoio/elstruct/elstruct/writer/program_modules.py", line 26, in call_module_function
+    return writer(function, *args, **kwargs)
+  File "/lcrc/project/CMRP/amech/autoio/elstruct/elstruct/writer/_cfour2/_writer.py", line 74, in write_input
+    PROG, method, basis, mult, orb_restricted)
+  File "/lcrc/project/CMRP/amech/autoio/elstruct/elstruct/writer/fill.py", line 224, in program_method_names
+    prog_method = elstruct.par.program_method_name(prog, corr)
+  File "/lcrc/project/CMRP/amech/autoio/elstruct/elstruct/par.py", line 388, in program_method_name
+    assert method in prog_method_dct
+AssertionError

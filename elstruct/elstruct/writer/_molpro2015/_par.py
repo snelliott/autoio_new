@@ -7,7 +7,7 @@ import elstruct.par
 
 
 REF_DCT = {
-    elstruct.par.Reference.RHF: 'rhf'
+    elstruct.par.Reference.RHF: 'rhf',
     elstruct.par.Reference.UHF: 'uhf'
 }
 
@@ -21,7 +21,7 @@ class MultiReference():
     MRCI_Q = 'mrci'
 
 
-OPTIONS_EVAL_DCT = {
+OPTION_EVAL_DCT = {
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
     option.name(Option.Scf.DIIS_):

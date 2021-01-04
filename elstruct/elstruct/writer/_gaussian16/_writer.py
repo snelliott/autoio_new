@@ -1,15 +1,14 @@
-""" mrcc2018 writer module """
+""" gaussian16 writer module """
 
 import os
 from ioformat import build_mako_str
-import automol
-import elstruct.par
 import elstruct.option
+import elstruct.par
 from elstruct.writer import fill
-from elstruct.writer._mrcc2018._par import OPTION_EVAL_DCT
+from elstruct.writer._gaussian16._par import OPTION_EVAL_DCT
 
 
-PROG = elstruct.par.Program.MRCC2018
+PROG = elstruct.par.Program.GAUSSIAN16
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(THIS_DIR, 'templates')
@@ -70,54 +69,46 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         :type gen_lines: dict[idx:str]
     """
 
-    # Set the theoretical method
+    # Build the geometry object for the job
+    geo_str, zmat_var_val_str, zmat_const_val_str = fill.geometry_strings(
+        geo, frozen_coordinates)
+
+    # Set theory methods and options
+    if elstruct.par.Method.is_correlated(method):
+        assert not corr_options
     prog_method, prog_reference, prog_basis = fill.program_method_names(
         PROG, method, basis, mult, orb_restricted)
 
-    # Build the geometry
-    geo_str, zmat_val_str, _ = fill.geometry_strings(geo, frozen_coordinates)
-
-    # Check options
-    scf_options = fill.evaluate_options(scf_options, OPTION_EVAL_DCT)
+    # Build various options
+    scf_guess_options, scf_options = fill.intercept_scf_guess_option(
+        scf_options, OPTION_EVAL_DCT)
     casscf_options = fill.evaluate_options(casscf_options, OPTION_EVAL_DCT)
     job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
-    _ = mol_options
-    _ = machine_options
-    _ = gen_lines
-
-    # Set the coordinate system
-    if automol.geom.is_valid(geo):
-        coord_sys = 'xyz'
-    elif automol.zmatrix.is_valid(geo):
-        coord_sys = 'zmat'
-
-    # No TS optimizer based on manual
-    assert not saddle
-
-    # No Frozen coordinates allowed based on manual
-    assert not frozen_coordinates
+    if saddle:
+        job_options += ('CALCFC', 'TS', 'NOEIGEN', 'MAXCYCLES=60')
 
     # Set the gen lines blocks
-    # if gen_lines is not None:
-    #     gen_lines = '\n'.join(gen_lines[1]) if 1 in gen_lines else ''
-    # else:
-    #     gen_lines = ''
+    gen_lines_1, _, _ = fill.build_gen_lines(gen_lines)
 
+    # Build the dictionary to fill the Mako template
     fill_dct = {
-        fill.TemplateKey.JOB_KEY: job_key,
-        fill.TemplateKey.COMMENT: comment,
         fill.TemplateKey.MEMORY: memory,
-        fill.TemplateKey.GEOM: geo_str,
-        fill.TemplateKey.ZMAT_VALS: zmat_val_str,
+        fill.TemplateKey.MACHINE_OPTIONS: '\n'.join(machine_options),
+        fill.TemplateKey.REFERENCE: prog_reference,
+        fill.TemplateKey.METHOD: prog_method,
+        fill.TemplateKey.BASIS: prog_basis,
+        fill.TemplateKey.SCF_OPTIONS: ','.join(scf_options),
+        fill.TemplateKey.SCF_GUESS_OPTIONS: ','.join(scf_guess_options),
+        fill.TemplateKey.MOL_OPTIONS: ','.join(mol_options),
+        fill.TemplateKey.COMMENT: comment,
         fill.TemplateKey.CHARGE: charge,
         fill.TemplateKey.MULT: mult,
-        fill.TemplateKey.BASIS: prog_basis,
-        fill.TemplateKey.SCF_METHOD: prog_reference,
-        fill.TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
-        fill.TemplateKey.CORR_METHOD: prog_method,
-        fill.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
-        fill.TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
-        fill.TemplateKey.COORD_SYS: coord_sys
+        fill.TemplateKey.GEOM: geo_str,
+        fill.TemplateKey.ZMAT_VAR_VALS: zmat_var_val_str,
+        fill.TemplateKey.ZMAT_CONST_VALS: zmat_const_val_str,
+        fill.TemplateKey.JOB_KEY: job_key,
+        fill.TemplateKey.JOB_OPTIONS: ','.join(job_options),
+        fill.TemplateKey.GEN_LINES: gen_lines_1,
     }
 
     return build_mako_str(

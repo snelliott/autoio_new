@@ -6,7 +6,7 @@ from ioformat import build_mako_str
 import elstruct.par
 import elstruct.option
 from elstruct.writer import fill
-from elstruct.writer._psi4._par import REF_DCT, OPTION_EVAL_DCT
+from elstruct.writer._psi4._par import OPTION_EVAL_DCT
 
 
 PROG = elstruct.par.Program.PSI4
@@ -74,7 +74,10 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     frozen_dis_strs, frozen_ang_strs, frozen_dih_strs = (
         _frozen_coordinate_strings(geo, frozen_coordinates))
 
-    reference = _reference(method, mult, orb_restricted)
+    # Set the theoretical method
+    prog_method, prog_reference, prog_basis = fill.program_method_names(
+        PROG, method, basis, mult, orb_restricted)
+
     geo_str, zmat_val_str, _ = fill.geometry_strings(geo, frozen_coordinates)
 
     if not elstruct.par.Method.is_correlated(method):
@@ -86,9 +89,6 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
 
     if saddle:
         job_options += ('set full_hess_every 0', 'set opt_type ts',)
-
-    psi4_method = elstruct.par.program_method_name(PROG, method)
-    psi4_basis = elstruct.par.program_basis_name(PROG, basis)
 
     # Set the gen lines blocks
     if gen_lines is not None:
@@ -105,9 +105,9 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         fill.TemplateKey.MULT: mult,
         fill.TemplateKey.GEOM: geo_str,
         fill.TemplateKey.ZMAT_VALS: zmat_val_str,
-        fill.TemplateKey.BASIS: psi4_basis,
-        fill.TemplateKey.METHOD: psi4_method,
-        fill.TemplateKey.REFERENCE: reference,
+        fill.TemplateKey.BASIS: prog_basis,
+        fill.TemplateKey.METHOD: prog_method,
+        fill.TemplateKey.REFERENCE: prog_reference,
         fill.TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
         fill.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
         fill.TemplateKey.JOB_KEY: job_key,
