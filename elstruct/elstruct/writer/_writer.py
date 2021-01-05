@@ -601,6 +601,7 @@ def _process_theory_specifications(prog, method, basis, mult, orb_type):
 
     # for non-standard DFT/Basis, the user can input whatever they want
     if not par.Method.is_nonstandard_dft(method):
+        print('assert check', prog, method)
         assert par.is_program_method(prog, method)
 
         assert par.is_program_method_orbital_type(

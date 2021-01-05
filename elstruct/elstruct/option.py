@@ -29,6 +29,9 @@ def create(name_, keys_=()):
 
 def specify(osp_, *args, **kwargs):
     """ set values for an option specifier
+        Function allow positional arguments, even though .format does not
+
+        :param osp_: option specifier
     """
     # allow positional arguments, even though .format doesn't
     _keys = keys(osp_)

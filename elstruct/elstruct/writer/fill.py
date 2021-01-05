@@ -55,7 +55,7 @@ class TemplateKey():
 
 
 # Format strings
-def geometry_strings(geo, frozen_coordinates):
+def geometry_strings(geo, frozen_coordinates, zma_sign='='):
     """ Build the string for the input geometry
 
         :param geo: cartesian or z-matrix geometry
@@ -84,9 +84,9 @@ def geometry_strings(geo, frozen_coordinates):
                     if key in frozen_coordinates}
 
         zmat_vval_str = aw.zmatrix.setval_block(
-            vval_dct, setval_sign=' ').strip()
+            vval_dct, setval_sign=zma_sign).strip()
         zmat_cval_str = aw.zmatrix.setval_block(
-            cval_dct, setval_sign=' ').strip()
+            cval_dct, setval_sign=zma_sign).strip()
     elif geo in ('GEOMETRY', 'GEOMETRY_HERE'):
         geo_str = geo
         zmat_vval_str = ''
@@ -212,17 +212,20 @@ def program_method_names(prog, method, basis, mult, orb_restricted):
     """
 
     # Determine the reference for the given method
-    reference = _reference(prog, method, mult, orb_restricted)
+    prog_reference = _reference(prog, method, mult, orb_restricted)
 
-    # Determine if the method is a single-reference, correlated method
-    if elstruct.par.Method.is_multiref(method):
-        corr = method if elstruct.par.Method.is_casscf(method) else ''
+    # Determine the method
+    if elstruct.par.Method.is_casscf(method):
+        prog_method = prog_reference
+    elif method == elstruct.par.Method.HF[0]:
+        if prog in (Program.GAUSSIAN09, Program.GAUSSIAN16):
+            prog_method = prog_reference
+        else:
+            prog_method = elstruct.par.program_method_name(prog, method)
     else:
-        corr = reference if elstruct.par.Method.is_correlated(method) else ''
+        prog_method = elstruct.par.program_method_name(prog, method)
 
-    # Set the program specific names for all of the methods
-    prog_method = elstruct.par.program_method_name(prog, corr)
-    prog_reference = elstruct.par.program_method_name(prog, reference)
+    # Set the basis
     prog_basis = elstruct.par.program_basis_name(prog, basis)
 
     return prog_method, prog_reference, prog_basis
@@ -243,18 +246,59 @@ def _reference(prog, method, mult, orb_restricted):
         :type orb_restricted: bool
         :rtype: str
     """
-
+    # Need a multiref version
     if elstruct.par.Method.is_dft(method):
-        if prog in (Program.GAUSSIAN09, Program.GAUSSIAN16):
-            reference = ''
+        reference = _dft_reference(prog, mult, orb_restricted)
+    elif method == elstruct.par.Method.HF[0]:
+        reference = _hf_reference(prog, mult, orb_restricted)
+    else:
+        reference = _corr_reference(prog, mult, orb_restricted)
+
+    return reference
+
+
+def _dft_reference(prog, mult, orb_restricted):
+    """ dft
+    """
+    if prog in (Program.GAUSSIAN09, Program.GAUSSIAN16):
+        reference = ''
+    else:
+        reference = (Reference.RKS if orb_restricted else
+                     Reference.UKS)
+
+    return reference
+
+
+def _hf_reference(prog, mult, orb_restricted):
+    """ hf
+    """
+    if prog in (Program.GAUSSIAN09, Program.GAUSSIAN16):
+        reference = ''
+    else:
+        if mult == 1:
+            reference = Reference.RHF
         else:
-            reference = (Reference.RKS if orb_restricted else
-                         Reference.UKS)
-    elif mult != 1:
+            reference = (Reference.ROHF if orb_restricted else
+                         Reference.UHF)
+
+    if reference == Reference.ROHF:
+        if prog == Program.MOLPRO2015:
+            reference = Reference.RHF
+
+    return reference
+
+
+def _corr_reference(prog, mult, orb_restricted):
+    """ correlated method reference
+    """
+    if mult == 1:
+        reference = Reference.RHF
+    else:
         reference = (Reference.ROHF if orb_restricted else
                      Reference.UHF)
-    else:
-        assert mult == 1 and orb_restricted is True
-        reference = Reference.RHF
+
+    if reference == Reference.ROHF:
+        if prog == Program.MOLPRO2015:
+            reference = Reference.RHF
 
     return reference

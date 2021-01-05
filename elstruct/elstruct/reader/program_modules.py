@@ -23,7 +23,7 @@ def call_module_function(prog, function, *args, **kwargs):
     module = importlib.import_module('elstruct.reader.{:s}'.format(name))
     reader = getattr(module, function)
 
-    return reader(function, *args, **kwargs)
+    return reader(*args, **kwargs)
 
 
 def program_modules_with_function(function):

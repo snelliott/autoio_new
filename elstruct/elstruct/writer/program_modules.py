@@ -68,8 +68,9 @@ WRITER_MODULE_DCT = {
         Job.MOLPROP, Job.IRC, Job.VPT2),
     par.Program.MRCC2018: (
         Job.ENERGY, Job.HESSIAN, Job.OPTIMIZATION),
-    par.Program.NWCHEM6: (
-        Job.ENERGY, Job.OPTIMIZATION),
+    par.Program.NWCHEM6: (),
+    # par.Program.NWCHEM6: (
+    #     Job.ENERGY, Job.OPTIMIZATION),
     par.Program.ORCA4: (
         Job.ENERGY, Job.GRADIENT, Job.HESSIAN, Job.OPTIMIZATION),
     par.Program.PSI4: (

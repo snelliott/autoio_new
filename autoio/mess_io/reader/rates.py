@@ -140,7 +140,7 @@ def _parse_rate_constants(out_lines, block_start, reaction):
     kts = tuple(float(kt)
                 if kt != '***' else kt
                 for kt in kts)
-    kts = tuple(zip(temps, kts))
+    kts = (temps, kts)
 
     return kts
 

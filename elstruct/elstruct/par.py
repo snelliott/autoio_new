@@ -36,6 +36,7 @@ class Program():
 def programs():
     """ List all electronic structure backend programs that are supported.
     """
+    print(pclass.all_values(Program))
     return pclass.all_values(Program)
 
 
@@ -383,8 +384,6 @@ def program_method_name(prog, method, singlet=True):
     else:
         method = standard_case(method)
         prog_method_dct = program_methods_info(prog)
-        print('method', method)
-        print('prog_dct', prog_method_dct)
         assert method in prog_method_dct
         name = (prog_method_dct[method][0] if singlet else
                 prog_method_dct[method][1])

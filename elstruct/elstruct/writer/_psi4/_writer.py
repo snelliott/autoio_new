@@ -78,7 +78,9 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     prog_method, prog_reference, prog_basis = fill.program_method_names(
         PROG, method, basis, mult, orb_restricted)
 
-    geo_str, zmat_val_str, _ = fill.geometry_strings(geo, frozen_coordinates)
+    geo_str, zmat_vval_str, zmat_cval_str = fill.geometry_strings(
+        geo, frozen_coordinates)
+    zmat_val_str = zmat_vval_str + '\n' + zmat_cval_str
 
     if not elstruct.par.Method.is_correlated(method):
         assert not corr_options

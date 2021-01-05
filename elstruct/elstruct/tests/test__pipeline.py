@@ -31,7 +31,9 @@ def test__energy():
     charge_vals = [0, 1]
 
     for prog in elstruct.writer.programs():
+        print(prog)
         for method in elstruct.program_methods(prog):
+            print(method)
             for mult, charge in zip(mult_vals, charge_vals):
                 for orb_type in (
                         elstruct.program_method_orbital_types(
@@ -51,7 +53,9 @@ def test__energy():
                                 elstruct.Option.Scf.MAXITER_, 2)
                         ]},
                     )
-                    print('ene\n', vals)
+                    # Print the value for Psi4 since it was run and read
+                    if prog == elstruct.par.Program.PSI4:
+                        print('ene\n', vals)
 
 
 def test__gradient():
@@ -86,7 +90,9 @@ def test__gradient():
                         args=(prog, geo, charge, mult, method, basis),
                         kwargs={'orb_type': orb_type},
                     )
-                    print('grad\n', vals)
+                    # Print the value for Psi4 since it was run and read
+                    if prog == elstruct.par.Program.PSI4:
+                        print('grad\n', vals)
 
 
 def test__hessian():
@@ -121,7 +127,9 @@ def test__hessian():
                         args=(prog, geo, charge, mult, method, basis),
                         kwargs={'orb_type': orb_type},
                     )
-                    print('hess\n', vals)
+                    # Print the value for Psi4 since it was run and read
+                    if prog == elstruct.par.Program.PSI4:
+                        print('hess\n', vals)
 
 
 def test__optimization():
@@ -159,7 +167,7 @@ def test__optimization():
             writer=elstruct.writer.optimization,
             readers=(
                 elstruct.reader.energy,
-                elstruct.reader.opt_geoetry,
+                elstruct.reader.opt_geometry,
                 elstruct.reader.opt_zmatrix,
             ),
             args=(prog, geo, charge, mult, method, basis),
@@ -180,6 +188,10 @@ def test__optimization():
             assert numpy.allclose(
                 frozen_values, ref_frozen_values, rtol=1e-4)
 
+        # Print the value for Psi4 since it was run and read
+        if prog == elstruct.par.Program.PSI4:
+            print('geom\n', vals)
+
 
 def _test_pipeline(script_str, writer, readers,
                    args, kwargs, error=None, error_kwargs=None):
@@ -194,6 +206,7 @@ def _test_pipeline(script_str, writer, readers,
     if script_str is not None:
         script_str = SCRIPT_DCT[prog]
         run_dir = tempfile.mkdtemp()
+        print('run_dir\n', run_dir)
         _, out_str = elstruct.run.direct(
             writer, script_str, run_dir, *args, **kwargs)
 
@@ -201,9 +214,9 @@ def _test_pipeline(script_str, writer, readers,
 
         for i, reader in enumerate(readers):
             if i == 0:
-                val = reader(prog, out_str)
-            else:
                 val = reader(prog, method, out_str)
+            else:
+                val = reader(prog, out_str)
             read_vals.append(val)
 
         if error is not None:

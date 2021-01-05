@@ -79,6 +79,11 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     prog_method, prog_reference, prog_basis = fill.program_method_names(
         PROG, method, basis, mult, orb_restricted)
 
+    if (prog_reference == elstruct.par.Reference.ROHF and
+            job_key in (elstruct.par.Job.GRADIENT, elstruct.par.Job.HESSIAN)):
+        job_options = list(job_options)
+        job_options.insert(0, 'EnOnly')
+
     # Build various options
     scf_guess_options, scf_options = fill.intercept_scf_guess_option(
         scf_options, OPTION_EVAL_DCT)

@@ -146,5 +146,7 @@ def _set_cc_prog(method, reference):
         corr_options += (('CC_PROG=NCC'),)
     elif method in ('ccsdt', 'ccsdt(q)') and reference in ('uhf', 'rohf'):
         raise NotImplementedError("CFOUR ONLY ALLOWS CLOSED-SHELL")
+    else:
+        corr_options = ()
 
     return corr_options
