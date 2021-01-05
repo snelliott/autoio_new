@@ -5,34 +5,47 @@ import autoread as ar
 import autoparse.pattern as app
 
 
-def gradient(output_string):
-    """ read gradient from the output string
+def gradient(output_str):
+    """ Reads the molecular gradient (in Cartesian coordinates) from
+        the output file string. Returns the gradient in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     head_ptt = ('Atom' + app.SPACES +
                 app.escape('dE/dx') + app.SPACES +
                 app.escape('dE/dy') + app.SPACES +
                 app.escape('dE/dz'))
     grad = ar.matrix.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded(head_ptt, app.NONNEWLINE),
             app.LINE, '']),
         line_start_ptt=app.UNSIGNED_INTEGER)
     if grad is not None:
         assert numpy.shape(grad)[1] == 3
+
     return grad
 
 
-def hessian(output_string):
-    """ read hessian from the output string
+def hessian(output_str):
+    """ Reads the molecular Hessian (in Cartesian coordinates) from
+        the output file string. Returns the Hessian in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     comp_ptt = (
         app.one_or_more(app.LETTER) +
         app.one_of_these(['X', 'Y', 'Z']) +
         app.UNSIGNED_INTEGER
     )
     mat = ar.matrix.read(
-        output_string,
+        output_str,
         start_ptt=(
             app.escape('Force Constants (Second Derivatives of the Energy) ') +
             app.escape('in [a.u.]') +
@@ -44,10 +57,3 @@ def hessian(output_string):
 
     mat = tuple(map(tuple, mat))
     return mat
-
-
-if __name__ == '__main__':
-    with open('run.out', 'r') as f:
-        OUTPUT_STRING = f.read()
-    print(gradient(OUTPUT_STRING))
-    print(hessian(OUTPUT_STRING))

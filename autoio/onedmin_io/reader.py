@@ -25,7 +25,7 @@ def lennard_jones(output_string):
         sigmas = [float(val) for val in sigmas]
     if epsilons is not None:
         epsilons = [float(val) for val in epsilons]
-    
+
     print('sigs', sigmas)
     print('eps', epsilons)
 

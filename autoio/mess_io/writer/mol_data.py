@@ -344,7 +344,7 @@ def rotor_bundle(enegrid_step=5.0, enegrid_max=50.0,
         template_keys=rotor_keys)
 
 
-def mdhr_data(potentials, freqs=(), nrot=0):
+def mdhr_data(potentials, freqs=None, nrot=0):
     """ Writes the string for an auxiliary data file for MESS containing
         potentials and vibrational frequencies of a
         multidimensional hindered rotor, up to four dimensions.
@@ -371,7 +371,7 @@ def mdhr_data(potentials, freqs=(), nrot=0):
     # dims = pot_idxs[-1]
 
     # Get the number of freqs
-    if freqs:
+    if freqs is not None:
         nfreqs = len(list(freqs.values())[0])
         nfreqs -= nrot
     else:
@@ -413,9 +413,10 @@ def mdhr_data(potentials, freqs=(), nrot=0):
         dat_str += '{0:>15f}'.format(val)
 
         # Add any frequencies if necessary
-        if idxs in freqs:
-            for freq in freqs[idxs]:
-                dat_str += '{0:>8.1f}'.format(freq)
+        if freqs is not None:
+            if idxs in freqs:
+                for freq in freqs[idxs]:
+                    dat_str += '{0:>8.1f}'.format(freq)
 
         dat_str += '\n'
 
@@ -500,7 +501,7 @@ def tunnel_eckart(imag_freq, well_depth1, well_depth2):
         template_keys=tunnel_keys)
 
 
-def tunnel_sct(imag_freq, tunnel_file, cutoff_energy=2500):
+def tunnel_sct(imag_freq, tunnel_file, cutoff_energy=2500.0):
     """ Writes the string that defines the 'Tunneling' section for a
         small curvature tunneling model for a transition state
         for a MESS input file by formatting input information into

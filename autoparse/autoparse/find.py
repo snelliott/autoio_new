@@ -177,13 +177,16 @@ def _re_search(pattern, string, case=True):
 
 
 def _re_findall(pattern, string, case=True):
-    flags = _re_flags(case=case)
-    # try:
-    #     ptt_find = re.findall(pattern, string, flags=flags)
-    # except TypeError:
-    #     ptt_find = None
-    # return ptt_find
-    return re.findall(pattern, string, flags=flags)
+    if pattern and string is not None:
+        flags = _re_flags(case=case)
+        ptt = re.findall(pattern, string, flags=flags)
+        if ptt:
+            ret = ptt
+        else:
+            ret = None
+    else:
+        ret = None
+    return ret
 
 
 def _re_split(pattern, string, case=True):

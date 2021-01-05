@@ -3,13 +3,10 @@ Writes the global keyword section of a MESS input file
 """
 
 import os
-from qcelemental import constants as qcc
 from ioformat import build_mako_str
+from phydat import phycon
 from varecof_io.writer import util
 
-
-ANG2BOHR = qcc.conversion_factor('angstrom', 'bohr')
-RAD2DEG = qcc.conversion_factor('radian', 'degree')
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
 SRC_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -85,8 +82,7 @@ def divsur(rdists,
            t1angs=(), t2angs=(),
            p1angs=(), p2angs=(),
            phi_dependence=False,
-           **conditions
-           ):
+           **conditions):
     """ Writes the divsur.inp file for VaReCoF
          that contains info on the dividing surfaces.
         :param rdists: List of temperatures (in Angstrom)
@@ -127,21 +123,21 @@ def divsur(rdists,
     # Format values strings for the coordinates
     # Function returns the empty string if list is empty
     r1_string = util.format_values_string(
-        'r1', rdists, conv_factor=ANG2BOHR)
+        'r1', rdists, conv_factor=phycon.ANG2BOHR)
     r2_string = util.format_values_string(
-        'r2', r2dists, conv_factor=ANG2BOHR)
+        'r2', r2dists, conv_factor=phycon.ANG2BOHR)
     d1_string = util.format_values_string(
-        'd1', d1dists, conv_factor=ANG2BOHR)
+        'd1', d1dists, conv_factor=phycon.ANG2BOHR)
     d2_string = util.format_values_string(
-        'd2', d2dists, conv_factor=ANG2BOHR)
+        'd2', d2dists, conv_factor=phycon.ANG2BOHR)
     t1_string = util.format_values_string(
-        't1', t1angs, conv_factor=RAD2DEG)
+        't1', t1angs, conv_factor=phycon.RAD2DEG)
     t2_string = util.format_values_string(
-        't2', t2angs, conv_factor=RAD2DEG)
+        't2', t2angs, conv_factor=phycon.RAD2DEG)
     p1_string = util.format_values_string(
-        'p1', p1angs, conv_factor=RAD2DEG)
+        'p1', p1angs, conv_factor=phycon.RAD2DEG)
     p2_string = util.format_values_string(
-        'p2', p2angs, conv_factor=RAD2DEG)
+        'p2', p2angs, conv_factor=phycon.RAD2DEG)
 
     # Fromat the frames
     frame1 = ' '.join([str(val) for val in frame1])
@@ -225,7 +221,7 @@ def divsur(rdists,
 def elec_struct(lib_path, base_name, npot,
                 dummy_name='dummy_corr_', lib_name='libcorrpot.so',
                 exe_name='run.sh',
-                geom_ptt='GEOMETRY_HERE', ene_ptt='molpro_energy'):
+                geo_ptt='GEOMETRY_HERE', ene_ptt='molpro_energy'):
     """ Writes the electronic structure code input file for VaReCoF
         Currently code only runs with Molpro
         :rtype: string
@@ -245,7 +241,7 @@ def elec_struct(lib_path, base_name, npot,
     # Create dictionary to fill template
     els_keys = {
         'exe_path': exe_path,
-        'geom_ptt': geom_ptt,
+        'geom_ptt': geo_ptt,
         'ene_ptt': ene_ptt,
         'base_name': base_name,
         'pot_path': pot_path,
@@ -289,55 +285,21 @@ def structure(geo1, geo2):
         template_keys=struct_keys)
 
 
-def tml(memory, wfn_guess, method, inf_sep_energy):
-    """ writes the tml file used as the template for the electronic structure
-        calculation
-        currently, we assume the use of molpro
-        in particular: method and wfn assume molpro input card structure
-    """
-
-    # convert the memory
-    memory_mw = int(memory * (1024.0 / 8.0))
-
-    # make the infinite seperation energy positive
-    inf_sep_energy *= -1.0
-
-    # Create dictionary to fill template
-    tml_keys = {
-        'memory': memory_mw,
-        'method': method,
-        'wfn': wfn_guess,
-        'inf_sep_energy': inf_sep_energy
-    }
-
-    return build_mako_str(
-        template_file_name='tml.mako',
-        template_src_path=TEMPLATE_PATH,
-        template_keys=tml_keys)
-
-
 def mc_flux():
     """ Writes the mc_flux.inp file.
 
-        :return mc_flux_inp_str: String for input file
         :rtype: string
     """
-
-    mc_flux_inp_str = 'MultiInputFile          tst.inp\n'
-    mc_flux_inp_str += 'OutputFile              mc_flux.out\n'
-    mc_flux_inp_str += 'Face                    0\n'
-    mc_flux_inp_str += 'ElectronicSurface       0'
-
-    return mc_flux_inp_str
+    return (
+        'MultiInputFile          tst.inp\n'
+        'OutputFile              mc_flux.out\n'
+        'Face                    0\n'
+        'ElectronicSurface       0')
 
 
 def convert():
     """ Writes the convert.inp file.
 
-        :return convert_inp_str: String for input file
         :rtype: string
     """
-
-    convert_inp_str = 'MultiInputFile    tst.inp'
-
-    return convert_inp_str
+    return 'MultiInputFile    tst.inp'

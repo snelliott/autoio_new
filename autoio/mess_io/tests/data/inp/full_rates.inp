@@ -1,0 +1,30 @@
+!===================================================
+!  GLOBAL KEYWORD SECTION
+!===================================================
+TemperatureList[K]                     100.0  200.0  300.0  400.0  500.0  600.0  700.0
+RelativeTemperatureIncrement           0.001
+AtomDistanceMin[angstrom]              0.60
+!
+!
+Model
+!
+!===================================================
+!  ENERGY TRANSFER SECTION
+!===================================================
+  EnergyRelaxation
+    Exponential
+       Factor[1/cm]                     150.000
+       Power                            50.000
+       ExponentCutoff                   80.000
+  End
+  CollisionFrequency
+    LennardJones
+       Epsilons[1/cm]                   100.000    200.000
+       Sigmas[angstrom]                 10.000     20.000
+       Masses[amu]                      15.000     25.000
+  End
+!===================================================
+!  REACTION CHANNELS SECTION
+!===================================================
+<FAKE REACTION CHANNEL_STR>
+End

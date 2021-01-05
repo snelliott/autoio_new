@@ -19,7 +19,7 @@ SETVAL_SEP_PATTERN = app.padded(app.NEWLINE)
 
 def read(string,
          start_ptt=None,
-         sym_ptt=par.Pattern.ATOM_SYMBOL,
+         symb_ptt=par.Pattern.ATOM_SYMBOL,
          key_ptt=KEY_PATTERN,
          name_ptt=NAME_PATTERN,
          val_ptt=par.Pattern.NUMERIC_VALUE,
@@ -34,50 +34,51 @@ def read(string,
          setv_sep_ptt=SETVAL_SEP_PATTERN,
          last=True,
          case=False):
-    """ read full z-matrix from a string
+    """ Reads a fully defined Z-matrix from a string, including the lines
+        where the atom positions and connectivities are defined, as well as
+        the lines where the values of the Z-matrix coordinates are set.
 
-    captures z-matrix values and returns them
-
-    :param start_ptt: pattern before the start of the z-matrix
-    :type start_ptt: str
-    :param sym_ptt: matches atom symbol in the first column of the z-matrix
-    :type sym_ptt: str
-    :param key_ptt: matches key/index in columns 2, 4, 6 of the z-matrix
-    :type key_ptt: str
-    :param name_ptt: matches z-matrix variable names in columns 3, 5, 7; can
-        also be used to match numbers at these positions
-    :type name_ptt: str
-    :param val_ptt: matches the numeric value in the setval block
-    :type name_ptt: str
-    :param mat_entry_start_ptt: matches before key_ptt
-    :type mat_entry_start_ptt: str
-    :param mat_entry_sep_ptt: matches between key_ptt and name_ptt
-    :type mat_entry_sep_ptt: str
-    :param mat_entry_end_ptt: matches after name_ptt
-    :type mat_entry_end_ptt: str
-    :param mat_line_start_ptt: matches at the start of a z-matrix line
-    :type mat_line_start_ptt: str
-    :param mat_line_end_ptt: matches at the end of a z-matrix line
-    :type mat_line_end_ptt: str
-    :param setv_entry_sep_ptt: matches the separator between a variable name
-        and its value, such as the equals sign in 'R1 = 5.00'
-    :type setv_entry_sep_ptt: str
-    :param setv_entry_start_ptt: matches at the start of a setval entry
-    :type setv_entry_start_ptt: str
-    :param setv_entry_end_ptt: matches at the end of a setval entry
-    :type setv_entry_end_ptt: str
-    :param setv_sep_ptt: matches the separator between setval entries, such as
-        a newline or comma
-    :type setv_sep_ptt: str
-    :param last: capture the last match, instead of the first?
-    :type last: bool
-    :param case: make the match case-sensitive?
-    :type case: bool
-    :return: symbols, key matrix, variable name matrix, dictionary of variable
-        names and values
-    :rtype: tuple
+        :param start_ptt: pattern before the start of the z-matrix
+        :type start_ptt: str
+        :param symb_ptt: matches atom symbol in first column of the z-matrix
+        :type symb_ptt: str
+        :param key_ptt: matches key/index in columns 2, 4, 6 of the z-matrix
+        :type key_ptt: str
+        :param name_ptt: matches z-matrix variable names in columns 3, 5, 7;
+            can also be used to match numbers at these positions
+        :type name_ptt: str
+        :param val_ptt: matches the numeric value in the setval block
+        :type name_ptt: str
+        :param mat_entry_start_ptt: matches before key_ptt
+        :type mat_entry_start_ptt: str
+        :param mat_entry_sep_ptt: matches between key_ptt and name_ptt
+        :type mat_entry_sep_ptt: str
+        :param mat_entry_end_ptt: matches after name_ptt
+        :type mat_entry_end_ptt: str
+        :param mat_line_start_ptt: matches at the start of a z-matrix line
+        :type mat_line_start_ptt: str
+        :param mat_line_end_ptt: matches at the end of a z-matrix line
+        :type mat_line_end_ptt: str
+        :param setv_entry_sep_ptt: matches the separator between a
+            variable name and its value, such as the equals sign in 'R1 = 5.00'
+        :type setv_entry_sep_ptt: str
+        :param setv_entry_start_ptt: matches at the start of a setval entry
+        :type setv_entry_start_ptt: str
+        :param setv_entry_end_ptt: matches at the end of a setval entry
+        :type setv_entry_end_ptt: str
+        :param setv_sep_ptt: matches the separator between setval entries,
+            such as a newline or comma
+        :type setv_sep_ptt: str
+        :param last: capture the last match, instead of the first?
+        :type last: bool
+        :param case: make the match case-sensitive?
+        :type case: bool
+        :return: symbols, key matrix, variable name matrix, and
+            dictionary of variable names and values
+        :rtype: tuple
     """
-    block_ptt_ = block_pattern(sym_ptt=sym_ptt,
+
+    block_ptt_ = block_pattern(symb_ptt=symb_ptt,
                                key_ptt=key_ptt,
                                name_ptt=name_ptt,
                                val_ptt=val_ptt,
@@ -107,9 +108,9 @@ def read(string,
         strs = cap if cap is not None else []
         mat_str, setv_str = strs
 
-    syms, key_mat, name_mat = _matrix_read(
+    symbs, key_mat, name_mat = _matrix_read(
         mat_str,
-        sym_ptt=sym_ptt,
+        symb_ptt=symb_ptt,
         key_ptt=key_ptt,
         name_ptt=name_ptt,
         entry_start_ptt=mat_entry_start_ptt,
@@ -118,7 +119,7 @@ def read(string,
         line_start_ptt=mat_line_start_ptt,
         line_end_ptt=mat_line_end_ptt)
 
-    if len(syms) == 1:
+    if len(symbs) == 1:
         val_dct = {}
     else:
         val_dct = _setval_read(
@@ -129,10 +130,10 @@ def read(string,
             entry_start_ptt=setv_entry_start_ptt,
             sep_ptt=setv_sep_ptt)
 
-    return syms, key_mat, name_mat, val_dct
+    return symbs, key_mat, name_mat, val_dct
 
 
-def block_pattern(sym_ptt=par.Pattern.ATOM_SYMBOL,
+def block_pattern(symb_ptt=par.Pattern.ATOM_SYMBOL,
                   key_ptt=KEY_PATTERN,
                   name_ptt=NAME_PATTERN,
                   val_ptt=par.Pattern.NUMERIC_VALUE,
@@ -148,9 +149,47 @@ def block_pattern(sym_ptt=par.Pattern.ATOM_SYMBOL,
                   capture_matrix_block=False,
                   capture_setval_block=False):
     """ full z-matrix pattern
+
+        :param smb_ptt: matches atom symbol in first column of the z-matrix
+        :type symb_ptt: str
+        :param key_ptt: matches key/index in columns 2, 4, 6 of the z-matrix
+        :type key_ptt: str
+        :param name_ptt: matches z-matrix variable names in columns 3, 5, 7;
+            can also be used to match numbers at these positions
+        :type name_ptt: str
+        :param val_ptt: matches the numeric value in the setval block
+        :type name_ptt: str
+        :param mat_entry_start_ptt: matches before key_ptt
+        :type mat_entry_start_ptt: str
+        :param mat_entry_sep_ptt: matches between key_ptt and name_ptt
+        :type mat_entry_sep_ptt: str
+        :param mat_entry_end_ptt: matches after name_ptt
+        :type mat_entry_end_ptt: str
+        :param mat_line_start_ptt: matches at the start of a z-matrix line
+        :type mat_line_start_ptt: str
+        :param mat_line_end_ptt: matches at the end of a z-matrix line
+        :type mat_line_end_ptt: str
+        :param setv_entry_sep_ptt: matches the separator between a
+            variable name and its value, such as the equals sign in 'R1 = 5.00'
+        :type setv_entry_sep_ptt: str
+        :param setv_entry_start_ptt: matches at the start of a setval entry
+        :type setv_entry_start_ptt: str
+        :param setv_entry_end_ptt: matches at the end of a setval entry
+        :type setv_entry_end_ptt: str
+        :param setv_sep_ptt: matches the separator between setval entries,
+            such as a newline or comma
+        :type setv_sep_ptt: str
+        :param capture_matrix_block: add capturing pattern for Z-matrix block
+        :type capture_matrix_block: bool
+        :param capture_setval_block: add capturing pattern for setval block
+        :type capture_setval_block: bool
+        :return: symbols, key matrix, variable name matrix, and
+            dictionary of variable names and values
+        :rtype: tuple
     """
+
     mat_ptt = _matrix_block_pattern(
-        sym_ptt=sym_ptt,
+        symb_ptt=symb_ptt,
         key_ptt=key_ptt,
         name_ptt=name_ptt,
         entry_start_ptt=mat_entry_start_ptt,
@@ -167,4 +206,5 @@ def block_pattern(sym_ptt=par.Pattern.ATOM_SYMBOL,
     mat_ptt = app.capturing(mat_ptt) if capture_matrix_block else mat_ptt
     setv_ptt = app.capturing(setv_ptt) if capture_setval_block else setv_ptt
     block_ptt = app.padded(setv_start_ptt).join([mat_ptt, setv_ptt])
+
     return block_ptt

@@ -1,47 +1,36 @@
-""" output reading module """
+""" Electronic structure program output reading module
+"""
+
 # energy
 from elstruct.reader._reader import programs
-from elstruct.reader._reader import methods
 from elstruct.reader._reader import energy
-from elstruct.reader._reader import energy_
 # gradient
 from elstruct.reader._reader import gradient_programs
 from elstruct.reader._reader import gradient
-from elstruct.reader._reader import gradient_
 # hessian
 from elstruct.reader._reader import hessian_programs
 from elstruct.reader._reader import hessian
-from elstruct.reader._reader import hessian_
 from elstruct.reader._reader import harmonic_frequencies_programs
 from elstruct.reader._reader import harmonic_frequencies
-from elstruct.reader._reader import harmonic_frequencies_
-from elstruct.reader._reader import normal_coords_programs
-from elstruct.reader._reader import normal_coords
-from elstruct.reader._reader import normal_coords_
+from elstruct.reader._reader import normal_coordinates_programs
+from elstruct.reader._reader import normal_coordinates
 # irc
 from elstruct.reader._reader import irc_programs
 from elstruct.reader._reader import irc_points
-from elstruct.reader._reader import irc_points_
 from elstruct.reader._reader import irc_path
-from elstruct.reader._reader import irc_path_
 # optimization
 from elstruct.reader._reader import opt_geometry_programs
 from elstruct.reader._reader import opt_geometry
-from elstruct.reader._reader import opt_geometry_
 from elstruct.reader._reader import opt_zmatrix_programs
 from elstruct.reader._reader import opt_zmatrix
-from elstruct.reader._reader import opt_zmatrix_
 # vpt2
 from elstruct.reader._reader import vpt2_programs
 from elstruct.reader._reader import vpt2
-from elstruct.reader._reader import vpt2_
 # properties
 from elstruct.reader._reader import dipole_moment_programs
 from elstruct.reader._reader import dipole_moment
-from elstruct.reader._reader import dipole_moment_
 from elstruct.reader._reader import polarizability_programs
 from elstruct.reader._reader import polarizability
-from elstruct.reader._reader import polarizability_
 # status
 from elstruct.reader._reader import has_error_message
 from elstruct.reader._reader import has_normal_exit_message
@@ -58,35 +47,33 @@ __all__ = [
     'programs',
     'methods',
     'energy',
-    'energy_',
     # gradient
     'gradient_programs',
     'gradient',
-    'gradient_',
     # hessian
     'hessian_programs',
     'hessian',
-    'hessian_',
-    'normal_coords_programs',
-    'normal_coords',
-    'normal_coords_',
+    'harmonic_frequencies_programs',
+    'harmonic_frequencies',
+    'normal_coordinates_programs',
+    'normal_coordinates',
     # irc
     'irc_programs',
     'irc_points',
-    'irc_points_',
     'irc_path',
-    'irc_path_',
     # optimization
     'opt_geometry_programs',
     'opt_geometry',
-    'opt_geometry_',
     'opt_zmatrix_programs',
     'opt_zmatrix',
-    'opt_zmatrix_',
     # vpt2
     'vpt2_programs',
     'vpt2',
-    'vpt2_',
+    # properties
+    'dipole_moment_programs',
+    'dipole_moment',
+    'polarizability_programs',
+    'polarizability',
     # status
     'has_error_message',
     'has_normal_exit_message',

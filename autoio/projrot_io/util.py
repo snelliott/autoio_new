@@ -25,12 +25,6 @@ def write_data_str(geoms, grads, hessians):
         :rtype: str
     """
 
-    # if not isinstance(geoms, list):
-    #     geoms = [geoms]
-    # if not isinstance(grads, list):
-    #     grads = [grads]
-    # if not isinstance(hessians, list):
-    #     hessians = [hessians]
     nsteps = len(geoms)
 
     data_str = ''
@@ -49,7 +43,7 @@ def write_data_str(geoms, grads, hessians):
 
 
 def _format_geom_str(geom):
-    """ Formats the geometry into a string used for the ProjRot input file.
+    """ Formats a geometry into a string used for the ProjRot input file.
 
         :param geoms: geometries (Angstrom)
         :type geoms: list
@@ -70,7 +64,7 @@ def _format_geom_str(geom):
 
 
 def _format_grad_str(geom, grad):
-    """ Formats the gradient into a string used for the ProjRot input file.
+    """ Formats a gradient into a string used for the ProjRot input file.
 
         :param geom: geometries (Angstrom)
         :type geom: list
@@ -95,7 +89,7 @@ def _format_grad_str(geom, grad):
 
 
 def _format_hessian_str(hess):
-    """ Formats the Hessian into a string used for the ProjRot input file.
+    """ Formats a Hessian into a string used for the ProjRot input file.
 
         :param hess: hessians (Eh/Bohr^2)
         :type hess: list

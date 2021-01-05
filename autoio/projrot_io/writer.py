@@ -17,15 +17,15 @@ SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_PATH = os.path.join(SRC_PATH, 'templates')
 
 
-def rpht_input(geoms, grads, hessians,
+def rpht_input(geos, grads, hessians,
                saddle_idx=1,
                rotors_str='',
                coord_proj='cartesian',
                proj_rxn_coord=False):
     """ Writes a string for the input file for ProjRot.
 
-        :param geoms: geometry for single species or along a reaction path
-        :type geoms: list(list(float))
+        :param geos: geometry for single species or along a reaction path
+        :type geos: list(list(float))
         :param grads: gradient for single species or along a reaction path
         :type grads: list(list(float))
         :param hessians: Hessian for single species or along a reaction path
@@ -42,20 +42,20 @@ def rpht_input(geoms, grads, hessians,
     """
 
     # Format the molecule info
-    data_str = util.write_data_str(geoms, grads, hessians)
-    natoms = len(geoms[0])
-    # nsteps = len(geoms)
+    data_str = util.write_data_str(geos, grads, hessians)
+    natoms = len(geos[0])
+    # nsteps = len(geos)
     nrotors = rotors_str.count('pivotA')
 
     # Check input into the function (really fix calls to not have this)
-    if not isinstance(geoms, list):
-        geoms = [geoms]
+    if not isinstance(geos, list):
+        geos = [geos]
     if not isinstance(grads, list):
         grads = [grads]
     if not isinstance(hessians, list):
         hessians = [hessians]
 
-    nsteps = len(geoms)
+    nsteps = len(geos)
     assert nsteps == len(hessians)
     if len(grads) != 0:
         assert len(grads) == nsteps
@@ -132,7 +132,7 @@ def rotors(axis, group, remdummy=None):
         :type axis: list(int)
         :param remdummy: list of idxs of dummy atoms for shifting values
         :type remdummy: list(int)
-        :rtype str
+        :rtype: str
     """
 
     # Set up the keywords

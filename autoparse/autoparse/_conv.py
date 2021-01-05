@@ -1,9 +1,7 @@
 """ convert string captures to various datatypes
 """
-try:
-    from collections.abc import Sequence as _Sequence
-except ImportError:
-    from collections import Sequence as _Sequence
+
+from collections.abc import Sequence as _Sequence
 
 
 def cast(seq):

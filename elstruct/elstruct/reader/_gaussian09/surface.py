@@ -1,5 +1,6 @@
-""" gradient and hessian readers
+""" potential energy surface information readers
 """
+
 import numpy
 from qcelemental import periodictable as pt
 import automol
@@ -9,27 +10,41 @@ import autoparse.pattern as app
 import autoparse.find as apf
 
 
-def gradient(output_string):
-    """ read gradient from the output string
+def gradient(output_str):
+    """ Reads the molecular gradient (in Cartesian coordinates) from
+        the output file string. Returns the gradient in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     grad = ar.matrix.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded(app.escape('Forces (Hartrees/Bohr)'), app.NONNEWLINE),
             app.LINE, app.LINE, '']),
         line_start_ptt=app.LINESPACES.join([app.UNSIGNED_INTEGER] * 2))
     grad = numpy.multiply(grad, -1.0)
+
     assert numpy.shape(grad)[1] == 3
+
     return grad
 
 
-def hessian(output_string):
-    """ read hessian from the output string
+def hessian(output_str):
+    """ Reads the molecular Hessian (in Cartesian coordinates) from
+        the output file string. Returns the Hessian in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     try:
         comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
         mat = ar.matrix.read(
-            output_string,
+            output_str,
             start_ptt=(app.escape('The second derivative matrix:') +
                        app.lpadded(app.NEWLINE)),
             block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
@@ -39,7 +54,7 @@ def hessian(output_string):
     except TypeError:
         comp_ptt = app.UNSIGNED_INTEGER
         mat = ar.matrix.read(
-            output_string,
+            output_str,
             val_ptt=app.EXPONENTIAL_FLOAT_D,
             start_ptt=(
                 app.escape('Force constants in Cartesian coordinates:') +
@@ -53,15 +68,22 @@ def hessian(output_string):
                for row in mat]
 
     mat = tuple(map(tuple, mat))
+
     return mat
 
 
-def hessian2(output_string):
-    """ read hessian from the output string
+def hessian2(output_str):
+    """ Reads the molecular Hessian (in Cartesian coordinates) from
+        the output file string. Returns the Hessian in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     comp_ptt = app.UNSIGNED_INTEGER
     mat = ar.matrix.read(
-        output_string,
+        output_str,
         val_ptt=app.EXPONENTIAL_FLOAT_D,
         start_ptt=(
             app.escape('Force constants in Cartesian coordinates:') +
@@ -75,15 +97,21 @@ def hessian2(output_string):
            for row in mat]
 
     mat = tuple(map(tuple, mat))
+
     return mat
 
 
+def harmonic_frequencies(output_str):
+    """ Reads the harmonic vibrational frequencies from
+        the output file string. Returns the frequencies in cm-1.
 
-def harmonic_frequencies(output_string):
-    """ read harmonic frequencies from the output string
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(float)
     """
+
     pattern = 'Frequencies --' + app.capturing(app.LINE_FILL)
-    captures = apf.all_captures(pattern, output_string)
+    captures = apf.all_captures(pattern, output_str)
     if captures is not None:
         freqs = []
         for capture in captures:
@@ -95,14 +123,20 @@ def harmonic_frequencies(output_string):
     return freqs
 
 
-def normal_coords(output_string):
-    """ read normal modes from the output string
+def normal_coordinates(output_str):
+    """ Reads the displacement along the normal modes (in Cartesian coordinates)
+        from the output string. Returns the coordinates in Bohr.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     comp_ptt = app.UNSIGNED_INTEGER + app.SPACES + app.UNSIGNED_INTEGER
     nmodes = []
     start = 'Atom  AN      X      Y      Z        '
     start += 'X      Y      Z        X      Y      Z'
-    for mode in apf.split('Frequencies', output_string)[1:]:
+    for mode in apf.split('Frequencies', output_str)[1:]:
         mat = ar.matrix.read(
             mode,
             start_ptt=app.padded(app.NEWLINE).join([app.escape(start), '']),
@@ -110,15 +144,21 @@ def normal_coords(output_string):
         nmat = numpy.array(mat)
         for i in range(int(len(nmat)/3)):
             nmodes.append(nmat[:, i*3:(i+1)*3])
+
     return nmodes
 
 
-def irc_points(output_string):
-    """ obtain the geometry, gradient, and hessian at each point along the irc
+def irc_points(output_str):
+    """ Reads the geometries, gradients, and Hessians at each point along the
+        Intrinsic Reaction Coordinate from the output string.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: (geom data structure, tuple(tuple(float)), tuple(tuple(float)))
     """
 
     # Lines
-    output_lines = output_string.splitlines()
+    output_lines = output_str.splitlines()
 
     # Obtain all of the info for the points off the saddle point
     # Find the lines with point number to get the strings
@@ -160,59 +200,82 @@ def irc_points(output_string):
     # Combine with the 0 index info
     geoms = [sadpt_geom] + geoms
     if grads:
-        grads = [sadpt_grad] + grads
+        grads = [] + grads
+        # grads = [sadpt_grad] + grads
     if hessians:
-        hessians = [sadpt_hess] + hessians
+        hessians = [] + hessians
+        # hessians = [sadpt_hess] + hessians
 
     return geoms, grads, hessians
 
 
-def sadpt_geometry(sadpt_string):
-    """ get the geometry of the saddle point of IRC
+def sadpt_geometry(sadpt_str):
+    """ Reads the molecular geometry of the saddle point (first point on the
+        Intrinsic Reaction Coordinate). Returns the geometry in Bohr.
+
+        :param sadpt_str: string of the output file containing the saddle point
+        :type sadpt_str: str
+        :rtype: automol geom data structure
     """
+
     nums, xyzs = ar.geom.read(
-        sadpt_string,
+        sadpt_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Input orientation:'),
             app.LINE, app.LINE, app.LINE, app.LINE, '']),
-        sym_ptt=app.UNSIGNED_INTEGER,
+        symb_ptt=app.UNSIGNED_INTEGER,
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.UNSIGNED_INTEGER)
     syms = tuple(map(pt.to_E, nums))
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
+
     return geo
 
 
-def irc_geometry(output_string):
-    """ get geometry at a point on the IRC
+def irc_geometry(output_str):
+    """ Reads the molecular geometry at a point on the
+        Intrinsic Reaction Coordinate. Returns the geometry in Bohr.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(automol geom data structure)
     """
+
     nums, xyzs = ar.geom.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('CURRENT STRUCTURE'),
             app.LINE, app.LINE, app.LINE, app.LINE, app.LINE, '']),
-        sym_ptt=app.UNSIGNED_INTEGER,
+        symb_ptt=app.UNSIGNED_INTEGER,
         line_start_ptt=app.UNSIGNED_INTEGER)
     syms = tuple(map(pt.to_E, nums))
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
+
     return geo
 
 
-def irc_path(output_string):
-    """ get the energies relative to the saddle point
+def irc_path(output_str):
+    """ Reads the coordinates and electronic energies (relative to saddple point)
+        of the Intrinsic Reaction Coordinate summarized at the end of
+        the output file.
+        Returns the energy in Hartress.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(automol geom data structure)
     """
 
-    # Read the coordiantes
-    coordinates = _read_irc_reaction_path_summary(output_string, 'coord')
+    # Reads the coordiantes
+    coordinates = _read_irc_reaction_path_summary(output_str, 'coord')
 
-    # Read the energies (the ts/sadpt)
+    # Reads the energies (the ts/sadpt)
     ptt = (
         'Energies reported relative to the TS energy of' +
         app.SPACES +
         app.capturing(app.FLOAT)
     )
-    ts_energy = apf.last_capture(ptt, output_string)
-    pt_energies = _read_irc_reaction_path_summary(output_string, 'energy')
+    ts_energy = apf.last_capture(ptt, output_str)
+    pt_energies = _read_irc_reaction_path_summary(output_str, 'energy')
     if ts_energy and pt_energies:
         energies = [float(ts_energy) + ene for ene in pt_energies]
 
@@ -224,16 +287,23 @@ def irc_path(output_string):
     return (coordinates, energies)
 
 
-def _read_irc_reaction_path_summary(output_string, read_val):
-    """ get the desired values from the reaction path summary block
+def _read_irc_reaction_path_summary(output_str, read_val):
+    """ Reads the values for the Intrinsic Reaction Path from the table.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :param read_val: value to read from table
+        :type read_val: str
+        :rtype: tuple(automol geom data structure)
     """
+
     assert read_val in ('energy', 'coord')
 
     block = apf.last_capture(
         (app.escape('Summary of reaction path following') +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          app.escape('Total number of points:') + app.SPACES + app.INTEGER),
-        output_string)
+        output_str)
 
     if read_val == 'energy':
         pattern = (

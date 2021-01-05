@@ -1,55 +1,19 @@
-""" input writing module
-Calls functions from the various program modules. Each module must provide a
-function that matches one in the module template -- both the function name and
-signature are checked before calling the function. The resulting function
-signatures are exactly those in module_template.py with `prog` inserted as the
-first required argument.
+""" Electronic structure program input writing module.
 """
-from elstruct import program_modules as pm
-from elstruct import par
-from elstruct.writer import module_template
 
-MODULE_NAME = par.Module.WRITER
+from elstruct import par
+from elstruct.writer import program_modules as pm
 
 
 # energy input writers
 def programs():
-    """ list of available electronic structure programs
-    (must at least implement an energy writer)
+    """ Constructs a list of available electronic structure programs.
+        At minimum, each program must have an energy reader to be enumerated.
     """
-    return pm.program_modules_with_functions(
-        MODULE_NAME, [module_template.energy])
+    return pm.program_modules_with_function(pm.Job.ENERGY)
 
 
-def methods(prog):
-    """ list of available electronic structure methods
-    :param prog: the electronic structure program to use as a backend
-    :type prog: str
-    """
-    return par.program_methods(prog)
-
-
-def bases(prog):
-    """ list of available electronic structure basis sets
-    :param prog: the electronic structure program to use as a backend
-    :type prog: str
-    """
-    return par.program_bases(prog)
-
-
-def method_orbital_types(prog, method, singlet):
-    """ list of available orbital restrictions for a given method
-    :param prog: the electronic structure program to use as a backend
-    :type prog: str
-    :param method: electronic structure method
-    :type method: str
-    :param singlet: whether or not the target is a singlet (closed shell)
-    :type singlet: bool
-    """
-    return par.program_method_orbital_types(prog, method, singlet)
-
-
-def energy(geom, charge, mult, method, basis, prog,
+def energy(prog, geo, charge, mult, method, basis,
            # molecule options
            mol_options=(),
            # machine options
@@ -59,64 +23,74 @@ def energy(geom, charge, mult, method, basis, prog,
            scf_options=(), casscf_options=(), corr_options=(),
            # generic options
            gen_lines=None):
-    """ energy input string
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param charge: molecular charge
-    :type charge: int
-    :param mult: spin multiplicity
-    :type mult: int
-    :param method: electronic structure method
-    :type method: str
-    :param basis: basis set
-    :type basis: str
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param mol_options: options for the molecule block
-    :type mol_options: tuple[str]
-    ;param memory: memory in GB
-    :type memory: int
-    :param comment: a comment string to be placed at the top of the file
-    :type comment: str
-    :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: tuple[str]
-    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-        unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
-        character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_type: str
-    :param scf_options: scf method directives
-    :type scf_options: tuple[str]
-    :param casscf_options: casscf method directives
-    :type casscf_options: tuple[str]
-    :param corr_options: correlation method directives
-    :type corr_options: tuple[str]
-    :param gen_lines: generic lines for the input file
-    :type gen_lines: dct[idx]=[str]
+    """ Writes an input file string for an electronic energy calculation
+        for a specified electronic structure program.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.energy,
+        prog, pm.Job.ENERGY,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=(), frozen_coordinates=(),
+        saddle=False)
 
 
 # gradient input writers
 def gradient_programs():
-    """ list of program modules implementing gradient input writers
+    """ Constructs a list of program modules implementing
+        gradient input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.gradient)
+    return pm.program_modules_with_function(pm.Job.GRADIENT)
 
 
-def gradient(geom, charge, mult, method, basis, prog,
+def gradient(prog, geo, charge, mult, method, basis,
              # molecule options
              mol_options=(),
              # machine options
@@ -128,64 +102,74 @@ def gradient(geom, charge, mult, method, basis, prog,
              gen_lines=None,
              # job options
              job_options=()):
-    """ gradient input string
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param charge: molecular charge
-    :type charge: int
-    :param mult: spin multiplicity
-    :type mult: int
-    :param method: electronic structure method
-    :type method: str
-    :param basis: basis set
-    :type basis: str
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param mol_options: options for the molecule block
-    :type mol_options: tuple[str]
-    ;param memory: memory in GB
-    :type memory: int
-    :param comment: a comment string to be placed at the top of the file
-    :type comment: str
-    :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: tuple[str]
-    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-        unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
-        character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_type: str
-    :param scf_options: scf method directives
-    :type scf_options: tuple[str]
-    :param casscf_options: casscf method directives
-    :type casscf_options: tuple[str]
-    :param corr_options: correlation method directives
-    :type corr_options: tuple[str]
-    :param gen_lines: generic lines for the input file
-    :type gen_lines: dct[idx]=[str]
+    """ Writes an input file string for a gradient calculation
+        for a specified electronic structure program.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.gradient,
+        prog, pm.Job.GRADIENT,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines, job_options=job_options)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=job_options, frozen_coordinates=(),
+        saddle=False)
 
 
 # hessian input writers
 def hessian_programs():
-    """ list of program modules implementing hessian input writers
+    """ Constructs a list of program modules implementing
+        Hessian input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.hessian)
+    return pm.program_modules_with_function(pm.Job.HESSIAN)
 
 
-def hessian(geom, charge, mult, method, basis, prog,
+def hessian(prog, geo, charge, mult, method, basis,
             # molecule options
             mol_options=(),
             # machine options
@@ -197,349 +181,414 @@ def hessian(geom, charge, mult, method, basis, prog,
             gen_lines=None,
             # job options
             job_options=()):
-    """ hessian input string
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param charge: molecular charge
-    :type charge: int
-    :param mult: spin multiplicity
-    :type mult: int
-    :param method: electronic structure method
-    :type method: str
-    :param basis: basis set
-    :type basis: str
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param mol_options: options for the molecule block
-    :type mol_options: tuple[str]
-    ;param memory: memory in GB
-    :type memory: int
-    :param comment: a comment string to be placed at the top of the file
-    :type comment: str
-    :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: tuple[str]
-    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-        unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
-        character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_type: str
-    :param scf_options: scf method directives
-    :type scf_options: tuple[str]
-    :param casscf_options: casscf method directives
-    :type casscf_options: tuple[str]
-    :param corr_options: correlation method directives
-    :type corr_options: tuple[str]
-    :param gen_lines: generic lines for the input file
-    :type gen_lines: dct[idx]=[str]
+    """ Writes an input file string for a Hessian calculation
+        for a specified electronic structure program.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.hessian,
+        prog, pm.Job.HESSIAN,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines, job_options=job_options)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=job_options, frozen_coordinates=(),
+        saddle=False)
 
 
 # vpt2 input writers
 def vpt2_programs():
-    """ list of program modules implementing hessian input writers
+    """ Constructs a list of program modules implementing
+        2nd-order vibrational perturbation theory (VPT2) input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.vpt2)
+    return pm.program_modules_with_function(pm.Job.VPT2)
 
 
-def vpt2(geom, charge, mult, method, basis, prog,
+def vpt2(prog, geo, charge, mult, method, basis,
          # molecule options
          mol_options=(),
          # machine options
          memory=1, comment='', machine_options=(),
          # theory options
-         orb_type=None,
+         orb_type='RU',
          scf_options=(), casscf_options=(), corr_options=(),
          # generic options
          gen_lines=None,
          # job options
          job_options=()):
-    """ hessian input string
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param charge: molecular charge
-    :type charge: int
-    :param mult: spin multiplicity
-    :type mult: int
-    :param method: electronic structure method
-    :type method: str
-    :param basis: basis set
-    :type basis: str
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param mol_options: options for the molecule block
-    :type mol_options: tuple[str]
-    ;param memory: memory in GB
-    :type memory: int
-    :param comment: a comment string to be placed at the top of the file
-    :type comment: str
-    :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: tuple[str]
-    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-        unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
-        character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_type: str
-    :param scf_options: scf method directives
-    :type scf_options: tuple[str]
-    :param casscf_options: casscf method directives
-    :type casscf_options: tuple[str]
-    :param corr_options: correlation method directives
-    :type corr_options: tuple[str]
-    :param gen_lines: generic lines for the input file
-    :type gen_lines: tuple[str]
-    :type gen_lines: dct[idx]=[str]
+    """ Writes an input file string for a
+        2nd-order vibrational perturbation theory calculation
+        for a specified electronic structure program.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.vpt2,
+        prog, pm.Job.VPT2,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines, job_options=job_options)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=job_options, frozen_coordinates=(),
+        saddle=False)
 
 
 # molec_properties input writers
-def molec_properties_programs():
-    """ list of program modules implementing hessian input writers
+def molecular_properties_programs():
+    """ Constructs a list of program modules implementing
+        molecular properties, including the
+        dipole moment and polarizability, input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.molec_properties)
+    return pm.program_modules_with_function(pm.Job.MOLPROP)
 
 
-def molec_properties(geom, charge, mult, method, basis, prog,
-                     # molecule options
-                     mol_options=(),
-                     # machine options
-                     memory=1, comment='', machine_options=(),
-                     # theory options
-                     orb_type=None,
-                     scf_options=(), casscf_options=(), corr_options=(),
-                     # generic options
-                     gen_lines=None,
-                     # job options
-                     job_options=()):
-    """ Molecular Properties input string
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param charge: molecular charge
-    :type charge: int
-    :param mult: spin multiplicity
-    :type mult: int
-    :param method: electronic structure method
-    :type method: str
-    :param basis: basis set
-    :type basis: str
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param mol_options: options for the molecule block
-    :type mol_options: tuple[str]
-    ;param memory: memory in GB
-    :type memory: int
-    :param comment: a comment string to be placed at the top of the file
-    :type comment: str
-    :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: tuple[str]
-    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-        unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
-        character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_type: str
-    :param scf_options: scf method directives
-    :type scf_options: tuple[str]
-    :param casscf_options: casscf method directives
-    :type casscf_options: tuple[str]
-    :param corr_options: correlation method directives
-    :type corr_options: tuple[str]
-    :param gen_lines: generic lines for the input file
-    :type gen_lines: tuple[str]
-    :type gen_lines: dct[idx]=[str]
+def molecular_properties(prog, geo, charge, mult, method, basis,
+                         # molecule options
+                         mol_options=(),
+                         # machine options
+                         memory=1, comment='', machine_options=(),
+                         # theory options
+                         orb_type='RU',
+                         scf_options=(), casscf_options=(), corr_options=(),
+                         # generic options
+                         gen_lines=None,
+                         # job options
+                         job_options=()):
+    """ Writes an input file string for molecular properties calculations,
+        including the dipole moment and polarizability,
+        for a specified electronic structure program.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.molec_properties,
+        prog, pm.Job.MOLPROP,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
-        gen_lines=gen_lines, job_options=job_options)
+        # generic options
+        gen_lines=gen_lines,
+        # job options
+        job_options=job_options, frozen_coordinates=(),
+        saddle=False)
 
 
 # irc input writers
 def irc_programs():
-    """ list of program modules implementing optimization input writers
+    """ Constructs a list of program modules implementing
+        Intrinsic Reaction Coordinate input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.irc)
+    return pm.program_modules_with_function(pm.Job.IRC)
 
 
-def irc(geom, charge, mult, method, basis, prog,
+def irc(prog, geo, charge, mult, method, basis,
         # molecule options
         mol_options=(),
         # machine options
         memory=1, comment='', machine_options=(),
         # theory options
-        orb_type=None,
+        orb_type='RU',
         scf_options=(), casscf_options=(), corr_options=(),
         # generic options
         gen_lines=None,
         # job options
         job_options=(), frozen_coordinates=()):
-    """ irc input string
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param charge: molecular charge
-    :type charge: int
-    :param mult: spin multiplicity
-    :type mult: int
-    :param method: electronic structure method
-    :type method: str
-    :param basis: basis set
-    :type basis: str
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param mol_options: options for the molecule block
-    :type mol_options: tuple[str]
-    ;param memory: memory in GB
-    :type memory: int
-    :param comment: a comment string to be placed at the top of the file
-    :type comment: str
-    :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: tuple[str]
-    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-        unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
-        character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_type: str
-    :param scf_options: scf method directives
-    :type scf_options: tuple[str]
-    :param casscf_options: casscf method directives
-    :type casscf_options: tuple[str]
-    :param corr_options: correlation method directives
-    :type corr_options: tuple[str]
-    :param job_options: geometry optimization routine directives
-    :type job_options: tuple[str]
-    :param frozen_coordinates: only with z-matrix geometries; list of
-        coordinate names to freeze
-    :type fozen_coordinates: tuple[str]
-    :param gen_lines: generic lines for the input file
-    :type gen_lines: dct[idx]=[str]
+    """ Writes an input file string for an Intrinsic Reaction Coordinate
+        calculation for a specified electronic structure program.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param job_options: geometry optimization routine directives
+        :type job_options: tuple[str]
+        :param frozen_coordinates: only with z-matrix geometries; list of
+            coordinate names to freeze
+        :type fozen_coordinates: tuple[str]
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.irc,
+        prog, pm.Job.IRC,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
+        # generic options
         gen_lines=gen_lines,
-        job_options=job_options, frozen_coordinates=frozen_coordinates)
+        # job options
+        job_options=job_options, frozen_coordinates=frozen_coordinates,
+        saddle=True)
 
 
 # optimization input writers
 def optimization_programs():
-    """ list of program modules implementing optimization input writers
+    """ Constructs a list of program modules implementing
+        geometry optimization input writers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.optimization)
+    return pm.program_modules_with_function(pm.Job.OPTIMIZATION)
 
 
-def optimization(geom, charge, mult, method, basis, prog,
+def optimization(prog, geo, charge, mult, method, basis,
                  # molecule options
                  mol_options=(),
                  # machine options
                  memory=1, comment='', machine_options=(),
                  # theory options
-                 orb_type=None,
+                 orb_type='RU',
                  scf_options=(), casscf_options=(), corr_options=(),
                  # generic options
                  gen_lines=None,
                  # job options
                  job_options=(), frozen_coordinates=(), saddle=False):
-    """ optimization input string
-    :param geom: cartesian or z-matrix geometry
-    :type geom: tuple
-    :param charge: molecular charge
-    :type charge: int
-    :param mult: spin multiplicity
-    :type mult: int
-    :param method: electronic structure method
-    :type method: str
-    :param basis: basis set
-    :type basis: str
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param mol_options: options for the molecule block
-    :type mol_options: tuple[str]
-    ;param memory: memory in GB
-    :type memory: int
-    :param comment: a comment string to be placed at the top of the file
-    :type comment: str
-    :param machine_options: machine directives (num procs, num threads, etc.)
-    :type machine_options: tuple[str]
-    :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
-        unrestricted orbitals; can also be 'RR', 'RU', or 'UU' where the first
-        character sets R/U for singlets and the second sets R/U for multiplets
-    :type orb_type: str
-    :param scf_options: scf method directives
-    :type scf_options: tuple[str]
-    :param casscf_options: casscf method directives
-    :type casscf_options: tuple[str]
-    :param corr_options: correlation method directives
-    :type corr_options: tuple[str]
-    :param job_options: geometry optimization routine directives
-    :type job_options: tuple[str]
-    :param frozen_coordinates: only with z-matrix geometries; list of
-        coordinate names to freeze
-    :type fozen_coordinates: tuple[str]
-    :param saddle: optimize a saddle point?
-    :type saddle: bool
-    :param gen_lines: generic lines for the input file
-    :type gen_lines: dct[idx]=[str]
+    """ Writes an input file string for a geometry optimization
+        calculation for a specified electronic structure program.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param charge: molecular charge
+        :type charge: int
+        :param mult: spin multiplicity
+        :type mult: int
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param mol_options: options for the molecule block
+        :type mol_options: tuple[str]
+        ;param memory: memory in GB
+        :type memory: int
+        :param comment: a comment string to be placed at the top of the file
+        :type comment: str
+        :param machine_options: machine directives
+            (num procs, num threads, etc.)
+        :type machine_options: tuple[str]
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :param scf_options: scf method directives
+        :type scf_options: tuple[str]
+        :param casscf_options: casscf method directives
+        :type casscf_options: tuple[str]
+        :param corr_options: correlation method directives
+        :type corr_options: tuple[str]
+        :param job_options: geometry optimization routine directives
+        :type job_options: tuple[str]
+        :param frozen_coordinates: only with z-matrix geometries; list of
+            coordinate names to freeze
+        :type fozen_coordinates: tuple[str]
+        :param saddle: optimize a saddle point?
+        :type saddle: bool
+        :param gen_lines: generic lines for the input file
+        :type gen_lines: dict[idx:str]
     """
     prog, method, basis, orb_restricted = _process_theory_specifications(
         prog, method, basis, mult, orb_type)
 
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.optimization,
+        prog, pm.Job.OPTIMIZATION,
         # *args
-        geom, charge, mult, method, basis,
+        geo, charge, mult, method, basis, orb_restricted,
         # **kwargs
-        mol_options=mol_options, memory=memory, comment=comment,
-        machine_options=machine_options, orb_restricted=orb_restricted,
+        # molecule options
+        mol_options=mol_options,
+        # machine options
+        memory=memory, comment=comment, machine_options=machine_options,
+        # theory options
         scf_options=scf_options, casscf_options=casscf_options,
         corr_options=corr_options,
+        # generic options
         gen_lines=gen_lines,
+        # job options
         job_options=job_options, frozen_coordinates=frozen_coordinates,
         saddle=saddle)
 
 
 def _process_theory_specifications(prog, method, basis, mult, orb_type):
+    """ Process the theory method including the orbital type conversion.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param method: electronic structure method
+        :type method: str
+        :param basis: basis set
+        :type basis: str
+        :param mult: spin multiplicity
+        :type mult: int
+        :param orb_type: 'R' indicates restricted orbitals, 'U' indicates
+            unrestricted orbitals; can also be 'RR', 'RU', or 'UU'.
+            Where first (second) character sets R/U for singlets (multiplets)
+        :type orb_type: str
+        :rtype: (str, str, str, str)
+    """
+
     assert par.is_program(prog)
 
     # determine the orbital restriction
@@ -552,6 +601,7 @@ def _process_theory_specifications(prog, method, basis, mult, orb_type):
 
     # for non-standard DFT/Basis, the user can input whatever they want
     if not par.Method.is_nonstandard_dft(method):
+        print('assert check', prog, method)
         assert par.is_program_method(prog, method)
 
         assert par.is_program_method_orbital_type(

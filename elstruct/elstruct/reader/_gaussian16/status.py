@@ -1,75 +1,128 @@
 """ status checkers
 """
+
 import autoparse.pattern as app
 import autoparse.find as apf
 import elstruct.par
 
 
 # Exit message for the program
-def has_normal_exit_message(output_string):
-    """ does this output string have a normal exit message?
+def has_normal_exit_message(output_str):
+    """ Assess whether the output file string contains the
+        normal program exit message.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
-    pattern = app.escape('Normal termination of Gaussian 16')
-    return apf.has_match(pattern, output_string, case=False)
+
+    pattern = app.escape('Normal termination of Gaussian 09')
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
 # Parsers for convergence success messages
-def _has_scf_convergence_message(output_string):
-    """ does this output string have a convergence success message?
+def _has_scf_convergence_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling successful convergence of the SCF procedure.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     scf_str1 = (
         'Initial convergence to {} achieved.  Increase integral accuracy.' +
         app.LINE_FILL + app.NEWLINE + app.LINE_FILL + app.escape('SCF Done:')
     ).format(app.EXPONENTIAL_FLOAT_D)
     scf_str2 = app.escape('Rotation gradient small -- convergence achieved.')
+
     pattern = app.one_of_these([scf_str1, scf_str2])
-    return apf.has_match(pattern, output_string, case=False)
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
-def _has_opt_convergence_message(output_string):
-    """ does this output string have a convergence success message?
+def _has_opt_convergence_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling successful convergence of the geometry optimization.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     pattern = (
         app.escape('Optimization completed.') +
         app.LINE_FILL + app.NEWLINE + app.LINE_FILL +
         app.escape('-- Stationary point found.')
     )
-    return apf.has_match(pattern, output_string, case=False)
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
-def _has_irc_convergence_message(output_string):
-    """ does this output string have a convergence success message?
+def _has_irc_convergence_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling successful convergence of the
+        Intrinsic Reaction Coordinate search.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     pattern = app.escape('Reaction path calculation complete.')
-    return apf.has_match(pattern, output_string, case=False)
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
 # Parsers for various error messages
-def _has_scf_nonconvergence_error_message(output_string):
-    """ does this output string have an SCF non-convergence message?
+def _has_scf_nonconvergence_error_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling the failure of the SCF procedure.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     pattern = app.padded(app.NEWLINE).join([
         app.escape('Convergence criterion not met.'),
         app.escape('SCF Done:')
     ])
-    return apf.has_match(pattern, output_string, case=False)
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
-def _has_opt_nonconvergence_error_message(output_string):
-    """ does this output string have an optimization non-convergence message?
+def _has_opt_nonconvergence_error_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling the failure of the geometry optimization.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     pattern = app.padded(app.NEWLINE).join([
         app.escape('Optimization stopped.'),
         app.escape('-- Number of steps exceeded,')
     ])
-    return apf.has_match(pattern, output_string, case=False)
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
-def _has_irc_nonconvergence_error_message(output_string):
-    """ does this output string have an optimization non-convergence message?
+def _has_irc_nonconvergence_error_message(output_str):
+    """ Assess whether the output file string contains the
+        message signaling the failure of the
+        Intrinsic Reaction Coordinate search.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     pattern = app.escape('Maximum number of corrector steps exceeded')
-    return apf.has_match(pattern, output_string, case=False)
+
+    return apf.has_match(pattern, output_str, case=False)
 
 
 ERROR_READER_DCT = {
@@ -85,35 +138,49 @@ SUCCESS_READER_DCT = {
 
 
 def error_list():
-    """ list of errors that be identified from the output file
+    """ Constructs a list of errors that be identified from the output file.
     """
     return tuple(sorted(ERROR_READER_DCT.keys()))
 
 
 def success_list():
-    """ list of sucesss that be identified from the output file
+    """ Constructs a list of successes that be identified from the output file.
     """
     return tuple(sorted(SUCCESS_READER_DCT.keys()))
 
 
-def has_error_message(error, output_string):
-    """ does this output string have an error message?
+def has_error_message(error, output_str):
+    """ Assess whether the output file string contains error messages
+        for any of the procedures in the job.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     assert error in error_list()
+
     error_reader = ERROR_READER_DCT[error]
-    return error_reader(output_string)
+
+    return error_reader(output_str)
 
 
-def check_convergence_messages(error, success, output_string):
-    """ check if error messages should trigger job success or failure
+def check_convergence_messages(error, success, output_str):
+    """ Assess whether the output file string contains messages
+        denoting all of the requested procedures in the job have converged.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: bool
     """
+
     assert error in error_list()
     assert success in success_list()
 
     job_success = False
-    has_error = ERROR_READER_DCT[error](output_string)
+    has_error = ERROR_READER_DCT[error](output_str)
     if has_error:
-        has_success = ERROR_READER_DCT[success](output_string)
+        has_success = SUCCESS_READER_DCT[success](output_str)
         if has_success:
             job_success = True
     else:
