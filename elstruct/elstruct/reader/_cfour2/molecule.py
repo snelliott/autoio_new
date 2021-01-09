@@ -58,37 +58,41 @@ def opt_zmatrix(output_str):
         last=False)
 
     # Remove any asterisks(*) from the entries in the name matrix
-    name_mat = tuple([[name.replace('*', '')
-                       if name is not None else None for name in name_row]
-                      for name_row in name_mat])
+    if all(x is not None for x in (syms, key_mat, name_mat)):
+        name_mat = tuple([[name.replace('*', '')
+                           if name is not None else None for name in name_row]
+                          for name_row in name_mat])
 
-    # complicated string patterns for the value dictionary read
-    start_ptt = app.padded(app.NEWLINE).join(
-        [app.padded('Final ZMATnew file', app.NONNEWLINE)] +
-        [app.LINE for i in range(len(syms)+3)] + [''])
+        # complicated string patterns for the value dictionary read
+        start_ptt = app.padded(app.NEWLINE).join(
+            [app.padded('Final ZMATnew file', app.NONNEWLINE)] +
+            [app.LINE for i in range(len(syms)+3)] + [''])
 
-    # read the values from the end of the output
-    if len(syms) == 1:
-        val_dct = {}
+        # read the values from the end of the output
+        if len(syms) == 1:
+            val_dct = {}
+        else:
+            val_dct = ar.zmatrix.setval.read(
+                output_str,
+                start_ptt=start_ptt,
+                entry_sep_ptt='=',
+                last=True)
+
+        # for the case when variable names are used instead of integer keys:
+        # (otherwise, does nothing)
+        key_dct = dict(map(reversed, enumerate(syms)))
+        key_dct[None] = 0
+        key_mat = [
+            [key_dct[val]+1 if not isinstance(val, numbers.Real) else val
+             for val in row] for row in key_mat]
+        sym_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
+        syms = [apf.first_capture(sym_ptt, sym) for sym in syms]
+
+        # call the automol constructor
+        zma = automol.zmatrix.from_data(
+            syms, key_mat, name_mat, val_dct,
+            one_indexed=True, angstrom=True, degree=True)
     else:
-        val_dct = ar.zmatrix.setval.read(
-            output_str,
-            start_ptt=start_ptt,
-            entry_sep_ptt='=',
-            last=True)
-
-    # for the case when variable names are used instead of integer keys:
-    # (otherwise, does nothing)
-    key_dct = dict(map(reversed, enumerate(syms)))
-    key_dct[None] = 0
-    key_mat = [[key_dct[val]+1 if not isinstance(val, numbers.Real) else val
-                for val in row] for row in key_mat]
-    sym_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
-    syms = [apf.first_capture(sym_ptt, sym) for sym in syms]
-
-    # call the automol constructor
-    zma = automol.zmatrix.from_data(
-        syms, key_mat, name_mat, val_dct,
-        one_indexed=True, angstrom=True, degree=True)
+        zma = None
 
     return zma

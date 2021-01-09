@@ -99,36 +99,36 @@ def read(string,
 
     if last:
         cap = apf.last_capture(block_ptt_, string, case=case)
-        assert cap is not None
-        strs = cap if cap is not None else []
-        mat_str, setv_str = strs
     else:
         cap = apf.first_capture(block_ptt_, string, case=case)
-        assert cap is not None
-        strs = cap if cap is not None else []
-        mat_str, setv_str = strs
 
-    symbs, key_mat, name_mat = _matrix_read(
-        mat_str,
-        symb_ptt=symb_ptt,
-        key_ptt=key_ptt,
-        name_ptt=name_ptt,
-        entry_start_ptt=mat_entry_start_ptt,
-        entry_sep_ptt=mat_entry_sep_ptt,
-        entry_end_ptt=mat_entry_end_ptt,
-        line_start_ptt=mat_line_start_ptt,
-        line_end_ptt=mat_line_end_ptt)
+    if cap is not None:
+        # strs = cap if cap is not None else []
+        mat_str, setv_str = cap
 
-    if len(symbs) == 1:
-        val_dct = {}
-    else:
-        val_dct = _setval_read(
-            setv_str,
+        symbs, key_mat, name_mat = _matrix_read(
+            mat_str,
+            symb_ptt=symb_ptt,
+            key_ptt=key_ptt,
             name_ptt=name_ptt,
-            val_ptt=val_ptt,
-            entry_sep_ptt=setv_entry_sep_ptt,
-            entry_start_ptt=setv_entry_start_ptt,
-            sep_ptt=setv_sep_ptt)
+            entry_start_ptt=mat_entry_start_ptt,
+            entry_sep_ptt=mat_entry_sep_ptt,
+            entry_end_ptt=mat_entry_end_ptt,
+            line_start_ptt=mat_line_start_ptt,
+            line_end_ptt=mat_line_end_ptt)
+
+        if len(symbs) == 1:
+            val_dct = {}
+        else:
+            val_dct = _setval_read(
+                setv_str,
+                name_ptt=name_ptt,
+                val_ptt=val_ptt,
+                entry_sep_ptt=setv_entry_sep_ptt,
+                entry_start_ptt=setv_entry_start_ptt,
+                sep_ptt=setv_sep_ptt)
+    else:
+        symbs, key_mat, name_mat, val_dct = None, None, None, None
 
     return symbs, key_mat, name_mat, val_dct
 

@@ -26,4 +26,5 @@ def opt_geometry(output_str):
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.FLOAT,)
     geo = automol.geom.from_data(syms, xyzs, angstrom=False)
+
     return geo

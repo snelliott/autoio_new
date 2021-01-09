@@ -1,6 +1,6 @@
 """ gradient and hessian readers
 """
-import numpy
+
 import autoread as ar
 import autoparse.pattern as app
 
@@ -24,8 +24,6 @@ def gradient(output_str):
             app.padded(head_ptt, app.NONNEWLINE),
             app.LINE, '']),
         line_start_ptt=app.UNSIGNED_INTEGER)
-    if grad is not None:
-        assert numpy.shape(grad)[1] == 3
 
     return grad
 
@@ -55,5 +53,7 @@ def hessian(output_str):
         line_start_ptt=comp_ptt,
         tril=True)
 
-    mat = tuple(map(tuple, mat))
+    if mat is not None:
+        mat = tuple(map(tuple, mat))
+
     return mat

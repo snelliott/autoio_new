@@ -50,8 +50,11 @@ def read(string,
                  apf.first_capture(block_ptt_, string, case=case))
 
     caps = apf.all_captures(line_ptt_, block_str)
-    symbs, xcomps, ycomps, zcomps = zip(*_cast(caps))
-    xyzs = tuple(zip(xcomps, ycomps, zcomps))
+    if caps is not None:
+        symbs, xcomps, ycomps, zcomps = zip(*_cast(caps))
+        xyzs = tuple(zip(xcomps, ycomps, zcomps))
+    else:
+        symbs, xyzs = None, None
 
     return symbs, xyzs
 

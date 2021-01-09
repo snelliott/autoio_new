@@ -8,6 +8,7 @@ import autoparse.pattern as app
 def gradient(output_string):
     """ read gradient from the output string
     """
+
     grad = ar.matrix.read(
         output_string,
         start_ptt=app.padded(app.NEWLINE).join([
@@ -17,13 +18,14 @@ def gradient(output_string):
             app.UNSIGNED_INTEGER,
             app.one_or_more(app.LETTER),
             ':']))
-    assert numpy.shape(grad)[1] == 3
+
     return grad
 
 
 def hessian(output_string):
     """ read hessian from the output string
     """
+
     comp_ptt = app.UNSIGNED_INTEGER
     mat = ar.matrix.read(
         output_string,
@@ -36,5 +38,7 @@ def hessian(output_string):
         line_start_ptt=comp_ptt,
         tril=False)
 
-    mat = tuple(map(tuple, mat))
+    if mat is not None:
+        mat = tuple(map(tuple, mat))
+
     return mat

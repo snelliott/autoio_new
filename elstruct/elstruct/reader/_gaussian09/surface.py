@@ -25,9 +25,8 @@ def gradient(output_str):
             app.padded(app.escape('Forces (Hartrees/Bohr)'), app.NONNEWLINE),
             app.LINE, app.LINE, '']),
         line_start_ptt=app.LINESPACES.join([app.UNSIGNED_INTEGER] * 2))
-    grad = numpy.multiply(grad, -1.0)
-
-    assert numpy.shape(grad)[1] == 3
+    if grad is not None:
+        grad = numpy.multiply(grad, -1.0)
 
     return grad
 
@@ -64,10 +63,10 @@ def hessian(output_str):
             line_start_ptt=comp_ptt,
             tril=True)
 
+    if mat is not None:
         mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
                for row in mat]
-
-    mat = tuple(map(tuple, mat))
+        mat = tuple(map(tuple, mat))
 
     return mat
 
@@ -93,10 +92,10 @@ def hessian2(output_str):
         line_start_ptt=comp_ptt,
         tril=True)
 
-    mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
-           for row in mat]
-
-    mat = tuple(map(tuple, mat))
+    if mat is not None:
+        mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
+               for row in mat]
+        mat = tuple(map(tuple, mat))
 
     return mat
 

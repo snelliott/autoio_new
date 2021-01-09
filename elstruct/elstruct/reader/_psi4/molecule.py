@@ -41,8 +41,11 @@ def opt_zmatrix(output_str):
             2 * app.padded(app.NEWLINE)))
 
     # Call the automol constructor
-    zma = automol.zmatrix.from_data(
-        syms, key_mat, name_mat, val_dct,
-        one_indexed=True, angstrom=True, degree=True)
+    if all(x is not None for x in (syms, key_mat, name_mat, val_dct)):
+        zma = automol.zmatrix.from_data(
+            syms, key_mat, name_mat, val_dct,
+            one_indexed=True, angstrom=True, degree=True)
+    else:
+        zma = None
 
     return zma

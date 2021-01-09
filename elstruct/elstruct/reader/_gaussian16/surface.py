@@ -25,9 +25,9 @@ def gradient(output_str):
             app.padded(app.escape('Forces (Hartrees/Bohr)'), app.NONNEWLINE),
             app.LINE, app.LINE, '']),
         line_start_ptt=app.LINESPACES.join([app.UNSIGNED_INTEGER] * 2))
-    grad = numpy.multiply(grad, -1.0)
 
-    assert numpy.shape(grad)[1] == 3
+    if grad is not None:
+        grad = numpy.multiply(grad, -1.0)
 
     return grad
 
@@ -64,10 +64,10 @@ def hessian(output_str):
             line_start_ptt=comp_ptt,
             tril=True)
 
+    if mat is not None:
         mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
                for row in mat]
-
-    mat = tuple(map(tuple, mat))
+        mat = tuple(map(tuple, mat))
 
     return mat
 
@@ -93,10 +93,10 @@ def hessian2(output_str):
         line_start_ptt=comp_ptt,
         tril=True)
 
-    mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
-           for row in mat]
-
-    mat = tuple(map(tuple, mat))
+    if mat is not None:
+        mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
+               for row in mat]
+        mat = tuple(map(tuple, mat))
 
     return mat
 
@@ -120,6 +120,7 @@ def harmonic_frequencies(output_str):
                 freqs.append(float(val))
     else:
         freqs = None
+
     return freqs
 
 
@@ -136,7 +137,8 @@ def normal_coordinates(output_str):
     nmodes = []
     start = 'Atom  AN      X      Y      Z        '
     start += 'X      Y      Z        X      Y      Z'
-    for mode in apf.split('Frequencies', output_str)[1:]:
+    freq_lines = apf.split('Frequencies', output_str)[1:]
+    for mode in freq_lines:
         mat = ar.matrix.read(
             mode,
             start_ptt=app.padded(app.NEWLINE).join([app.escape(start), '']),

@@ -33,15 +33,18 @@ def read(string,
 
     ene_str = (apf.last_capture(ptt_, string, case=case) if last else
                apf.first_capture(ptt_, string, case=case))
-    ene = _cast(ene_str.replace('D', 'E'))
+    if ene_str is not None:
+        ene = _cast(ene_str.replace('D', 'E'))
+    else:
+        ene = None
 
     return ene
 
 
 def pattern(start_ptt,
             val_ptt=VALUE_PATTERN):
-    """ Build a regex string for the energy pattern/
-       
+    """ Build a regex string for the energy pattern.
+
         :param start_ptt: matches before the numeric value
         :type start_ptt: str
         :param val_ptt: matches the numeric value

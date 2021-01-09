@@ -28,8 +28,6 @@ def gradient(output_str):
             app.FLOAT])
         )
 
-    assert numpy.shape(grad)[1] == 3
-
     return grad
 
 # def hessian(output_str):

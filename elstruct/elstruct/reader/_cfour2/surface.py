@@ -1,6 +1,6 @@
 """ gradient and hessian readers
 """
-import numpy
+
 import autoread as ar
 import autoparse.pattern as app
 import autoparse.find as apf
@@ -21,25 +21,27 @@ def gradient(output_str):
                  'Molecular gradient norm')
     block = apf.last_capture(block_ptt, output_str)
 
-    # Trim the block to start it at the gradient lines
-    blank_count = 0
-    for i, line in enumerate(block.splitlines()):
-        if line.strip() == '':
-            blank_count += 1
-            if blank_count == 3:
-                grad_start = i
-                break
-    trim_block = '\n'.join(block.splitlines()[grad_start:])
+    if block is not None:
+        # Trim the block to start it at the gradient lines
+        blank_count = 0
+        for i, line in enumerate(block.splitlines()):
+            if line.strip() == '':
+                blank_count += 1
+                if blank_count == 3:
+                    grad_start = i
+                    break
+        trim_block = '\n'.join(block.splitlines()[grad_start:])
 
-    # Grab the gradient from the trimmed block string
-    grad = ar.matrix.read(
-        trim_block,
-        line_start_ptt=app.LINESPACES.join([
-            app.LETTER,
-            app.escape('#') + app.UNSIGNED_INTEGER,
-            app.maybe(app.UNSIGNED_INTEGER)]))
+        # Grab the gradient from the trimmed block string
+        grad = ar.matrix.read(
+            trim_block,
+            line_start_ptt=app.LINESPACES.join([
+                app.LETTER,
+                app.escape('#') + app.UNSIGNED_INTEGER,
+                app.maybe(app.UNSIGNED_INTEGER)]))
+    else:
+        grad = None
 
-    assert numpy.shape(grad)[1] == 3
     return grad
 
 # def hessian(output_str):
