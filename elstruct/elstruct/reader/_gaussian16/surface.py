@@ -41,17 +41,17 @@ def hessian(output_str):
         :rtype: tuple(tuple(float))
     """
 
-    try:
-        comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
-        mat = ar.matrix.read(
-            output_str,
-            start_ptt=(app.escape('The second derivative matrix:') +
-                       app.lpadded(app.NEWLINE)),
-            block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
-                             app.padded(app.NEWLINE)),
-            line_start_ptt=comp_ptt,
-            tril=True)
-    except TypeError:
+    comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
+    mat = ar.matrix.read(
+        output_str,
+        start_ptt=(app.escape('The second derivative matrix:') +
+                   app.lpadded(app.NEWLINE)),
+        block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
+                         app.padded(app.NEWLINE)),
+        line_start_ptt=comp_ptt,
+        tril=True)
+
+    if mat is None:
         comp_ptt = app.UNSIGNED_INTEGER
         mat = ar.matrix.read(
             output_str,
