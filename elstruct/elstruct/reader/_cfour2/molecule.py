@@ -70,13 +70,15 @@ def opt_zmatrix(output_str):
 
         # read the values from the end of the output
         if len(symbs) == 1:
-            val_dct = {}
+            # val_dct = {}
+            val_mat = ((None, None, None),)
         else:
             val_dct = ar.setval.read(
                 output_str,
                 start_ptt=start_ptt,
                 entry_sep_ptt='=',
                 last=True)
+            val_mat = ar.setval.convert_dct_to_matrix(val_dct, name_mat)
 
         # for the case when variable names are used instead of integer keys:
         # (otherwise, does nothing)
@@ -85,12 +87,12 @@ def opt_zmatrix(output_str):
         key_mat = [
             [key_dct[val]+1 if not isinstance(val, numbers.Real) else val
              for val in row] for row in key_mat]
-        sym_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
-        symbs = [apf.first_capture(sym_ptt, sym) for sym in symbs]
+        symb_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
+        symbs = [apf.first_capture(symb_ptt, symb) for symb in symbs]
 
         # call the automol constructor
         zma = automol.zmat.from_data(
-            symbs, key_mat, name_mat, val_dct,
+            symbs, key_mat, name_mat, val_mat,
             one_indexed=True, angstrom=True, degree=True)
     else:
         zma = None

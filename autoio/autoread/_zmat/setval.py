@@ -21,7 +21,8 @@ def read(string,
          entry_end_ptt=None,
          sep_ptt=SEP_PATTERN,
          last=True,
-         case=False):
+         case=False,
+         matrix=True):
     """ Read the lines from a string where the values of the coordinates of a
         Z-matrix are set (e.g., lines such as R1 = 5.00 generally given below
         a Z-matrix).
@@ -69,6 +70,7 @@ def read(string,
                  apf.first_capture(block_ptt_, string, case=case))
 
     caps = apf.all_captures(entry_ptt_, block_str, case=case)
+
     val_dct = dict(_cast(caps))
 
     return val_dct
@@ -140,3 +142,15 @@ def entry_pattern(name_ptt=NAME_PATTERN,
     ptt = app.padded(app.maybe(app.LINESPACES).join(parts))
 
     return ptt
+
+
+def convert_dct_to_matrix(val_dct, name_mat):
+    """ Take the values dictionary parsed from setval.read and convert
+        it to a value matrix used to build Z-Matrix objects
+    """
+
+    val_mat = tuple(tuple(val_dct[name] if name is not None else None
+                          for name in name_mat_row)
+                    for name_mat_row in name_mat)
+
+    return val_mat

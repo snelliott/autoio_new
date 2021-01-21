@@ -4,9 +4,10 @@
 import autoparse.find as apf
 import autoparse.pattern as app
 from autoread._zmat.vmat import read as _matrix_read
-from autoread._zmat.setval import read as _setval_read
 from autoread._zmat.vmat import block_pattern as _matrix_block_pattern
+from autoread._zmat.setval import read as _setval_read
 from autoread._zmat.setval import block_pattern as _setval_block_pattern
+from autoread._zmat.setval import convert_dct_to_matrix
 from autoread import par
 
 
@@ -119,7 +120,8 @@ def read(string,
             line_end_ptt=mat_line_end_ptt)
 
         if len(symbs) == 1:
-            val_dct = {}
+            # val_dct = {}
+            val_mat = ((None, None, None),)
         else:
             val_dct = _setval_read(
                 setv_str,
@@ -128,10 +130,12 @@ def read(string,
                 entry_sep_ptt=setv_entry_sep_ptt,
                 entry_start_ptt=setv_entry_start_ptt,
                 sep_ptt=setv_sep_ptt)
-    else:
-        symbs, key_mat, name_mat, val_dct = None, None, None, None
+            val_mat = convert_dct_to_matrix(val_dct, name_mat)
 
-    return symbs, key_mat, name_mat, val_dct
+    else:
+        symbs, key_mat, name_mat, val_mat = None, None, None, None
+
+    return symbs, key_mat, name_mat, val_mat
 
 
 def block_pattern(symb_ptt=par.Pattern.ATOM_SYMBOL,

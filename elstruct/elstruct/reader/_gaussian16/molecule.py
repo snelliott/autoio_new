@@ -59,7 +59,7 @@ def opt_zmatrix(output_str):
     if all(x is not None for x in (symbs, key_mat, name_mat)):
         grad_val = app.one_of_these([app.FLOAT, 'nan', '-nan'])
         if len(symbs) == 1:
-            val_dct = {}
+            val_mat = ((None, None, None),)
         else:
             val_dct = ar.setval.read(
                 output_str,
@@ -72,6 +72,7 @@ def opt_zmatrix(output_str):
                     app.escape('-DE/DX ='), grad_val, app.escape('!'),
                     app.NEWLINE]),
                 last=True)
+            val_mat = ar.setval.convert_dct_to_matrix(val_dct, name_mat)
 
         # Check for the pattern
         err_ptt = app.LINESPACES.join([
@@ -89,12 +90,12 @@ def opt_zmatrix(output_str):
         key_mat = [
             [key_dct[val]+1 if not isinstance(val, numbers.Real) else val
              for val in row] for row in key_mat]
-        sym_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
-        symbs = [apf.first_capture(sym_ptt, sym) for sym in symbs]
+        symb_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
+        symbs = [apf.first_capture(symb_ptt, symb) for symb in symbs]
 
         # Call the automol constructor
         zma = automol.zmat.from_data(
-            symbs, key_mat, name_mat, val_dct,
+            symbs, key_mat, name_mat, val_mat,
             one_indexed=True, angstrom=True, degree=True)
     else:
         zma = None

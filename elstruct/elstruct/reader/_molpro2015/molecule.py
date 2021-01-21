@@ -125,9 +125,11 @@ def opt_zmatrix(output_str):
         assert set(opt_val_dct) <= set(val_dct)
         val_dct.update(opt_val_dct)
 
+        val_mat = ar.setval.convert_dct_to_matrix(val_dct, name_mat)
+
         # Call the automol constructor
         zma = automol.zmat.from_data(
-            symbs, key_mat, name_mat, val_dct,
+            symbs, key_mat, name_mat, val_mat,
             one_indexed=True, angstrom=True, degree=True)
     else:
         zma = None

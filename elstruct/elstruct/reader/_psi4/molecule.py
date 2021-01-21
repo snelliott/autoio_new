@@ -34,16 +34,16 @@ def opt_zmatrix(output_str):
     """
 
     # Read the matrix and the values from the output
-    symbs, key_mat, name_mat, val_dct = ar.zmat.read(
+    symbs, key_mat, name_mat, val_mat = ar.zmat.read(
         output_str,
         start_ptt=(
             app.padded(app.escape('Geometry (in Angstrom),'), app.NONNEWLINE) +
             2 * app.padded(app.NEWLINE)))
 
     # Call the automol constructor
-    if all(x is not None for x in (symbs, key_mat, name_mat, val_dct)):
+    if all(x is not None for x in (symbs, key_mat, name_mat, val_mat)):
         zma = automol.zmat.from_data(
-            symbs, key_mat, name_mat, val_dct,
+            symbs, key_mat, name_mat, val_mat,
             one_indexed=True, angstrom=True, degree=True)
     else:
         zma = None

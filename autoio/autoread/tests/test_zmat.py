@@ -1,6 +1,7 @@
 """ test the autoread.zmat module
 """
 
+import numpy
 import autoread
 import autoparse.pattern as app
 
@@ -156,12 +157,23 @@ def test_zmat():
     """ test autoread.zmat
     """
 
+    def _val_mats_similar(val_mat, ref_val_mat):
+        """ Check if two value matrices are the same
+        """
+        for i, row in enumerate(val_mat):
+            for j, val in enumerate(row):
+                ref_val = ref_val_mat[i][j]
+                if val is None:
+                    assert ref_val is None
+                else:
+                    assert numpy.isclose(val, ref_val)
+
     # Simple ZMA reads
     start_ptt = (
         app.padded(app.escape('Geometry (in Angstrom),'), app.NONNEWLINE) +
         2 * app.padded(app.NEWLINE))
 
-    symbs, key_mat, name_mat, val_dct = autoread.zmat.read(
+    symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA1_STR,
         start_ptt=start_ptt)
     assert symbs == ('O', 'O', 'H', 'H')
@@ -173,10 +185,13 @@ def test_zmat():
                         ('R1', None, None),
                         ('R2', 'A2', None),
                         ('R2', 'A2', 'D3'))
-    assert val_dct == {
-        'A2': 96.772572, 'D3': 129.366995, 'R1': 1.4470582953, 'R2': 0.976073}
+    ref_val_mat = ((None, None, None),
+                   (1.4470582953, None, None),
+                   (0.976073, 96.772572, None),
+                   (0.976073, 96.772572, 129.36699))
+    _val_mats_similar(val_mat, ref_val_mat)
 
-    symbs, key_mat, name_mat, val_dct = autoread.zmat.read(
+    symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA2_STR,
         mat_entry_start_ptt=',',
         mat_entry_sep_ptt=',',
@@ -194,12 +209,19 @@ def test_zmat():
                         ('R3', 'A3', 'D3'),
                         ('R4', 'A4', 'D4'),
                         ('R5', 'A5', 'D5'))
-    assert val_dct == {
-        'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
-        'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
-        'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
+    ref_val_mat = ((None, None, None),
+                   (2.67535, None, None),
+                   (2.06501, 109.528, None),
+                   (2.06501, 109.528, 120.808),
+                   (2.06458, 108.982, 240.404),
+                   (1.83748, 107.091, 299.596))
+    _val_mats_similar(val_mat, ref_val_mat)
+    # assert val_dct == {
+    #     'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
+    #     'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
+    #     'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
 
-    symbs, key_mat, name_mat, val_dct = autoread.zmat.read(
+    symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA4_STR,
         mat_entry_start_ptt=',',
         mat_entry_sep_ptt=',',
@@ -208,10 +230,10 @@ def test_zmat():
     assert symbs == ('C',)
     assert key_mat == ((None, None, None),)
     assert name_mat == ((None, None, None),)
-    assert val_dct == {}
+    assert val_mat == ((None, None, None),)
 
     # Check last functionality
-    symbs, key_mat, name_mat, val_dct = autoread.zmat.read(
+    symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA2_STR + '\n\n' + ZMA3_STR,
         mat_entry_start_ptt=',',
         mat_entry_sep_ptt=',',
@@ -230,10 +252,17 @@ def test_zmat():
                         ('R3', 'A3', 'D3'),
                         ('R4', 'A4', 'D4'),
                         ('R5', 'A5', 'D5'))
-    assert val_dct == {
-        'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
-        'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
-        'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
+    ref_val_mat = ((None, None, None),
+                   (2.67535, None, None),
+                   (2.06501, 109.528, None),
+                   (2.06501, 109.528, 120.808),
+                   (2.06458, 108.982, 240.404),
+                   (1.83748, 107.091, 299.596))
+    _val_mats_similar(val_mat, ref_val_mat)
+    # assert val_dct == {
+    #     'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
+    #     'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
+    #     'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
 
 
 def test__matrix():
