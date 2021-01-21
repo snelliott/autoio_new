@@ -156,7 +156,7 @@ def test__geom():
     nums, xyzs = autoread.geom.read(
         GEO1_STR,
         start_ptt=start_ptt,
-        sym_ptt=app.UNSIGNED_INTEGER,
+        symb_ptt=app.UNSIGNED_INTEGER,
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.UNSIGNED_INTEGER,)
 

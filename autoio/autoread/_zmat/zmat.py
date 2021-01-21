@@ -1,13 +1,14 @@
-""" full z-matrix parsers
+""" Full Z-Matrix parsers
 """
 
 import autoparse.find as apf
 import autoparse.pattern as app
-from autoread.zmatrix.matrix import read as _matrix_read
-from autoread.zmatrix.setval import read as _setval_read
-from autoread.zmatrix.matrix import block_pattern as _matrix_block_pattern
-from autoread.zmatrix.setval import block_pattern as _setval_block_pattern
+from autoread._zmat.vmat import read as _matrix_read
+from autoread._zmat.setval import read as _setval_read
+from autoread._zmat.vmat import block_pattern as _matrix_block_pattern
+from autoread._zmat.setval import block_pattern as _setval_block_pattern
 from autoread import par
+
 
 KEY_PATTERN = app.UNSIGNED_INTEGER
 NAME_PATTERN = app.VARIABLE_NAME
@@ -38,13 +39,13 @@ def read(string,
         where the atom positions and connectivities are defined, as well as
         the lines where the values of the Z-matrix coordinates are set.
 
-        :param start_ptt: pattern before the start of the z-matrix
+        :param start_ptt: pattern before the start of the Z-Matrix
         :type start_ptt: str
-        :param symb_ptt: matches atom symbol in first column of the z-matrix
+        :param symb_ptt: matches atom symbol in first column of the Z-Matrix
         :type symb_ptt: str
-        :param key_ptt: matches key/index in columns 2, 4, 6 of the z-matrix
+        :param key_ptt: matches key/index in columns 2, 4, 6 of the Z-Matrix
         :type key_ptt: str
-        :param name_ptt: matches z-matrix variable names in columns 3, 5, 7;
+        :param name_ptt: matches Z-Matrix variable names in columns 3, 5, 7;
             can also be used to match numbers at these positions
         :type name_ptt: str
         :param val_ptt: matches the numeric value in the setval block
@@ -55,9 +56,9 @@ def read(string,
         :type mat_entry_sep_ptt: str
         :param mat_entry_end_ptt: matches after name_ptt
         :type mat_entry_end_ptt: str
-        :param mat_line_start_ptt: matches at the start of a z-matrix line
+        :param mat_line_start_ptt: matches at the start of a Z-Matrix line
         :type mat_line_start_ptt: str
-        :param mat_line_end_ptt: matches at the end of a z-matrix line
+        :param mat_line_end_ptt: matches at the end of a Z-Matrix line
         :type mat_line_end_ptt: str
         :param setv_entry_sep_ptt: matches the separator between a
             variable name and its value, such as the equals sign in 'R1 = 5.00'
@@ -148,13 +149,13 @@ def block_pattern(symb_ptt=par.Pattern.ATOM_SYMBOL,
                   setv_sep_ptt=SETVAL_SEP_PATTERN,
                   capture_matrix_block=False,
                   capture_setval_block=False):
-    """ full z-matrix pattern
+    """ full Z-Matrix pattern
 
-        :param smb_ptt: matches atom symbol in first column of the z-matrix
+        :param smb_ptt: matches atom symbol in first column of the Z-Matrix
         :type symb_ptt: str
-        :param key_ptt: matches key/index in columns 2, 4, 6 of the z-matrix
+        :param key_ptt: matches key/index in columns 2, 4, 6 of the Z-Matrix
         :type key_ptt: str
-        :param name_ptt: matches z-matrix variable names in columns 3, 5, 7;
+        :param name_ptt: matches Z-Matrix variable names in columns 3, 5, 7;
             can also be used to match numbers at these positions
         :type name_ptt: str
         :param val_ptt: matches the numeric value in the setval block
@@ -165,9 +166,9 @@ def block_pattern(symb_ptt=par.Pattern.ATOM_SYMBOL,
         :type mat_entry_sep_ptt: str
         :param mat_entry_end_ptt: matches after name_ptt
         :type mat_entry_end_ptt: str
-        :param mat_line_start_ptt: matches at the start of a z-matrix line
+        :param mat_line_start_ptt: matches at the start of a Z-Matrix line
         :type mat_line_start_ptt: str
-        :param mat_line_end_ptt: matches at the end of a z-matrix line
+        :param mat_line_end_ptt: matches at the end of a Z-Matrix line
         :type mat_line_end_ptt: str
         :param setv_entry_sep_ptt: matches the separator between a
             variable name and its value, such as the equals sign in 'R1 = 5.00'

@@ -2,7 +2,7 @@
 """
 
 import numpy
-from qcelemental import periodictable as pt
+from phydat import ptab
 import automol
 import autoread as ar
 from autoparse import cast as _cast
@@ -228,7 +228,7 @@ def sadpt_geometry(sadpt_str):
         symb_ptt=app.UNSIGNED_INTEGER,
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.UNSIGNED_INTEGER)
-    syms = tuple(map(pt.to_E, nums))
+    syms = tuple(map(ptab.to_symbol, nums))
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
 
     return geo
@@ -250,7 +250,7 @@ def irc_geometry(output_str):
             app.LINE, app.LINE, app.LINE, app.LINE, app.LINE, '']),
         symb_ptt=app.UNSIGNED_INTEGER,
         line_start_ptt=app.UNSIGNED_INTEGER)
-    syms = tuple(map(pt.to_E, nums))
+    syms = tuple(map(ptab.to_symbol, nums))
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
 
     return geo

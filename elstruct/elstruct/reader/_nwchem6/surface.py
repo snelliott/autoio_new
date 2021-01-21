@@ -1,7 +1,7 @@
 """ gradient and hessian readers
 """
 
-import numpy
+# import numpy
 import autoread as ar
 import autoparse.pattern as app
 

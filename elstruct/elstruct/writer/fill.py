@@ -70,22 +70,22 @@ def geometry_strings(geo, frozen_coordinates, zma_sign='='):
         geo_str = automol.geom.string(geo)
         zmat_vval_str = ''
         zmat_cval_str = ''
-    elif automol.zmatrix.is_valid(geo):
+    elif automol.zmat.is_valid(geo):
         zma = geo
-        symbs = automol.zmatrix.symbols(zma)
-        key_mat = automol.zmatrix.key_matrix(zma, shift=1)
-        name_mat = automol.zmatrix.name_matrix(zma)
-        val_dct = automol.zmatrix.values(zma, angstrom=True, degree=True)
-        geo_str = aw.zmatrix.matrix_block(symbs, key_mat, name_mat)
+        symbs = automol.zmat.symbols(zma)
+        key_mat = automol.zmat.key_matrix(zma, shift=1)
+        name_mat = automol.zmat.name_matrix(zma)
+        val_dct = automol.zmat.values(zma, angstrom=True, degree=True)
+        geo_str = aw.zmat.matrix_block(symbs, key_mat, name_mat)
 
         vval_dct = {key: val for key, val in val_dct.items()
                     if key not in frozen_coordinates}
         cval_dct = {key: val for key, val in val_dct.items()
                     if key in frozen_coordinates}
 
-        zmat_vval_str = aw.zmatrix.setval_block(
+        zmat_vval_str = aw.zmat.setval_block(
             vval_dct, setval_sign=zma_sign).strip()
-        zmat_cval_str = aw.zmatrix.setval_block(
+        zmat_cval_str = aw.zmat.setval_block(
             cval_dct, setval_sign=zma_sign).strip()
     elif geo in ('GEOMETRY', 'GEOMETRY_HERE'):
         geo_str = geo
@@ -114,9 +114,9 @@ def _name_mat(zma, frozen_coordinates, job_key):
             [name+'*'
              if name is not None and name not in frozen_coordinates else name
              for name in row]
-            for row in automol.zmatrix.name_matrix(zma)]
+            for row in automol.zmat.name_matrix(zma)]
     else:
-        name_mat = automol.zmatrix.name_matrix(zma)
+        name_mat = automol.zmat.name_matrix(zma)
 
     return name_mat
 

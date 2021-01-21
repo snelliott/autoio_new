@@ -2,7 +2,7 @@
 """
 
 import numbers
-from qcelemental import periodictable as pt
+from phydat import ptab
 import autoread as ar
 import autoparse.pattern as app
 import autoparse.find as apf
@@ -28,8 +28,8 @@ def opt_geometry(output_str):
         line_sep_ptt=app.UNSIGNED_INTEGER,)
 
     if all(x is not None for x in (nums, xyzs)):
-        syms = tuple(map(pt.to_E, nums))
-        geo = automol.geom.from_data(syms, xyzs, angstrom=True)
+        symbs = tuple(map(ptab.to_symbol, nums))
+        geo = automol.geom.from_data(symbs, xyzs, angstrom=True)
     else:
         geo = None
 
@@ -46,7 +46,7 @@ def opt_zmatrix(output_str):
     """
 
     # Reads the matrix from the beginning of the output
-    syms, key_mat, name_mat = ar.zmatrix.matrix.read(
+    symbs, key_mat, name_mat = ar.vmat.read(
         output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Symbolic Z-matrix:'), app.LINE, '']),
@@ -56,12 +56,12 @@ def opt_zmatrix(output_str):
         last=False)
 
     # Reads the values from the end of the output
-    if all(x is not None for x in (syms, key_mat, name_mat)):
+    if all(x is not None for x in (symbs, key_mat, name_mat)):
         grad_val = app.one_of_these([app.FLOAT, 'nan', '-nan'])
-        if len(syms) == 1:
+        if len(symbs) == 1:
             val_dct = {}
         else:
-            val_dct = ar.zmatrix.setval.read(
+            val_dct = ar.setval.read(
                 output_str,
                 start_ptt=app.padded(app.NEWLINE).join([
                     app.padded('Optimized Parameters', app.NONNEWLINE),
@@ -84,16 +84,17 @@ def opt_zmatrix(output_str):
 
         # For the case when variable names are used instead of integer keys:
         # (otherwise, does nothing)
-        key_dct = dict(map(reversed, enumerate(syms)))
+        key_dct = dict(map(reversed, enumerate(symbs)))
         key_dct[None] = 0
-        key_mat = [[key_dct[val]+1 if not isinstance(val, numbers.Real) else val
-                    for val in row] for row in key_mat]
+        key_mat = [
+            [key_dct[val]+1 if not isinstance(val, numbers.Real) else val
+             for val in row] for row in key_mat]
         sym_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
-        syms = [apf.first_capture(sym_ptt, sym) for sym in syms]
+        symbs = [apf.first_capture(sym_ptt, sym) for sym in symbs]
 
         # Call the automol constructor
-        zma = automol.zmatrix.from_data(
-            syms, key_mat, name_mat, val_dct,
+        zma = automol.zmat.from_data(
+            symbs, key_mat, name_mat, val_dct,
             one_indexed=True, angstrom=True, degree=True)
     else:
         zma = None

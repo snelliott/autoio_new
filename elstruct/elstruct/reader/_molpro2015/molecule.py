@@ -35,10 +35,10 @@ def opt_geometry(output_str):
         ''
     ])
 
-    syms, xyzs = ar.geom.read(
+    symbs, xyzs = ar.geom.read(
         output_str,
         start_ptt=ptt)
-    geo = automol.geom.from_data(syms, xyzs, angstrom=True)
+    geo = automol.geom.from_data(symbs, xyzs, angstrom=True)
 
     return geo
 
@@ -54,14 +54,14 @@ def hess_geometry(output_str):
         :rtype: automol molecular geometry data structure
     """
 
-    syms, xyzs = ar.geom.read(
+    symbs, xyzs = ar.geom.read(
         output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('ATOMIC COORDINATES'),
             app.LINE, app.LINE, app.LINE, '']),
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.FLOAT,)
-    geo = automol.geom.from_data(syms, xyzs, angstrom=False)
+    geo = automol.geom.from_data(symbs, xyzs, angstrom=False)
 
     return geo
 
@@ -76,7 +76,7 @@ def opt_zmatrix(output_str):
     """
 
     # Reads the matrix from the beginning of the output
-    syms, key_mat, name_mat = ar.zmatrix.matrix.read(
+    symbs, key_mat, name_mat = ar.vmat.read(
         output_str,
         start_ptt=app.maybe(app.SPACES).join([
             'geometry', app.escape('='), app.escape('{'), '']),
@@ -86,11 +86,11 @@ def opt_zmatrix(output_str):
         case=False)
 
     # Read the initial z-matrix values from the beginning out the output
-    if all(x is not None for x in (syms, key_mat, name_mat)):
-        if len(syms) == 1:
+    if all(x is not None for x in (symbs, key_mat, name_mat)):
+        if len(symbs) == 1:
             val_dct = {}
         else:
-            val_dct = ar.zmatrix.setval.read(
+            val_dct = ar.setval.read(
                 output_str,
                 # entry_start_ptt=MOLPRO_ENTRY_START_PATTERN,
                 entry_start_ptt='SETTING',
@@ -114,7 +114,7 @@ def opt_zmatrix(output_str):
             app.padded('Optimized variables'),
             app.padded('Current variables')
         ])
-        opt_val_dct = ar.zmatrix.setval.read(
+        opt_val_dct = ar.setval.read(
             output_str,
             start_ptt=var_string + app.NEWLINE,
             entry_end_ptt=app.one_of_these(['ANGSTROM', 'DEGREE']),
@@ -126,8 +126,8 @@ def opt_zmatrix(output_str):
         val_dct.update(opt_val_dct)
 
         # Call the automol constructor
-        zma = automol.zmatrix.from_data(
-            syms, key_mat, name_mat, val_dct,
+        zma = automol.zmat.from_data(
+            symbs, key_mat, name_mat, val_dct,
             one_indexed=True, angstrom=True, degree=True)
     else:
         zma = None
