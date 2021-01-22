@@ -184,6 +184,92 @@ def centrifugal_distortion_constants(output_str):
     return cent_dist_const
 
 
+def cubic_force_constants(output_str):
+    """ Reads the cubic force constants
+        from the output file string. Returns the constants in _.
+        Hartree*amu(-3/2)*Bohr(-3)
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
+    """
+
+    block = apf.last_capture(
+        ('CUBIC FORCE CONSTANTS IN NORMAL MODES' +
+         app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+         'QUARTIC FORCE CONSTANTS IN NORMAL MODES'),
+        output_str)
+
+    pattern = (
+        app.capturing(app.INTEGER) +
+        app.SPACES +
+        app.capturing(app.INTEGER) +
+        app.SPACES +
+        app.capturing(app.INTEGER) +
+        app.SPACES +
+        app.FLOAT +
+        app.SPACES +
+        app.FLOAT +
+        app.SPACES +
+        app.capturing(app.FLOAT)
+    )
+
+    caps = apf.all_captures(pattern, block)
+    if caps:
+        cfc_dct = {}
+        for idx1, idx2, idx3, cfc in caps:
+            cfc_dct[(int(idx1), int(idx2), int(idx3))] = float(cfc)
+        for i, j, k, cfc in caps:
+            cfc_dct[(int(i), int(j), int(k))] = float(cfc)
+    else:
+        cfc_dct = {}
+
+    return cfc_dct
+
+
+def quartic_force_constants(output_str):
+    """ Reads the quartic force constants
+        from the output file string. Returns the constants in _.
+        Hartree*amu(2)*Bohr(-4)
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
+    """
+
+    block = apf.last_capture(
+        ('QUARTIC FORCE CONSTANTS IN NORMAL MODES' +
+         app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+         'Input to Restart Anharmonic Calculations'),
+        output_str)
+
+    pattern = (
+        app.capturing(app.INTEGER) +
+        app.SPACES +
+        app.capturing(app.INTEGER) +
+        app.SPACES +
+        app.capturing(app.INTEGER) +
+        app.SPACES +
+        app.capturing(app.INTEGER) +
+        app.SPACES +
+        app.FLOAT +
+        app.SPACES +
+        app.FLOAT +
+        app.SPACES +
+        app.capturing(app.FLOAT)
+    )
+
+    caps = apf.all_captures(pattern, block)
+    if caps:
+        qfc_dct = {}
+        for idx1, idx2, idx3, idx4, qfc in caps:
+            qfc_dct[(int(idx1), int(idx2), int(idx3), int(idx4))] = float(qfc)
+    else:
+        qfc_dct = {}
+
+    return qfc_dct
+
+
 def vpt2(output_str):
     """ Reads out various pieces data from the output string of a
         VPT2 calculations.
@@ -198,7 +284,9 @@ def vpt2(output_str):
         'zpve': anharmonic_zpve(output_str),
         'x_mat': anharmonicity_matrix(output_str),
         'vibrot_mat': vibrorot_alpha_matrix(output_str),
-        'cent_dist_const': centrifugal_distortion_constants(output_str)
+        'cent_dist_const': centrifugal_distortion_constants(output_str),
+        'cubic_fc': cubic_force_constants(output_str),
+        'quartic_fc': quartic_force_constants(output_str)
     }
 
     return anharm_dct
