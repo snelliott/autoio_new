@@ -11,7 +11,7 @@ from ioformat._format import remove_trail_whitespace
 from ioformat._format import remove_comment_lines
 from ioformat import pathtools
 from ioformat import phycon
-
+from ioformat import ptt
 
 __all__ = [
     'build_mako_str',
@@ -22,5 +22,6 @@ __all__ = [
     'remove_trail_whitespace',
     'remove_comment_lines',
     'pathtools',
-    'phycon'
+    'phycon',
+    'ptt'
 ]
