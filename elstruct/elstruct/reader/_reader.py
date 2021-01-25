@@ -66,9 +66,9 @@ def gradient(prog, output_str):
         # *args
         output_str)
 
-    if grad is not None:
-        assert all(isinstance(val, float) for val in grad)
-        assert numpy.shape(grad)[1] == 3
+    # if grad is not None:
+    #     assert all(isinstance(val, float) for val in grad)
+    #     assert numpy.shape(grad)[1] == 3
 
     return grad
 

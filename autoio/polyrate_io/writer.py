@@ -4,7 +4,7 @@
 
 import os
 from ioformat import build_mako_str
-from _util import pt_format
+from polyrate_io._util import pt_format
 
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
