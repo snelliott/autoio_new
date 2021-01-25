@@ -2,7 +2,7 @@
 """
 
 import numpy
-from qcelemental import periodictable as pt
+from phydat import ptab
 import automol
 import autoread as ar
 from autoparse import cast as _cast
@@ -25,9 +25,9 @@ def gradient(output_str):
             app.padded(app.escape('Forces (Hartrees/Bohr)'), app.NONNEWLINE),
             app.LINE, app.LINE, '']),
         line_start_ptt=app.LINESPACES.join([app.UNSIGNED_INTEGER] * 2))
-    grad = numpy.multiply(grad, -1.0)
 
-    assert numpy.shape(grad)[1] == 3
+    if grad is not None:
+        grad = numpy.multiply(grad, -1.0)
 
     return grad
 
@@ -41,17 +41,17 @@ def hessian(output_str):
         :rtype: tuple(tuple(float))
     """
 
-    try:
-        comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
-        mat = ar.matrix.read(
-            output_str,
-            start_ptt=(app.escape('The second derivative matrix:') +
-                       app.lpadded(app.NEWLINE)),
-            block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
-                             app.padded(app.NEWLINE)),
-            line_start_ptt=comp_ptt,
-            tril=True)
-    except TypeError:
+    comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
+    mat = ar.matrix.read(
+        output_str,
+        start_ptt=(app.escape('The second derivative matrix:') +
+                   app.lpadded(app.NEWLINE)),
+        block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
+                         app.padded(app.NEWLINE)),
+        line_start_ptt=comp_ptt,
+        tril=True)
+
+    if mat is None:
         comp_ptt = app.UNSIGNED_INTEGER
         mat = ar.matrix.read(
             output_str,
@@ -64,10 +64,10 @@ def hessian(output_str):
             line_start_ptt=comp_ptt,
             tril=True)
 
+    if mat is not None:
         mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
                for row in mat]
-
-    mat = tuple(map(tuple, mat))
+        mat = tuple(map(tuple, mat))
 
     return mat
 
@@ -93,10 +93,10 @@ def hessian2(output_str):
         line_start_ptt=comp_ptt,
         tril=True)
 
-    mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
-           for row in mat]
-
-    mat = tuple(map(tuple, mat))
+    if mat is not None:
+        mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
+               for row in mat]
+        mat = tuple(map(tuple, mat))
 
     return mat
 
@@ -120,6 +120,7 @@ def harmonic_frequencies(output_str):
                 freqs.append(float(val))
     else:
         freqs = None
+
     return freqs
 
 
@@ -136,7 +137,8 @@ def normal_coordinates(output_str):
     nmodes = []
     start = 'Atom  AN      X      Y      Z        '
     start += 'X      Y      Z        X      Y      Z'
-    for mode in apf.split('Frequencies', output_str)[1:]:
+    freq_lines = apf.split('Frequencies', output_str)[1:]
+    for mode in freq_lines:
         mat = ar.matrix.read(
             mode,
             start_ptt=app.padded(app.NEWLINE).join([app.escape(start), '']),
@@ -226,7 +228,7 @@ def sadpt_geometry(sadpt_str):
         symb_ptt=app.UNSIGNED_INTEGER,
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.UNSIGNED_INTEGER)
-    syms = tuple(map(pt.to_E, nums))
+    syms = tuple(map(ptab.to_symbol, nums))
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
 
     return geo
@@ -248,7 +250,7 @@ def irc_geometry(output_str):
             app.LINE, app.LINE, app.LINE, app.LINE, app.LINE, '']),
         symb_ptt=app.UNSIGNED_INTEGER,
         line_start_ptt=app.UNSIGNED_INTEGER)
-    syms = tuple(map(pt.to_E, nums))
+    syms = tuple(map(ptab.to_symbol, nums))
     geo = automol.geom.from_data(syms, xyzs, angstrom=True)
 
     return geo

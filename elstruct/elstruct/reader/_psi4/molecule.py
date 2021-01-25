@@ -14,12 +14,12 @@ def opt_geometry(output_str):
         :rtype: automol molecular geometry data structure
     """
 
-    syms, xyzs = ar.geom.read(
+    symbs, xyzs = ar.geom.read(
         output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Final (previous) structure:'), app.LINE, '']))
 
-    geo = automol.geom.from_data(syms, xyzs, angstrom=True)
+    geo = automol.geom.from_data(symbs, xyzs, angstrom=True)
 
     return geo
 
@@ -34,15 +34,18 @@ def opt_zmatrix(output_str):
     """
 
     # Read the matrix and the values from the output
-    syms, key_mat, name_mat, val_dct = ar.zmatrix.read(
+    symbs, key_mat, name_mat, val_mat = ar.zmat.read(
         output_str,
         start_ptt=(
             app.padded(app.escape('Geometry (in Angstrom),'), app.NONNEWLINE) +
             2 * app.padded(app.NEWLINE)))
 
     # Call the automol constructor
-    zma = automol.zmatrix.from_data(
-        syms, key_mat, name_mat, val_dct,
-        one_indexed=True, angstrom=True, degree=True)
+    if all(x is not None for x in (symbs, key_mat, name_mat, val_mat)):
+        zma = automol.zmat.from_data(
+            symbs, key_mat, name_mat, val_mat,
+            one_indexed=True, angstrom=True, degree=True)
+    else:
+        zma = None
 
     return zma

@@ -15,7 +15,7 @@ def opt_geometry(output_str):
         :rtype: automol molecular geometry data structure
     """
 
-    syms, xyzs = ar.geom.read(
+    symbs, xyzs = ar.geom.read(
         output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded(
@@ -23,6 +23,6 @@ def opt_geometry(output_str):
                 app.NONNEWLINE),
             app.LINE, '']))
 
-    geo = automol.geom.from_data(syms, xyzs, angstrom=True)
+    geo = automol.geom.from_data(symbs, xyzs, angstrom=True)
 
     return geo

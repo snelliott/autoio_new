@@ -1,9 +1,13 @@
 """ flexibly write data to a string
 """
+
 from autowrite import geom
-from autowrite import zmatrix
+from autowrite import zmat
+from autowrite import vmat
+
 
 __all__ = [
     'geom',
-    'zmatrix',
+    'zmat',
+    'vmat'
 ]

@@ -18,12 +18,13 @@ def opt_geometry(output_str):
     opt_str = ('Output coordinates in a.u. ' +
                'scale by  1.000000000 to convert to a.u.)')
 
-    syms, xyzs = ar.geom.read(
+    symbs, xyzs = ar.geom.read(
         output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape(opt_str),
             app.LINE, app.LINE, app.LINE, '']),
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.FLOAT,)
-    geo = automol.geom.from_data(syms, xyzs, angstrom=False)
+    geo = automol.geom.from_data(symbs, xyzs, angstrom=False)
+
     return geo

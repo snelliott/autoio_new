@@ -25,8 +25,6 @@ def gradient(output_str):
             app.LINE, '', app.LINE, '', '']),
         line_start_ptt=comp_ptt)
 
-    assert numpy.shape(grad)[1] == 3
-
     return grad
 
 
@@ -47,8 +45,6 @@ def hessian(output_str):
         block_start_ptt=app.padded(app.NEWLINE).join([
             '', app.series(comp_ptt, app.LINESPACES), '', '']),
         line_start_ptt=comp_ptt)
-
-    assert numpy.allclose(hess, numpy.transpose(hess))
 
     return hess
 

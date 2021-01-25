@@ -1,7 +1,7 @@
 """ gradient and hessian readers
 """
 
-import numpy
+# import numpy
 import autoread as ar
 import autoparse.pattern as app
 
@@ -27,8 +27,6 @@ def gradient(output_str):
             app.FLOAT,
             app.FLOAT])
         )
-
-    assert numpy.shape(grad)[1] == 3
 
     return grad
 

@@ -9,6 +9,7 @@
     with `prog` inserted as the first argument.
 """
 
+import numpy
 import automol
 from elstruct.reader import program_modules as pm
 
@@ -32,12 +33,15 @@ def energy(prog, method, output_str):
         :param output_str: string of the program's output file
         :type output_str: str
     """
-    # prog = prog.lower()
-    # method = method.lower()
-    return pm.call_module_function(
+
+    ene = pm.call_module_function(
         prog, pm.Job.ENERGY,
         # *args
         method, output_str)
+    if ene is not None:
+        assert isinstance(ene, float)
+
+    return ene
 
 
 def gradient_programs():
@@ -56,10 +60,17 @@ def gradient(prog, output_str):
         :param output_str: string of the program's output file
         :type output_str: str
     """
-    return pm.call_module_function(
+
+    grad = pm.call_module_function(
         prog, pm.Job.GRADIENT,
         # *args
         output_str)
+
+    # if grad is not None:
+    #     assert all(isinstance(val, float) for val in grad)
+    #     assert numpy.shape(grad)[1] == 3
+
+    return grad
 
 
 def hessian_programs():
@@ -78,10 +89,16 @@ def hessian(prog, output_str):
         :param output_str: string of the program's output file
         :type output_str: str
     """
-    return pm.call_module_function(
+
+    hess = pm.call_module_function(
         prog, pm.Job.HESSIAN,
         # *args
         output_str)
+
+    if hess is not None:
+        assert numpy.allclose(hess, numpy.transpose(hess))
+
+    return hess
 
 
 def harmonic_frequencies_programs():
@@ -100,10 +117,15 @@ def harmonic_frequencies(prog, output_str):
         :param output_str: string of the program's output file
         :type output_str: str
     """
-    return pm.call_module_function(
+
+    harm_freqs = pm.call_module_function(
         prog, pm.Job.HARM_FREQS,
         # *args
         output_str)
+
+    if harm_freqs is not None:
+        assert all(isinstance(val, float) for val in harm_freqs)
+        assert numpy.shape(harm_freqs)[1] == 3
 
 
 def normal_coordinates_programs():

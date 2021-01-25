@@ -109,10 +109,10 @@ def test__geo():
 
 
 def test__zma():
-    """ test autowrite.zmatrix.write
+    """ test autowrite.zmat.write
     """
 
-    zma_str = autowrite.zmatrix.write(
+    zma_str = autowrite.zmat.write(
         ZMA_SYMBS, ZMA_KEY_MAT, ZMA_NAME_MAT, ZMA_VAL_DCT,
         mat_delim=' ', setval_sign='=')
     assert zma_str == (
@@ -135,4 +135,21 @@ def test__zma():
         'D3   = 120.808000\n'
         'D4   = 240.404000\n'
         'D5   = 299.596000'
+    )
+
+
+def test__vma():
+    """ test autowrite.zmat.write
+    """
+
+    vma_str = autowrite.vmat.write(
+        ZMA_SYMBS, ZMA_KEY_MAT, ZMA_NAME_MAT,
+        mat_delim=' ')
+    assert vma_str == (
+        'C  \n'
+        'O  1    R1 \n'
+        'H  1    R2  2    A2 \n'
+        'H  1    R3  2    A3  3    D3 \n'
+        'H  1    R4  2    A4  3    D4 \n'
+        'H  2    R5  1    A5  3    D5 '
     )

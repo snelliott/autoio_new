@@ -1,6 +1,7 @@
-""" test the autoread.zmatrix module
+""" test the autoread.zmat module
 """
 
+import numpy
 import autoread
 import autoparse.pattern as app
 
@@ -152,16 +153,27 @@ ZMA_VAL5_STR = (
     ' D5=                299.84441753 DEGREE\n')
 
 
-def test_():
-    """ test autoread.zmatrix
+def test_zmat():
+    """ test autoread.zmat
     """
+
+    def _val_mats_similar(val_mat, ref_val_mat):
+        """ Check if two value matrices are the same
+        """
+        for i, row in enumerate(val_mat):
+            for j, val in enumerate(row):
+                ref_val = ref_val_mat[i][j]
+                if val is None:
+                    assert ref_val is None
+                else:
+                    assert numpy.isclose(val, ref_val)
 
     # Simple ZMA reads
     start_ptt = (
         app.padded(app.escape('Geometry (in Angstrom),'), app.NONNEWLINE) +
         2 * app.padded(app.NEWLINE))
 
-    symbs, key_mat, name_mat, val_dct = autoread.zmatrix.read(
+    symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA1_STR,
         start_ptt=start_ptt)
     assert symbs == ('O', 'O', 'H', 'H')
@@ -173,10 +185,13 @@ def test_():
                         ('R1', None, None),
                         ('R2', 'A2', None),
                         ('R2', 'A2', 'D3'))
-    assert val_dct == {
-        'A2': 96.772572, 'D3': 129.366995, 'R1': 1.4470582953, 'R2': 0.976073}
+    ref_val_mat = ((None, None, None),
+                   (1.4470582953, None, None),
+                   (0.976073, 96.772572, None),
+                   (0.976073, 96.772572, 129.36699))
+    _val_mats_similar(val_mat, ref_val_mat)
 
-    symbs, key_mat, name_mat, val_dct = autoread.zmatrix.read(
+    symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA2_STR,
         mat_entry_start_ptt=',',
         mat_entry_sep_ptt=',',
@@ -194,12 +209,19 @@ def test_():
                         ('R3', 'A3', 'D3'),
                         ('R4', 'A4', 'D4'),
                         ('R5', 'A5', 'D5'))
-    assert val_dct == {
-        'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
-        'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
-        'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
+    ref_val_mat = ((None, None, None),
+                   (2.67535, None, None),
+                   (2.06501, 109.528, None),
+                   (2.06501, 109.528, 120.808),
+                   (2.06458, 108.982, 240.404),
+                   (1.83748, 107.091, 299.596))
+    _val_mats_similar(val_mat, ref_val_mat)
+    # assert val_dct == {
+    #     'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
+    #     'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
+    #     'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
 
-    symbs, key_mat, name_mat, val_dct = autoread.zmatrix.read(
+    symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA4_STR,
         mat_entry_start_ptt=',',
         mat_entry_sep_ptt=',',
@@ -208,10 +230,10 @@ def test_():
     assert symbs == ('C',)
     assert key_mat == ((None, None, None),)
     assert name_mat == ((None, None, None),)
-    assert val_dct == {}
+    assert val_mat == ((None, None, None),)
 
     # Check last functionality
-    symbs, key_mat, name_mat, val_dct = autoread.zmatrix.read(
+    symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA2_STR + '\n\n' + ZMA3_STR,
         mat_entry_start_ptt=',',
         mat_entry_sep_ptt=',',
@@ -230,20 +252,27 @@ def test_():
                         ('R3', 'A3', 'D3'),
                         ('R4', 'A4', 'D4'),
                         ('R5', 'A5', 'D5'))
-    assert val_dct == {
-        'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
-        'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
-        'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
+    ref_val_mat = ((None, None, None),
+                   (2.67535, None, None),
+                   (2.06501, 109.528, None),
+                   (2.06501, 109.528, 120.808),
+                   (2.06458, 108.982, 240.404),
+                   (1.83748, 107.091, 299.596))
+    _val_mats_similar(val_mat, ref_val_mat)
+    # assert val_dct == {
+    #     'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
+    #     'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
+    #     'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
 
 
 def test__matrix():
-    """ test autoread.zmatrix.matrix
+    """ test autoread.zmat.matrix
     """
     start_ptt = (
         app.padded(app.NEWLINE).join([
             app.escape('Symbolic Z-matrix:'), app.LINE, '']))
 
-    symbs, key_mat, name_mat = autoread.zmatrix.matrix.read(
+    symbs, key_mat, name_mat = autoread.vmat.read(
         ZMA_OUT1_STR,
         start_ptt=start_ptt)
     assert symbs == ('O', 'O', 'H', 'H')
@@ -260,7 +289,7 @@ def test__matrix():
         app.padded(app.NEWLINE).join([
             app.escape('Symbolic Z-matrix:'), app.LINE, '']))
 
-    symbs, key_mat, name_mat = autoread.zmatrix.matrix.read(
+    symbs, key_mat, name_mat = autoread.vmat.read(
         ZMA_OUT2_STR,
         start_ptt=start_ptt,
         line_end_ptt=app.maybe(app.UNSIGNED_INTEGER))
@@ -311,7 +340,7 @@ def test__matrix():
             app.escape('Z-MATRIX (ANGSTROMS AND DEGREES)'),
             app.LINE, app.LINE, '']))
 
-    symbs, key_mat, name_mat = autoread.zmatrix.matrix.read(
+    symbs, key_mat, name_mat = autoread.vmat.read(
         ZMA_OUT3_STR,
         start_ptt=start_ptt,
         name_ptt=app.FLOAT,
@@ -335,7 +364,7 @@ def test__matrix():
         app.maybe(app.SPACES).join([
             'geometry', app.escape('='), app.escape('{'), '']))
 
-    symbs, key_mat, name_mat = autoread.zmatrix.matrix.read(
+    symbs, key_mat, name_mat = autoread.vmat.read(
         ZMA_OUT4_STR,
         start_ptt=start_ptt,
         entry_start_ptt=app.maybe(','),
@@ -356,10 +385,10 @@ def test__matrix():
 
 
 def test__setval():
-    """ test autoread.zmatrix.setval
+    """ test autoread.zmat.setval
     """
 
-    val_dct = autoread.zmatrix.setval.read(ZMA_VAL1_STR)
+    val_dct = autoread.setval.read(ZMA_VAL1_STR)
     assert val_dct == {
         'A2': 96.772572, 'D3': 129.366995, 'R1': 1.4470582953, 'R2': 0.976073}
 
@@ -367,7 +396,7 @@ def test__setval():
         app.escape('!   Optimized Parameters   !'),
         app.LINE, app.LINE, app.LINE, app.LINE, ''])
 
-    val_dct = autoread.zmatrix.setval.read(
+    val_dct = autoread.setval.read(
         ZMA_VAL2_STR,
         start_ptt=start_ptt,
         entry_sep_ptt='',
@@ -377,14 +406,14 @@ def test__setval():
     assert val_dct == {
         'R1': 1.4057, 'R2': 0.9761, 'A2': 96.7726, 'D3': 129.367}
 
-    val_dct = autoread.zmatrix.setval.read(
+    val_dct = autoread.setval.read(
         ZMA_VAL3_STR,
         sep_ptt=app.one_of_these(['', app.NEWLINE]))
     assert val_dct == {
         'R1': 2.73454, 'R2': 1.84451, 'A2': 96.7726, 'R3': 1.84451,
         'A3': 96.7726, 'D3': 129.367}
 
-    val_dct = autoread.zmatrix.setval.read(
+    val_dct = autoread.setval.read(
         ZMA_VAL4_STR,
         entry_start_ptt='SETTING',
         val_ptt=app.one_of_these([app.EXPONENTIAL_FLOAT_D, app.NUMBER]),
@@ -396,7 +425,7 @@ def test__setval():
         'D4': 234.912696, 'R5': 0.952519, 'A5': 103.132403, 'D5': 297.938053,
         'SPIN': '0.00000000D+00', 'CHARGE': '0.00000000D+00'}
 
-    val_dct = autoread.zmatrix.setval.read(
+    val_dct = autoread.setval.read(
         ZMA_VAL5_STR,
         start_ptt=app.padded('Optimized variables') + app.NEWLINE,
         entry_end_ptt=app.one_of_these(['ANGSTROM', 'DEGREE']),

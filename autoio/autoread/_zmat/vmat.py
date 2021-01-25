@@ -1,5 +1,6 @@
 """ z-matrix matrix block parsers
 """
+
 import numpy
 from autoparse import cast as _cast
 import autoparse.find as apf
@@ -84,25 +85,28 @@ def read(string,
     block_str = (apf.last_capture(block_ptt_, string, case=case) if last else
                  apf.first_capture(block_ptt_, string, case=case))
 
-    lines = block_str.splitlines()
-    nrows = len(lines)
-    symbs = []
-    key_mat = numpy.empty((nrows, 3), dtype=numpy.object_)
-    name_mat = numpy.empty((nrows, 3), dtype=numpy.object_)
-    for row_idx, line in enumerate(lines):
-        ncols = min(row_idx, 3)
-        caps = _cast(apf.first_capture(line_ptts_[ncols], line, case=case))
-        sym = caps if ncols == 0 else caps[0]
-        keys = caps[1::2]
-        names = caps[2::2]
+    if block_str is not None:
+        lines = block_str.splitlines()
+        nrows = len(lines)
+        symbs = []
+        key_mat = numpy.empty((nrows, 3), dtype=numpy.object_)
+        name_mat = numpy.empty((nrows, 3), dtype=numpy.object_)
+        for row_idx, line in enumerate(lines):
+            ncols = min(row_idx, 3)
+            caps = _cast(apf.first_capture(line_ptts_[ncols], line, case=case))
+            sym = caps if ncols == 0 else caps[0]
+            keys = caps[1::2]
+            names = caps[2::2]
 
-        symbs.append(sym)
-        key_mat[row_idx, :ncols] = keys
-        name_mat[row_idx, :ncols] = names
+            symbs.append(sym)
+            key_mat[row_idx, :ncols] = keys
+            name_mat[row_idx, :ncols] = names
 
-    symbs = tuple(symbs)
-    key_mat = tuple(map(tuple, key_mat))
-    name_mat = tuple(map(tuple, name_mat))
+        symbs = tuple(symbs)
+        key_mat = tuple(map(tuple, key_mat))
+        name_mat = tuple(map(tuple, name_mat))
+    else:
+        symbs, key_mat, name_mat = None, None, None
 
     return symbs, key_mat, name_mat
 

@@ -9,7 +9,8 @@ import autoparse.find as apf
 
 
 # Build formatted strings
-def build_mako_str(template_file_name, template_src_path, template_keys):
+def build_mako_str(template_file_name, template_src_path, template_keys,
+                   remove_whitespace=True):
     """ Uses an input dictionary to fill in Mako template file containing the
         keys of the dictionary, then writes a string corresponding to the
         filled-in Mako template.
@@ -26,7 +27,10 @@ def build_mako_str(template_file_name, template_src_path, template_keys):
     template_file_path = os.path.join(template_src_path, template_file_name)
     mako_str = Template(filename=template_file_path).render(**template_keys)
 
-    return remove_trail_whitespace(mako_str)
+    if remove_whitespace:
+        mako_str = remove_trail_whitespace(mako_str)
+
+    return mako_str
 
 
 def indent(string, nspaces):
