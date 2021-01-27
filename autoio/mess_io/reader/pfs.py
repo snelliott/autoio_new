@@ -28,10 +28,10 @@ def partition_function(output_str):
             dq_dt += (float(tmp[2]),)
             dq2_dt2 += (float(tmp[3]),)
 
-    pf_dct = dict(zip(temps, zip(logq, dq_dt, dq2_dt2)))
+    # pf_dct = dict(zip(temps, zip(logq, dq_dt, dq2_dt2)))
 
-    return pf_dct
-
+    # return pf_dct
+    return temps, logq, dq_dt, dq2_dt2
 
 def entropy(output_str):
     """ Parses the MESSPF output file string for the entropy

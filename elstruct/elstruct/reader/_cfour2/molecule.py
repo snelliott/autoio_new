@@ -92,7 +92,7 @@ def opt_zmatrix(output_str):
 
         # call the automol constructor
         zma = automol.zmat.from_data(
-            symbs, key_mat, name_mat, val_mat,
+            symbs, key_mat, val_mat, name_mat,
             one_indexed=True, angstrom=True, degree=True)
     else:
         zma = None

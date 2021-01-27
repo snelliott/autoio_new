@@ -182,7 +182,7 @@ def test__optimization():
         if script_str is not None:
             # check that the frozen coordinates didn't change
             zma = vals[-1]
-            val_dct = automol.zmatrix.values(zma)
+            val_dct = automol.zmat.value_dictionary(zma)
             frozen_values = tuple(
                 map(val_dct.__getitem__, frozen_coordinates))
             assert numpy.allclose(

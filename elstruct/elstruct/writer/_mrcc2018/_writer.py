@@ -88,7 +88,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     # Set the coordinate system
     if automol.geom.is_valid(geo):
         coord_sys = 'xyz'
-    elif automol.zmatrix.is_valid(geo):
+    elif automol.zmat.is_valid(geo):
         coord_sys = 'zmat'
 
     # No TS optimizer based on manual

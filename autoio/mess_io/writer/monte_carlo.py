@@ -4,7 +4,7 @@ Writes MESS input for a monte carlo partition function calculation
 
 import os
 import automol.geom
-import automol.cart.mat
+import automol.util.mat
 from ioformat import build_mako_str
 from ioformat import remove_trail_whitespace
 from ioformat import indent
@@ -123,11 +123,11 @@ def mc_data(geos, enes, grads=(), hessians=()):
         geo_str = remove_trail_whitespace(geo_str)
         dat_str += geo_str
         if grads:
-            grad_str = automol.cart.mat.string(grads[idx], precision=12)
+            grad_str = automol.util.mat.string(grads[idx], precision=12)
             dat_str += 'Gradient'+'\n'
             dat_str += grad_str
         if hessians:
-            hess_str = automol.cart.mat.string(hessians[idx], precision=12)
+            hess_str = automol.util.mat.string(hessians[idx], precision=12)
             dat_str += 'Hessian'+'\n'
             dat_str += hess_str+'\n'
 

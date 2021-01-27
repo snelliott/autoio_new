@@ -29,4 +29,4 @@ def hf298k(output_str):
     else:
         hfs = None
 
-    return hfs
+    return hfs[0]

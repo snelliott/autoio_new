@@ -131,7 +131,7 @@ def _frozen_coordinate_strings(geo, frozen_coordinates):
     if not frozen_coordinates:
         dis_strs = ang_strs = dih_strs = ()
     else:
-        coo_dct = automol.zmatrix.coordinates(geo, shift=1)
+        coo_dct = automol.zmat.coordinates(geo, shift=1)
         assert all(coo_name in coo_dct for coo_name in frozen_coordinates)
 
         def _coordinate_strings(coo_names):
@@ -143,9 +143,9 @@ def _frozen_coordinate_strings(geo, frozen_coordinates):
             return frz_coo_strs
 
         dis_strs = _coordinate_strings(
-            automol.zmatrix.distance_names(geo))
+            automol.zmat.distance_names(geo))
         ang_strs = _coordinate_strings(
-            automol.zmatrix.central_angle_names(geo))
+            automol.zmat.central_angle_names(geo))
         dih_strs = _coordinate_strings(
-            automol.zmatrix.dihedral_angle_names(geo))
+            automol.zmat.dihedral_angle_names(geo))
     return dis_strs, ang_strs, dih_strs

@@ -209,7 +209,7 @@ def opt_geometry(prog, output_str):
         geo = _opt_geometry(prog, output_str)
     except TypeError:
         zma = opt_zmatrix(prog, output_str)
-        geo = automol.zmatrix.geometry(zma)
+        geo = automol.zmat.geometry(zma)
     return geo
 
 
