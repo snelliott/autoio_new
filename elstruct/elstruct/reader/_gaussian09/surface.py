@@ -2,6 +2,7 @@
 """
 
 import numpy
+# from qcelemental import periodictable as ptab
 from phydat import ptab
 import automol
 import autoread as ar

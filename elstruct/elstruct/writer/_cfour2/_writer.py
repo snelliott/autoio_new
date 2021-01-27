@@ -98,7 +98,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
 
     if automol.geom.is_valid(geo):
         coord_sys = 'CARTESIAN'
-    elif automol.zmatrix.is_valid(geo):
+    elif automol.zmat.is_valid(geo):
         coord_sys = 'INTERNAL'
 
     # Set the gen lines blocks

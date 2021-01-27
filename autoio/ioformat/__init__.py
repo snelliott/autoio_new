@@ -11,6 +11,7 @@ from ioformat._format import remove_trail_whitespace
 from ioformat._format import remove_comment_lines
 from ioformat._run import from_input_string
 from ioformat._run import run_script
+from ioformat._format import addchar
 from ioformat import pathtools
 from ioformat import phycon
 from ioformat import ptt
@@ -25,6 +26,7 @@ __all__ = [
     'remove_comment_lines',
     'from_input_string',
     'run_script',
+    'addchar',
     'pathtools',
     'phycon',
     'ptt'

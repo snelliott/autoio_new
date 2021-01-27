@@ -30,7 +30,7 @@ ${machine_options}
 % elif job_key == 'irc':
 # IRC=(${job_options})
 # IOp(7/33=1)
-% elif job_key == 'molec_properties':
+% elif job_key == 'molecular_properties':
 # Polar
 % endif
 % if gen_lines != '':

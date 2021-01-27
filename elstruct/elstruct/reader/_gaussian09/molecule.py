@@ -2,6 +2,7 @@
 """
 
 import numbers
+#from qcelemental import periodictable as ptab
 from phydat import ptab
 import autoread as ar
 import autoparse.pattern as app
@@ -83,7 +84,6 @@ def opt_zmatrix(output_str):
             if apf.has_match(err_ptt, test_str):
                 print('Warning: Bad gradient value (nan)',
                       'in "Optimized Parameters" list.')
-
         # For the case when variable names are used instead of integer keys:
         # (otherwise, does nothing)
         key_dct = dict(map(reversed, enumerate(symbs)))
@@ -95,8 +95,9 @@ def opt_zmatrix(output_str):
         symbs = [apf.first_capture(symb_ptt, symb) for symb in symbs]
 
         # Call the automol constructor
+        print('test in elstruc reader', val_mat, '\n', symbs, key_mat, name_mat)
         zma = automol.zmat.from_data(
-            symbs, key_mat, name_mat, val_mat,
+            symbs, key_mat, val_mat, name_mat,
             one_indexed=True, angstrom=True, degree=True)
     else:
         zma = None

@@ -75,7 +75,7 @@ def geometry_strings(geo, frozen_coordinates, zma_sign='='):
         symbs = automol.zmat.symbols(zma)
         key_mat = automol.zmat.key_matrix(zma, shift=1)
         name_mat = automol.zmat.name_matrix(zma)
-        val_dct = automol.zmat.values(zma, angstrom=True, degree=True)
+        val_dct = automol.zmat.value_dictionary(zma, angstrom=True, degree=True)
         geo_str = aw.zmat.matrix_block(symbs, key_mat, name_mat)
 
         vval_dct = {key: val for key, val in val_dct.items()
