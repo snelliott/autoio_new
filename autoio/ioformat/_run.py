@@ -12,11 +12,11 @@ INPUT_NAME = 'run.inp'
 OUTPUT_NAME = 'run.out'
 
 
-def from_input(script_str, run_dir, input_str,
-               aux_dct=None,
-               script_name=SCRIPT_NAME,
-               input_name=INPUT_NAME,
-               output_name=OUTPUT_NAME):
+def from_input_string(script_str, run_dir, input_str,
+                      aux_dct=None,
+                      script_name=SCRIPT_NAME,
+                      input_name=INPUT_NAME,
+                      output_name=OUTPUT_NAME):
     """ run the program in a temporary directory and return the output
 
         :param script_str: string of bash script that contains

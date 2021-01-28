@@ -7,7 +7,8 @@ from ioformat import build_mako_str
 from ioformat import indent
 from ioformat import remove_trail_whitespace
 from mess_io.writer._sec import rxnchan_header_str
-from mess_io.writer.mol_data import molecule
+from mess_io.writer.mol_data import core_rigidrotor
+from mess_io.writer.spc import molecule
 from mess_io.writer.rxnchan import species
 from phydat import phycon
 
@@ -45,7 +46,7 @@ def messpf_inp_str(globkey_str, spc_str):
     """ Combine various MESS strings together to combined MESSPF
     """
     return '\n'.join([globkey_str, spc_str]) + '\n'
-    
+
 
 def messhr_inp_str(geo, hind_rot_str):
     """ Special MESS input string to calculate frequencies and ZPVEs
@@ -57,7 +58,7 @@ def messhr_inp_str(geo, hind_rot_str):
         rel_temp_inc=0.001,
         atom_dist_min=0.6)
     dat_str = molecule(
-        core=mess_io.writer.core_rigidrotor(tors_geo, 1.0),
+        core=core_rigidrotor(geo, 1.0),
         freqs=[1000.0],
         elec_levels=[[0.0, 1.0]],
         hind_rot=hind_rot_str,
@@ -65,10 +66,10 @@ def messhr_inp_str(geo, hind_rot_str):
     spc_str = species(
         spc_label='Tmp',
         spc_data=dat_str,
-        zero_energy=0.0
+        zero_ene=0.0
     )
 
-    return messpf_inp_str(globkey_str, spc_str)
+    return messpf_inp_str(global_pf_str, spc_str)
 
 
 # Write individual sections of the input file
