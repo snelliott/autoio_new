@@ -40,33 +40,36 @@ def hessian(output_str):
         :type output_str: str
         :rtype: tuple(tuple(float))
     """
-
-    comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
+    
+    comp_ptt = app.UNSIGNED_INTEGER
     mat = ar.matrix.read(
         output_str,
-        start_ptt=(app.escape('The second derivative matrix:') +
-                   app.lpadded(app.NEWLINE)),
+        val_ptt=app.EXPONENTIAL_FLOAT_D,
+        start_ptt=(
+            app.escape('Force constants in Cartesian coordinates:') +
+            app.lpadded(app.NEWLINE)),
         block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
                          app.padded(app.NEWLINE)),
         line_start_ptt=comp_ptt,
         tril=True)
 
+    if mat is not None:
+        print('mat test\n', mat)
+        mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
+               for row in mat]
+
     if mat is None:
-        comp_ptt = app.UNSIGNED_INTEGER
+        comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
         mat = ar.matrix.read(
             output_str,
-            val_ptt=app.EXPONENTIAL_FLOAT_D,
-            start_ptt=(
-                app.escape('Force constants in Cartesian coordinates:') +
-                app.lpadded(app.NEWLINE)),
+            start_ptt=(app.escape('The second derivative matrix:') +
+                       app.lpadded(app.NEWLINE)),
             block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
                              app.padded(app.NEWLINE)),
             line_start_ptt=comp_ptt,
             tril=True)
 
     if mat is not None:
-        mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
-               for row in mat]
         mat = tuple(map(tuple, mat))
 
     return mat
