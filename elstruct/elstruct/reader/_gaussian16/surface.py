@@ -40,7 +40,7 @@ def hessian(output_str):
         :type output_str: str
         :rtype: tuple(tuple(float))
     """
-    
+
     comp_ptt = app.UNSIGNED_INTEGER
     mat = ar.matrix.read(
         output_str,
@@ -54,7 +54,6 @@ def hessian(output_str):
         tril=True)
 
     if mat is not None:
-        print('mat test\n', mat)
         mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
                for row in mat]
 

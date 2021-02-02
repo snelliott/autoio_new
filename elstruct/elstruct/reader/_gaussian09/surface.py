@@ -54,7 +54,6 @@ def hessian(output_str):
         tril=True)
 
     if mat is not None:
-        print('mat test\n', mat)
         mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
                for row in mat]
 

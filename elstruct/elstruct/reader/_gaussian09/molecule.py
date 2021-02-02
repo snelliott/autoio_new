@@ -28,6 +28,16 @@ def opt_geometry(output_str):
         line_start_ptt=app.UNSIGNED_INTEGER,
         line_sep_ptt=app.UNSIGNED_INTEGER,)
 
+    if all(x is None for x in (nums, xyzs)):
+        nums, xyzs = ar.geom.read(
+            output_str,
+            start_ptt=app.padded(app.NEWLINE).join([
+                app.escape('Z-Matrix orientation:'),
+                app.LINE, app.LINE, app.LINE, app.LINE, '']),
+            symb_ptt=app.UNSIGNED_INTEGER,
+            line_start_ptt=app.UNSIGNED_INTEGER,
+            line_sep_ptt=app.UNSIGNED_INTEGER,)
+
     if all(x is not None for x in (nums, xyzs)):
         symbs = tuple(map(ptab.to_symbol, nums))
         geo = automol.geom.from_data(symbs, xyzs, angstrom=True)
@@ -95,7 +105,6 @@ def opt_zmatrix(output_str):
         symbs = [apf.first_capture(symb_ptt, symb) for symb in symbs]
 
         # Call the automol constructor
-        print('test in elstruc reader', val_mat, '\n', symbs, key_mat, name_mat)
         zma = automol.zmat.from_data(
             symbs, key_mat, val_mat, name_mat,
             one_indexed=True, angstrom=True, degree=True)
