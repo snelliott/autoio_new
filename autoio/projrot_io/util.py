@@ -59,7 +59,7 @@ def _format_geo_str(geo):
     return remove_trail_whitespace(geo_str)
 
 
-def _format_grad_str(geom, grad):
+def _format_grad_str(geo, grad):
     """ Formats a gradient into a string used for the ProjRot input file.
 
         :param geom: geometries (Angstrom)
@@ -70,8 +70,8 @@ def _format_grad_str(geom, grad):
     """
 
     atom_list = []
-    for i, (sym, _) in enumerate(geom):
-        atom_list.append(int(ptab.to_Z(sym)))
+    for i, (sym, _) in enumerate(geo):
+        atom_list.append(int(ptab.to_number(sym)))
 
     # Format the strings for the xyz gradients
     full_grads_str = ''
