@@ -123,27 +123,23 @@ def rpht_path_coord_en(coords, energies, bnd1=(), bnd2=()):
     return remove_trail_whitespace(path_str)
 
 
-def rotors(axis, group, remdummy=None):
+def rotors(axis, group):
     """ Write the sections that defines the rotors section
 
         :param group: idxs for the atoms of one of the rotational groups
         :type group: list(int)
         :param axis: idxs for the atoms that make up the rotational axis
         :type axis: list(int)
-        :param remdummy: list of idxs of dummy atoms for shifting values
-        :type remdummy: list(int)
         :rtype: str
     """
 
     # Set up the keywords
     [pivota, pivotb] = axis
     atomsintopa = len(group)
-    if remdummy is not None:
-        pivota = int(pivota - remdummy[pivota-1])
-        pivotb = int(pivotb - remdummy[pivotb-1])
-        topaatoms = '  '.join([str(int(val-remdummy[val-1])) for val in group])
-    else:
-        topaatoms = '  '.join([str(val) for val in group])
+
+    pivota += 1
+    pivotb += 1
+    topaatoms = '  '.join([str(val+1) for val in group])
 
     # Build the rotors_str
     rotors_str = '\n{0:<32s}{1:<4d}\n'.format('pivotA', pivota)

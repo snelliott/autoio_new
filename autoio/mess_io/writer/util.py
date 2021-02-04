@@ -50,30 +50,30 @@ def elec_levels_format(elec_levels):
     return nlevels, elec_levels_str
 
 
-def geom_format(geom):
+def geometry_format(geo):
     """ Formats the geometry of a species into a string that
         is appropriate for a MESS input file.
 
-        :param geom: geometry of a species
+        :param geo: geometry of a species
         :return natoms: number of atoms in the geometry
         :rtype int
-        :return geom_string: MESS-format string containing geometry
+        :return geo_str: MESS-format string containing geometry
         :rtype string
     """
 
     # Get the number of atoms
-    natoms = len(geom)
+    natoms = len(geo)
 
     # Build geom string; converting the coordinates to angstrom
-    geom_string = ''
-    for (asymb, xyz) in geom:
-        geom_string += '{:<4s}{:>14.5f}{:>14.5f}{:>14.5f}\n'.format(
-                        asymb, *tuple([val*0.529177 for val in xyz]))
+    geo_str = ''
+    for (asymb, xyz) in geo:
+        geo_str += '{:<4s}{:>14.5f}{:>14.5f}{:>14.5f}\n'.format(
+            asymb, *tuple([val*0.529177 for val in xyz]))
 
     # Remove final newline character and indent the lines
-    geom_string = indent(geom_string.rstrip(), 4)
+    geo_str = indent(geo_str.rstrip(), 4)
 
-    return natoms, geom_string
+    return natoms, geo_str
 
 
 def freqs_format(freqs):
@@ -134,15 +134,13 @@ def intensities_format(intens):
     return nintens, inten_str
 
 
-def format_rotor_key_defs(rotor_keyword_vals, remdummy=None):
+def format_rotor_key_defs(rotor_keyword_vals):
     """ Formats strings that contain the 'Group', 'Axis', and 'Symmetry'
         keywords and values that are used to define hindered rotors and
         internal rotors in MESS input files.
 
         :param rotor_keyword_vals: values for the for some rotor keyword
         :type: rotor_keyword_vals: list(int)
-        :param remdummy: list of idxs of dummy atoms for shifting values
-        :type remdummy: list(int)
         :return rotor_keyword_str: MESS-format string containing values
         :rtype str
     """
@@ -150,11 +148,7 @@ def format_rotor_key_defs(rotor_keyword_vals, remdummy=None):
     # Build string containing the values of each keyword
     rotor_keyword_str = ''
     for vals in rotor_keyword_vals:
-        if remdummy is not None:
-            rotor_keyword_str += '{0:<4d}'.format(
-                int(vals - remdummy[vals-1]))
-        else:
-            rotor_keyword_str += '{0:<4d}'.format(vals)
+        rotor_keyword_str += '{0:<4d}'.format(vals+1)
 
     return rotor_keyword_str
 
@@ -165,8 +159,6 @@ def format_rotor_potential(potential):
 
         :param potential: value of the potential along torsion (kcal.mol-1)
         :type potential: list(float)
-        :param remdummy: list of idxs of dummy atoms for shifting values
-        :type remdummy: list(int)
         :return npotential: number of values in the potential
         :rtype int
         :return potential_str: values of potential in a MESS-format string
@@ -260,20 +252,20 @@ def format_xmat(xmat):
     return xmat_str
 
 
-def molec_spec_format(geom):
+def molec_spec_format(geo):
     """ Parses out the atom labels of a Cartesian geometry and
         formats them into a string appropriate for definining
         molecular species for Monte Carlo calculations in MESS.
 
-        :param geom: geometry
-        :type geom: list
+        :param geo: geometry
+        :type geo: list
         :return atom_lst_str
         :rtype: string
     """
 
     # Build geom string; converting the coordinates to angstrom
     atom_lst_str = ''
-    for (asymb, _) in geom:
+    for (asymb, _) in geo:
         atom_lst_str += '{:s} '.format(asymb)
 
     # Remove final newline character

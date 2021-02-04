@@ -15,13 +15,13 @@ SPECIES_PATH = os.path.join(TEMPLATE_PATH, 'species')
 SPEC_INFO_PATH = os.path.join(SPECIES_PATH, 'info')
 
 
-def core_rigidrotor(geom, sym_factor, interp_emax=None):
+def core_rigidrotor(geo, sym_factor, interp_emax=None):
     """ Writes the string that defines the 'Core' section for a
         rigid-rotor model of a species for a MESS input file by
         formatting input information into strings a filling Mako template.
 
-        :param geom: geometry of species
-        :type geom: list
+        :param geo: geometry of species
+        :type geo: list
         :param sym_factor: symmetry factor of species
         :type sym_factor: float
         :param interp_emax: max energy to calculate num. of states (kcal.mol-1)
@@ -30,13 +30,13 @@ def core_rigidrotor(geom, sym_factor, interp_emax=None):
     """
 
     # Format the geometry section
-    natom, geom = util.geom_format(geom)
+    natom, geo = util.geometry_format(geo)
 
     # Create dictionary to fill template
     core_keys = {
         'sym_factor': sym_factor,
         'natom': natom,
-        'geom': geom,
+        'geom': geo,
         'interp_emax': interp_emax
     }
 
@@ -46,14 +46,14 @@ def core_rigidrotor(geom, sym_factor, interp_emax=None):
         template_keys=core_keys)
 
 
-def core_multirotor(geom, sym_factor, pot_surf_file, int_rot_str,
+def core_multirotor(geo, sym_factor, pot_surf_file, int_rot_str,
                     interp_emax=100, quant_lvl_emax=9):
     """ Writes the string that defines the `Core` section for a
         multidimensional rotor model of a species for a MESS input file by
         formatting input information into strings a filling Mako template.
 
-        :param geom: geometry of species
-        :type geom: list
+        :param geo: geometry of species
+        :type geo: list
         :param sym_factor: symmetry factor of species
         :type sym_factor: float
         :param pot_surf_file: name of file with PES along rotor (kcal.mol-1)
@@ -68,7 +68,7 @@ def core_multirotor(geom, sym_factor, pot_surf_file, int_rot_str,
     """
 
     # Format the geometry section
-    natom, geom = util.geom_format(geom)
+    natom, geo = util.geometry_format(geo)
 
     # Indent the internal rotor string
     int_rot_str = indent(int_rot_str, 2)
@@ -77,7 +77,7 @@ def core_multirotor(geom, sym_factor, pot_surf_file, int_rot_str,
     core_keys = {
         'sym_factor': sym_factor,
         'natom': natom,
-        'geom': geom,
+        'geom': geo,
         'pot_surf_file': pot_surf_file,
         'int_rot': int_rot_str,
         'interp_emax': interp_emax,
@@ -90,16 +90,16 @@ def core_multirotor(geom, sym_factor, pot_surf_file, int_rot_str,
         template_keys=core_keys)
 
 
-def core_phasespace(geom1, geom2, sym_factor, stoich,
+def core_phasespace(geo1, geo2, sym_factor, stoich,
                     pot_prefactor=10.0, pot_exp=6.0, tstlvl='e'):
     """ Writes the string that defines the `Core` section for a
         phase space theory model of a transition state for a MESS input file by
         formatting input information into strings a filling Mako template.
 
-        :param geom1: geometry of the dissociation species 1
-        :type geom1: list
-        :param geom2: geometry of the dissociation species 2
-        :type geom2: list
+        :param geo1: geometry of the dissociation species 1
+        :type geo1: list
+        :param geo2: geometry of the dissociation species 2
+        :type geo2: list
         :param sym_factor: symmetry factor of transition state
         :type sym_factor: float
         :param stoich: combined stoichiometry of dissociation species 1 and 2
@@ -116,12 +116,12 @@ def core_phasespace(geom1, geom2, sym_factor, stoich,
     assert tstlvl in ('e', 'ej', 't')
 
     # Format the geometry section of each fragment
-    natom1, geom1 = util.geom_format(geom1)
-    natom2, geom2 = util.geom_format(geom2)
+    natom1, geo1 = util.geometry_format(geo1)
+    natom2, geo2 = util.geometry_format(geo2)
 
     # Indent the geometry strings
-    geom1 = indent(geom1, 2)
-    geom2 = indent(geom2, 2)
+    geo1 = indent(geo1, 2)
+    geo2 = indent(geo2, 2)
 
     # Format the tstlvl string
     assert tstlvl in ('e', 'ej', 't')
@@ -131,9 +131,9 @@ def core_phasespace(geom1, geom2, sym_factor, stoich,
     core_keys = {
         'sym_factor': sym_factor,
         'natom1': natom1,
-        'geom1': geom1,
+        'geo1': geo1,
         'natom2': natom2,
-        'geom2': geom2,
+        'geo2': geo2,
         'stoich': stoich,
         'pot_prefactor': pot_prefactor,
         'pot_exp': pot_exp,
@@ -178,7 +178,7 @@ def rotor_hindered(group, axis, symmetry, potential,
                    hmin=None, hmax=None,
                    lvl_ene_max=None,
                    therm_pow_max=None,
-                   remdummy=None, geom=None,
+                   geo=None,
                    rotor_id=''):
     """ Writes the string that defines the `Rotor` section for a
         single hindered rotor of a species for a MESS input file by
@@ -198,25 +198,23 @@ def rotor_hindered(group, axis, symmetry, potential,
         :type potential: list(float)
         :param therm_pow_max: max exp't power in Boltzmann weight
         :type therm_pow_max: int
-        :param remdummy: list of idxs of dummy atoms for shifting values
-        :type remdummy: list(int)
-        :param geom: geometry of the species the rotor exists for
-        :type geom: list
+        :param geo: geometry of the species the rotor exists for
+        :type geo: list
         :param rotor_id: name associated with the rotor
         :type rotor_id: str
         :rtype: str
     """
 
     # Format the rotor sections
-    rotor_group = util.format_rotor_key_defs(group, remdummy)
-    rotor_axis = util.format_rotor_key_defs(axis, remdummy)
+    rotor_group = util.format_rotor_key_defs(group)
+    rotor_axis = util.format_rotor_key_defs(axis)
     rotor_npotential, rotor_potential = util.format_rotor_potential(potential)
 
     # Format the geom
     natom = 1
-    if geom is not None:
-        natom, geom = util.geom_format(geom)
-        geom = indent(geom, 4)
+    if geo is not None:
+        natom, geo = util.geometry_format(geo)
+        geo = indent(geo, 4)
 
     # Create dictionary to fill template
     rotor_keys = {
@@ -230,7 +228,7 @@ def rotor_hindered(group, axis, symmetry, potential,
         'lvl_ene_max': lvl_ene_max,
         'therm_pow_max': therm_pow_max,
         'natom': natom,
-        'geom': geom,
+        'geom': geo,
         'rotor_id': rotor_id
     }
 
@@ -242,7 +240,7 @@ def rotor_hindered(group, axis, symmetry, potential,
 
 def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
                    pot_exp_size=5, hmin=13, hmax=101,
-                   remdummy=None, geom=None, rotor_id=''):
+                   geo=None, rotor_id=''):
     """ Writes the string that defines the `Rotor` section for a
         single internal rotor of a species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -263,10 +261,8 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
         :type hmin: int
         :param hmax: maximum value for quantum phase space dimension
         :type hmax: int
-        :param remdummy: list of idxs of dummy atoms for shifting values
-        :type remdummy: list(int)
-        :param geom: geometry of the species the rotor exists for
-        :type geom: list
+        :param geo: geometry of the species the rotor exists for
+        :type geo: list
         :param rotor_id: name associated with the rotor
         :type rotor_id: str
         :rtype: str
@@ -280,13 +276,13 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
     )
 
     # Format the sections
-    rotor_group = util.format_rotor_key_defs(group, remdummy)
-    rotor_axis = util.format_rotor_key_defs(axis, remdummy)
+    rotor_group = util.format_rotor_key_defs(group)
+    rotor_axis = util.format_rotor_key_defs(axis)
 
     # Format the geom
-    if geom is not None:
-        natom, geom = util.geom_format(geom)
-        geom = indent(geom, 4)
+    if geo is not None:
+        natom, geo = util.geometry_format(geo)
+        geo = indent(geo, 4)
     else:
         natom = None
 
@@ -301,7 +297,7 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
         'hmax': hmax,
         'grid_size': grid_size,
         'natom': natom,
-        'geom': geom,
+        'geom': geo,
         'rotor_id': rotor_id
     }
 
@@ -424,7 +420,7 @@ def mdhr_data(potentials, freqs=None, nrot=0):
 
 
 def umbrella_mode(group, plane, ref_atom, potential,
-                  remdummy=None, geom=None):
+                  geo=None):
     """ Writes the string that defines the `Umbrella` section for a
         single umbrella mode of a species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -433,22 +429,20 @@ def umbrella_mode(group, plane, ref_atom, potential,
         :type group: list(int)
         :param axis: idxs for the atoms that ?
         :type axis: list(int)
-        :param remdummy: list of idxs of dummy atoms for shifting values
-        :type remdummy: list(int)
-        :param geom: geometry of the species the umbrella mode exists for
-        :type geom: list
+        :param geo: geometry of the species the umbrella mode exists for
+        :type geo: list
         :rtype: str
     """
 
     # Format the sections
-    umbr_group = util.format_rotor_key_defs(group, remdummy)
-    umbr_plane = util.format_rotor_key_defs(plane, remdummy)
+    umbr_group = util.format_rotor_key_defs(group)
+    umbr_plane = util.format_rotor_key_defs(plane)
     umbr_npotential, umbr_potential = util.format_rotor_potential(potential)
 
     # Format the geom
-    if geom is not None:
-        natom, geom = util.geom_format(geom)
-        geom = indent(geom, 4)
+    if geo is not None:
+        natom, geo = util.geometry_format(geo)
+        geo = indent(geo, 4)
     else:
         natom = None
 
@@ -460,7 +454,7 @@ def umbrella_mode(group, plane, ref_atom, potential,
         'npotential': umbr_npotential,
         'potential': umbr_potential,
         'natom': natom,
-        'geom': geom,
+        'geom': geo,
     }
 
     return build_mako_str(

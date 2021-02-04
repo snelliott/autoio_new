@@ -1,5 +1,5 @@
 Geometry[angstrom]                        ${natom}
-${geom}
+${geo}
 Core MultiRotor
   SymmetryFactor                          ${sym_factor}
   PotentialEnergySurface[kcal/mol]        ${pot_surf_file}

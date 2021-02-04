@@ -1,7 +1,7 @@
 Umbrella
-% if geom:
+% if geo:
   Geometry[angstrom]   ${natom}
-${geom}
+${geo}
 % endif
   Group                ${group}
   Axis                 ${axis}

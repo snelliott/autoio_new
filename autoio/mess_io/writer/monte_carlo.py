@@ -18,14 +18,14 @@ SECTION_PATH = os.path.join(TEMPLATE_PATH, 'sections')
 MONTE_CARLO_PATH = os.path.join(SECTION_PATH, 'monte_carlo')
 
 
-def mc_species(geom, sym_factor, elec_levels,
+def mc_species(geo, sym_factor, elec_levels,
                flux_mode_str, data_file_name, ref_config_file_name='',
                ground_ene=None, reference_ene=None,
                freqs=(), use_cm_shift=False):
     """ Writes a monte carlo species section
 
-        :param core: `MonteCarlo` section string in MESS format
-        :type core: str
+        :param geo: geometry of species
+        :type geo: list
         :param sym_factor: symmetry factor of species
         :type sym_factor: float
         :param elec_levels: energy and degeneracy of atom's electronic states
@@ -46,7 +46,7 @@ def mc_species(geom, sym_factor, elec_levels,
     """
 
     # Format the molecule specification section
-    atom_list = util.molec_spec_format(geom)
+    atom_list = util.molec_spec_format(geo)
 
     # Build a formatted frequencies and elec levels string
     nlevels, levels = util.elec_levels_format(elec_levels)
@@ -90,7 +90,7 @@ def mc_species(geom, sym_factor, elec_levels,
 def mc_data(geos, enes, grads=(), hessians=()):
     """ Writes the string for an auxliary data file required for
         Monte Carlo calculations in MESS that contains the
-        geometries, energies, gradients, and Hessians obtained
+        geoetries, energies, gradients, and Hessians obtained
         from Monte Carlo sampling of the fluxional modes.
 
         :param geos: geometries from sampling
@@ -123,11 +123,13 @@ def mc_data(geos, enes, grads=(), hessians=()):
         geo_str = remove_trail_whitespace(geo_str)
         dat_str += geo_str
         if grads:
-            grad_str = automol.util.mat.string(grads[idx], precision=12)
+            grad_str = automol.util.mat.string(
+                grads[idx], val_format='{0:>16.12f}')
             dat_str += 'Gradient'+'\n'
             dat_str += grad_str
         if hessians:
-            hess_str = automol.util.mat.string(hessians[idx], precision=12)
+            hess_str = automol.util.mat.string(
+                hessians[idx], val_format='{0:>16.12f}')
             dat_str += 'Hessian'+'\n'
             dat_str += hess_str+'\n'
 

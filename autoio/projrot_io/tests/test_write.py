@@ -2,8 +2,8 @@
  tests writing of projrot inumpyut
 """
 
-import projrot_io
 from _util import read_text_file
+import projrot_io
 
 
 GEO = (('C', (-4.0048955763, -0.3439866053, -0.0021431734)),
@@ -83,9 +83,9 @@ def test_rt_hr_projections():
     """
 
     rotors_str = (
-        projrot_io.writer.rotors(AXIS1, GROUP1, remdummy=None) +
+        projrot_io.writer.rotors(AXIS1, GROUP1) +
         '\n' +
-        projrot_io.writer.rotors(AXIS2, GROUP2, remdummy=None)
+        projrot_io.writer.rotors(AXIS2, GROUP2)
     )
 
     inp_str = projrot_io.writer.rpht_input(

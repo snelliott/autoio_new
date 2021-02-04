@@ -1,8 +1,8 @@
 """ Tests the writing of the energy transfer section
 """
 
-import mess_io.writer
 from _util import read_text_file
+import mess_io.writer
 
 
 # Core Data
@@ -47,7 +47,6 @@ UMBR_REF = 4
 ONEDPOT = {(0,): 0.00, (1,): 2.91, (2,): 9.06, (3,): 12.63,
            (4,): 9.97, (5,): 3.51, (6,): 0.03, (7,): 3.49,
            (8,): 9.96, (9,): 12.63, (10,): 9.08, (11,): 2.93}
-REMDUMMY = (0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
 
 # MDHR Data
 FLST = (10., 50., 100., 200., 300., 400., 500., 600., 700., 800., 900.)
@@ -180,8 +179,7 @@ def test__core_multirotor_writer():
         pot_exp_size=POT_EXP_SIZE,
         hmin=HMIN,
         hmax=HMAX,
-        remdummy=REMDUMMY,
-        geom=GEO1,
+        geo=GEO1,
         rotor_id=HR_ID)
 
     assert rotor_int1_str == read_text_file(['data', 'inp'], 'rotor_int1.inp')
@@ -260,8 +258,7 @@ def test__rotor_hindered_writer():
         hmax=HMAX,
         lvl_ene_max=LVL_ENE_MAX,
         therm_pow_max=THERM_POW_MAX,
-        remdummy=REMDUMMY,
-        geom=GEO1,
+        geo=GEO1,
         rotor_id=HR_ID)
 
     assert rotor_hind1_str == read_text_file(
@@ -278,8 +275,7 @@ def test__umbrella_writer():
         UMBR_GROUP, UMBR_PLANE, UMBR_REF, ONEDPOT)
     umbrella2_str = mess_io.writer.mol_data.umbrella_mode(
         UMBR_GROUP, UMBR_PLANE, UMBR_REF, ONEDPOT,
-        remdummy=REMDUMMY,
-        geom=GEO1)
+        geo=GEO1)
 
     assert umbrella1_str == read_text_file(['data', 'inp'], 'umbrella1.inp')
     assert umbrella2_str == read_text_file(['data', 'inp'], 'umbrella2.inp')
