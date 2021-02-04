@@ -3,12 +3,8 @@
 """
 
 import numpy
-from qcelemental import constants as qcc
-from qcelemental import periodictable as ptab
+from phydat import phycon, ptab
 from ioformat import remove_trail_whitespace
-
-
-BOHR2ANG = qcc.conversion_factor('bohr', 'angstrom')
 
 
 def write_data_str(geos, grads, hessians):
@@ -53,8 +49,8 @@ def _format_geo_str(geo):
     # Format the strings for the xyz coordinates
     geo_str = ''
     for i, (sym, coords) in enumerate(geo):
-        anum = int(ptab.to_Z(sym))
-        coords = [coord * BOHR2ANG for coord in coords]
+        anum = int(ptab.to_number(sym))
+        coords = [coord * phycon.BOHR2ANG for coord in coords]
         coords_str = '{0:>14.8f}{1:>14.8f}{2:>14.8f}'.format(
             coords[0], coords[1], coords[2])
         geo_str += '{0:2d}{1:4d}{2:4d}{3}\n'.format(

@@ -3,14 +3,10 @@
 """
 
 import os
-from qcelemental import constants as qcc
 from ioformat import build_mako_str
 from ioformat import remove_trail_whitespace
 from projrot_io import util
 
-
-# Conversion factors
-BOHR2ANG = qcc.conversion_factor('bohr', 'angstrom')
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
 SRC_PATH = os.path.dirname(os.path.realpath(__file__))
