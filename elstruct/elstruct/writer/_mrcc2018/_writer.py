@@ -123,4 +123,6 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     return build_mako_str(
         template_file_name='all.mako',
         template_src_path=TEMPLATE_DIR,
-        template_keys=fill_dct)
+        template_keys=fill_dct,
+        remove_whitespace=False)
+

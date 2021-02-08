@@ -5,13 +5,10 @@
 import os
 import numpy
 import mess_io
+from _util import read_text_file
 
 
-PATH = os.path.dirname(os.path.realpath(__file__))
-DATA_PATH = os.path.join(PATH, 'data')
-DATA_NAME = 'rates.inp'
-with open(os.path.join(DATA_PATH, DATA_NAME), 'r') as datfile:
-    INP_STR = datfile.read()
+INP_STR = read_text_file(['data', 'inp'], 'full_rates.inp')
 
 
 def test__pes():

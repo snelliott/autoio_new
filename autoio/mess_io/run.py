@@ -1,9 +1,23 @@
 """
 """
 
-def direct():
+def direct(input_str, aux_dct, script_str, run_dir):
+    """
+        :param input_writer: elstruct writer module function for desired job
+        :type input_writer: elstruct function
+        :param aux_dct: auxiliary input strings dict[name: string]
+        :type aux_dct: dict[str: str]
+        :param script_str: string of bash script that contains
+            execution instructions electronic structure job
+        :type script_str: str
+        :param run_dir: name of directory to run electronic structure job
+        :type run_dir: str
+    """
+
+def old_fxn():
     """
     """
+    output_str = from_input_string(script_str, run_dir, input_str, aux_dct)
 
     # Write the MESS file
     if not os.path.exists(mess_path):

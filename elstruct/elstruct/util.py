@@ -70,7 +70,6 @@ def _frequency_analysis(geo, hess, project=True):
     """
 
     mw_hess = mass_weighted_hessian(geo, hess, project=project)
-    # print(mw_hess)
     fcs, mw_norm_coos = numpy.linalg.eigh(mw_hess)
 
     conv = qcc.conversion_factor("hartree", "wavenumber")

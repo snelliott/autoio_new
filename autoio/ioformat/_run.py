@@ -13,6 +13,7 @@ OUTPUT_NAME = 'run.out'
 
 
 def from_input_string(script_str, run_dir, input_str,
+                      aux_dct=None,
                       script_name=SCRIPT_NAME,
                       input_name=INPUT_NAME,
                       output_name=OUTPUT_NAME):
@@ -30,28 +31,39 @@ def from_input_string(script_str, run_dir, input_str,
     """
 
     with _EnterDirectory(run_dir):
-        # write the submit script to the run directory
+
+        # Write the submit script to the run directory
         with open(script_name, 'w') as script_obj:
             script_obj.write(script_str)
+        # print('\n\nWriting MESS input file...')
 
-        # make the script executable
+        # Make the script executable
         os.chmod(script_name, mode=os.stat(script_name).st_mode | stat.S_IEXEC)
 
-        # write the input string to the run directory
+        # Write the input string to the run directory
         with open(input_name, 'w') as input_obj:
             input_obj.write(input_str)
+        # print('\n\nWriting MESS input file...')
+        # print(' - Path: {}'.format(mess_path))
 
-        # call the electronic structure program
+        # Write all of the auxiliary input files
+        if aux_dct is not None:
+            for fname, fstring in aux_dct.items():
+                if fstring:
+                    with open(input_name, 'w') as aux_obj:
+                        aux_obj.write(fstring)
+
+        # Execute the program
         try:
             subprocess.check_call('./{:s}'.format(script_name))
         except subprocess.CalledProcessError as err:
-            # as long as the program wrote an output, continue with a warning
+            # As long as the program wrote an output, continue with a warning
             if os.path.isfile(output_name):
-                warnings.warn("elstruct run failed in {}".format(run_dir))
+                warnings.warn("Program run failed in {}".format(run_dir))
             else:
                 raise err
 
-        # read the output string from the run directory
+        # Read the output string from the run directory
         assert os.path.isfile(output_name), (
             '{} is should be a file, but it is not'.format(output_name)
         )
@@ -66,6 +78,7 @@ def run_script(script_str, run_dir, script_name=SCRIPT_NAME):
     """
 
     with _EnterDirectory(run_dir):
+
         # Write the submit script to the run directory
         print('trying to delete {}: {}', script_name, run_dir)
         try:
@@ -87,6 +100,9 @@ def run_script(script_str, run_dir, script_name=SCRIPT_NAME):
         except subprocess.CalledProcessError:
             # If the program failed, continue with a warning
             warnings.warn("run failed in {}".format(run_dir))
+            # if kill_job or script_str == MESSRATE or script_str == MESSPF:
+            #     print('killing AutoMech:')
+            #     sys.exit()
 
 
 class _EnterDirectory():

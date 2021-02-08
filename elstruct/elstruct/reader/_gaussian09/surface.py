@@ -41,46 +41,6 @@ def hessian(output_str):
         :rtype: tuple(tuple(float))
     """
 
-    comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
-    mat = ar.matrix.read(
-        output_str,
-        start_ptt=(app.escape('The second derivative matrix:') +
-                   app.lpadded(app.NEWLINE)),
-        block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
-                         app.padded(app.NEWLINE)),
-        line_start_ptt=comp_ptt,
-        tril=True)
-
-    if mat is None:
-        comp_ptt = app.UNSIGNED_INTEGER
-        mat = ar.matrix.read(
-            output_str,
-            val_ptt=app.EXPONENTIAL_FLOAT_D,
-            start_ptt=(
-                app.escape('Force constants in Cartesian coordinates:') +
-                app.lpadded(app.NEWLINE)),
-            block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
-                             app.padded(app.NEWLINE)),
-            line_start_ptt=comp_ptt,
-            tril=True)
-
-    if mat is not None:
-        mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
-               for row in mat]
-        mat = tuple(map(tuple, mat))
-
-    return mat
-
-
-def hessian2(output_str):
-    """ Reads the molecular Hessian (in Cartesian coordinates) from
-        the output file string. Returns the Hessian in atomic units.
-
-        :param output_str: string of the program's output file
-        :type output_str: str
-        :rtype: tuple(tuple(float))
-    """
-
     comp_ptt = app.UNSIGNED_INTEGER
     mat = ar.matrix.read(
         output_str,
@@ -96,6 +56,19 @@ def hessian2(output_str):
     if mat is not None:
         mat = [[_cast(apf.replace('d', 'e', dst, case=False)) for dst in row]
                for row in mat]
+
+    if mat is None:
+        comp_ptt = app.one_of_these(['X', 'Y', 'Z']) + app.UNSIGNED_INTEGER
+        mat = ar.matrix.read(
+            output_str,
+            start_ptt=(app.escape('The second derivative matrix:') +
+                       app.lpadded(app.NEWLINE)),
+            block_start_ptt=(app.series(comp_ptt, app.LINESPACES) +
+                             app.padded(app.NEWLINE)),
+            line_start_ptt=comp_ptt,
+            tril=True)
+
+    if mat is not None:
         mat = tuple(map(tuple, mat))
 
     return mat
@@ -175,7 +148,7 @@ def irc_points(output_str):
     sadpt_str = '\n'.join(output_lines[0:section_starts[0]])
     sadpt_geom = sadpt_geometry(sadpt_str)
     # sadpt_grad = gradient(sadpt_str)
-    # sadpt_hess = hessian2(sadpt_str)
+    # sadpt_hess = hessian(sadpt_str)
 
     # Now start getting other points by getting a list of each string with info
     pt_strs = []
@@ -191,7 +164,7 @@ def irc_points(output_str):
     for string in pt_strs:
         geoms.append(irc_geometry(string))
         # pt_grad = gradient(string)
-        # pt_hess = hessian2(string)
+        # pt_hess = hessian(string)
         # if pt_grad is not None:
         #     grads.append(pt_grad)
         # if pt_hess is not None:

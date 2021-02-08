@@ -1,8 +1,8 @@
 """ Tests the writing of the energy transfer section
 """
 
-import mess_io.writer
 from _util import read_text_file
+import mess_io.writer
 
 
 # Core Data
@@ -30,8 +30,8 @@ POT_EXP = 4.0
 TSTLVL = 'ej'
 
 # Rotor Data
-HR_GROUP = (6, 7, 8, 9, 10, 11)
-HR_AXIS = (2, 3)
+HR_GROUP = (5, 6, 7, 8, 9, 10)
+HR_AXIS = (1, 2)
 HR_SYMMETRY = 1.0
 HR_ID = 'D5'
 HR_GRID_SIZE = 100
@@ -41,13 +41,12 @@ LVL_ENE_MAX = 1000.0
 POT_EXP_SIZE = 7
 HMIN = 15
 HMAX = 110
-UMBR_GROUP = (4, 5, 6)
-UMBR_PLANE = (4, 5, 6)
-UMBR_REF = 4
+UMBR_GROUP = (3, 4, 5)
+UMBR_PLANE = (3, 4, 5)
+UMBR_REF = 3
 ONEDPOT = {(0,): 0.00, (1,): 2.91, (2,): 9.06, (3,): 12.63,
            (4,): 9.97, (5,): 3.51, (6,): 0.03, (7,): 3.49,
            (8,): 9.96, (9,): 12.63, (10,): 9.08, (11,): 2.93}
-REMDUMMY = (0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
 
 # MDHR Data
 FLST = (10., 50., 100., 200., 300., 400., 500., 600., 700., 800., 900.)
@@ -140,7 +139,6 @@ FOURDFREQ = {(0, 0, 0, 0): FLST, (0, 0, 0, 1): FLST,
              (0, 3, 3, 0): FLST, (0, 3, 3, 1): FLST,
              (0, 3, 3, 2): FLST, (0, 3, 3, 3): FLST}
 
-
 # Tunnel Data
 IMAG_FREQ = 2000.0
 WELL_DEPTH1 = 10.0
@@ -180,8 +178,7 @@ def test__core_multirotor_writer():
         pot_exp_size=POT_EXP_SIZE,
         hmin=HMIN,
         hmax=HMAX,
-        remdummy=REMDUMMY,
-        geom=GEO1,
+        geo=GEO1,
         rotor_id=HR_ID)
 
     assert rotor_int1_str == read_text_file(['data', 'inp'], 'rotor_int1.inp')
@@ -260,8 +257,7 @@ def test__rotor_hindered_writer():
         hmax=HMAX,
         lvl_ene_max=LVL_ENE_MAX,
         therm_pow_max=THERM_POW_MAX,
-        remdummy=REMDUMMY,
-        geom=GEO1,
+        geo=GEO1,
         rotor_id=HR_ID)
 
     assert rotor_hind1_str == read_text_file(
@@ -278,8 +274,7 @@ def test__umbrella_writer():
         UMBR_GROUP, UMBR_PLANE, UMBR_REF, ONEDPOT)
     umbrella2_str = mess_io.writer.mol_data.umbrella_mode(
         UMBR_GROUP, UMBR_PLANE, UMBR_REF, ONEDPOT,
-        remdummy=REMDUMMY,
-        geom=GEO1)
+        geo=GEO1)
 
     assert umbrella1_str == read_text_file(['data', 'inp'], 'umbrella1.inp')
     assert umbrella2_str == read_text_file(['data', 'inp'], 'umbrella2.inp')

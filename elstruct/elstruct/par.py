@@ -36,7 +36,6 @@ class Program():
 def programs():
     """ List all electronic structure backend programs that are supported.
     """
-    print(pclass.all_values(Program))
     return pclass.all_values(Program)
 
 

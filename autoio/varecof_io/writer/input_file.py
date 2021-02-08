@@ -241,7 +241,7 @@ def elec_struct(lib_path, base_name, npot,
     # Create dictionary to fill template
     els_keys = {
         'exe_path': exe_path,
-        'geom_ptt': geo_ptt,
+        'geo_ptt': geo_ptt,
         'ene_ptt': ene_ptt,
         'base_name': base_name,
         'pot_path': pot_path,

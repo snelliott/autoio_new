@@ -1,5 +1,5 @@
   Geometry[angstrom]        ${natom}
-${geom}
+${geo}
   Core RigidRotor
     SymmetryFactor          ${sym_factor}
 % if interp_emax is not None:     

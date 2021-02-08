@@ -3,9 +3,9 @@ Rotor  Hindered   # ${rotor_id}
 % else:
 Rotor  Hindered
 % endif
-% if geom:
+% if geo:
   Geometry[angstrom]   ${natom}
-${geom}
+${geo}
 % endif
   Group                ${group}
   Axis                 ${axis}

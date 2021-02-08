@@ -4,12 +4,8 @@
 
 import os
 import subprocess
-from qcelemental import constants as qcc
-from qcelemental import periodictable as ptab
 from automol import geom
-
-# Conversion factors
-BOHR2ANG = qcc.conversion_factor('bohr', 'angstrom')
+from phydat import phycon
 
 # Obtain the path to a convert struct executable
 SRC_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -45,8 +41,7 @@ def format_coords(geo):
     # Get the geometry information
     symbols = geom.symbols(geo)
     coordinates = geom.coordinates(geo)
-    masses = [int(ptab.to_mass(symbol)) if symbol != 'X' else 0
-              for symbol in symbols]
+    masses = geom.masses(geo)
 
     # Build a string with the formatted coordinates string
     if geom.is_atom(geo):
@@ -54,7 +49,7 @@ def format_coords(geo):
     else:
         geo_str = '{0} \n'.format(str(natoms))
         for symbol, mass, coords in zip(symbols, masses, coordinates):
-            coords = [coord * BOHR2ANG for coord in coords]
+            coords = [coord * phycon.BOHR2ANG for coord in coords]
             coords_str = '{0:>14.8f}{1:>14.8f}{2:>14.8f}'.format(
                 coords[0], coords[1], coords[2])
             geo_str += '{0:<4s}{1:<6d}{2}\n'.format(
