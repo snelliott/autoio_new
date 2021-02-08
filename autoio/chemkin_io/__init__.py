@@ -1,5 +1,5 @@
 """
-Modules to write, read, and analyze CHEMKIN mechanism files
+Modules for parsing and writing Chemkin files 
 """
 
 from chemkin_io import parser
