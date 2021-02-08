@@ -36,7 +36,7 @@ def core_rigidrotor(geo, sym_factor, interp_emax=None):
     core_keys = {
         'sym_factor': sym_factor,
         'natom': natom,
-        'geom': geo,
+        'geo': geo,
         'interp_emax': interp_emax
     }
 
@@ -438,6 +438,7 @@ def umbrella_mode(group, plane, ref_atom, potential,
     umbr_group = util.format_rotor_key_defs(group)
     umbr_plane = util.format_rotor_key_defs(plane)
     umbr_npotential, umbr_potential = util.format_rotor_potential(potential)
+    ref_atom += 1
 
     # Format the geom
     if geo is not None:

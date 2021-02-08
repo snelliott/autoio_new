@@ -30,8 +30,8 @@ POT_EXP = 4.0
 TSTLVL = 'ej'
 
 # Rotor Data
-HR_GROUP = (6, 7, 8, 9, 10, 11)
-HR_AXIS = (2, 3)
+HR_GROUP = (5, 6, 7, 8, 9, 10)
+HR_AXIS = (1, 2)
 HR_SYMMETRY = 1.0
 HR_ID = 'D5'
 HR_GRID_SIZE = 100
@@ -41,9 +41,9 @@ LVL_ENE_MAX = 1000.0
 POT_EXP_SIZE = 7
 HMIN = 15
 HMAX = 110
-UMBR_GROUP = (4, 5, 6)
-UMBR_PLANE = (4, 5, 6)
-UMBR_REF = 4
+UMBR_GROUP = (3, 4, 5)
+UMBR_PLANE = (3, 4, 5)
+UMBR_REF = 3
 ONEDPOT = {(0,): 0.00, (1,): 2.91, (2,): 9.06, (3,): 12.63,
            (4,): 9.97, (5,): 3.51, (6,): 0.03, (7,): 3.49,
            (8,): 9.96, (9,): 12.63, (10,): 9.08, (11,): 2.93}
@@ -138,7 +138,6 @@ FOURDFREQ = {(0, 0, 0, 0): FLST, (0, 0, 0, 1): FLST,
              (0, 3, 2, 2): FLST, (0, 3, 2, 3): FLST,
              (0, 3, 3, 0): FLST, (0, 3, 3, 1): FLST,
              (0, 3, 3, 2): FLST, (0, 3, 3, 3): FLST}
-
 
 # Tunnel Data
 IMAG_FREQ = 2000.0

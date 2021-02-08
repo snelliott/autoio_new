@@ -130,7 +130,7 @@ def rotors(axis, group):
     """
 
     # Set up the keywords
-    [pivota, pivotb] = axis
+    pivota, pivotb = axis
     atomsintopa = len(group)
 
     pivota += 1
