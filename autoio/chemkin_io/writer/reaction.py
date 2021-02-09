@@ -14,13 +14,13 @@ def troe(reaction, high_params, low_params, troe_params, colliders=None,
 
         :param reaction: Chemkin formatted string with chemical equation
         :type reaction: str
-        :param high_params: Arrhenius high-P parameters   
+        :param high_params: Arrhenius high-P parameters
         :type high_params: list of floats
-        :param low_params: Arrhenius low-P parameters   
+        :param low_params: Arrhenius low-P parameters
         :type low_params: list of floats
         :param troe_params: Troe parameters: alpha, T***, T*, and T** (T** is optional)
         :type troe_params: list of floats
-        :param colliders: names and collision enhancement factors for bath gases 
+        :param colliders: names and collision enhancement factors for bath gases
         :type colliders: list((str, float))
         :return troe_str: Chemkin reaction string with Troe parameters
         :rtype: str
@@ -53,11 +53,11 @@ def lindemann(reaction, high_params, low_params, colliders=None,
 
         :param reaction: Chemkin formatted string with chemical equation
         :type reaction: str
-        :param high_params: Arrhenius high-P parameters   
+        :param high_params: Arrhenius high-P parameters
         :type high_params: list of floats
-        :param low_params: Arrhenius low-P parameters   
+        :param low_params: Arrhenius low-P parameters
         :type low_params: list of floats
-        :param colliders: names and collision enhancement factors for bath gases 
+        :param colliders: names and collision enhancement factors for bath gases
         :type colliders: list((str, float))
         :return lind_str: Chemkin reaction string with Lindemann parameters
         :rtype: str
@@ -94,7 +94,7 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
             :param pressure: pressure at which to write the string
             :type pressure: float
             :param params: Arrhenius parameters at the specified pressure
-            :type params: list of floats 
+            :type params: list of floats
             :param max_length: length of the longest reaction name in the mechanism
             :type max_length: int
             :param name_buffer: buffer between the name and the Arrhenius params
@@ -102,7 +102,7 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
             :return single_plog_str: Chemkin reaction string with PLOG parameters at a single pressure
             :rtype: str
         """
-        plog_buffer = str(max_length+name_buffer-12) 
+        plog_buffer = str(max_length+name_buffer-12)
         [a_par, n_par, ea_par] = params
         single_plog_str = ('{0:<' + plog_buffer + 's}{1:<12.3E}{2:<10.3E}{3:>9.3f}{4:>9.0f} /\n').format(
             '    PLOG /', pressure, a_par, n_par, ea_par)
@@ -117,13 +117,13 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
     # Write the header for the reaction, which includes the 1-atm fit if available
     if 1 in pressures:
         if len(plog_param_dct[1]) > 3:
-            comment = 'Duplicates exist at 1 atm (see below); only a single 1-atm fit is written here' 
-            plog_str = _highp_str(reaction, plog_param_dct[1][:3], max_length=max_length, 
+            comment = 'Duplicates exist at 1 atm (see below); only a single 1-atm fit is written here'
+            plog_str = _highp_str(reaction, plog_param_dct[1][:3], max_length=max_length,
                 name_buffer=name_buffer, inline_comment=comment
             )
-        else: 
-            comment = 'Arrhenius parameters at 1 atm' 
-            plog_str = _highp_str(reaction, plog_param_dct[1], max_length=max_length, 
+        else:
+            comment = 'Arrhenius parameters at 1 atm'
+            plog_str = _highp_str(reaction, plog_param_dct[1], max_length=max_length,
                 name_buffer=name_buffer, inline_comment=comment
             )
     else:
@@ -132,14 +132,14 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
             name_buffer=name_buffer, inline_comment=comment
         )
 
-    # Loop over each pressure     
+    # Loop over each pressure
     for pressure in pressures:
         plog_params = plog_param_dct[pressure]
         assert len(plog_params) % 3 == 0, (
             f'The number of Arrhenius params should be a multiple of 3 but is rather {len(plog_params)} for {reaction}'
         )
 
-        # Loop over however many Arrhenius sets there are, writing a PLOG line for each 
+        # Loop over however many Arrhenius sets there are, writing a PLOG line for each
         num_arr_sets = int(len(plog_params)/3)
         for idx in range(num_arr_sets):
             current_plog_params = plog_params[3*idx:3*(idx+1)]
@@ -154,7 +154,7 @@ def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax, max_lengt
 
         :param reaction: Chemkin formatted string with chemical equation
         :type reaction: str
-        :param one_atm_params: Arrhenius parameters at 1 atm 
+        :param one_atm_params: Arrhenius parameters at 1 atm
         :type one_atm_params: list of floats
         :param alpha: Chebyshev coefficient matrix
         :type alpha: numpy.ndarray
@@ -179,14 +179,14 @@ def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax, max_lengt
 
     # Write reaction header (with third body added) and high-pressure params
     # reaction = _format_rxn_str_for_pdep(reaction, pressure='all') #LPM this adds unrequired (+M)
-    if one_atm_params != [1.0, 0.0, 0.0]:  # if the params look real 
+    if one_atm_params != [1.0, 0.0, 0.0]:  # if the params look real
         comment = 'Arrhenius parameters at 1 atm'
     else:  # if the params look fake
         comment = None
     cheb_str = _highp_str(reaction, one_atm_params, max_length=max_length,
             name_buffer=name_buffer, inline_comment=comment
     )
-        
+
     # Write the temperature and pressure ranges
     cheb_str += _troe_and_cheb_params('TCHEB', (tmin, tmax), newline=True, val='float')
     cheb_str += _troe_and_cheb_params('PCHEB', (pmin, pmax), newline=True, val='float')
@@ -211,7 +211,7 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
         :type reaction: str
         :param high_params: Arrhenius high-P (i.e., high-P) parameters
         :type high_params: list of floats
-        :param colliders: names and collision enhancement factors for bath gases 
+        :param colliders: names and collision enhancement factors for bath gases
         :type colliders: list((str, float))
         :param max_length: length of the longest reaction name in the mechanism
         :type max_length: int
@@ -230,8 +230,8 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
     for idx in range(num_arr_sets):
         current_high_params = high_params[3*idx:3*(idx+1)]
         arr_str += _highp_str(reaction, current_high_params, max_length=max_length, name_buffer=name_buffer)
-        if num_arr_sets > 1: 
-            arr_str += '    DUP \n' 
+        if num_arr_sets > 1:
+            arr_str += '    DUP \n'
 
     # Write the collider efficiencies string
     if colliders:
@@ -298,7 +298,7 @@ def fit_info(pressures, temp_dct, err_dct):
 
 def _highp_str(reaction, high_params, max_length=45, name_buffer=BUFFER, inline_comment=None):
     """ Write the high-pressure Arrhenius parameters as a string
-    
+
         :param reaction: Chemkin formatted string with chemical equation
         :type reaction: str
         :param high_params: Arrhenius high-P parameters
@@ -313,8 +313,8 @@ def _highp_str(reaction, high_params, max_length=45, name_buffer=BUFFER, inline_
         :rtype: str
 
     """
-    highp_buffer = str(max_length+name_buffer) 
-    [a_par, n_par, ea_par] = high_params 
+    highp_buffer = str(max_length+name_buffer)
+    [a_par, n_par, ea_par] = high_params
     highp_str = ('{0:<' + highp_buffer + 's}{1:<10.3E}{2:>9.3f}{3:>9.0f}').format(
         reaction, a_par, n_par, ea_par
         )
@@ -329,7 +329,7 @@ def _highp_str(reaction, high_params, max_length=45, name_buffer=BUFFER, inline_
 
 def _lowp_str(reaction, low_params, max_length=45, name_buffer=BUFFER, inline_comment=None):
     """ Write the low-pressure Arrhenius parameters as a string
-    
+
         :param reaction: Chemkin formatted string with chemical equation
         :type reaction: str
         :param low_params: Arrhenius low-P parameters
@@ -344,8 +344,8 @@ def _lowp_str(reaction, low_params, max_length=45, name_buffer=BUFFER, inline_co
         :rtype: str
 
     """
-    lowp_buffer = str(max_length+name_buffer) 
-    [a_par, n_par, ea_par] = low_params 
+    lowp_buffer = str(max_length+name_buffer)
+    [a_par, n_par, ea_par] = low_params
     lowp_str = ('{0:<' + lowp_buffer + 's}{1:<10.3E}{2:>9.3f}{3:>9.0f}  /').format(
         '    LOW  /', a_par, n_par, ea_par
         )
@@ -364,7 +364,7 @@ def _troe_and_cheb_params(header, params, newline=False, val='exp'):
 
         :param header: the header str to be written before the slashes
         :type header: str
-        :param params: params to be written  
+        :param params: params to be written
         :type params: list or numpy array or tuple of floats
         :param newline: whether or not to add a new line after the params
         :type newline: Bool
@@ -379,7 +379,7 @@ def _troe_and_cheb_params(header, params, newline=False, val='exp'):
         val_str = '{0:12.2f}'
     elif val == 'int':
         val_str = '{0:12.0f}'
-   
+
     params_str = '    {0:5s}/'.format(header.upper())
     for param in params:
         if param:  # skip any None entries
@@ -436,8 +436,8 @@ def _format_collider_string(colliders):
 
 
 def _format_rxn_name(rxn_key, param_vals):
-    """ Receives a rxn_key and the corresponding param_vals 
-        from a rxn_param_dct and writes it to a string that 
+    """ Receives a rxn_key and the corresponding param_vals
+        from a rxn_param_dct and writes it to a string that
         the above functions can handle. Adds +M or (+M) if
         applicable.
     """
@@ -461,13 +461,13 @@ def _format_rxn_name(rxn_key, param_vals):
             prd_str = prd
         else:
             prd_str += ' + ' + prd
-    
+
     # Add the +M or (+M) text if it is applicable
     if param_vals[6] is not None:
         rct_str += param_vals[6]
         prd_str += param_vals[6]
-    
+
     rxn_name = rct_str + ' = ' + prd_str
-    
+
     return rxn_name
 

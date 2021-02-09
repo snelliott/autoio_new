@@ -3,12 +3,12 @@ Write various parts of a Chemkin mechanism file
 """
 
 from chemkin_io.writer import reaction as writer_reac
-from chemkin_io.writer import thermo2 as writer_therm
+from chemkin_io.writer import thermo as writer_therm
 from chemkin_io.writer import _util as util
 import numpy as np
 
 
-def write_chemkin_file(elem_tuple=None, spc_dct=None, spc_nasa7_dct=None, rxn_param_dct=None, 
+def write_chemkin_file(elem_tuple=None, spc_dct=None, spc_nasa7_dct=None, rxn_param_dct=None,
                     filename='written_mech.txt', comments=None):
     """ Writes a Chemkin-formatted mechanism and/or thermo file. Writes
         the output to a text file.
@@ -58,7 +58,7 @@ def elements_block(elem_tuple):
     return elem_str
 
 
-def species_block(spc_dct):
+def species_block(spc_ident_dct):
     """ Writes the species block of the mechanism file
 
         :param spc_dct: dct containing the species data
@@ -67,19 +67,25 @@ def species_block(spc_dct):
         :rtype: str
     """
     # Get the max species name length
-    max_len = 0
-    for spc_name in spc_dct.keys():
-        if len(spc_name) > max_len:
-            max_len = len(spc_name)
+    max_spc_len = 0
+    for spc in spc_ident_dct.keys():
+        if len(spc) > max_spc_len:
+            max_spc_len = len(spc)
+
+    # Get the max SMILES name length
+    max_smiles_len = 0
+    for spc, ident_dct in spc_ident_dct.items():
+        if len(ident_dct['smiles']) > max_smiles_len:
+            max_smiles_len = len(ident_dct['smiles'])
 
     buffer = 5
 
     # Write the spc_str
     spc_str = 'SPECIES \n\n'
-    for spc_name, spc_data in spc_dct.items():
-        spc_str += (
-            '{0:<' + str(max_len+buffer) + 's}{1:>9s}{2:>9s}\n').format(
-                spc_name, '! InChi: ', spc_data['inchi'])
+    for spc, ident_dct in spc_ident_dct.items():
+        spc_str += ('{0:<'+str(max_spc_len+buffer)+'s}{1:>9s}{2:<'+
+                    str(max_smiles_len+buffer)+'s}{3:>9s}{4:<9s}\n').format(
+                    spc, '! SMILES: ', ident_dct['smiles'], 'InChi: ', ident_dct['inchi'])
 
     spc_str += '\nEND \n\n\n'
 
@@ -90,16 +96,13 @@ def thermo_block(spc_nasa7_dct):
     """ Writes the thermo block of the mechanism file
 
     """
-    if spc_nasa7_dct!='':
-        thermo_str = 'THERMO \n'
-        thermo_str += '200.00    1000.00   5000.000  \n\n'
-        for spc_name, params in spc_nasa7_dct.items():
-            thermo_str += writer_therm.thermo_entry(spc_name, params) 
+    thermo_str = 'THERMO \n'
+    thermo_str += '200.00    1000.00   5000.000  \n\n'
+    for spc_name, params in spc_nasa7_dct.items():
+        thermo_str += writer_therm.thermo_entry(spc_name, params)
 
-        thermo_str += '\nEND\n\n\n'
-    else:
-        thermo_str = '!THERMO NOT DEFINED \n'
-    
+    thermo_str += '\nEND\n\n\n'
+
     return thermo_str
 
 
@@ -137,7 +140,7 @@ def reactions_block(rxn_param_dct, comments=None):
             tmax = param_dct[3]['t_limits'][1]
             pmin = param_dct[3]['p_limits'][0]
             pmax = param_dct[3]['p_limits'][1]
-            rxn_str = writer_reac.chebyshev(rxn_name, one_atm_params, alpha, 
+            rxn_str = writer_reac.chebyshev(rxn_name, one_atm_params, alpha,
                 tmin, tmax, pmin, pmax, max_length=max_len)
 
         elif param_dct[4] is not None:  # PLOG
@@ -190,10 +193,10 @@ def reactions_block(rxn_param_dct, comments=None):
             if isinstance(comments[rxn],dict):
                 if comments[rxn]['cmts_inline'] != '':
                     rxn_str_split = rxn_str.split('\n')
-                    rxn_str_split[0] = rxn_str_split[0] + ' ' + comments[rxn]['cmts_inline'] 
+                    rxn_str_split[0] = rxn_str_split[0] + ' ' + comments[rxn]['cmts_inline']
                     # rewrite rxn_str
-                    rxn_str = '\n'.join(rxn_str_split) 
-        
+                    rxn_str = '\n'.join(rxn_str_split)
+
             # check for comments: header
             if isinstance(comments[rxn],dict):
                 total_rxn_str += comments[rxn]['cmts_top']

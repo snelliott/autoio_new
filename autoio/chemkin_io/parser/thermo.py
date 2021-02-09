@@ -52,10 +52,7 @@ def create_entry_list(block_str, add_spaces=True):
 
     """
     block_str = apf.remove(COMMENTS_PATTERN, block_str)
-#    print('type of block_str\n', type(block_str))
     line_lst = list(apf.split_lines(block_str))
-    #line_lst = list(block_str.splitlines)
-#    print(type(line_lst))
     
     # Get the indices of the entry header lines
     header_idxs = []

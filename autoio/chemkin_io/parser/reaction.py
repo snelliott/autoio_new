@@ -3,8 +3,8 @@
 
 import collections
 import itertools
-import numpy
 import math
+import numpy
 import autoparse.pattern as app
 import autoparse.find as apf
 from autoparse import cast as ap_cast
@@ -32,7 +32,7 @@ REACTION_PATTERN = (SPECIES_NAMES_PATTERN + app.padded(CHEMKIN_ARROW) +
                     SPECIES_NAMES_PATTERN)
 COEFF_PATTERN = (app.NUMBER + app.LINESPACES + app.NUMBER +
                  app.LINESPACES + app.NUMBER)
-COMMENTS_PATTERN = app.escape('!') + app.capturing(app.one_or_more(app.WILDCARD2))  
+COMMENTS_PATTERN = app.escape('!') + app.capturing(app.one_or_more(app.WILDCARD2))
 
 BAD_STRS = ['inf', 'INF', 'nan']
 
@@ -42,7 +42,7 @@ BAD_STRS = ['inf', 'INF', 'nan']
 # These functions are used to create param_dcts
 
 
-def param_dct(block_str, ea_units, a_units): 
+def param_dct(block_str, ea_units, a_units):
     """ Parses all of the chemical equations and corresponding fitting
         parameters in the reactions block of the mechanism input file
         and subsequently pulls all of the species names and fitting
@@ -128,11 +128,10 @@ def reactant_names(rxn_dstr):
         param_ptt=app.maybe(COEFF_PATTERN)
     )
     string = apf.first_capture(pattern, rxn_dstr)
-    try: 
+    try:
         names = _split_reagent_string(string)
     except TypeError:
         print('Error with this reaction\n', rxn_dstr)
-        quit()
 
     return names
 
@@ -154,11 +153,10 @@ def product_names(rxn_dstr):
         param_ptt=COEFF_PATTERN
     )
     string = apf.first_capture(pattern, rxn_dstr)
-    try: 
+    try:
         names = _split_reagent_string(string)
     except TypeError:
         print('Error with this reaction\n', rxn_dstr)
-        quit()
 
     return names
 
@@ -228,7 +226,7 @@ def high_p_parameters(rxn_dstr, ea_units, a_units):
             params = fake_params[0]
 
         # Convert the units of Ea and A
-        ea_conv_factor = get_ea_conv_factor(rxn_dstr, ea_units)
+        ea_conv_factor = get_ea_conv_factor(ea_units)
         a_conv_factor = get_a_conv_factor(rxn_dstr, a_units)
         params[2] = params[2] * ea_conv_factor
         params[0] = params[0] * a_conv_factor
@@ -263,7 +261,7 @@ def low_p_parameters(rxn_dstr, ea_units, a_units):
         params = [float(val) for val in cap1]
 
         # Convert the units of Ea and A
-        ea_conv_factor = get_ea_conv_factor(rxn_dstr, ea_units)
+        ea_conv_factor = get_ea_conv_factor(ea_units)
         a_conv_factor = get_a_conv_factor(rxn_dstr, a_units)
         params[2] = params[2] * ea_conv_factor
         params[0] = params[0] * a_conv_factor
@@ -333,10 +331,10 @@ def chebyshev_parameters(rxn_dstr, a_units='moles'):
         app.one_or_more(app.SPACE) + app.capturing(app.NUMBER) +
         app.zero_or_more(app.SPACE) + app.escape('/')
     )
-    cheb_pattern = ( 
-        app.not_preceded_by(app.one_of_these(['T','P'])) + 'CHEB' + app.zero_or_more(app.SPACE) + app.escape('/') +
-        app.capturing(app.one_or_more(app.WILDCARD2)) + app.escape('/')
-    )  
+    cheb_pattern = (
+        app.not_preceded_by(app.one_of_these(['T','P'])) + 'CHEB' + app.zero_or_more(app.SPACE) +
+        app.escape('/') + app.capturing(app.one_or_more(app.WILDCARD2)) + app.escape('/')
+    )
 
     cheb_params_raw = apf.all_captures(cheb_pattern, rxn_dstr)
 
@@ -345,31 +343,34 @@ def chebyshev_parameters(rxn_dstr, a_units='moles'):
         # Get the temp and pressure limits; add the Chemkin default values if they don't exist
         cheb_temps = apf.first_capture(tcheb_pattern, rxn_dstr)
         cheb_pressures = apf.first_capture(pcheb_pattern, rxn_dstr)
-        if cheb_temps is None: 
+        if cheb_temps is None:
             cheb_temps = ('300.00', '2500.00')
-            print(f'No Chebyshev temperature limits specified for the below reaction. Assuming 300 and 2500 K. \n \n {original_rxn_dstr}\n')
-        if cheb_pressures is None: 
+            print('No Chebyshev temperature limits specified for the below reaction.' +
+                  f' Assuming 300 and 2500 K. \n \n {original_rxn_dstr}\n')
+        if cheb_pressures is None:
             cheb_pressures = ('0.001', '100.00')
-            print(f'No Chebyshev pressure limits specified for the below reaction. Assuming 0.001 and 100 atm. \n \n {original_rxn_dstr}\n')
-    
-        # Get all the numbers from the CHEB parameters 
+            print('No Chebyshev pressure limits specified for the below reaction.' +
+                  f' Assuming 0.001 and 100 atm. \n \n {original_rxn_dstr}\n')
+
+        # Get all the numbers from the CHEB parameters
         cheb_params = []
         for cheb_line in cheb_params_raw:
             cheb_params.extend(cheb_line.split())
-    
+
         # Get the cheb array dimensions N and M, which are the first two entries of the CHEB params
-        cheb_n = int(math.floor(float(cheb_params[0])))  # rounds down to match the Chemkin parser, although it should be an integer already
-        cheb_m = int(math.floor(float(cheb_params[1]))) 
-    
+        cheb_n = int(math.floor(float(cheb_params[0])))
+        cheb_m = int(math.floor(float(cheb_params[1])))
+
         # Start on the third value (after N and M) and get all the polynomial coefficients
-        coeffs = [] 
+        coeffs = []
         for idx, coeff in enumerate(cheb_params[2:]):
-            if idx+1 > (cheb_n*cheb_m):  # there are allowed to be extra coefficients, but just ignore them
+            if idx+1 > (cheb_n*cheb_m):  # extra coefficients are allowed but ignored
                 break
             coeffs.append(coeff)
         assert len(coeffs) == (cheb_n*cheb_m), (
-            f'For the below reaction, there should be {cheb_n*cheb_m} Chebyshev polynomial coefficients, but there are only {len(coeffs)}. \n \n {original_rxn_dstr}\n'
-        ) 
+            f'For the below reaction, there should be {cheb_n*cheb_m} Chebyshev polynomial' +
+            f' coefficients, but there are only {len(coeffs)}. \n \n {original_rxn_dstr}\n'
+        )
         alpha = numpy.array(list(map(float,coeffs)))
 
         params['t_limits'] = [float(val) for val in cheb_temps]
@@ -408,8 +409,8 @@ def plog_parameters(rxn_dstr, ea_units, a_units):
     # Build dictionary of parameters, indexed by parameter
     if params_lst:
 
-        # Get the Ea and A conversion factors 
-        ea_conv_factor = get_ea_conv_factor(rxn_dstr, ea_units)
+        # Get the Ea and A conversion factors
+        ea_conv_factor = get_ea_conv_factor(ea_units)
         a_conv_factor = get_a_conv_factor(rxn_dstr, a_units)
         params = {}
         for param in params_lst:
@@ -448,7 +449,7 @@ def collider_enhance_factors(rxn_dstr):
     species_name = app.one_or_more(species_char)
 
     # Loop over the lines and search for string with collider facts
-    if apf.has_match('LOW', rxn_dstr) or apf.has_match('TROE', rxn_dstr) or apf.has_match('M=', rxn_dstr) or apf.has_match('M =', rxn_dstr):
+    if 'LOW' in rxn_dstr or 'TROE' in rxn_dstr or 'M=' in rxn_dstr or 'M =' in rxn_dstr:
         params = {}
         for line in rxn_dstr.splitlines():
             if not any(apf.has_match(string, line) for string in bad_strings):
@@ -566,7 +567,7 @@ def fix_duplicates(rcts_prds, params):
         reactants and products.
 
         :param rcts_prds: reaction keys (i.e., reactant/product sets)
-        :type rcts_prds: list of tuples [((rct1, rct2,...),(prd1, prd2,...)), ...] 
+        :type rcts_prds: list of tuples [((rct1, rct2,...),(prd1, prd2,...)), ...]
         :param params: reaction parameters
         :type params: list
         :return params: updated reaction parameters with duplicates included
@@ -603,9 +604,9 @@ def fix_duplicates(rcts_prds, params):
             # PLOG
             if params1[4]:
                 # Only do this if the PLOG params exist in the second case
-                if params2[4]:  
-                
-                    # Deal with the high-P params                               
+                if params2[4]:
+
+                    # Deal with the high-P params
                     for value in params2[0]:
                         params1[0].append(value)
 
@@ -618,7 +619,7 @@ def fix_duplicates(rcts_prds, params):
                             params1[4][key2] = values2
 
                 else:
-                    print(f'For rxn {rxn}, the format of the first duplicate is PLOG, but the second is not PLOG')
+                    print(f'For rxn {rxn}, the first duplicate is PLOG, but the second is not')
 
             # Arrhenius
             else:
@@ -630,46 +631,46 @@ def fix_duplicates(rcts_prds, params):
             params[second] = params1
 
     if three_or_more_dups > 0:
-        print(f'From chemkin_io.parser.reaction.fix_duplicates, there are {three_or_more_dups} reactions with 3 or more rate expressions.')
+        print(f'There are {three_or_more_dups} reactions with 3 or more rate expressions.')
 
     return params
 
-
-def get_ea_conv_factor(rxn_dstr, ea_units):
+def get_ea_conv_factor(ea_units):
     """ Get the factor for converting Ea to the desired units of kcal/mole
 
     """
     if ea_units == 'cal/mole':
         ea_conv_factor = 1
     elif ea_units == 'kcal/mole':
-        ea_conv_factor = phycon.KCAL2CAL  
+        ea_conv_factor = phycon.KCAL2CAL
     elif ea_units == 'joules/mole':
-        ea_conv_factor = phycon.J2CAL  
+        ea_conv_factor = phycon.J2CAL
     elif ea_units == 'kjoules/mole':
-        ea_conv_factor = phycon.KJ2CAL  
+        ea_conv_factor = phycon.KJ2CAL
     elif ea_units == 'kelvins':
-        ea_conv_factor = phycon.KEL2CAL  
+        ea_conv_factor = phycon.KEL2CAL
     else:
         raise NotImplementedError(
-            f"Invalid ea_units: {ea_units}. Options: 'kcal/mole', 'cal/mole', 'joules/mole', 'kjoules/mole', 'kelvins'"
+            f"Invalid ea_units: {ea_units}." +
+            " Options: 'kcal/mole', 'cal/mole', 'joules/mole', 'kjoules/mole', 'kelvins'"
         )
 
     return ea_conv_factor
 
 
 def get_a_conv_factor(rxn_dstr, a_units):
-    """ Get the factor for converting A to the desired basis of moles 
+    """ Get the factor for converting A to the desired basis of moles
 
     """
     # Get the molecularity
     rcts = reactant_names(rxn_dstr)
-    if not isinstance(rcts, tuple):  # convert to list to avoid mistake 
+    if not isinstance(rcts, tuple):  # convert to list to avoid mistake
         rcts = [rcts]
     molecularity = len(rcts)
 
     # Find out whether there is a third body
     em_param = em_parameters(rxn_dstr)
-    if em_param is not None and '(' not in em_param:  # if the 3rd body has parentheses, no contribution to the units
+    if em_param is not None and '(' not in em_param:  # if 3rd body has '(', no effect on units
         molecularity += 1
 
     if a_units == 'moles':
@@ -678,10 +679,10 @@ def get_a_conv_factor(rxn_dstr, a_units):
         a_conv_factor = phycon.NAVO**(molecularity-1)
     else:
         raise NotImplementedError(
-            f"Invalid a_units: {a_units}. Options: 'moles' or 'molecules'" 
+            f"Invalid a_units: {a_units}. Options: 'moles' or 'molecules'"
         )
 
-    return a_conv_factor 
+    return a_conv_factor
 
 
 ############################## ARCHIVED FUNCTIONS ###############################
