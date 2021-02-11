@@ -216,6 +216,8 @@ def rotor_hindered(group, axis, symmetry, potential,
         natom, geo = util.geometry_format(geo)
         geo = indent(geo, 4)
 
+    print('geo in mess write\n', geo)
+
     # Create dictionary to fill template
     rotor_keys = {
         'group': rotor_group,
@@ -228,7 +230,7 @@ def rotor_hindered(group, axis, symmetry, potential,
         'lvl_ene_max': lvl_ene_max,
         'therm_pow_max': therm_pow_max,
         'natom': natom,
-        'geom': geo,
+        'geo': geo,
         'rotor_id': rotor_id
     }
 
@@ -297,7 +299,7 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
         'hmax': hmax,
         'grid_size': grid_size,
         'natom': natom,
-        'geom': geo,
+        'geo': geo,
         'rotor_id': rotor_id
     }
 
