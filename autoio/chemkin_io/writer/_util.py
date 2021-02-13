@@ -56,9 +56,15 @@ def format_rxn_name(rxn_key, param_vals):
     if param_vals[6] is not None:
         rct_str += param_vals[6]
         prd_str += param_vals[6]
+    elif param_vals[3] is not None:
+        # cheb writer if cheb params is not there
+        rct_str += '(+M)'
+        prd_str += '(+M)'
+        
     rxn_name = rct_str + '=' + prd_str
 
     return rxn_name
+
 
 def format_rxn_name_luna(rxn_key, param_vals):
     """ Receives a rxn_key and the corresponding param_vals 
@@ -82,12 +88,11 @@ def format_rxn_name_luna(rxn_key, param_vals):
     elif len(prds) >= 2:
         prd_str = '+'.join(list(prds))
 
-    
     # Add the +M or (+M) text if it is applicable
     if param_vals[6] is not None:
         rct_str += ' ' + param_vals[6]
         prd_str += ' ' + param_vals[6]
 
     rxn_name = rct_str + ' = ' + prd_str
-    
+
     return rxn_name
