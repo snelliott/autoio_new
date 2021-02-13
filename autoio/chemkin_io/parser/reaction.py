@@ -12,10 +12,13 @@ from ioformat import headlined_sections
 from phydat import phycon
 
 # Various strings needed to parse the data sections of the Reaction block
+
 CHEMKIN_ARROW = (app.maybe(app.escape('<')) + app.escape('=') +
                  app.maybe(app.escape('>')))
 CHEMKIN_PLUS_EM = app.PLUS + 'M'
 CHEMKIN_PAREN_PLUS_EM = app.escape('(') + app.PLUS + 'M' + app.escape(')')
+CHEMKIN_PAREN_PLUS = app.escape('(') + app.PLUS
+CHEMKIN_PAREN_CLOSE = app.escape(')')
 
 SPECIES_NAME_PATTERN = (
     r'[^\s=+\-]' +
@@ -32,7 +35,8 @@ REACTION_PATTERN = (SPECIES_NAMES_PATTERN + app.padded(CHEMKIN_ARROW) +
                     SPECIES_NAMES_PATTERN)
 COEFF_PATTERN = (app.NUMBER + app.LINESPACES + app.NUMBER +
                  app.LINESPACES + app.NUMBER)
-COMMENTS_PATTERN = app.escape('!') + app.capturing(app.one_or_more(app.WILDCARD2))
+COMMENTS_PATTERN = app.escape(
+    '!') + app.capturing(app.one_or_more(app.WILDCARD2))
 
 BAD_STRS = ['inf', 'INF', 'nan']
 
@@ -332,8 +336,9 @@ def chebyshev_parameters(rxn_dstr, a_units='moles'):
         app.zero_or_more(app.SPACE) + app.escape('/')
     )
     cheb_pattern = (
-        app.not_preceded_by(app.one_of_these(['T','P'])) + 'CHEB' + app.zero_or_more(app.SPACE) +
-        app.escape('/') + app.capturing(app.one_or_more(app.WILDCARD2)) + app.escape('/')
+        app.not_preceded_by(app.one_of_these(['T', 'P'])) + 'CHEB' + app.zero_or_more(app.SPACE) +
+        app.escape('/') + app.capturing(app.one_or_more(app.WILDCARD2)
+                                        ) + app.escape('/')
     )
 
     cheb_params_raw = apf.all_captures(cheb_pattern, rxn_dstr)
@@ -371,7 +376,7 @@ def chebyshev_parameters(rxn_dstr, a_units='moles'):
             f'For the below reaction, there should be {cheb_n*cheb_m} Chebyshev polynomial' +
             f' coefficients, but there are only {len(coeffs)}. \n \n {original_rxn_dstr}\n'
         )
-        alpha = numpy.array(list(map(float,coeffs)))
+        alpha = numpy.array(list(map(float, coeffs)))
 
         params['t_limits'] = [float(val) for val in cheb_temps]
         params['p_limits'] = [float(val) for val in cheb_pressures]
@@ -483,23 +488,26 @@ def em_parameters(rxn_dstr):
         :rtype: str
     """
 
-    pattern = app.capturing(
-        _first_line_pattern(
-            rct_ptt=SPECIES_NAMES_PATTERN,
-            prd_ptt=SPECIES_NAMES_PATTERN,
-            param_ptt=COEFF_PATTERN
-        )
+    pattern = _first_line_pattern(
+        rct_ptt=app.capturing(SPECIES_NAMES_PATTERN),
+        prd_ptt=SPECIES_NAMES_PATTERN,
+        param_ptt=app.maybe(COEFF_PATTERN)
     )
-    string = apf.first_capture(pattern, rxn_dstr)
+    rgt_str = apf.first_capture(pattern, rxn_dstr)
 
-    if string is not None:
-        string = string.strip()
-        if '(+M)' in string:
-            params = '(+M)'
-        elif 'M' in string:
-            params = '+M'
-        else:
-            params = None
+    rgt_str = apf.remove(app.LINESPACES, rgt_str)
+    rgt_split_paren = apf.split(CHEMKIN_PAREN_PLUS, rgt_str)
+    rgt_split_plus = apf.split(app.PLUS, rgt_str)
+
+    if len(rgt_split_paren) > 1:
+        params = '(+' + apf.split(CHEMKIN_PAREN_CLOSE,
+                                  rgt_split_paren[1])[0] + ')'
+
+    elif 'M' in rgt_split_plus:
+        params = '+M'
+
+    else:
+        params = None
 
     return params
 
@@ -554,10 +562,20 @@ def _split_reagent_string(rgt_str):
 
     rgt_str = apf.remove(app.LINESPACES, rgt_str)
     rgt_str = apf.remove(CHEMKIN_PAREN_PLUS_EM, rgt_str)
-    rgt_str = apf.remove(CHEMKIN_PLUS_EM, rgt_str)
+    rgt_split = apf.split(CHEMKIN_PAREN_PLUS, rgt_str)
+
+    if len(rgt_split) > 1:
+        rgt_str = rgt_split[0]
+
     pattern = app.PLUS + app.not_followed_by(app.PLUS)
     rgt_cnt_strs = apf.split(pattern, rgt_str)
+
     rgts = tuple(itertools.chain(*map(_interpret_reagent_count, rgt_cnt_strs)))
+    # remove '+M':
+    if 'M' in rgts:
+        rgts_lst = list(rgts)
+        rgts_lst.remove('M')
+        rgts = tuple(rgts_lst)
 
     return rgts
 
@@ -585,7 +603,8 @@ def fix_duplicates(rcts_prds, params):
             # If more than two instances, print a warning
             if val[rxn] > 2:
                 three_or_more_dups += 1
-                print(f'Warning: {val[rxn]} instances of {rxn} detected. Params printed below.')
+                print(
+                    f'Warning: {val[rxn]} instances of {rxn} detected. Params printed below.')
                 for dup in range(val[rxn]):
                     if dup == 0:
                         idx2 = rcts_prds.index(unique_list[idx])
@@ -619,7 +638,8 @@ def fix_duplicates(rcts_prds, params):
                             params1[4][key2] = values2
 
                 else:
-                    print(f'For rxn {rxn}, the first duplicate is PLOG, but the second is not')
+                    print(
+                        f'For rxn {rxn}, the first duplicate is PLOG, but the second is not')
 
             # Arrhenius
             else:
@@ -631,9 +651,11 @@ def fix_duplicates(rcts_prds, params):
             params[second] = params1
 
     if three_or_more_dups > 0:
-        print(f'There are {three_or_more_dups} reactions with 3 or more rate expressions.')
+        print(
+            f'There are {three_or_more_dups} reactions with 3 or more rate expressions.')
 
     return params
+
 
 def get_ea_conv_factor(ea_units):
     """ Get the factor for converting Ea to the desired units of kcal/mole
@@ -670,7 +692,8 @@ def get_a_conv_factor(rxn_dstr, a_units):
 
     # Find out whether there is a third body
     em_param = em_parameters(rxn_dstr)
-    if em_param is not None and '(' not in em_param:  # if 3rd body has '(', no effect on units
+    # if 3rd body has '(', no effect on units
+    if em_param is not None and '(+' not in em_param:
         molecularity += 1
 
     if a_units == 'moles':
@@ -813,3 +836,35 @@ def are_highp_fake(highp_params):
             are_fake = True
 
     return are_fake
+
+
+def em_parameters_old(rxn_dstr):
+    """ Parses the data string for a reaction in the reactions block
+        for the line containing the chemical equation in order to
+        check if a body M is given, indicating pressure dependence.
+
+        :param rxn_dstr: data string for species in reaction block
+        :type rxn_dstr: str
+        :return pressure_region: type of pressure indicated
+        :rtype: str
+    """
+
+    pattern = app.capturing(
+        _first_line_pattern(
+            rct_ptt=SPECIES_NAMES_PATTERN,
+            prd_ptt=SPECIES_NAMES_PATTERN,
+            param_ptt=COEFF_PATTERN
+        )
+    )
+    string = apf.first_capture(pattern, rxn_dstr)
+
+    if string is not None:
+        string = string.strip()
+        if '(+M)' in string:
+            params = '(+M)'
+        elif 'M' in string:
+            params = '+M'
+        else:
+            params = None
+
+    return params
