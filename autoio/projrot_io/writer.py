@@ -144,3 +144,41 @@ def rotors(axis, group):
     rotors_str += '{0:<32s}{1}'.format('topAatoms', topaatoms)
 
     return util.remove_trail_whitespace(rotors_str)
+
+
+DIST_DCT = {
+    ('C', 'H'): 1.5,
+    ('H', 'C'): 1.2,
+    ('C', 'C'): 2.4,
+    ('C', 'N'): 1.8,
+    ('C', 'O'): 1.6,
+    ('O', 'H'): 1.6,
+    ('H', 'O'): 1.5,
+    ('O', 'O'): 1.6,
+    ('S', 'H'): 1.5,
+    ('N', 'H'): 1.3,
+    ('H', 'H'): 1.2
+}
+
+
+def projection_aux():
+    """ Projection Auxiliary
+    """
+
+    # Set the header
+    dist_str = (
+        'projection distances'
+        ''
+        'distances to be read as Atom1 Atom2 distance'
+        ''
+    )
+
+    # Modify the dictionary
+    dct = {}
+
+    # Write the distance strings
+    dist_str = ''
+    for (atm1, atm2), dist in dct.values():
+        dist_str += '{0:s} {1:s} {2:.3f}'.format(atm1, atm2, dist)
+
+    return dist_str

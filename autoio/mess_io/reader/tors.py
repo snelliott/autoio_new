@@ -73,7 +73,7 @@ def zero_point_vibrational_energies(output_str):
     """
 
     # Patterns for the ZPVE of a rotor
-    num_patterns = (app.EXPONENTIAL_FLOAT, app.FLOAT)
+    num_patterns = (app.EXPONENTIAL_FLOAT, app.FLOAT, app.INTEGER)
     pattern1 = (app.escape('minimum energy[kcal/mol]') +
                 app.one_or_more(app.SPACE) +
                 '=' +
