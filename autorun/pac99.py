@@ -1,40 +1,31 @@
 """ Runners for PAC99 program
 """
 
-import subprocess
+import os
+import automol
 import pac99_io.reader
-import thermp_io.reader
-from autorun.thermp import direct as thermp_direct
-from autorun._run import EnterDirectory
+from autorun._run import from_input_string
 
 
 # Read the new groups file stored with src
+def _new_groups_str():
+    """ Read the new groups string
+    """
+    src_path = os.path.dirname(os.path.realpath(__file__))
+    new_groups_path = os.path.join(src_path, 'aux', NEW_GROUPS_NAME)
+    with open(new_groups_path) as fobj:
+        new_groups_str = fobj.read()
+    return new_groups_str
+
+
 NEW_GROUPS_NAME = 'new.groups'
-NEW_GROUPS_STR = ''
+INPUT_NAME = '{}.i97'
+OUTPUT_NAMES = ('{}.o97', '{}.c97')
 
 
 # Specialized runner
-def thermo(script_str, run_dir,
-           pf_str, formula, hform0, temps,
-           enthalpyt=0.0, breakt=1000.0, convert=False):
-    """ calc thermo
-    """
-
-    # Run ThermP and read the Heat-of-Formation at 298K
-    _, thermp_out_str = thermp_direct(
-        script_str, run_dir,
-        pf_str, formula, hform0, temps,
-        enthalpyt=enthalpyt, breakt=breakt)
-    hform298 = thermp_io.reader.hf298k(thermp_out_str)
-
-    # Run PACC99 and obtain the polynomials
-    nasa_poly = nasa_polynomial(
-        run_dir, input_str, name, formula_dct, convert=convert)
-
-    return hform298, nasa_poly
-
-
-def nasa_polynomial(run_dir, input_str, name, formula_dct, convert=False):
+def nasa_polynomial(script_str, run_dir, input_str, name, formula,
+                    convert=False):
     """ Generates NASA polynomial from run
 
         :param convert: convert the polynomial to more standard CHEMKIN
@@ -42,13 +33,15 @@ def nasa_polynomial(run_dir, input_str, name, formula_dct, convert=False):
     """
 
     # Run PAC99 to get the output file
-    output_str = direct(run_dir, input_str, formula)
+    formula_str = automol.formula.string(formula)
+    output_strs = direct(script_str, run_dir, input_str, formula_str)
 
     # Obtain the NASA polynomial, convert if necessary
-    if output_str is not None:
-        poly_str = pac99_io.reader.nasa_polynomial(output_str)
+    if output_strs is not None:
+        c97_str = output_strs[1]
+        poly_str = pac99_io.reader.nasa_polynomial(c97_str)
         if convert:
-            poly_str = pac99_io.pac2ckin_poly(name, formula_dct, poly_str)
+            poly_str = pac99_io.pac2ckin_poly(name, formula, poly_str)
     else:
         poly_str = None
 
@@ -56,62 +49,34 @@ def nasa_polynomial(run_dir, input_str, name, formula_dct, convert=False):
 
 
 # Generalized runners
-def direct(run_dir, input_str, formula):
+def direct(script_str, run_dir, input_str, formula_str):
     """ Generates an input file for a ThermP job runs it directly.
 
         Need formula input to run the script
         :param input_str: string of input file with .i97 suffix
     """
 
-    output_str = _pac99_from_input_string(
-        run_dir, input_str, formula)
+    aux_dct = {NEW_GROUPS_NAME: _new_groups_str()}
 
-    return input_str, output_str
+    input_name = INPUT_NAME.format(formula_str)
+    output_names = tuple(name.format(formula_str) for name in OUTPUT_NAMES)
+    output_strs = from_input_string(
+        script_str, run_dir, input_str,
+        aux_dct=aux_dct,
+        input_name=input_name,
+        output_names=output_names)
 
+    if not _check(output_strs):
+        output_strs = None
 
-def _pac99_from_input_string(run_dir, input_str, formula):
-    """
-    Run pac99 for a given species name (formula)
-    https://www.grc.nasa.gov/WWW/CEAWeb/readme_pac99.htm
-    requires formula+'i97' and new.groups files
-    """
-
-    # Write the input string to the run directory
-    with EnterDirectory(run_dir):
-
-        # Write the input string to the run directory
-        input_name = formula+'.i97'
-        with open(input_name, 'w') as input_obj:
-            input_obj.write(input_str)
-
-        # Write the new groups file to
-        with open(NEW_GROUPS_NAME, 'w') as new_grps_obj:
-            new_grps_obj.write(NEW_GROUPS_STR)
-
-        # Run pac99
-        proc = subprocess.Popen('pac99', stdin=subprocess.PIPE)
-        proc.communicate(bytes(formula, 'utf-8'))
-
-        # Open output files and check them
-        o97_output_name = formula+'.o97'
-        with open(o97_output_name, 'r') as o97_output_obj:
-            o97_output_str = o97_output_obj.read()
-
-        c97_output_name = formula+'.c97'
-        with open(c97_output_name, 'r') as c97_output_obj:
-            c97_output_str = c97_output_obj.read()
-
-        if _check(o97_output_str, c97_output_str):
-            output_str = o97_output_str
-        else:
-            output_str = None
-
-    return output_str
+    return output_strs
 
 
-def _check(o97_output_str, c97_output_str):
+def _check(output_strs):
     """ assess the output (.o97, .c97 fileS)
     """
+
+    o97_output_str, c97_output_str = output_strs
 
     success = True
     if 'INSUFFICIENT DATA' in o97_output_str:

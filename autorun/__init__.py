@@ -9,6 +9,7 @@ from autorun import pac99
 from autorun import polyrate
 from autorun import projrot
 from autorun import thermp
+from autorun import thermo
 from autorun._script import SCRIPT_DCT
 
 
@@ -20,5 +21,6 @@ __all__ = [
     'polyrate',
     'projrot',
     'thermp',
+    'thermo',
     'SCRIPT_DCT'
 ]
