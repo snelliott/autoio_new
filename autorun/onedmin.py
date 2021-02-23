@@ -2,13 +2,13 @@
 input file writing routines for parallel OneDMin runs
 """
 
-import os
-import random
-import automol
-import autofile
-import elstruct
-import onedmin_io
-from lib.submission import qchem_params
+# import os
+# import random
+# import automol
+# import autofile
+# import elstruct
+# import onedmin_io
+# from lib.submission import qchem_params
 
 
 def write_input(nsamp, smin=2.0, smax=6.0,
