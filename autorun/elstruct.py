@@ -1,10 +1,10 @@
 """ core run function
 """
 
-from ioformat import from_input_string
+from autorun._run import from_input_string
 
 
-def direct(input_writer, script_str, run_dir, prog,
+def direct(script_str, run_dir, input_writer, prog,
            geo, charge, mult, method, basis, **kwargs):
     """ Generates an input file for an electronic structure job and
         runs it directly.
