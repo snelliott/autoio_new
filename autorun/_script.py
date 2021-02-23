@@ -37,14 +37,15 @@ TSTCHECK = (
 THERMP = (
     "#!/usr/bin/env bash\n"
     "ulimit -c 0\n"
-    "THERMP FILE"
+    "thermp"
 )
 PAC99 = (
     "#!/usr/bin/env bash\n"
     "ulimit -c 0\n"
-    "PACC << EOF >& pac99.out\n"
-    "FORMULA\n"
+    "pac99 << EOF \n"
+    "{}\n"
     "EOF"
+    # "EOF >& pac99.out"
 )
 DSARRFIT = (
     "#!/usr/bin/env bash\n"
