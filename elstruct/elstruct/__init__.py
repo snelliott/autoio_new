@@ -1,7 +1,7 @@
 """ electronic structure interfaces """
 from elstruct import writer
 from elstruct import reader
-# from elstruct import run
+from elstruct import run
 from elstruct import option
 from elstruct import util
 from elstruct.par import Error
@@ -22,7 +22,7 @@ from elstruct.par import program_bases
 
 __all__ = [
     'writer',
-    # 'reader',
+    'reader',
     'run',
     'option',
     'util',
