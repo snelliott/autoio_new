@@ -1,11 +1,13 @@
 """ Obtain information from VPT2 calculations
 """
 
+import itertools
+import numpy
 from qcelemental import constants as qcc
 import autoread as ar
 import autoparse.pattern as app
 import autoparse.find as apf
-
+import automol
 
 KJ2EH = qcc.conversion_factor('kJ/mol', 'hartree')
 
@@ -216,15 +218,20 @@ def cubic_force_constants(output_str):
 
     caps = apf.all_captures(pattern, block)
     if caps:
-        cfc_dct = {}
-        for idx1, idx2, idx3, cfc in caps:
-            cfc_dct[(int(idx1), int(idx2), int(idx3))] = float(cfc)
-        for i, j, k, cfc in caps:
-            cfc_dct[(int(i), int(j), int(k))] = float(cfc)
+        cfc_mat = _fc_mat(caps)
     else:
-        cfc_dct = {}
+        cfc_mat = None
 
-    return cfc_dct
+    # if caps:
+    #     cfc_dct = {}
+    #     for idx1, idx2, idx3, cfc in caps:
+    #         cfc_dct[(int(idx1), int(idx2), int(idx3))] = float(cfc)
+    #     for i, j, k, cfc in caps:
+    #         cfc_dct[(int(i), int(j), int(k))] = float(cfc)
+    # else:
+    #     cfc_dct = {}
+
+    return cfc_mat
 
 
 def quartic_force_constants(output_str):
@@ -261,13 +268,45 @@ def quartic_force_constants(output_str):
 
     caps = apf.all_captures(pattern, block)
     if caps:
-        qfc_dct = {}
-        for idx1, idx2, idx3, idx4, qfc in caps:
-            qfc_dct[(int(idx1), int(idx2), int(idx3), int(idx4))] = float(qfc)
+        qfc_mat = _fc_mat(caps)
     else:
-        qfc_dct = {}
+        qfc_mat = None
 
-    return qfc_dct
+    return qfc_mat
+
+
+def _fc_mat(fc_caps):
+    """ caps: (
+            ((idx1, idx2, ..., idxn), val1),
+            ((idx1, idx2, ..., idxn), val2),
+            ...,
+            ((idx1, idx2, ..., idxn), valn),
+    """
+
+    # Convert the types of the force constant data
+    fc_idxs, fc_vals = [], []
+    for caps in fc_caps:
+        fc_idxs.append(tuple(int(val) for val in caps[:-1]))
+        fc_vals.append(float(caps[-1]))
+
+    # Get dimensionality of force constants
+    ncoords = max((max(idxs) for idxs in fc_idxs))
+    ndim = len(fc_idxs[0])
+    print(ncoords)
+    print(ndim)
+
+    # Build the force constant matrix
+    dims = tuple(ncoords for _ in range(ndim))
+    print(dims)
+
+    fc_mat = numpy.zeros(dims)
+    for idxs, val in zip(fc_idxs, fc_vals):
+        idx_perms = tuple(itertools.permutations(idxs))
+        for perm in idx_perms:
+            perm2 = tuple(val-1 for val in perm)
+            fc_mat[perm2] = val
+
+    return fc_mat
 
 
 def vpt2(output_str):
@@ -290,3 +329,14 @@ def vpt2(output_str):
     }
 
     return anharm_dct
+
+
+if __name__ == '__main__':
+    with open('vpt2.out') as fobj:
+        OUT_STR = fobj.read()
+    CFC = cubic_force_constants(OUT_STR)
+    CFC_STR = automol.util.highd_mat.string(CFC)
+    print(CFC_STR)
+    QFC = quartic_force_constants(OUT_STR)
+    QFC_STR = automol.util.highd_mat.string(QFC)
+    print(QFC_STR)

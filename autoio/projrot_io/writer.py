@@ -189,3 +189,25 @@ def projection_distance_aux(dist_cutoff_dct=None):
         dist_str += '{0:s} {1:s} {2:.3f}\n'.format(atm1, atm2, dist)
 
     return dist_str
+
+
+def bmatrix(bmat):
+    """ Write the B-Matrix to a ProjRot style input
+    """
+
+    nd1, nd2, nd3 = bmat.shape
+    bmat_str = '{0:>12d}{1:>12d}\n'.format(nd1, nd2*nd3)
+    bmat_str += bmat_string(bmat)
+
+    return bmat_str
+
+
+def cmatrix(cmat):
+    """ Write the B-Matrix to a ProjRot style input
+    """
+
+    nd1, nd2, nd3, nd4 = cmat.shape
+    cmat_str = '{0:>12d}{1:>12d}\n'.format(nd2, nd3*nd4)
+    cmat_str += cmat_string(cmat)
+
+    return cmat_str
