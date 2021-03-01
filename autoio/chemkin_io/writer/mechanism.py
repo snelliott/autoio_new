@@ -9,7 +9,7 @@ import numpy as np
 
 
 def write_chemkin_file(elem_tuple=None, spc_dct=None, spc_nasa7_dct=None, rxn_param_dct=None,
-                    filename='written_mech.txt', comments=None):
+                       filename='written_mech.txt', comments=None):
     """ Writes a Chemkin-formatted mechanism and/or thermo file. Writes
         the output to a text file.
 
@@ -83,9 +83,9 @@ def species_block(spc_ident_dct):
     # Write the spc_str
     spc_str = 'SPECIES \n\n'
     for spc, ident_dct in spc_ident_dct.items():
-        spc_str += ('{0:<'+str(max_spc_len+buffer)+'s}{1:>9s}{2:<'+
+        spc_str += ('{0:<'+str(max_spc_len+buffer)+'s}{1:>9s}{2:<' +
                     str(max_smiles_len+buffer)+'s}{3:>9s}{4:<9s}\n').format(
-                    spc, '! SMILES: ', ident_dct['smiles'], 'InChi: ', ident_dct['inchi'])
+            spc, '! SMILES: ', ident_dct['smiles'], 'InChi: ', ident_dct['inchi'])
 
     spc_str += '\nEND \n\n\n'
 
@@ -118,7 +118,7 @@ def reactions_block(rxn_param_dct, comments=None):
     # Get the length of the longest reaction name
     max_len = 0
     for rxn, param_dct in rxn_param_dct.items():
-        rxn_name = util.format_rxn_name(rxn, param_dct)
+        rxn_name = util.format_rxn_name(rxn, param_dct[0])
         if len(rxn_name) > max_len:
             max_len = len(rxn_name)
 
@@ -126,84 +126,93 @@ def reactions_block(rxn_param_dct, comments=None):
     total_rxn_str = 'REACTIONS     CAL/MOLE     MOLES\n\n'
     for rxn, param_dct in rxn_param_dct.items():
 
-        # Convert the reaction name from tuple of tuples to string
-        # (Note: this includes '+M' or '(+M)' if appropriate)
-        rxn_name = util.format_rxn_name(rxn, param_dct)
+        # loop over the parameter entries: might be a single one or a duplicate one
+        for param_set_i, param_dct_vals in enumerate(param_dct):
+            # Convert the reaction name from tuple of tuples to string
+            # (Note: this includes '+M' or '(+M)' if appropriate)
+            rxn_name = util.format_rxn_name(rxn, param_dct_vals)
 
-        if param_dct[3] is not None:  # Chebyshev
-            assert param_dct[0] is not None, (
-                f'For {rxn}, Chebyshev params included but highP params absent'
-            )
-            one_atm_params = param_dct[0]  # this spot is usually high-P params, but is instead 1-atm for Chebyshev
-            alpha = param_dct[3]['alpha_elm']
-            tmin = param_dct[3]['t_limits'][0]
-            tmax = param_dct[3]['t_limits'][1]
-            pmin = param_dct[3]['p_limits'][0]
-            pmax = param_dct[3]['p_limits'][1]
-            rxn_str = writer_reac.chebyshev(rxn_name, one_atm_params, alpha,
-                tmin, tmax, pmin, pmax, max_length=max_len)
+            if param_dct_vals[3] is not None:  # Chebyshev
+                assert param_dct_vals[0] is not None, (
+                    f'For {rxn}, Chebyshev params included but highP params absent'
+                )
+                # this spot is usually high-P params, but is instead 1-atm for Chebyshev
+                one_atm_params = param_dct_vals[0]
+                alpha = param_dct_vals[3]['alpha_elm']
+                tmin = param_dct_vals[3]['t_limits'][0]
+                tmax = param_dct_vals[3]['t_limits'][1]
+                pmin = param_dct_vals[3]['p_limits'][0]
+                pmax = param_dct_vals[3]['p_limits'][1]
+                rxn_str = writer_reac.chebyshev(rxn_name, one_atm_params, alpha,
+                                                tmin, tmax, pmin, pmax, max_length=max_len)
 
-        elif param_dct[4] is not None:  # PLOG
-            plog_dct = param_dct[4]
-            rxn_str = writer_reac.plog(rxn_name, plog_dct, max_length=max_len)
+            elif param_dct_vals[4] is not None:  # PLOG
+                plog_dct = param_dct_vals[4]
+                rxn_str = writer_reac.plog(
+                    rxn_name, plog_dct, max_length=max_len)
 
-        elif param_dct[2] is not None:  # Troe
-            assert param_dct[0] is not None, (
-                f'For {rxn}, Troe params included, highP params absent'
-            )
-            assert param_dct[1] is not None, (
-                f'For {rxn}, Troe, highP params included, lowP params absent'
-            )
-            assert param_dct[6] is not None, (
-                f'For {rxn}, Troe, highP, lowP params included, (+M) absent'
-            )
+            elif param_dct_vals[2] is not None:  # Troe
+                assert param_dct_vals[0] is not None, (
+                    f'For {rxn}, Troe params included, highP params absent'
+                )
+                assert param_dct_vals[1] is not None, (
+                    f'For {rxn}, Troe, highP params included, lowP params absent'
+                )
+                assert rxn[2][0] is not None, (
+                    f'For {rxn}, Troe, highP, lowP params included, (+M) absent'
+                )
 
-            highp_params = param_dct[0]
-            lowp_params = param_dct[1]
-            troe_params = param_dct[2]
-            collid_factors = param_dct[5]
-            rxn_str = writer_reac.troe(
-                rxn_name, highp_params, lowp_params, troe_params, colliders=collid_factors, max_length=max_len
-            )
+                highp_params = param_dct_vals[0]
+                lowp_params = param_dct_vals[1]
+                troe_params = param_dct_vals[2]
+                collid_factors = param_dct_vals[5]
+                rxn_str = writer_reac.troe(
+                    rxn_name, highp_params, lowp_params, troe_params, colliders=collid_factors, max_length=max_len
+                )
 
-        elif param_dct[1] is not None:  # Lindemann
-            assert param_dct[0] is not None, (
-                f'For {rxn}, lowP params included, highP params absent'
-            )
-            assert param_dct[6] is not None, (
-                f'For {rxn}, highP, lowP params included, (+M) absent'
-            )
-            highp_params = param_dct[0]
-            lowp_params = param_dct[1]
-            collid_factors = param_dct[5]
-            rxn_str = writer_reac.lindemann(
-                rxn_name, highp_params, lowp_params, colliders=collid_factors, max_length=max_len
-            )
+            elif param_dct_vals[1] is not None:  # Lindemann
+                assert param_dct_vals[0] is not None, (
+                    f'For {rxn}, lowP params included, highP params absent'
+                )
+                assert rxn[2][0] is not None, (
+                    f'For {rxn}, highP, lowP params included, (+M) absent'
+                )
+                highp_params = param_dct_vals[0]
+                lowp_params = param_dct_vals[1]
+                collid_factors = param_dct_vals[5]
+                rxn_str = writer_reac.lindemann(
+                    rxn_name, highp_params, lowp_params, colliders=collid_factors, max_length=max_len
+                )
 
-        else:  # Simple Arrhenius
-            assert param_dct[0] is not None, (
-                f'For {rxn}, the highP params absent'
-            )
-            highp_params = param_dct[0]
-            collid_factors = param_dct[5]
-            rxn_str = writer_reac.arrhenius(rxn_name, highp_params, colliders=collid_factors, max_length=max_len)
+            else:  # Simple Arrhenius
+                assert param_dct_vals[0] is not None, (
+                    f'For {rxn}, the highP params absent'
+                )
+                highp_params = param_dct_vals[0]
+                collid_factors = param_dct_vals[5]
+                rxn_str = writer_reac.arrhenius(
+                    rxn_name, highp_params, colliders=collid_factors, max_length=max_len)
 
-        if comments:
-            # add inline comments on the first line
-            if isinstance(comments[rxn],dict):
-                if comments[rxn]['cmts_inline'] != '':
-                    rxn_str_split = rxn_str.split('\n')
-                    rxn_str_split[0] = rxn_str_split[0] + ' ' + comments[rxn]['cmts_inline']
-                    # rewrite rxn_str
-                    rxn_str = '\n'.join(rxn_str_split)
+            if comments and param_set_i == 0:
+                # add inline comments on the first line
+                if isinstance(comments[rxn], dict):
+                    if comments[rxn]['cmts_inline'] != '':
+                        rxn_str_split = rxn_str.split('\n')
+                        rxn_str_split[0] = rxn_str_split[0] + \
+                            ' ' + comments[rxn]['cmts_inline']
+                        # rewrite rxn_str
+                        rxn_str = '\n'.join(rxn_str_split)
 
-            # check for comments: header
-            if isinstance(comments[rxn],dict):
-                total_rxn_str += comments[rxn]['cmts_top']
+                # check for comments: header
+                if isinstance(comments[rxn], dict):
+                    total_rxn_str += comments[rxn]['cmts_top']
 
-        total_rxn_str += rxn_str
+            if len(param_dct) > 1:
+                # duplicate reactions
+                rxn_str += 'DUP \n'
+
+            total_rxn_str += rxn_str
 
     total_rxn_str += '\nEND \n'
 
     return total_rxn_str
-

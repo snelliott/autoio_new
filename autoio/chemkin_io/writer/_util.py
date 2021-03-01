@@ -27,12 +27,19 @@ def name_column_length(names):
 
 def format_rxn_name(rxn_key, param_vals):
     """ Receives a rxn_key and the corresponding param_vals
-        from a rxn_param_dct and writes it to a string that
-        the above functions can handle. Adds +M or (+M) if
-        applicable.
+        from a rxn_param_dct and writes an appropriate string
+        to be written in a CHEMKIN mech. Adds third body if applicable
+
+        :params rxn_key: reaction names and third body
+        :type rxn_key: tuple ((rct1,rct2),(prd1,prd2),(thirdbody))
+        :params param_vals: one set of parameters of the reaction
+        :type param_vals: tuple(dct)
+        :return rxn_name: formatted reaction name for writing in the mech
+        :rtype: str
     """
     rcts = rxn_key[0]
     prds = rxn_key[1]
+    thrbdy = rxn_key[2][0]
 
     # Convert to list if only one species
     if not isinstance(rcts, tuple):
@@ -53,9 +60,9 @@ def format_rxn_name(rxn_key, param_vals):
             prd_str += '+' + prd
 
     # Add the +M or (+M) text if it is applicable
-    if param_vals[6] is not None:
-        rct_str += param_vals[6]
-        prd_str += param_vals[6]
+    if thrbdy is not None:
+        rct_str += thrbdy
+        prd_str += thrbdy
     elif param_vals[3] is not None:
         # cheb writer if cheb params is not there
         rct_str += '(+M)'

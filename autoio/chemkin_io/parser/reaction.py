@@ -65,7 +65,8 @@ def param_dct(block_str, ea_units, a_units):
 
     reac_and_prods = list(zip(
         map(reactant_names, rxn_dstr_lst),
-        map(product_names, rxn_dstr_lst)))
+        map(product_names, rxn_dstr_lst),
+        map(third_body, rxn_dstr_lst)))
 
     params = list(
         zip(
@@ -75,12 +76,11 @@ def param_dct(block_str, ea_units, a_units):
             map(chebyshev_parameters, rxn_dstr_lst, many_a_units),
             map(plog_parameters, rxn_dstr_lst, many_ea_units, many_a_units),
             map(collider_enhance_factors, rxn_dstr_lst),
-            map(em_parameters, rxn_dstr_lst)
         )
     )
 
     # Fix any duplicates in Arrhenius or PLOG reactions
-    params = fix_duplicates(reac_and_prods, params)
+    reac_and_prods, params = fix_duplicates(reac_and_prods, params)
     rxn_param_dct = dict(zip(reac_and_prods, params))
 
     return rxn_param_dct
@@ -123,7 +123,7 @@ def reactant_names(rxn_dstr):
         :param rxn_dstr: data string for species in reaction block
         :type rxn_dstr: str
         :return names: names of the reactants
-        :rtype: list(str)
+        :rtype: tuple(str)
     """
 
     pattern = _first_line_pattern(
@@ -148,7 +148,7 @@ def product_names(rxn_dstr):
         :param rxn_dstr: data string for species in reaction block
         :type rxn_dstr: str
         :return names: names of the products
-        :rtype: list(str)
+        :rtype: tuple(str)
     """
 
     pattern = _first_line_pattern(
@@ -163,6 +163,42 @@ def product_names(rxn_dstr):
         print('Error with this reaction\n', rxn_dstr)
 
     return names
+
+
+def third_body(rxn_dstr):
+    """ Parses the data string for a reaction in the reactions block
+        for the line containing the chemical equation in order to
+        read the names of the third body collider if present
+
+        :param rxn_dstr: data string for species in reaction block
+        :type rxn_dstr: str
+        :return third_body: names of the colliders and corresponding fraction
+        :rtype: tuple(dct)
+    """
+
+    pattern = _first_line_pattern(
+        rct_ptt=app.capturing(SPECIES_NAMES_PATTERN),
+        prd_ptt=SPECIES_NAMES_PATTERN,
+        param_ptt=app.maybe(COEFF_PATTERN)
+    )
+    rgt_str = apf.first_capture(pattern, rxn_dstr)
+    rgt_str = apf.remove(app.LINESPACES, rgt_str)
+    rgt_split_paren = apf.split(CHEMKIN_PAREN_PLUS, rgt_str)
+    rgt_split_plus = apf.split(app.PLUS, rgt_str)
+
+    if len(rgt_split_paren) > 1:
+        third_body = '(+' + apf.split(CHEMKIN_PAREN_CLOSE,
+                                      rgt_split_paren[1])[0] + ')'
+
+    elif 'M' in rgt_split_plus:
+        third_body = '+M'
+
+    else:
+        third_body = None
+
+    third_body = (third_body,)
+
+    return third_body
 
 
 def pressure_region_specification(rxn_dstr):
@@ -477,41 +513,6 @@ def collider_enhance_factors(rxn_dstr):
     return params
 
 
-def em_parameters(rxn_dstr):
-    """ Parses the data string for a reaction in the reactions block
-        for the line containing the chemical equation in order to
-        check if a body M is given, indicating pressure dependence.
-
-        :param rxn_dstr: data string for species in reaction block
-        :type rxn_dstr: str
-        :return pressure_region: type of pressure indicated
-        :rtype: str
-    """
-
-    pattern = _first_line_pattern(
-        rct_ptt=app.capturing(SPECIES_NAMES_PATTERN),
-        prd_ptt=SPECIES_NAMES_PATTERN,
-        param_ptt=app.maybe(COEFF_PATTERN)
-    )
-    rgt_str = apf.first_capture(pattern, rxn_dstr)
-
-    rgt_str = apf.remove(app.LINESPACES, rgt_str)
-    rgt_split_paren = apf.split(CHEMKIN_PAREN_PLUS, rgt_str)
-    rgt_split_plus = apf.split(app.PLUS, rgt_str)
-
-    if len(rgt_split_paren) > 1:
-        params = '(+' + apf.split(CHEMKIN_PAREN_CLOSE,
-                                  rgt_split_paren[1])[0] + ')'
-
-    elif 'M' in rgt_split_plus:
-        params = '+M'
-
-    else:
-        params = None
-
-    return params
-
-
 # SECTION 3 OF 3: HELPER FUNCTIONS #####################
 
 # These functions help with some miscellaneous tasks
@@ -541,7 +542,7 @@ def _split_reagent_string(rgt_str):
         :param rgt_str: string with the reaction chemical equation
         :type rgt_str: str
         :return rgts: names of the species in the reaction
-        :type rgts: list(str)
+        :type rgts: tuple(str)
     """
 
     def _interpret_reagent_count(rgt_cnt_str):
@@ -551,7 +552,7 @@ def _split_reagent_string(rgt_str):
             :param rgt_cnt_str: string of one side of chemcial equation
             :type rgt_cnt_str: str
             :return: rgts: names of species from string
-            :rtype: list(str)
+            :rtype: tuple(str)
         """
         _pattern = (app.STRING_START + app.capturing(app.maybe(app.DIGIT)) +
                     app.capturing(app.one_or_more(app.NONSPACE)))
@@ -582,79 +583,36 @@ def _split_reagent_string(rgt_str):
 
 def fix_duplicates(rcts_prds, params):
     """ This function finds duplicates within the list of
-        reactants and products.
+        reactants and products and converts the params to a list of tuples of tuples.
 
         :param rcts_prds: reaction keys (i.e., reactant/product sets)
-        :type rcts_prds: list of tuples [((rct1, rct2,...),(prd1, prd2,...)), ...]
+        :type rcts_prds: list of tuples [((rct1, rct2,...),(prd1, prd2,...),(third body,)),]
         :param params: reaction parameters
-        :type params: list
-        :return params: updated reaction parameters with duplicates included
-        :rtype: list
+        :type params: list [(params1),(params2)]
+        :return unique_list: unique list of reactants and products
+        :rtype: list of tuples [((rct1, rct2,...),(prd1, prd2,...),(third body,)),]
+        :return unique_params: updated reaction parameters with duplicates included
+        :rtype: list of tuples [((params1),(params1')),...]
     """
     # Get the unique entries and number of occurrences
     unique_list = list(set(rcts_prds))
     val = collections.Counter(rcts_prds)
-
+    unique_params = []
     # Loop through each unique item, looking for duplicates
-    three_or_more_dups = 0
     for idx, rxn in enumerate(unique_list):
-        if val[rxn] > 1:  # if a duplicate reaction
 
-            # If more than two instances, print a warning
-            if val[rxn] > 2:
-                three_or_more_dups += 1
-                print(
-                    f'Warning: {val[rxn]} instances of {rxn} detected. Params printed below.')
-                for dup in range(val[rxn]):
-                    if dup == 0:
-                        idx2 = rcts_prds.index(unique_list[idx])
-                    else:
-                        idx2 = rcts_prds.index(unique_list[idx], idx2+1)
-                    print(params[idx2])
+        # allocate first value in list
+        first = rcts_prds.index(unique_list[idx])
+        params_all = [params[first]]
 
-            # Get indices of the first and second occurrences
-            first = rcts_prds.index(unique_list[idx])
-            second = rcts_prds.index(unique_list[idx], first+1)
+        for i in range(1, val[rxn]):
+            first_plus_i = rcts_prds.index(unique_list[idx], first+i)
+            params_all.append(params[first_plus_i])
 
-            # Get param lists for both occurrences
-            params1 = params[first]
-            params2 = params[second]
+        # convert to tuple and overwrite the parameters
+        unique_params.append(tuple(params_all))
 
-            # PLOG
-            if params1[4]:
-                # Only do this if the PLOG params exist in the second case
-                if params2[4]:
-
-                    # Deal with the high-P params
-                    for value in params2[0]:
-                        params1[0].append(value)
-
-                    # Deal with the PLOG params
-                    for key2, values2 in params2[4].items():
-                        if key2 in params1[4].keys():  # if key2 in dct1
-                            for value2 in values2:
-                                params1[4][key2].append(value2)
-                        else:  # if key2 not in dct1
-                            params1[4][key2] = values2
-
-                else:
-                    print(
-                        f'For rxn {rxn}, the first duplicate is PLOG, but the second is not')
-
-            # Arrhenius
-            else:
-                for value in params2[0]:
-                    params1[0].append(value)
-
-            # Insert the fixed params back into the original params
-            params[first] = params1
-            params[second] = params1
-
-    if three_or_more_dups > 0:
-        print(
-            f'There are {three_or_more_dups} reactions with 3 or more rate expressions.')
-
-    return params
+    return unique_list, unique_params
 
 
 def get_ea_conv_factor(ea_units):
@@ -838,6 +796,41 @@ def are_highp_fake(highp_params):
     return are_fake
 
 
+def em_parameters(rxn_dstr):
+    """ Parses the data string for a reaction in the reactions block
+        for the line containing the chemical equation in order to
+        check if a body M is given, indicating pressure dependence.
+
+        :param rxn_dstr: data string for species in reaction block
+        :type rxn_dstr: str
+        :return pressure_region: type of pressure indicated
+        :rtype: str
+    """
+
+    pattern = _first_line_pattern(
+        rct_ptt=app.capturing(SPECIES_NAMES_PATTERN),
+        prd_ptt=SPECIES_NAMES_PATTERN,
+        param_ptt=app.maybe(COEFF_PATTERN)
+    )
+    rgt_str = apf.first_capture(pattern, rxn_dstr)
+
+    rgt_str = apf.remove(app.LINESPACES, rgt_str)
+    rgt_split_paren = apf.split(CHEMKIN_PAREN_PLUS, rgt_str)
+    rgt_split_plus = apf.split(app.PLUS, rgt_str)
+
+    if len(rgt_split_paren) > 1:
+        params = '(+' + apf.split(CHEMKIN_PAREN_CLOSE,
+                                  rgt_split_paren[1])[0] + ')'
+
+    elif 'M' in rgt_split_plus:
+        params = '+M'
+
+    else:
+        params = None
+
+    return params
+
+
 def em_parameters_old(rxn_dstr):
     """ Parses the data string for a reaction in the reactions block
         for the line containing the chemical equation in order to
@@ -866,5 +859,82 @@ def em_parameters_old(rxn_dstr):
             params = '+M'
         else:
             params = None
+
+    return params
+
+
+def fix_duplicates_old(rcts_prds, params):
+    """ This function finds duplicates within the list of
+        reactants and products.
+
+        :param rcts_prds: reaction keys (i.e., reactant/product sets)
+        :type rcts_prds: list of tuples [((rct1, rct2,...),(prd1, prd2,...)), (third body,)]
+        :param params: reaction parameters
+        :type params: list
+        :return params: updated reaction parameters with duplicates included
+        :rtype: list
+    """
+    # Get the unique entries and number of occurrences
+    unique_list = list(set(rcts_prds))
+    val = collections.Counter(rcts_prds)
+
+    # Loop through each unique item, looking for duplicates
+    three_or_more_dups = 0
+    for idx, rxn in enumerate(unique_list):
+        if val[rxn] > 1:  # if a duplicate reaction
+
+            # If more than two instances, print a warning
+            if val[rxn] > 2:
+                three_or_more_dups += 1
+                print(
+                    f'Warning: {val[rxn]} instances of {rxn} detected. Params printed below.')
+                for dup in range(val[rxn]):
+                    if dup == 0:
+                        idx2 = rcts_prds.index(unique_list[idx])
+                    else:
+                        idx2 = rcts_prds.index(unique_list[idx], idx2+1)
+                    print(params[idx2])
+
+            # Get indices of the first and second occurrences
+            first = rcts_prds.index(unique_list[idx])
+            second = rcts_prds.index(unique_list[idx], first+1)
+
+            # Get param lists for both occurrences
+            params1 = params[first]
+            params2 = params[second]
+
+            # PLOG
+            if params1[4]:
+                # Only do this if the PLOG params exist in the second case
+                if params2[4]:
+
+                    # Deal with the high-P params
+                    for value in params2[0]:
+                        params1[0].append(value)
+
+                    # Deal with the PLOG params
+                    for key2, values2 in params2[4].items():
+                        if key2 in params1[4].keys():  # if key2 in dct1
+                            for value2 in values2:
+                                params1[4][key2].append(value2)
+                        else:  # if key2 not in dct1
+                            params1[4][key2] = values2
+
+                else:
+                    print(
+                        f'For rxn {rxn}, the first duplicate is PLOG, but the second is not')
+
+            # Arrhenius
+            else:
+                for value in params2[0]:
+                    params1[0].append(value)
+
+            # Insert the fixed params back into the original params
+            params[first] = params1
+            params[second] = params1
+
+    if three_or_more_dups > 0:
+        print(
+            f'There are {three_or_more_dups} reactions with 3 or more rate expressions.')
 
     return params
