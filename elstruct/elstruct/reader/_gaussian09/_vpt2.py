@@ -4,6 +4,7 @@
 import itertools
 import numpy
 from qcelemental import constants as qcc
+from automol.util import highd_mat
 import autoread as ar
 import autoparse.pattern as app
 import autoparse.find as apf
@@ -222,15 +223,6 @@ def cubic_force_constants(output_str):
     else:
         cfc_mat = None
 
-    # if caps:
-    #     cfc_dct = {}
-    #     for idx1, idx2, idx3, cfc in caps:
-    #         cfc_dct[(int(idx1), int(idx2), int(idx3))] = float(cfc)
-    #     for i, j, k, cfc in caps:
-    #         cfc_dct[(int(i), int(j), int(k))] = float(cfc)
-    # else:
-    #     cfc_dct = {}
-
     return cfc_mat
 
 
@@ -249,6 +241,12 @@ def quartic_force_constants(output_str):
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          'Input to Restart Anharmonic Calculations'),
         output_str)
+    if block is None:
+        block = apf.last_capture(
+            ('QUARTIC FORCE CONSTANTS IN NORMAL MODES' +
+             app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+             'Input for POLYMODE'),
+            output_str)
 
     pattern = (
         app.capturing(app.INTEGER) +
@@ -289,22 +287,8 @@ def _fc_mat(fc_caps):
         fc_idxs.append(tuple(int(val) for val in caps[:-1]))
         fc_vals.append(float(caps[-1]))
 
-    # Get dimensionality of force constants
-    ncoords = max((max(idxs) for idxs in fc_idxs))
-    ndim = len(fc_idxs[0])
-    print(ncoords)
-    print(ndim)
-
-    # Build the force constant matrix
-    dims = tuple(ncoords for _ in range(ndim))
-    print(dims)
-
-    fc_mat = numpy.zeros(dims)
-    for idxs, val in zip(fc_idxs, fc_vals):
-        idx_perms = tuple(itertools.permutations(idxs))
-        for perm in idx_perms:
-            perm2 = tuple(val-1 for val in perm)
-            fc_mat[perm2] = val
+    fc_mat = highd_mat.build_full_array(
+        fc_idxs, fc_vals, fill_perms=True)
 
     return fc_mat
 
@@ -332,11 +316,13 @@ def vpt2(output_str):
 
 
 if __name__ == '__main__':
-    with open('vpt2.out') as fobj:
+    # with open('vpt2.out') as fobj:
+    #     OUT_STR = fobj.read()
+    with open('TS1.log') as fobj:
         OUT_STR = fobj.read()
     CFC = cubic_force_constants(OUT_STR)
-    CFC_STR = automol.util.highd_mat.string(CFC)
+    CFC_STR = automol.util.highd_mat.string(CFC, val_format='{0:>14.6f}')
     print(CFC_STR)
     QFC = quartic_force_constants(OUT_STR)
-    QFC_STR = automol.util.highd_mat.string(QFC)
+    QFC_STR = automol.util.highd_mat.string(QFC, val_format='{0:>14.6f}')
     print(QFC_STR)

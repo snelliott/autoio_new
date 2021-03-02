@@ -1,7 +1,7 @@
 """ core run function
 """
 
-from ioformat import from_input_string
+from autorun import from_input_string
 
 
 def direct(input_writer, script_str, run_dir, prog,
