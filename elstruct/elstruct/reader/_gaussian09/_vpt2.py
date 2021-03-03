@@ -1,16 +1,11 @@
 """ Obtain information from VPT2 calculations
 """
 
-import itertools
-import numpy
-from qcelemental import constants as qcc
-from automol.util import highd_mat
+from phydat import phycon
+import automol
 import autoread as ar
 import autoparse.pattern as app
 import autoparse.find as apf
-import automol
-
-KJ2EH = qcc.conversion_factor('kJ/mol', 'hartree')
 
 
 def anharmonic_frequencies(output_str):
@@ -87,7 +82,7 @@ def anharmonic_zpve(output_str):
 
     # Convert the ZPVE units
     anh_zpve = float(anh_zpve.replace('D', 'E'))
-    anh_zpve *= KJ2EH
+    anh_zpve *= phycon.KJ2EH
 
     return anh_zpve
 
@@ -284,10 +279,10 @@ def _fc_mat(fc_caps):
     # Convert the types of the force constant data
     fc_idxs, fc_vals = [], []
     for caps in fc_caps:
-        fc_idxs.append(tuple(int(val) for val in caps[:-1]))
+        fc_idxs.append(tuple(int(val)-1 for val in caps[:-1]))
         fc_vals.append(float(caps[-1]))
 
-    fc_mat = highd_mat.build_full_array(
+    fc_mat = automol.util.highd_mat.build_full_array(
         fc_idxs, fc_vals, fill_perms=True)
 
     return fc_mat
@@ -313,16 +308,3 @@ def vpt2(output_str):
     }
 
     return anharm_dct
-
-
-if __name__ == '__main__':
-    # with open('vpt2.out') as fobj:
-    #     OUT_STR = fobj.read()
-    with open('TS1.log') as fobj:
-        OUT_STR = fobj.read()
-    CFC = cubic_force_constants(OUT_STR)
-    CFC_STR = automol.util.highd_mat.string(CFC, val_format='{0:>14.6f}')
-    print(CFC_STR)
-    QFC = quartic_force_constants(OUT_STR)
-    QFC_STR = automol.util.highd_mat.string(QFC, val_format='{0:>14.6f}')
-    print(QFC_STR)

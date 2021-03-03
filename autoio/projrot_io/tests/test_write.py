@@ -110,11 +110,6 @@ def test__rotor_dist_cutoffs():
     rotor_dist2_str = projrot_io.writer.projection_distance_aux(
         dist_cutoff_dct=dist_cutoff_dct)
 
-    with open('data/rotor_dist1.inp', 'w') as f:
-        f.write(rotor_dist1_str)
-    with open('data/rotor_dist2.inp', 'w') as f:
-        f.write(rotor_dist2_str)
-
     assert rotor_dist1_str == read_text_file(['data'], 'rotor_dist1.inp')
     assert rotor_dist2_str == read_text_file(['data'], 'rotor_dist2.inp')
 

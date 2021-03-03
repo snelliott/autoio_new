@@ -2,7 +2,6 @@
 """
 
 import numbers
-#from qcelemental import periodictable as ptab
 from phydat import ptab
 import autoread as ar
 import autoparse.pattern as app
