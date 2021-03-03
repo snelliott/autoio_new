@@ -6,6 +6,7 @@ import projrot_io.writer
 from autorun._run import from_input_string
 
 
+# Default names of input and output files
 INPUT_NAME = 'RPHt_input_data.dat'
 OUTPUT_NAMES = (
         'RTproj_freq.dat',
@@ -30,10 +31,15 @@ def frequencies(script_str, run_dir, geoms, grads, hessians,
     if rtproj_str is not None:
         rtproj_freqs, rt_imag_freq = projrot_io.reader.rpht_output(
             rtproj_str)
+    else:
+        rtproj_freqs, rt_imag_freq = [], []
+
     hrproj_str = output_strs[1]
     if hrproj_str is not None:
         hrproj_freqs, hr_imag_freq = projrot_io.reader.rpht_output(
             hrproj_str)
+    else:
+        hrproj_freqs, hr_imag_freq = [], []
 
     return rtproj_freqs, hrproj_freqs, rt_imag_freq, hr_imag_freq
 

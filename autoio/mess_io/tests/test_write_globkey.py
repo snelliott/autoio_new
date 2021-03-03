@@ -16,6 +16,13 @@ ATOM_DIST_MIN = 1.05
 EXCESS_ENE_TEMP = 10000.0
 WELL_EXTEND = 20000.0
 
+# For output
+FORMULA = 'CH4'
+TEMPS2 = (100.0, 200.0, 300.0)
+LOGQ = (0.100, 0.200, 0.300)
+DQ_DT = (0.111, 0.222, 0.333)
+D2Q_DT2 = (0.777, 0.888, 0.999)
+
 
 def test__global_reaction():
     """ test mess_io.writer.global_reaction
@@ -72,7 +79,19 @@ def test__full_str():
     assert pf_inp_str == read_text_file(['data', 'inp'], 'full_pf.inp', PATH)
 
 
+def test__pf_output():
+    """ test mess_io.writer.pf_output
+    """
+
+    pf_str = mess_io.writer.pf_output(FORMULA, TEMPS2, LOGQ, DQ_DT, D2Q_DT2)
+    with open('pf_str', 'w') as f:
+        f.write(pf_str)
+
+    # assert mc_dat1_str == read_text_file(['data', 'inp'], 'mc_dat1.inp')
+
+
 if __name__ == '__main__':
-    test__global_reaction()
-    test__global_pf()
-    test__full_str()
+    # test__global_reaction()
+    # test__global_pf()
+    # test__full_str()
+    test__pf_output()

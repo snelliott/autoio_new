@@ -76,6 +76,51 @@ def from_input_string(script_str, run_dir, input_str,
     return output_strs
 
 
+def write_input(run_dir, input_str,
+                aux_dct=None,
+                input_name=INPUT_NAME):
+    """ write the input
+    """
+
+    if not os.path.exists(run_dir):
+        os.makedirs(run_dir)
+
+    with EnterDirectory(run_dir):
+
+        # Write the main input file
+        with open(input_name, 'w') as input_obj:
+            input_obj.write(input_str)
+
+        # Write all auxiliary input files
+        if aux_dct is not None:
+            for fname, fstring in aux_dct.items():
+                if fstring:
+                    with open(fname, 'w') as aux_obj:
+                        aux_obj.write(fstring)
+
+
+def read_output(run_dir, output_names=(OUTPUT_NAME,)):
+    """ Read the output string from the run directory
+    """
+
+    with EnterDirectory(run_dir):
+
+        output_strs = ()
+        for output_name in output_names:
+            if os.path.exists(output_name):
+                if os.path.isfile(output_name):
+                    with open(output_name, 'r') as output_obj:
+                        output_str = output_obj.read()
+                else:
+                    output_str = None
+            else:
+                output_str = None
+
+        output_strs += (output_str,)
+
+    return output_strs
+
+
 def run_script(script_str, run_dir, script_name=SCRIPT_NAME):
     """ run a program from a script
     """
@@ -98,6 +143,11 @@ def run_script(script_str, run_dir, script_name=SCRIPT_NAME):
         try:
             subprocess.check_call('./{:s}'.format(script_name))
         except subprocess.CalledProcessError:
+            # # As long as the program wrote an output, continue with a warning
+            # if all(os.path.isfile(name) for name in output_names):
+            #     warnings.warn("Program run failed in {}".format(run_dir))
+            # else:
+            #     raise err
             warnings.warn("run failed in {}".format(run_dir))
 
 

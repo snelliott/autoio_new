@@ -237,3 +237,22 @@ def global_energy_transfer(edown_str, collid_freq_str):
         template_file_name='global_etrans.mako',
         template_src_path=SECTION_PATH,
         template_keys=glob_etrans_keys)
+
+
+# Write data to output file formats if you want to make a formatted output file
+def pf_output(formula_str, temps, logq, dq_dt, d2q_dt2):
+    """ Writes partition function data into a string that is formatted like the
+        output file 
+    """
+
+    mess_out_str = 'Natural log of the partition function '
+    mess_out_str += 'and its derivatives:\n'
+    mess_out_str += ' T, K            {}'.format(formula_str)
+    for temp, _logq, dq1, dq2 in zip(temps, logq, dq_dt, d2q_dt2):
+        mess_out_str += '\n'
+        mess_out_str += '{0:>8.6f}    '.format(temp)
+        mess_out_str += '{0:>8.6f}    '.format(_logq)
+        mess_out_str += '{0:>8.6f}    '.format(dq1)
+        mess_out_str += '{0:>8.6f}    '.format(dq2)
+
+    return mess_out_str

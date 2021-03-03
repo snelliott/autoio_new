@@ -46,6 +46,13 @@ FLUX_SPAN = 120.0
 USE_CM_SHIFT = True
 
 
+# For output
+TEMPS = (100.0, 200.0, 300.0)
+LOGQ = (0.100, 0.200, 0.300)
+DQ_DT = (0.111, 0.222, 0.333)
+D2Q_DT2 = (0.777, 0.888, 0.999)
+
+
 def test__flux_mode():
     """ test mess_io.writer.monte_carlo.fluxional_mode
     """
