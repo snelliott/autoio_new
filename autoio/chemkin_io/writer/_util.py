@@ -41,7 +41,7 @@ def format_rxn_name(rxn_key, param_vals):
     rcts = rxn_key[0]
     prds = rxn_key[1]
     thrbdy = rxn_key[2][0]
-
+    
     # Convert to list if only one species
     if not isinstance(rcts, tuple):
         rcts = [rcts]
@@ -64,10 +64,6 @@ def format_rxn_name(rxn_key, param_vals):
     if thrbdy is not None:
         rct_str += thrbdy
         prd_str += thrbdy
-    elif param_vals[3] is not None:
-        # cheb writer if cheb params is not there
-        rct_str += '(+M)'
-        prd_str += '(+M)'
 
     rxn_name = rct_str + '=' + prd_str
 

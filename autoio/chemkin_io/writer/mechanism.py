@@ -160,7 +160,7 @@ def reactions_block(rxn_param_dct, comments=None):
                     f'For {rxn}, Troe, highP params included, lowP params absent'
                 )
                 assert rxn[2][0] is not None, (
-                    f'For {rxn}, Troe, highP, lowP params included, (+M) absent'
+                    f'For {rxn}, Troe, highP, lowP params included, third body absent'
                 )
 
                 highp_params = param_dct_vals[0]
@@ -177,7 +177,7 @@ def reactions_block(rxn_param_dct, comments=None):
                     f'For {rxn}, lowP params included, highP params absent'
                 )
                 assert rxn[2][0] is not None, (
-                    f'For {rxn}, highP, lowP params included, (+M) absent'
+                    f'For {rxn}, highP, lowP params included, third body absent'
                 )
                 highp_params = param_dct_vals[0]
                 lowp_params = param_dct_vals[1]
@@ -219,3 +219,4 @@ def reactions_block(rxn_param_dct, comments=None):
     total_rxn_str += '\nEND \n'
 
     return total_rxn_str
+
