@@ -1,16 +1,16 @@
 # cmd: conda build . -c kevinmooreiii -c auto-mech -c psi4 -c rdkit -c openbabel -c conda-forge
 package:
     name: autoio
-    version: "0.1.0"
+    version: "0.1.1"
 
 source:
     path: .
 
 requirements:
     host:
-        - python
+        - python=3.7
     run:
-        - python
+        - python=3.7
         - {{ compiler('fortran') }}
         - numpy
         - scipy
@@ -26,7 +26,6 @@ requirements:
         - openbabel::openbabel
         - conda-forge::qcelemental
         - psi4::psi4
-        - kevinmooreiii::autoparse
-        - kevinmooreiii::automol
-        - kevinmooreiii:ratefit
+        - auto-mech::autoparse
+        - auto-mech::automol
         - auto-mech::x2z

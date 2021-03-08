@@ -52,7 +52,7 @@ def test__optimization_programs():
     """
     assert set(writer.optimization_programs()) >= {
         'cfour2', 'gaussian09', 'gaussian16', 'molpro2015', 'mrcc2018',
-        'nwchem6', 'orca4', 'psi4'}
+        'orca4', 'psi4'}
 
 
 if __name__ == '__main__':

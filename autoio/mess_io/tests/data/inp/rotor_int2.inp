@@ -8,8 +8,8 @@ InternalRotation   # D5
         H          1.13499       0.81475       0.63070
         H          1.16275       0.10176      -0.99371
         H          1.12255      -0.94866       0.43557
-  Group                      5   6   7   8   9   10
-  Axis                       2   3
+  Group                      3   4   5
+  Axis                       1   2
   Symmetry                   1.0
   GridSize                   100
   MassExpansionSize          5

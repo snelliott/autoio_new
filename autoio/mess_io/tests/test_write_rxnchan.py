@@ -1,10 +1,12 @@
 """ Tests the writing of the species section
 """
 
+import os
 import mess_io.writer
 from _util import read_text_file
 
 
+PATH = os.path.dirname(os.path.realpath(__file__))
 SPC1_LABEL = 'Mol1'
 SPC2_LABEL = 'Mol1'
 WELL_LABEL = 'W1'
@@ -62,11 +64,11 @@ def test__species_writer():
 
     spc1_str = mess_io.writer.rxnchan.species(
         SPC1_LABEL, MOL_MESS_STR, zero_ene=None)
-    assert spc1_str == read_text_file(['data', 'inp'], 'spc1.inp')
+    assert spc1_str == read_text_file(['data', 'inp'], 'spc1.inp', PATH)
 
     spc2_str = mess_io.writer.rxnchan.species(
         SPC2_LABEL, MOL_MESS_STR, zero_ene=ENE)
-    assert spc2_str == read_text_file(['data', 'inp'], 'spc2.inp')
+    assert spc2_str == read_text_file(['data', 'inp'], 'spc2.inp', PATH)
 
 
 def test__well_writer():
@@ -76,14 +78,14 @@ def test__well_writer():
 
     well1_str = mess_io.writer.rxnchan.well(
         WELL_LABEL, MOL_MESS_STR)
-    assert well1_str == read_text_file(['data', 'inp'], 'well1.inp')
+    assert well1_str == read_text_file(['data', 'inp'], 'well1.inp', PATH)
 
     well2_str = mess_io.writer.rxnchan.well(
         WELL_LABEL, MOL_MESS_STR,
         zero_ene=ENE,
         edown_str=EDOWN_STR,
         collid_freq_str=COLLID_STR)
-    assert well2_str == read_text_file(['data', 'inp'], 'well2.inp')
+    assert well2_str == read_text_file(['data', 'inp'], 'well2.inp', PATH)
 
 
 def test__bimolecular_writer():
@@ -95,7 +97,7 @@ def test__bimolecular_writer():
         SPC1_LABEL, ATOM_MESS_STR,
         SPC2_LABEL, MOL_MESS_STR,
         ENE)
-    assert bimol_str == read_text_file(['data', 'inp'], 'bimol.inp')
+    assert bimol_str == read_text_file(['data', 'inp'], 'bimol.inp', PATH)
 
 
 def test__ts_sadpt_writer():
@@ -105,12 +107,14 @@ def test__ts_sadpt_writer():
 
     ts_sadpt1_str = mess_io.writer.rxnchan.ts_sadpt(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR)
-    assert ts_sadpt1_str == read_text_file(['data', 'inp'], 'ts_sadpt1.inp')
+    assert ts_sadpt1_str == read_text_file(['data', 'inp'], 'ts_sadpt1.inp',
+                                           PATH)
 
     ts_sadpt2_str = mess_io.writer.rxnchan.ts_sadpt(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR,
         zero_ene=ENE, tunnel=TUNNEL_STR)
-    assert ts_sadpt2_str == read_text_file(['data', 'inp'], 'ts_sadpt2.inp')
+    assert ts_sadpt2_str == read_text_file(['data', 'inp'], 'ts_sadpt2.inp',
+                                           PATH)
 
 
 def test__ts_variational_writer():
@@ -128,13 +132,13 @@ def test__ts_variational_writer():
         TS_LABEL, WELL_LABEL, BIMOL_LABEL,
         var_pt_strings,
         zero_enes=PATH_ENES, tunnel='')
-    assert ts_var1_str == read_text_file(['data', 'inp'], 'ts_var1.inp')
+    assert ts_var1_str == read_text_file(['data', 'inp'], 'ts_var1.inp', PATH)
 
     ts_var2_str = mess_io.writer.rxnchan.ts_variational(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL,
         var_pt_strings,
         zero_enes=PATH_ENES, tunnel=TUNNEL_STR)
-    assert ts_var2_str == read_text_file(['data', 'inp'], 'ts_var2.inp')
+    assert ts_var2_str == read_text_file(['data', 'inp'], 'ts_var2.inp', PATH)
 
 
 def test__dummy_writer():
@@ -143,11 +147,11 @@ def test__dummy_writer():
 
     dummy1_str = mess_io.writer.rxnchan.dummy(
         BIMOL_LABEL)
-    assert dummy1_str == read_text_file(['data', 'inp'], 'dummy1.inp')
+    assert dummy1_str == read_text_file(['data', 'inp'], 'dummy1.inp', PATH)
 
     dummy2_str = mess_io.writer.rxnchan.dummy(
         BIMOL_LABEL, zero_ene=ENE)
-    assert dummy2_str == read_text_file(['data', 'inp'], 'dummy2.inp')
+    assert dummy2_str == read_text_file(['data', 'inp'], 'dummy2.inp', PATH)
 
 
 def test__configs_union_writer():
@@ -158,7 +162,7 @@ def test__configs_union_writer():
 
     union_str = mess_io.writer.rxnchan.configs_union(
         mol_strings)
-    assert union_str == read_text_file(['data', 'inp'], 'union.inp')
+    assert union_str == read_text_file(['data', 'inp'], 'union.inp', PATH)
 
 
 if __name__ == '__main__':

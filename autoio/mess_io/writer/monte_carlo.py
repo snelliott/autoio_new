@@ -126,7 +126,7 @@ def mc_data(geos, enes, grads=(), hessians=()):
             grad_str = automol.util.mat.string(
                 grads[idx], val_format='{0:>16.12f}')
             dat_str += 'Gradient'+'\n'
-            dat_str += grad_str
+            dat_str += grad_str + '\n'
         if hessians:
             hess_str = automol.util.mat.string(
                 hessians[idx], val_format='{0:>16.12f}')

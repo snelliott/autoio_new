@@ -9,10 +9,10 @@ import numpy
 PATH = os.path.dirname(os.path.realpath(__file__))
 
 
-def read_text_file(path_lst, file_name):
+def read_text_file(path_lst, file_name, path=PATH):
     """ Read a file
     """
-    file_path = os.path.join(PATH, *path_lst, file_name)
+    file_path = os.path.join(path, *path_lst, file_name)
     with open(file_path, 'r') as fobj:
         file_str = fobj.read()
     return file_str

@@ -1,11 +1,13 @@
 """
   Tests the varecof_io.writer functions
 """
+import os
 
 import varecof_io.writer
 from _util import read_text_file
 
 
+PATH = os.path.dirname(os.path.realpath(__file__))
 # TST parameters
 NSAMP_MAX = 2000
 NSAMP_MIN = 500
@@ -86,8 +88,8 @@ def test__tst_writer():
         f.write(tst_inp1_str)
     with open('data/tst2.inp', 'w') as f:
         f.write(tst_inp2_str)
-    assert tst_inp1_str == read_text_file(['data'], 'tst1.inp')
-    assert tst_inp2_str == read_text_file(['data'], 'tst2.inp')
+    assert tst_inp1_str == read_text_file(['data'], 'tst1.inp', PATH)
+    assert tst_inp2_str == read_text_file(['data'], 'tst2.inp', PATH)
 
 
 def test__divsur_writer():
@@ -111,8 +113,8 @@ def test__divsur_writer():
         f.write(divsur_inp1_str)
     with open('data/divsur2.inp', 'w') as f:
         f.write(divsur_inp2_str)
-    assert divsur_inp1_str == read_text_file(['data'], 'divsur1.inp')
-    assert divsur_inp2_str == read_text_file(['data'], 'divsur2.inp')
+    assert divsur_inp1_str == read_text_file(['data'], 'divsur1.inp', PATH)
+    assert divsur_inp2_str == read_text_file(['data'], 'divsur2.inp', PATH)
 
 
 def test__els_writer():
@@ -132,8 +134,8 @@ def test__els_writer():
         f.write(els_inp1_str)
     with open('data/els2.inp', 'w') as f:
         f.write(els_inp2_str)
-    assert els_inp1_str == read_text_file(['data'], 'els1.inp')
-    assert els_inp2_str == read_text_file(['data'], 'els2.inp')
+    assert els_inp1_str == read_text_file(['data'], 'els1.inp', PATH)
+    assert els_inp2_str == read_text_file(['data'], 'els2.inp', PATH)
 
 
 def test__structure_writer():
@@ -145,7 +147,7 @@ def test__structure_writer():
 
     with open('data/structure.inp', 'w') as f:
         f.write(struct_inp_str)
-    assert struct_inp_str == read_text_file(['data'], 'structure.inp')
+    assert struct_inp_str == read_text_file(['data'], 'structure.inp', PATH)
 
 
 def test__mcflux_writer():
@@ -156,7 +158,7 @@ def test__mcflux_writer():
 
     with open('data/mc_flux.inp', 'w') as f:
         f.write(mc_flux_inp_str)
-    assert mc_flux_inp_str == read_text_file(['data'], 'mc_flux.inp')
+    assert mc_flux_inp_str == read_text_file(['data'], 'mc_flux.inp', PATH)
 
 
 def test__convert_writer():
@@ -167,7 +169,7 @@ def test__convert_writer():
 
     with open('data/conv.inp', 'w') as f:
         f.write(conv_inp_str)
-    assert conv_inp_str == read_text_file(['data'], 'conv.inp')
+    assert conv_inp_str == read_text_file(['data'], 'conv.inp', PATH)
 
 
 if __name__ == '__main__':

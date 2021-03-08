@@ -1,6 +1,6 @@
 Rotor  Hindered
-  Group                6   7   8   9   10  11
-  Axis                 2   3
+  Group                3   4   5
+  Axis                 1   2
   Symmetry             1.0
   Potential[kcal/mol]  12
     0.00    2.91    9.06    12.63   9.97    3.51

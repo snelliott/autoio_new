@@ -1,11 +1,13 @@
 """ Tests the writing of the energy transfer section
 """
 
+import os
 import mess_io.writer
 from _util import read_text_file
 
 
 # Atom/Molecule Data
+PATH = os.path.dirname(os.path.realpath(__file__))
 CORE_STR = """  Geometry[angstrom]        8
     C         -0.75583       0.00710      -0.01604
     C          0.75582      -0.00710       0.01604
@@ -45,7 +47,7 @@ def test__atom_writer():
     """
 
     atom_str = mess_io.writer.spc.atom(MASS, ELEC_LEVELS1)
-    assert atom_str == read_text_file(['data', 'inp'], 'atom_data.inp')
+    assert atom_str == read_text_file(['data', 'inp'], 'atom_data.inp', PATH)
 
 
 def test__molecule_writer():
@@ -54,14 +56,14 @@ def test__molecule_writer():
 
     mol1_str = mess_io.writer.spc.molecule(
         CORE_STR, ELEC_LEVELS2)
-    assert mol1_str == read_text_file(['data', 'inp'], 'mol1_data.inp')
+    assert mol1_str == read_text_file(['data', 'inp'], 'mol1_data.inp', PATH)
 
     mol2_str = mess_io.writer.spc.molecule(
         CORE_STR, ELEC_LEVELS2,
         freqs=FREQS,
         freq_scale_factor=1.833,
         use_harmfreqs_key=True)
-    assert mol2_str == read_text_file(['data', 'inp'], 'mol2_data.inp')
+    assert mol2_str == read_text_file(['data', 'inp'], 'mol2_data.inp', PATH)
 
     mol3_str = mess_io.writer.spc.molecule(
         CORE_STR, ELEC_LEVELS2,
@@ -70,7 +72,7 @@ def test__molecule_writer():
         rovib_coups=ROVIB_COUPS,
         rot_dists=ROT_DISTS,
         inf_intens=INF_INTENS)
-    assert mol3_str == read_text_file(['data', 'inp'], 'mol3_data.inp')
+    assert mol3_str == read_text_file(['data', 'inp'], 'mol3_data.inp', PATH)
 
 
 if __name__ == '__main__':

@@ -11,6 +11,7 @@ from _util import read_text_file
 
 # Set paths for building files
 TMP_PATH = tempfile.mkdtemp()
+PATH = os.path.dirname(os.path.realpath(__file__))
 
 # Set variables
 NPOT = 5
@@ -50,8 +51,8 @@ def test__species_writer():
         f.write(spc_corr1_str)
     with open('data/mol_corr2.f', 'w') as f:
         f.write(spc_corr2_str)
-    assert spc_corr1_str == read_text_file(['data'], 'mol_corr1.f')
-    assert spc_corr2_str == read_text_file(['data'], 'mol_corr.f')
+    assert spc_corr1_str == read_text_file(['data'], 'mol_corr1.f', PATH)
+    assert spc_corr2_str == read_text_file(['data'], 'mol_corr.f', PATH)
 
 
 def test__dummy_writer():
@@ -62,7 +63,7 @@ def test__dummy_writer():
 
     with open('data/dummy_corr.f', 'w') as f:
         f.write(dummy_corr_str)
-    assert dummy_corr_str == read_text_file(['data'], 'dummy_corr.f')
+    assert dummy_corr_str == read_text_file(['data'], 'dummy_corr.f', PATH)
 
 
 def test__auxiliary_writer():
@@ -72,7 +73,7 @@ def test__auxiliary_writer():
 
     with open('data/pot_aux.f', 'w') as f:
         f.write(pot_aux_str)
-    assert pot_aux_str == read_text_file(['data'], 'pot_aux.f')
+    assert pot_aux_str == read_text_file(['data'], 'pot_aux.f', PATH)
 
 
 def test__makefile_writer():
@@ -90,17 +91,17 @@ def test__makefile_writer():
         f.write(makefile1_str)
     with open('data/makefile', 'w') as f:
         f.write(makefile2_str)
-    assert makefile1_str == read_text_file(['data'], 'makefile1')
-    assert makefile2_str == read_text_file(['data'], 'makefile')
+    assert makefile1_str == read_text_file(['data'], 'makefile1', PATH)
+    assert makefile2_str == read_text_file(['data'], 'makefile', PATH)
 
 
 def test__compile_correction_potential():
     """ test varecof_io.writer.corr_potentials.compile_correction_pot
     """
 
-    os.makdir(TMP_DIR)
+    os.makedirs(TMP_PATH)
 
-    varecof_io.writer.corr_potentials.compile_corr_pot(TMP_DIR)
+    varecof_io.writer.corr_potentials.compile_corr_pot(TMP_PATH)
 
 
 if __name__ == '__main__':

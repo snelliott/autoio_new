@@ -1,13 +1,15 @@
 """
  tests rates reader
 """
+import os
 
 import mess_io.reader
 from _util import read_text_file
 
 
-KTP_OUT_STR = read_text_file(['data', 'out'], 'rate.out')
-KE_OUT_STR = read_text_file(['data', 'out'], 'ke.out')
+PATH = os.path.dirname(os.path.realpath(__file__))
+KTP_OUT_STR = read_text_file(['data', 'out'], 'rate.out', PATH)
+KE_OUT_STR = read_text_file(['data', 'out'], 'ke.out', PATH)
 
 # Set the REACTANT and PRODUCT
 REACTANT = 'W1'
