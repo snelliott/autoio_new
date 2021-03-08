@@ -5,7 +5,6 @@ Write various parts of a Chemkin mechanism file
 from chemkin_io.writer import reaction as writer_reac
 from chemkin_io.writer import thermo as writer_therm
 from chemkin_io.writer import _util as util
-import numpy as np
 
 
 def write_chemkin_file(elem_tuple=None, spc_dct=None, spc_nasa7_dct=None, rxn_param_dct=None,
@@ -169,7 +168,8 @@ def reactions_block(rxn_param_dct, comments=None):
                 troe_params = param_dct_vals[2]
                 collid_factors = param_dct_vals[5]
                 rxn_str = writer_reac.troe(
-                    rxn_name, highp_params, lowp_params, troe_params, colliders=collid_factors, max_length=max_len
+                    rxn_name, highp_params, lowp_params, troe_params,
+                    colliders=collid_factors, max_length=max_len
                 )
 
             elif param_dct_vals[1] is not None:  # Lindemann
@@ -183,7 +183,8 @@ def reactions_block(rxn_param_dct, comments=None):
                 lowp_params = param_dct_vals[1]
                 collid_factors = param_dct_vals[5]
                 rxn_str = writer_reac.lindemann(
-                    rxn_name, highp_params, lowp_params, colliders=collid_factors, max_length=max_len
+                    rxn_name, highp_params, lowp_params, colliders=collid_factors,
+                    max_length=max_len
                 )
 
             else:  # Simple Arrhenius

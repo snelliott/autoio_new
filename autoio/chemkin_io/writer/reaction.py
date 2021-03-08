@@ -104,15 +104,16 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
             :type max_length: int
             :param name_buffer: buffer between the name and the Arrhenius params
             :type name_buffer: int
-            :return single_plog_str: Chemkin reaction string with PLOG parameters at a single pressure
+            :return single_str: Chemkin reaction string with PLOG parameters
+                at a single pressure
             :rtype: str
         """
         plog_buffer = str(max_length+name_buffer-12)
         [a_par, n_par, ea_par] = params
-        single_plog_str = ('{0:<' + plog_buffer + 's}{1:<12.3E}{2:<10.3E}{3:>9.3f}{4:>9.0f} /\n').format(
+        single_str = ('{0:<' + plog_buffer + 's}{1:<12.3E}{2:<10.3E}{3:>9.3f}{4:>9.0f} /\n').format(
             '    PLOG /', pressure, a_par, n_par, ea_par)
 
-        return single_plog_str
+        return single_str
 
     # Obtain a list of the pressures and sort from low to high pressure
     unsorted_pressures = plog_param_dct.keys()
@@ -121,7 +122,7 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
     # Write the header for the reaction, which includes the 1-atm fit if available
     if 1 in pressures:
         if len(plog_param_dct[1]) > 3:
-            comment = 'Duplicates exist at 1 atm (see below); only a single 1-atm fit is written here'
+            comment = 'Duplicates exist at 1 atm (see below); only single 1-atm fit is written'
             plog_str = _highp_str(reaction, plog_param_dct[1][:3], max_length=max_length,
                                   name_buffer=name_buffer, inline_comment=comment
                                   )
@@ -140,7 +141,7 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
     for pressure in pressures:
         plog_params = plog_param_dct[pressure]
         assert len(plog_params) % 3 == 0, (
-            f'The number of Arrhenius params should be a multiple of 3 but is rather {len(plog_params)} for {reaction}'
+            f'Arr params should be a multiple of 3 but is {len(plog_params)} for {reaction}'
         )
 
         # Loop over however many Arrhenius sets there are, writing a PLOG line for each
@@ -153,8 +154,8 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
     return plog_str
 
 
-
-def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax, max_length=45, name_buffer=BUFFER):
+def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax,
+              max_length=45, name_buffer=BUFFER):
     """ Write the string containing the Chebyshev fitting parameters
         formatted for Chemkin input files.
 
@@ -230,7 +231,7 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
         :rtype: str
     """
     assert len(high_params) == 3, (
-        f'The number of Arrhenius params should be 3 but is rather {len(high_params)} for {reaction}'
+        f'Arrh params should be 3 but is {len(high_params)} for {reaction}'
     )
 
     # write the arrhenius parameter string
@@ -373,7 +374,8 @@ def _troe_and_cheb_params(header, params, newline=False, val='exp'):
         :type params: list or numpy array or tuple of floats
         :param newline: whether or not to add a new line after the params
         :type newline: Bool
-        :param val: indicates how the parameters are to be formatted; should be 'exp' or 'float' or 'int'
+        :param val: indicates how the parameters are to be formatted;
+            should be 'exp' or 'float' or 'int'
         :type val: str
         :return params_str: a string containing the formatted params
         :rtype: str
