@@ -31,6 +31,5 @@ def direct(script_str, run_dir,
         aux_dct=aux_dct,
         input_name=INPUT_NAME,
         output_names=output_names)
-    output_str = output_strs[0]
 
-    return input_str, output_str
+    return input_str, output_strs
