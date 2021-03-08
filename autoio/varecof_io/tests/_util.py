@@ -18,6 +18,14 @@ def read_text_file(path_lst, file_name):
     return file_str
 
 
+def write_text_file(path_lst, file_name, file_str):
+    """ Read a file
+    """
+    file_path = os.path.join(PATH, *path_lst, file_name)
+    with open(file_path, 'w') as fobj:
+        file_str = fobj.write(file_str)
+
+
 def load_numpy_string_file(path_lst, file_name):
     """ Read a file with numpy
     """

@@ -4,13 +4,13 @@
 
 import os
 import tempfile
-import shutil
 import varecof_io
 from _util import read_text_file
+from _util import write_text_file
 
 
 # Set paths for building files
-TMP_PATH = tempfile.mkdtemp()
+TMP_DIR = tempfile.mkdtemp()
 
 # Set variables
 NPOT = 5
@@ -46,11 +46,11 @@ def test__species_writer():
         pot_labels=POT_LABELS,
         dist_restrict_idxs=DIST_RESTRICT_IDXS)
 
-    with open('data/mol_corr1.f', 'w') as f:
-        f.write(spc_corr1_str)
     with open('data/mol_corr2.f', 'w') as f:
+        f.write(spc_corr1_str)
+    with open('data/mol_corr.f', 'w') as f:
         f.write(spc_corr2_str)
-    assert spc_corr1_str == read_text_file(['data'], 'mol_corr1.f')
+    assert spc_corr1_str == read_text_file(['data'], 'mol_corr2.f')
     assert spc_corr2_str == read_text_file(['data'], 'mol_corr.f')
 
 
@@ -98,9 +98,18 @@ def test__compile_correction_potential():
     """ test varecof_io.writer.corr_potentials.compile_correction_pot
     """
 
-    os.makdir(TMP_DIR)
-
+    # Copy the files over to TMP_DIR for compilation
+    write_text_file([TMP_DIR], 'mol_corr.f',
+                    read_text_file(['data'], 'mol_corr.f'))
+    write_text_file([TMP_DIR], 'pot_aux.f',
+                    read_text_file(['data'], 'pot_aux.f'))
+    write_text_file([TMP_DIR], 'dummy_corr.f',
+                    read_text_file(['data'], 'dummy_corr.f'))
+    write_text_file([TMP_DIR], 'makefile',
+                    read_text_file(['data'], 'makefile'))
     varecof_io.writer.corr_potentials.compile_corr_pot(TMP_DIR)
+
+    assert os.path.exists(os.path.join(TMP_DIR, 'libcorrpot.so'))
 
 
 if __name__ == '__main__':
