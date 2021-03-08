@@ -47,10 +47,6 @@ def test__species_writer():
         pot_labels=POT_LABELS,
         dist_restrict_idxs=DIST_RESTRICT_IDXS)
 
-    with open('data/mol_corr2.f', 'w') as f:
-        f.write(spc_corr1_str)
-    with open('data/mol_corr.f', 'w') as f:
-        f.write(spc_corr2_str)
     assert spc_corr1_str == read_text_file(['data'], 'mol_corr1.f', PATH)
     assert spc_corr2_str == read_text_file(['data'], 'mol_corr.f', PATH)
 
@@ -103,7 +99,7 @@ def test__compile_correction_potential():
                     read_text_file(['data'], 'makefile'))
     varecof_io.writer.corr_potentials.compile_corr_pot(TMP_PATH)
 
-    assert os.path.exists(os.path.join(TMP_DIR, 'libcorrpot.so'))
+    assert os.path.exists(os.path.join(TMP_PATH, 'libcorrpot.so'))
 
 
 if __name__ == '__main__':

@@ -84,10 +84,6 @@ def test__tst_writer():
         ener_grid=ENER_GRID,
         amom_grid=AMOM_GRID)
 
-    with open('data/tst1.inp', 'w') as f:
-        f.write(tst_inp1_str)
-    with open('data/tst2.inp', 'w') as f:
-        f.write(tst_inp2_str)
     assert tst_inp1_str == read_text_file(['data'], 'tst1.inp', PATH)
     assert tst_inp2_str == read_text_file(['data'], 'tst2.inp', PATH)
 
@@ -109,10 +105,6 @@ def test__divsur_writer():
         phi_dependence=False,
         **CONDITIONS_DCT)
 
-    with open('data/divsur1.inp', 'w') as f:
-        f.write(divsur_inp1_str)
-    with open('data/divsur2.inp', 'w') as f:
-        f.write(divsur_inp2_str)
     assert divsur_inp1_str == read_text_file(['data'], 'divsur1.inp', PATH)
     assert divsur_inp2_str == read_text_file(['data'], 'divsur2.inp', PATH)
 
@@ -130,10 +122,6 @@ def test__els_writer():
         dummy_name=DUMMY_NAME, lib_name=LIB_NAME,
         geo_ptt=GEO_PTT, ene_ptt=ENE_PTT)
 
-    with open('data/els1.inp', 'w') as f:
-        f.write(els_inp1_str)
-    with open('data/els2.inp', 'w') as f:
-        f.write(els_inp2_str)
     assert els_inp1_str == read_text_file(['data'], 'els1.inp', PATH)
     assert els_inp2_str == read_text_file(['data'], 'els2.inp', PATH)
 

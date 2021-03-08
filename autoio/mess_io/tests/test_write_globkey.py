@@ -90,6 +90,17 @@ def test__pf_output():
     # assert mc_dat1_str == read_text_file(['data', 'inp'], 'mc_dat1.inp')
 
 
+def test__pf_output():
+    """ test mess_io.writer.pf_output
+    """
+
+    pf_str = mess_io.writer.pf_output(FORMULA, TEMPS2, LOGQ, DQ_DT, D2Q_DT2)
+    with open('pf_str', 'w') as f:
+        f.write(pf_str)
+
+    # assert mc_dat1_str == read_text_file(['data', 'inp'], 'mc_dat1.inp')
+
+
 if __name__ == '__main__':
     # test__global_reaction()
     # test__global_pf()

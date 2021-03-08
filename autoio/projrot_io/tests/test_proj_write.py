@@ -116,6 +116,23 @@ def test__rotor_dist_cutoffs():
     assert rotor_dist2_str == read_text_file(['data'], 'rotor_dist2.inp')
 
 
+def test__rotor_dist_cutoffs():
+    """ test projrot_io.writer.projection_distance_aux
+    """
+
+    dist_cutoff_dct = {
+        ('H', 'O'): 2.26767,
+        ('H', 'C'): 2.26767
+    }
+
+    rotor_dist1_str = projrot_io.writer.projection_distance_aux()
+    rotor_dist2_str = projrot_io.writer.projection_distance_aux(
+        dist_cutoff_dct=dist_cutoff_dct)
+
+    assert rotor_dist1_str == read_text_file(['data'], 'rotor_dist1.inp')
+    assert rotor_dist2_str == read_text_file(['data'], 'rotor_dist2.inp')
+
+
 def test_sct_rpht_input():
     """ test projrot_io.writer.rpht_input
         test projrot_io.writer.rpht_path_coord_en
