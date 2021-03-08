@@ -45,7 +45,6 @@ DUPLICATE_PLOG_RXN_PARAM_DCT = {(('H', 'O2'), ('OH', 'O'), (None,)):
                             ([1E+15, 0.00, 25000], None, None, None,
                                {0.1: [1E+15, 0.00, 25000],
                                 1.0: [1E+16, 0.00, 25000],
-                                10.0: [1E+17, 0.00, 25000],
                                 100.0: [1E+18, 0.00, 25000]},
                                 None),)}
 
@@ -89,8 +88,6 @@ def test__dup_arrhenius():
     """ Tests the Arrhenius reader and writer for a duplicate reaction
     """
     first_str, second_str = _get_strs(DUPLICATE_ARRHENIUS_RXN_PARAM_DCT)
-    print('inside test__reactions\n', first_str)
-    print(second_str)
     assert first_str == second_str
 
 
@@ -98,8 +95,6 @@ def test__dup_plog():
     """ Tests the PLOG reader and writer for a duplicate reaction
     """
     first_str, second_str = _get_strs(DUPLICATE_PLOG_RXN_PARAM_DCT)
-    print('inside test__reactions\n', first_str)
-    print(second_str)
     assert first_str == second_str
 
 
@@ -108,18 +103,17 @@ def _get_strs(rxn_param_dct):
     """
     first_str = writer(rxn_param_dct)
     new_rxn_param_dct = parser(first_str, 'cal/mole', 'moles')
-    print(new_rxn_param_dct)
     second_str = writer(new_rxn_param_dct)
     
     return first_str, second_str
 
 
 if __name__ == '__main__':
-    #test__arrhenius()
-    #test__lindemann()
-    #test__troe()
-    #test__chebyshev()
-    #test__plog()
+    test__arrhenius()
+    test__lindemann()
+    test__troe()
+    test__chebyshev()
+    test__plog()
     test__dup_arrhenius()
     test__dup_plog()
 
