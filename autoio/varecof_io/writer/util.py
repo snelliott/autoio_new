@@ -42,6 +42,7 @@ def format_coords(geo):
     symbols = geom.symbols(geo)
     coordinates = geom.coordinates(geo)
     masses = geom.masses(geo)
+    print(masses)
 
     # Build a string with the formatted coordinates string
     if geom.is_atom(geo):
@@ -52,7 +53,7 @@ def format_coords(geo):
             coords = [coord * phycon.BOHR2ANG for coord in coords]
             coords_str = '{0:>14.8f}{1:>14.8f}{2:>14.8f}'.format(
                 coords[0], coords[1], coords[2])
-            geo_str += '{0:<4s}{1:<6d}{2}\n'.format(
+            geo_str += '{0:<4s}{1:<6.0f}{2}\n'.format(
                 symbol, mass, coords_str)
         # Remove final newline character from the string
         geo_str = geo_str.rstrip()
