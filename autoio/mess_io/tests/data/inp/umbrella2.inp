@@ -8,8 +8,8 @@ Umbrella
         H          1.13499       0.81475       0.63070
         H          1.16275       0.10176      -0.99371
         H          1.12255      -0.94866       0.43557
-  Group                4   5   5
-  Axis                 4   5   5
+  Group                4   5   6
+  Axis                 4   5   6
   ReferenceAtom        4
   Potential[kcal/mol]  12
     0.00    2.91    9.06    12.63   9.97    3.51

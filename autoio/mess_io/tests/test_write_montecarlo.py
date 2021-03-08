@@ -2,10 +2,12 @@
 Tests writing the input for a Monte Carlo sampling routine
 """
 
+import os
 import mess_io.writer
 from _util import read_text_file
 
 
+PATH = os.path.dirname(os.path.realpath(__file__))
 GEO = (('C', (-4.0048955763, -0.3439866053, -0.0021431734)),
        ('O', (-1.3627056155, -0.3412713280, 0.0239463418)),
        ('H', (-4.7435343957, 1.4733340928, 0.7491098889)),
@@ -54,15 +56,15 @@ def test__flux_mode():
     flux_mode2_str = mess_io.writer.monte_carlo.fluxional_mode(
         FLUX_IDX, span=FLUX_SPAN)
 
-    assert flux_mode1_str == read_text_file(['data', 'inp'], 'flux_mode1.inp')
-    assert flux_mode2_str == read_text_file(['data', 'inp'], 'flux_mode2.inp')
+    assert flux_mode1_str == read_text_file(['data', 'inp'], 'flux_mode1.inp', PATH)
+    assert flux_mode2_str == read_text_file(['data', 'inp'], 'flux_mode2.inp', PATH)
 
 
 def test__monte_carlo_species():
     """ test mess_io.writer.monte_carlo.mc_species
     """
 
-    flux_mode_str = read_text_file(['data', 'inp'], 'flux_mode1.inp')
+    flux_mode_str = read_text_file(['data', 'inp'], 'flux_mode1.inp', PATH)
 
     mc_spc1_str = mess_io.writer.monte_carlo.mc_species(
         GEO, SYM_FACTOR, ELEC_LEVELS,
@@ -76,8 +78,8 @@ def test__monte_carlo_species():
         freqs=FREQS,
         use_cm_shift=USE_CM_SHIFT)
 
-    assert mc_spc1_str == read_text_file(['data', 'inp'], 'mc_spc1.inp')
-    assert mc_spc2_str == read_text_file(['data', 'inp'], 'mc_spc2.inp')
+    assert mc_spc1_str == read_text_file(['data', 'inp'], 'mc_spc1.inp', PATH)
+    assert mc_spc2_str == read_text_file(['data', 'inp'], 'mc_spc2.inp', PATH)
 
 
 def test__monte_carlo_dat():
@@ -91,5 +93,12 @@ def test__monte_carlo_dat():
         grads=GRADS,
         hessians=HESSES)
 
-    assert mc_dat1_str == read_text_file(['data', 'inp'], 'mc_dat1.inp')
-    assert mc_dat2_str == read_text_file(['data', 'inp'], 'mc_dat2.inp')
+    print(mc_dat2_str)
+    print(read_text_file(['data', 'inp'], 'mc_dat2.inp', PATH))
+
+    assert mc_dat1_str == read_text_file(['data', 'inp'], 'mc_dat1.inp', PATH)
+    assert mc_dat2_str == read_text_file(['data', 'inp'], 'mc_dat2.inp', PATH)
+
+
+if __name__ == '__main__':
+    test__monte_carlo_dat()

@@ -26,7 +26,8 @@ def hf298k(output_str):
 
     if caps:
         hfs = tuple(float(val) for val in caps)
+        hfs = hfs[0]
     else:
         hfs = None
 
-    return hfs[0]
+    return hfs

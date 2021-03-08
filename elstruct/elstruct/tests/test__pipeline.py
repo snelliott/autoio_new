@@ -137,16 +137,12 @@ def test__optimization():
     """
     method = 'hf'
     basis = 'sto-3g'
-    geo = ((('C', (None, None, None), (None, None, None)),
-            ('O', (0, None, None), ('R1', None, None)),
-            ('H', (0, 1, None), ('R2', 'A2', None)),
-            ('H', (0, 1, 2), ('R3', 'A3', 'D3')),
-            ('H', (0, 1, 2), ('R4', 'A4', 'D4')),
-            ('H', (1, 0, 2), ('R5', 'A5', 'D5'))),
-           {'R1': 2.6, 'R2': 2.0, 'A2': 1.9,
-            'R3': 2.0, 'A3': 1.9, 'D3': 2.1,
-            'R4': 2.0, 'A4': 1.9, 'D4': 4.1,
-            'R5': 1.8, 'A5': 1.8, 'D5': 5.2})
+    geo = (('C', (None, None, None), (None, None, None), (None, None, None)),
+           ('O', (0, None, None), ('R1', None, None), (2.6, None, None)),
+           ('H', (0, 1, None), ('R2', 'A2', None), (2.0, 1.9, None)),
+           ('H', (0, 1, 2), ('R3', 'A3', 'D3'), (2.0, 1.9, 2.1)),
+           ('H', (0, 1, 2), ('R4', 'A4', 'D4'), (2.0, 1.9, 4.1)),
+           ('H', (1, 0, 2), ('R5', 'A5', 'D5'), (1.8, 1.8, 5.2)))
     mult = 1
     charge = 0
     orb_type = 'R'

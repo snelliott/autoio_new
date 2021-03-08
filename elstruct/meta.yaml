@@ -24,6 +24,6 @@ requirements:
         - openbabel::openbabel
         - conda-forge::qcelemental
         - psi4::psi4
-        - kevinmooreiii::autoparse
-        - kevinmooreiii::automol
+        - auto-mech::autoparse
+        - auto-mech::automol
         - auto-mech::x2z

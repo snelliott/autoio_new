@@ -1,11 +1,13 @@
 """
  tests writing of projrot inumpyut
 """
+import os
 
 from _util import read_text_file
 import projrot_io
 
 
+PATH = os.path.dirname(os.path.realpath(__file__))
 GEO = (('C', (-4.0048955763, -0.3439866053, -0.0021431734)),
        ('O', (-1.3627056155, -0.3412713280, 0.0239463418)),
        ('H', (-4.7435343957, 1.4733340928, 0.7491098889)),
@@ -30,10 +32,10 @@ HESS = ((0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
 GEOS = [GEO for i in range(21)]
 GRADS = [GRAD for i in range(21)]
 HESSES = [HESS for i in range(21)]
-AXIS1 = [3, 4]
-GROUP1 = [1, 2]
-AXIS2 = [5, 6]
-GROUP2 = [7, 8, 9, 10, 11, 12]
+AXIS1 = [2, 3]
+GROUP1 = [0, 1]
+AXIS2 = [4, 5]
+GROUP2 = [6, 7, 8, 9, 10, 11]
 
 CART_PROJ = 'cartesian'
 
@@ -74,7 +76,7 @@ def test_rt_projections():
         rotors_str='',
         coord_proj=CART_PROJ,
         proj_rxn_coord=False)
-    assert inp_str == read_text_file(['data'], 'rpht.inp')
+    assert inp_str == read_text_file(['data'], 'rpht.inp', PATH)
 
 
 def test_rt_hr_projections():
@@ -94,7 +96,7 @@ def test_rt_hr_projections():
         rotors_str=rotors_str,
         coord_proj=CART_PROJ,
         proj_rxn_coord=False)
-    assert inp_str == read_text_file(['data'], 'rpht_hr.inp')
+    assert inp_str == read_text_file(['data'], 'rpht_hr.inp', PATH)
 
 
 def test_sct_rpht_input():
@@ -108,7 +110,7 @@ def test_sct_rpht_input():
         rotors_str='',
         coord_proj=CART_PROJ,
         proj_rxn_coord=True)
-    assert inp_str == read_text_file(['data'], 'rpht_sct.inp')
+    assert inp_str == read_text_file(['data'], 'rpht_sct.inp', PATH)
 
 
 def test_sct_coord_en():
@@ -118,12 +120,12 @@ def test_sct_coord_en():
     en1_str = projrot_io.writer.rpht_path_coord_en(
         RXN_PATH_COORDS, RXN_PATH_ENERGIES,
         bnd1=(), bnd2=())
-    assert en1_str == read_text_file(['data'], 'rpht_en1.inp')
+    assert en1_str == read_text_file(['data'], 'rpht_en1.inp', PATH)
 
     en2_str = projrot_io.writer.rpht_path_coord_en(
         RXN_PATH_COORDS, RXN_PATH_ENERGIES,
         bnd1=RCT_DISTS, bnd2=PRD_DISTS)
-    assert en2_str == read_text_file(['data'], 'rpht_en2.inp')
+    assert en2_str == read_text_file(['data'], 'rpht_en2.inp', PATH)
 
 
 if __name__ == '__main__':

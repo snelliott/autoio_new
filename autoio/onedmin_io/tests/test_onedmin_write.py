@@ -1,10 +1,12 @@
 """ Tests the writing of the energy transfer section
 """
+import os
 
 import onedmin_io
 from _util import read_text_file
 
 
+PATH = os.path.dirname(os.path.realpath(__file__))
 # Input parameters
 RANSEED = 28384920
 NSAMP = 10
@@ -33,8 +35,8 @@ def test__input_file():
         TARGET_XYZ_NAME, BATH_XYZ_NAME,
         spin_method=1)
 
-    assert onedmin_inp1_str == read_text_file(['data'], 'onedmin1.inp')
-    assert onedmin_inp2_str == read_text_file(['data'], 'onedmin2.inp')
+    assert onedmin_inp1_str == read_text_file(['data'], 'onedmin1.inp', PATH)
+    assert onedmin_inp2_str == read_text_file(['data'], 'onedmin2.inp', PATH)
 
 
 def test__submission_script():
@@ -48,8 +50,8 @@ def test__submission_script():
         NJOBS, JOB_PATH, ONEDMIN_PATH,
         exe_name=EXE_NAME)
 
-    assert subscript1_str == read_text_file(['data'], 'subscript1.inp')
-    assert subscript2_str == read_text_file(['data'], 'subscript2.inp')
+    assert subscript1_str == read_text_file(['data'], 'subscript1.inp', PATH)
+    assert subscript2_str == read_text_file(['data'], 'subscript2.inp', PATH)
 
 
 if __name__ == '__main__':

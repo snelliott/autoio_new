@@ -77,7 +77,7 @@ def core_multirotor(geo, sym_factor, pot_surf_file, int_rot_str,
     core_keys = {
         'sym_factor': sym_factor,
         'natom': natom,
-        'geom': geo,
+        'geo': geo,
         'pot_surf_file': pot_surf_file,
         'int_rot': int_rot_str,
         'interp_emax': interp_emax,
@@ -457,7 +457,7 @@ def umbrella_mode(group, plane, ref_atom, potential,
         'npotential': umbr_npotential,
         'potential': umbr_potential,
         'natom': natom,
-        'geom': geo,
+        'geo': geo,
     }
 
     return build_mako_str(
