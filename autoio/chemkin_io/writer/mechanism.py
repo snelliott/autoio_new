@@ -126,6 +126,8 @@ def reactions_block(rxn_param_dct, comments=None):
     total_rxn_str = 'REACTIONS     CAL/MOLE     MOLES\n\n'
     for rxn, param_dct in rxn_param_dct.items():
 
+        # preprocess potential duplicate PLOGs written as separate tuples:
+        param_dct = util.merge_plog_dct(param_dct)
         # loop over the parameter entries: might be a single one or a duplicate one
         for param_set_i, param_dct_vals in enumerate(param_dct):
             # Convert the reaction name from tuple of tuples to string

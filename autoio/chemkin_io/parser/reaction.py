@@ -4,7 +4,8 @@
 import collections
 import itertools
 import math
-import numpy
+import copy
+import numpy as np
 import autoparse.pattern as app
 import autoparse.find as apf
 from autoparse import cast as ap_cast
@@ -172,8 +173,8 @@ def third_body(rxn_dstr):
 
         :param rxn_dstr: data string for species in reaction block
         :type rxn_dstr: str
-        :return third_body: names of the colliders and corresponding fraction
-        :rtype: tuple(dct)
+        :return trd_body: names of the colliders and corresponding fraction
+        :rtype: tuple(str)
     """
 
     pattern = _first_line_pattern(
@@ -187,18 +188,18 @@ def third_body(rxn_dstr):
     rgt_split_plus = apf.split(app.PLUS, rgt_str)
 
     if len(rgt_split_paren) > 1:
-        third_body = '(+' + apf.split(CHEMKIN_PAREN_CLOSE,
-                                      rgt_split_paren[1])[0] + ')'
+        trd_body = '(+' + apf.split(CHEMKIN_PAREN_CLOSE,
+                                    rgt_split_paren[1])[0] + ')'
 
     elif 'M' in rgt_split_plus:
-        third_body = '+M'
+        trd_body = '+M'
 
     else:
-        third_body = None
+        trd_body = None
 
-    third_body = (third_body,)
+    trd_body = (trd_body,)
 
-    return third_body
+    return trd_body
 
 
 def pressure_region_specification(rxn_dstr):
@@ -412,7 +413,7 @@ def chebyshev_parameters(rxn_dstr, a_units='moles'):
             f'For the below reaction, there should be {cheb_n*cheb_m} Chebyshev polynomial' +
             f' coefficients, but there are only {len(coeffs)}. \n \n {original_rxn_dstr}\n'
         )
-        alpha = numpy.array(list(map(float, coeffs)))
+        alpha = np.array(list(map(float, coeffs)))
 
         params['t_limits'] = [float(val) for val in cheb_temps]
         params['p_limits'] = [float(val) for val in cheb_pressures]
@@ -609,15 +610,69 @@ def fix_duplicates(rcts_prds, params):
             first_plus_i = rcts_prds.index(unique_list[idx], first+i)
             params_all.append(params[first_plus_i])
 
+        # check for duplicate plogs
+        params_all = split_plog_dct(params_all)
         # convert to tuple and overwrite the parameters
         unique_params.append(tuple(params_all))
 
     return unique_list, unique_params
 
 
+def split_plog_dct(param_dct):
+    """ Splits 2 or more PLOG dictionaries if they share the same pressures
+
+        :param_dct: values of one rxn_param_dct
+        :type tuple(tuple)
+        :return param_dct
+        :rtype tuple(tuple)    
+    """
+
+    # convert param_dct [(tup)] to [[lst]]
+    param_dct_lst = [list(param_dct_i) for param_dct_i in param_dct]
+    # extract plog dictionaries
+    plog = np.array(
+        [param_dct_vals[4] is not None for param_dct_vals in param_dct_lst], dtype=int)
+    mask_nonplog = np.where(plog == 0)[0]
+    mask_plog = np.where(plog == 1)[0]
+
+    for plog_i in mask_plog:
+        param_dct_vals = param_dct_lst[plog_i]
+        keys, plog_params = zip(*list(param_dct_vals[4].items()))
+
+        if any([int(len(param_i)/3) > 1 for param_i in plog_params]):
+            num_arr_sets = max([int(len(param_i)/3)
+                                for param_i in plog_params])
+            new_sets = []
+
+            for idx in range(num_arr_sets):
+                param_dct_vals_idx = copy.deepcopy(param_dct_vals)
+                param_dct_vals_idx[4] = {}
+                keys_idx = np.array(
+                    [int(len(param_i)/3/(idx+1)) >= 1 for param_i in plog_params], dtype=int)
+                mask_keys = np.where(keys_idx == 1)[0]
+                new_keys = [keys[i] for i in mask_keys]
+                for key_i in new_keys:
+                    param_dct_vals_idx[4][key_i] = param_dct_vals[4][key_i][3 *
+                                                                            idx:3*(idx+1)]
+                # append the new dictionary to param_dct_lst
+                new_sets.append(param_dct_vals_idx)
+            # replace the original dictionary
+            param_dct_lst[plog_i] = new_sets[0]
+            # add new sets
+            param_dct_lst.extend(new_sets[1:])
+
+    # convert back to tuples
+    param_dct = [tuple(param_dct_i) for param_dct_i in param_dct]
+    return param_dct
+
+
 def get_ea_conv_factor(ea_units):
     """ Get the factor for converting Ea to the desired units of kcal/mole
 
+        :param ea_units: units of activation energies
+        :type ea_units: string
+        :return ea_conv_factor: conversion factor from ea_units to cal/mol
+        :rtype: float
     """
     if ea_units == 'cal/mole':
         ea_conv_factor = 1
@@ -641,6 +696,11 @@ def get_ea_conv_factor(ea_units):
 def get_a_conv_factor(rxn_dstr, a_units):
     """ Get the factor for converting A to the desired basis of moles
 
+        :param rxn_dstr: data string for species in reaction block
+        :param a_units: units of pre-exponential factor
+        :type rxn_dstr, a_units: string
+        :return a_conv_factor: conversion factor from a_units to moles
+        :rtype: float
     """
     # Get the molecularity
     rcts = reactant_names(rxn_dstr)
@@ -649,9 +709,9 @@ def get_a_conv_factor(rxn_dstr, a_units):
     molecularity = len(rcts)
 
     # Find out whether there is a third body
-    em_param = em_parameters(rxn_dstr)
+    trd_body = third_body(rxn_dstr)[0]
     # if 3rd body has '(', no effect on units
-    if em_param is not None and '(+' not in em_param:
+    if trd_body is not None and '(+' not in trd_body:
         molecularity += 1
 
     if a_units == 'moles':

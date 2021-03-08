@@ -123,13 +123,13 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
         if len(plog_param_dct[1]) > 3:
             comment = 'Duplicates exist at 1 atm (see below); only a single 1-atm fit is written here'
             plog_str = _highp_str(reaction, plog_param_dct[1][:3], max_length=max_length,
-                name_buffer=name_buffer, inline_comment=comment
-            )
+                                  name_buffer=name_buffer, inline_comment=comment
+                                  )
         else:
             comment = 'Arrhenius parameters at 1 atm'
             plog_str = _highp_str(reaction, plog_param_dct[1], max_length=max_length,
-                name_buffer=name_buffer, inline_comment=comment
-            )
+                                  name_buffer=name_buffer, inline_comment=comment
+                                  )
     else:
         comment = 'No fit at 1 atm available'
         plog_str = _highp_str(reaction, [1.0, 0.0, 0.0], max_length=max_length,
@@ -151,6 +151,7 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
                                       max_length=max_length, name_buffer=name_buffer)
 
     return plog_str
+
 
 
 def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax, max_length=45, name_buffer=BUFFER):
