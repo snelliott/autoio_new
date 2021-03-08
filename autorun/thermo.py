@@ -20,15 +20,15 @@ def direct(thermp_script_str, pac99_script_str, run_dir,
 
     # Run ThermP and read the Heat-of-Formation at 298K
     formula_str = automol.formula.string(formula)
-    _, thermp_output_str = thermp_direct(
+    _, thermp_output_strs = thermp_direct(
         thermp_script_str, run_dir,
         pf_str, formula_str, hform0, temps,
         enthalpyt=enthalpyt, breakt=breakt)
-    hform298 = thermp_io.reader.hf298k(thermp_output_str)
+    hform298 = thermp_io.reader.hf298k(thermp_output_strs[0])
 
     # Run PACC99 and obtain the polynomials
     nasa_poly = nasa_polynomial(
-        pac99_script_str, run_dir, thermp_output_str, name, formula,
+        pac99_script_str, run_dir, thermp_output_strs[1], name, formula,
         convert=convert)
 
     return hform298, nasa_poly

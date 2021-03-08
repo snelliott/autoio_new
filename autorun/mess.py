@@ -42,12 +42,12 @@ def torsions(script_str, run_dir, geo, hind_rot_str):
     output_str = output_strs[0]
 
     # Read the torsional freqs and zpves
-    tors_zpes = mess_io.reader.tors.zero_point_vibrational_energies(
-        output_str)
     # tors_freqs = mess_io.reader.tors.freqs(output_string)
     tors_freqs = mess_io.reader.tors.grid_minimum_frequencies(output_str)
+    tors_zpes = mess_io.reader.tors.zero_point_vibrational_energies(
+        output_str)
 
-    return tors_zpes, tors_freqs
+    return tors_freqs, tors_zpes
 
 
 def direct(script_str, run_dir, input_str, aux_dct=None,

@@ -30,6 +30,9 @@ def from_input_string(script_str, run_dir, input_str,
         :rtype: str
     """
 
+    if not os.path.exists(run_dir):
+        os.makedirs(run_dir)
+
     with EnterDirectory(run_dir):
 
         # Write the submit script to the run directory
