@@ -9,6 +9,7 @@ from mess_io.writer.globkey import messpf_inp_str
 from mess_io.writer.globkey import global_reaction
 from mess_io.writer.globkey import global_pf
 from mess_io.writer.globkey import global_energy_transfer
+from mess_io.writer.globkey import pf_output
 from mess_io.writer.etrans import energy_down
 from mess_io.writer.etrans import collision_frequency
 from mess_io.writer.rxnchan import species
@@ -43,6 +44,7 @@ __all__ = [
     'global_reaction',
     'global_pf',
     'global_energy_transfer',
+    'pf_output',
     'energy_down',
     'collision_frequency',
     'species',

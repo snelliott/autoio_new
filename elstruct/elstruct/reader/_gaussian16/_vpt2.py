@@ -1,13 +1,11 @@
 """ Obtain information from VPT2 calculations
 """
 
-from qcelemental import constants as qcc
+from phydat import phycon
+import automol
 import autoread as ar
 import autoparse.pattern as app
 import autoparse.find as apf
-
-
-KJ2EH = qcc.conversion_factor('kJ/mol', 'hartree')
 
 
 def anharmonic_frequencies(output_str):
@@ -84,7 +82,7 @@ def anharmonic_zpve(output_str):
 
     # Convert the ZPVE units
     anh_zpve = float(anh_zpve.replace('D', 'E'))
-    anh_zpve *= KJ2EH
+    anh_zpve *= phycon.KJ2EH
 
     return anh_zpve
 
@@ -216,15 +214,11 @@ def cubic_force_constants(output_str):
 
     caps = apf.all_captures(pattern, block)
     if caps:
-        cfc_dct = {}
-        for idx1, idx2, idx3, cfc in caps:
-            cfc_dct[(int(idx1), int(idx2), int(idx3))] = float(cfc)
-        for i, j, k, cfc in caps:
-            cfc_dct[(int(i), int(j), int(k))] = float(cfc)
+        cfc_mat = _fc_mat(caps)
     else:
-        cfc_dct = {}
+        cfc_mat = None
 
-    return cfc_dct
+    return cfc_mat
 
 
 def quartic_force_constants(output_str):
@@ -242,6 +236,12 @@ def quartic_force_constants(output_str):
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          'Input to Restart Anharmonic Calculations'),
         output_str)
+    if block is None:
+        block = apf.last_capture(
+            ('QUARTIC FORCE CONSTANTS IN NORMAL MODES' +
+             app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
+             'Input for POLYMODE'),
+            output_str)
 
     pattern = (
         app.capturing(app.INTEGER) +
@@ -261,13 +261,31 @@ def quartic_force_constants(output_str):
 
     caps = apf.all_captures(pattern, block)
     if caps:
-        qfc_dct = {}
-        for idx1, idx2, idx3, idx4, qfc in caps:
-            qfc_dct[(int(idx1), int(idx2), int(idx3), int(idx4))] = float(qfc)
+        qfc_mat = _fc_mat(caps)
     else:
-        qfc_dct = {}
+        qfc_mat = None
 
-    return qfc_dct
+    return qfc_mat
+
+
+def _fc_mat(fc_caps):
+    """ caps: (
+            ((idx1, idx2, ..., idxn), val1),
+            ((idx1, idx2, ..., idxn), val2),
+            ...,
+            ((idx1, idx2, ..., idxn), valn),
+    """
+
+    # Convert the types of the force constant data
+    fc_idxs, fc_vals = [], []
+    for caps in fc_caps:
+        fc_idxs.append(tuple(int(val)-1 for val in caps[:-1]))
+        fc_vals.append(float(caps[-1]))
+
+    fc_mat = automol.util.highd_mat.build_full_array(
+        fc_idxs, fc_vals, fill_perms=True)
+
+    return fc_mat
 
 
 def vpt2(output_str):

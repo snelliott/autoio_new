@@ -3,6 +3,7 @@
 """
 
 import os
+from phydat import phycon
 from ioformat import build_mako_str
 from ioformat import remove_trail_whitespace
 from projrot_io import util
@@ -146,39 +147,67 @@ def rotors(axis, group):
     return util.remove_trail_whitespace(rotors_str)
 
 
-DIST_DCT = {
-    ('C', 'H'): 1.5,
-    ('H', 'C'): 1.2,
-    ('C', 'C'): 2.4,
-    ('C', 'N'): 1.8,
-    ('C', 'O'): 1.6,
-    ('O', 'H'): 1.6,
-    ('H', 'O'): 1.5,
-    ('O', 'O'): 1.6,
-    ('S', 'H'): 1.5,
-    ('N', 'H'): 1.3,
-    ('H', 'H'): 1.2
-}
+def projection_distance_aux(dist_cutoff_dct=None):
+    """ Write the auxiliary file for defining atom-atom distance cutoffs used
+        to constuct parts of the molecule for rotors.
 
-
-def projection_aux():
-    """ Projection Auxiliary
+        :param dist_cutoff_dct: atom-atom cutoff distances (in Bohr)
+        :type dist_cutoff_dct: dict[(str, str): float]
+        :rtype: str
     """
+
+    # Set dictionary of default cutoffs and update with the input dct
+    # These distances are already in Angstrom since that is unit for file
+    dist_dct = {
+        ('C', 'H'): 1.50,
+        ('H', 'C'): 1.25,
+        ('C', 'C'): 2.40,
+        ('C', 'N'): 1.80,
+        ('C', 'O'): 1.60,
+        ('O', 'H'): 1.60,
+        ('H', 'O'): 1.50,
+        ('O', 'O'): 1.60,
+        ('S', 'H'): 1.50,
+        ('N', 'H'): 1.30,
+        ('H', 'H'): 1.20
+    }
+    if dist_cutoff_dct is not None:
+        for key, val in dist_cutoff_dct.items():
+            dist_cutoff_dct[key] = val * phycon.BOHR2ANG
+        dist_dct.update(dist_cutoff_dct)
 
     # Set the header
     dist_str = (
-        'projection distances'
-        ''
-        'distances to be read as Atom1 Atom2 distance'
-        ''
+        'projection distances\n'
+        '\n'
+        'distances to be read as Atom1 Atom2 distance\n'
+        '\n'
     )
 
-    # Modify the dictionary
-    dct = {}
-
     # Write the distance strings
-    dist_str = ''
-    for (atm1, atm2), dist in dct.values():
-        dist_str += '{0:s} {1:s} {2:.3f}'.format(atm1, atm2, dist)
+    for (atm1, atm2), dist in dist_dct.items():
+        dist_str += '{0:s} {1:s} {2:.3f}\n'.format(atm1, atm2, dist)
 
     return dist_str
+
+
+def bmatrix(bmat):
+    """ Write the B-Matrix to a ProjRot style input
+    """
+
+    nd1, nd2, nd3 = bmat.shape
+    bmat_str = '{0:>12d}{1:>12d}\n'.format(nd1, nd2*nd3)
+    bmat_str += bmat_string(bmat)
+
+    return bmat_str
+
+
+def cmatrix(cmat):
+    """ Write the B-Matrix to a ProjRot style input
+    """
+
+    nd1, nd2, nd3, nd4 = cmat.shape
+    cmat_str = '{0:>12d}{1:>12d}\n'.format(nd2, nd3*nd4)
+    cmat_str += cmat_string(cmat)
+
+    return cmat_str

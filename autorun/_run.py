@@ -16,7 +16,7 @@ def from_input_string(script_str, run_dir, input_str,
                       aux_dct=None,
                       script_name=SCRIPT_NAME,
                       input_name=INPUT_NAME,
-                      output_name=OUTPUT_NAME):
+                      output_names=(OUTPUT_NAME,)):
     """ run the program in a temporary directory and return the output
 
         :param script_str: string of bash script that contains
@@ -30,12 +30,14 @@ def from_input_string(script_str, run_dir, input_str,
         :rtype: str
     """
 
-    with _EnterDirectory(run_dir):
+    if not os.path.exists(run_dir):
+        os.makedirs(run_dir)
+
+    with EnterDirectory(run_dir):
 
         # Write the submit script to the run directory
         with open(script_name, 'w') as script_obj:
             script_obj.write(script_str)
-        # print('\n\nWriting MESS input file...')
 
         # Make the script executable
         os.chmod(script_name, mode=os.stat(script_name).st_mode | stat.S_IEXEC)
@@ -43,14 +45,12 @@ def from_input_string(script_str, run_dir, input_str,
         # Write the input string to the run directory
         with open(input_name, 'w') as input_obj:
             input_obj.write(input_str)
-        # print('\n\nWriting MESS input file...')
-        # print(' - Path: {}'.format(mess_path))
 
         # Write all of the auxiliary input files
         if aux_dct is not None:
             for fname, fstring in aux_dct.items():
                 if fstring:
-                    with open(input_name, 'w') as aux_obj:
+                    with open(fname, 'w') as aux_obj:
                         aux_obj.write(fstring)
 
         # Execute the program
@@ -58,38 +58,86 @@ def from_input_string(script_str, run_dir, input_str,
             subprocess.check_call('./{:s}'.format(script_name))
         except subprocess.CalledProcessError as err:
             # As long as the program wrote an output, continue with a warning
-            if os.path.isfile(output_name):
+            if all(os.path.isfile(name) for name in output_names):
                 warnings.warn("Program run failed in {}".format(run_dir))
             else:
                 raise err
 
         # Read the output string from the run directory
-        assert os.path.isfile(output_name), (
-            '{} is should be a file, but it is not'.format(output_name)
-        )
-        with open(output_name, 'r') as output_obj:
-            output_str = output_obj.read()
+        output_strs = ()
+        for output_name in output_names:
+            if os.path.exists(output_name):
+                if os.path.isfile(output_name):
+                    with open(output_name, 'r') as output_obj:
+                        output_str = output_obj.read()
+                else:
+                    output_str = None
+            else:
+                output_str = None
+            output_strs += (output_str,)
 
-    return output_str
+    return output_strs
+
+
+def write_input(run_dir, input_str,
+                aux_dct=None,
+                input_name=INPUT_NAME):
+    """ write the input
+    """
+
+    if not os.path.exists(run_dir):
+        os.makedirs(run_dir)
+
+    with EnterDirectory(run_dir):
+
+        # Write the main input file
+        with open(input_name, 'w') as input_obj:
+            input_obj.write(input_str)
+
+        # Write all auxiliary input files
+        if aux_dct is not None:
+            for fname, fstring in aux_dct.items():
+                if fstring:
+                    with open(fname, 'w') as aux_obj:
+                        aux_obj.write(fstring)
+
+
+def read_output(run_dir, output_names=(OUTPUT_NAME,)):
+    """ Read the output string from the run directory
+    """
+
+    with EnterDirectory(run_dir):
+
+        output_strs = ()
+        for output_name in output_names:
+            if os.path.exists(output_name):
+                if os.path.isfile(output_name):
+                    with open(output_name, 'r') as output_obj:
+                        output_str = output_obj.read()
+                else:
+                    output_str = None
+            else:
+                output_str = None
+
+        output_strs += (output_str,)
+
+    return output_strs
 
 
 def run_script(script_str, run_dir, script_name=SCRIPT_NAME):
     """ run a program from a script
     """
 
-    with _EnterDirectory(run_dir):
+    with EnterDirectory(run_dir):
 
         # Write the submit script to the run directory
-        print('trying to delete {}: {}', script_name, run_dir)
         try:
             os.remove(script_name)
             with open(script_name, 'w') as script_obj:
                 script_obj.write(script_str)
-            print('succeeded in deleting {}:'.format(script_name))
         except IOError:
             with open(script_name, 'w') as script_obj:
                 script_obj.write(script_str)
-            print('failed to delete {}:'.format(script_name))
 
         # Make the script executable
         os.chmod(script_name, mode=os.stat(script_name).st_mode | stat.S_IEXEC)
@@ -98,17 +146,22 @@ def run_script(script_str, run_dir, script_name=SCRIPT_NAME):
         try:
             subprocess.check_call('./{:s}'.format(script_name))
         except subprocess.CalledProcessError:
-            # If the program failed, continue with a warning
+            # # As long as the program wrote an output, continue with a warning
+            # if all(os.path.isfile(name) for name in output_names):
+            #     warnings.warn("Program run failed in {}".format(run_dir))
+            # else:
+            #     raise err
             warnings.warn("run failed in {}".format(run_dir))
-            # if kill_job or script_str == MESSRATE or script_str == MESSPF:
-            #     print('killing AutoMech:')
-            #     sys.exit()
 
 
-class _EnterDirectory():
+class EnterDirectory():
+    """ Handles the entrance and exit of some directory.
+    """
 
     def __init__(self, directory):
-        assert os.path.isdir(directory)
+        assert os.path.isdir(directory), (
+            '{} is not a directory'.format(directory)
+        )
         self.directory = directory
         self.working_directory = os.getcwd()
 

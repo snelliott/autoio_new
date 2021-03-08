@@ -1,7 +1,7 @@
 """ core run function
 """
 
-from ioformat import from_input_string
+from autorun import from_input_string
 
 
 def direct(input_writer, script_str, run_dir, prog,
@@ -34,6 +34,8 @@ def direct(input_writer, script_str, run_dir, prog,
         prog=prog,
         geo=geo, charge=charge, mult=mult, method=method, basis=basis,
         **kwargs)
-    output_str = from_input_string(script_str, run_dir, input_str)
+
+    output_strs = from_input_string(script_str, run_dir, input_str)
+    output_str = output_strs[0]
 
     return input_str, output_str

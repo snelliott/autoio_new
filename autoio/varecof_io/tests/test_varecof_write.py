@@ -84,10 +84,6 @@ def test__tst_writer():
         ener_grid=ENER_GRID,
         amom_grid=AMOM_GRID)
 
-    with open('data/tst1.inp', 'w') as f:
-        f.write(tst_inp1_str)
-    with open('data/tst2.inp', 'w') as f:
-        f.write(tst_inp2_str)
     assert tst_inp1_str == read_text_file(['data'], 'tst1.inp', PATH)
     assert tst_inp2_str == read_text_file(['data'], 'tst2.inp', PATH)
 
@@ -106,13 +102,9 @@ def test__divsur_writer():
         d1dists=D1DISTS, d2dists=D2DISTS,
         t1angs=T1ANGS, t2angs=T2ANGS,
         p1angs=P1ANGS, p2angs=P2ANGS,
-        phi_dependence=True,
+        phi_dependence=False,
         **CONDITIONS_DCT)
 
-    with open('data/divsur1.inp', 'w') as f:
-        f.write(divsur_inp1_str)
-    with open('data/divsur2.inp', 'w') as f:
-        f.write(divsur_inp2_str)
     assert divsur_inp1_str == read_text_file(['data'], 'divsur1.inp', PATH)
     assert divsur_inp2_str == read_text_file(['data'], 'divsur2.inp', PATH)
 
@@ -123,17 +115,13 @@ def test__els_writer():
 
     # Write the els input string
     els_inp1_str = varecof_io.writer.input_file.elec_struct(
-        EXE_PATH, LIB_PATH, BASE_NAME, NPOT)
+        LIB_PATH, BASE_NAME, NPOT)
 
     els_inp2_str = varecof_io.writer.input_file.elec_struct(
-        EXE_PATH, LIB_PATH, BASE_NAME, NPOT,
+        LIB_PATH, BASE_NAME, NPOT,
         dummy_name=DUMMY_NAME, lib_name=LIB_NAME,
         geo_ptt=GEO_PTT, ene_ptt=ENE_PTT)
 
-    with open('data/els1.inp', 'w') as f:
-        f.write(els_inp1_str)
-    with open('data/els2.inp', 'w') as f:
-        f.write(els_inp2_str)
     assert els_inp1_str == read_text_file(['data'], 'els1.inp', PATH)
     assert els_inp2_str == read_text_file(['data'], 'els2.inp', PATH)
 
@@ -145,8 +133,6 @@ def test__structure_writer():
     struct_inp_str = varecof_io.writer.input_file.structure(
         C2H5_GEO, OH_GEO)
 
-    with open('data/structure.inp', 'w') as f:
-        f.write(struct_inp_str)
     assert struct_inp_str == read_text_file(['data'], 'structure.inp', PATH)
 
 
@@ -156,8 +142,6 @@ def test__mcflux_writer():
 
     mc_flux_inp_str = varecof_io.writer.input_file.mc_flux()
 
-    with open('data/mc_flux.inp', 'w') as f:
-        f.write(mc_flux_inp_str)
     assert mc_flux_inp_str == read_text_file(['data'], 'mc_flux.inp', PATH)
 
 
@@ -167,8 +151,6 @@ def test__convert_writer():
 
     conv_inp_str = varecof_io.writer.input_file.convert()
 
-    with open('data/conv.inp', 'w') as f:
-        f.write(conv_inp_str)
     assert conv_inp_str == read_text_file(['data'], 'conv.inp', PATH)
 
 
