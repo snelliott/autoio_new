@@ -58,7 +58,7 @@ def test__pot40():
     """
 
     inp_str = polyrate_io.writer.potential_file(
-        RCT_INFO, PRD_INFO, SADPT_INFO, MEP_INFOS)
+        RCT_INFO, SADPT_INFO, MEP_INFOS)
 
     with open('pot.fu40', 'w') as fobj:
         fobj.write(inp_str)

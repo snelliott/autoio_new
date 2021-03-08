@@ -9,7 +9,7 @@ from _util import read_text_file
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-INP_STR = read_text_file(['data', 'inp'], 'full_rates.inp', PATH)
+INP_STR = read_text_file(['data', 'inp'], 'mess.inp', PATH)
 
 
 def test__pes():
@@ -37,7 +37,7 @@ def test__pes():
     assert conn_lst1 == ref_conn_lst1
 
     # Test reading the entire PES with fake wells
-    energy_dct2, conn_lst2 = mess_io.reader.pes(
+    energy_dct2, conn_lst2, _ = mess_io.reader.pes(
         input_string=INP_STR,
         read_fake=True)
 

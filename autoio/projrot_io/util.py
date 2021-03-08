@@ -32,7 +32,7 @@ def write_data_str(geos, grads, hessians):
         data_str += _format_grad_str(geo, grad)
         data_str += 'Hessian\n'
         data_str += _format_hessian_str(hess)
-        if i != nsteps-1:
+        if i < nsteps-1:
             data_str += '\n'
 
     return remove_trail_whitespace(data_str)
