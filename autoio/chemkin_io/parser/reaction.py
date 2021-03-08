@@ -618,21 +618,20 @@ def fix_duplicates(rcts_prds, params):
     return unique_list, unique_params
 
 
-def split_plog_dct(param_dct):
+def split_plog_dct(param_dct_entry):
     """ Splits 2 or more PLOG dictionaries if they share the same pressures
 
-        :param_dct: values of one rxn_param_dct
+        :param_dct_entry: values of one rxn_param_dct
         :type tuple(tuple)
         :return param_dct
         :rtype tuple(tuple)    
     """
 
     # convert param_dct [(tup)] to [[lst]]
-    param_dct_lst = [list(param_dct_i) for param_dct_i in param_dct]
+    param_dct_lst = [list(param_dct_i) for param_dct_i in param_dct_entry]
     # extract plog dictionaries
     plog = np.array(
         [param_dct_vals[4] is not None for param_dct_vals in param_dct_lst], dtype=int)
-    mask_nonplog = np.where(plog == 0)[0]
     mask_plog = np.where(plog == 1)[0]
 
     for plog_i in mask_plog:
@@ -640,11 +639,10 @@ def split_plog_dct(param_dct):
         keys, plog_params = zip(*list(param_dct_vals[4].items()))
 
         if any([int(len(param_i)/3) > 1 for param_i in plog_params]):
-            num_arr_sets = max([int(len(param_i)/3)
-                                for param_i in plog_params])
             new_sets = []
 
-            for idx in range(num_arr_sets):
+            for idx in range(max([int(len(param_i)/3)
+                                  for param_i in plog_params])):
                 param_dct_vals_idx = copy.deepcopy(param_dct_vals)
                 param_dct_vals_idx[4] = {}
                 keys_idx = np.array(
@@ -662,8 +660,8 @@ def split_plog_dct(param_dct):
             param_dct_lst.extend(new_sets[1:])
 
     # convert back to tuples
-    param_dct = [tuple(param_dct_i) for param_dct_i in param_dct]
-    return param_dct
+    param_dct_entry = [tuple(param_dct_i) for param_dct_i in param_dct_entry]
+    return param_dct_entry
 
 
 def get_ea_conv_factor(ea_units):
@@ -850,7 +848,7 @@ def are_highp_fake(highp_params):
 
     are_fake = False
     for params in highp_params:
-        if numpy.allclose(params, [1.0, 0.0, 0.0], atol=0.0000001):
+        if np.allclose(params, [1.0, 0.0, 0.0], atol=0.0000001):
             are_fake = True
 
     return are_fake
