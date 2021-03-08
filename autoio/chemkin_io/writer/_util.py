@@ -1,5 +1,6 @@
-""" Format things
+""" Format utilities
 """
+import numpy as np
 
 CKIN_TRANS_HEADER_STR = """! THEORETICAL TRANSPORT PROPERTIES
 !
@@ -67,39 +68,82 @@ def format_rxn_name(rxn_key, param_vals):
         # cheb writer if cheb params is not there
         rct_str += '(+M)'
         prd_str += '(+M)'
-        
+
     rxn_name = rct_str + '=' + prd_str
 
     return rxn_name
 
 
-def format_rxn_name_luna(rxn_key, param_vals):
-    """ Receives a rxn_key and the corresponding param_vals 
-        from a rxn_param_dct and writes it to a string that 
-        the above functions can handle. Adds +M or (+M) if
-        applicable.
+def merge_plog_dct(param_dct):
+    """ Merge 2 or more duplicate PLOG dictionaries
+
+        :param_dct: values of one rxn_param_dct
+        :type tuple(tuple)
+        :return param_dct
+        :rtype tuple(tuple)
     """
-    rcts = rxn_key[0]
-    prds = rxn_key[1]
+    # extract plog dictionaries
+    plog = np.array(
+        [param_dct_vals[4] is not None for param_dct_vals in param_dct], dtype=int)
+    mask_nonplog = np.where(plog == 0)[0]
+    mask_plog = np.where(plog == 1)[0]
+    if len(mask_plog) > 1:  # more than 1 set of plog params
+        # merge dictionaries together or add entries
+        plog_param_dct = [list(param_dct[i]) for i in mask_plog]
+        merged_plog_dct = plog_param_dct[0]
+        # new dictionary
+        for plog_param_dct_i in plog_param_dct[1:]:
+            # extend the plog values with the other parameters
+            for key_i, plog_params in plog_param_dct_i[4].items():
+                try:
+                    merged_plog_dct[4][key_i].extend(plog_params)
+                except KeyError:
+                    merged_plog_dct[4][key_i] = plog_params
 
-    # write strings
-    if len(rcts) == 1:
-        # 1 species
-        rct_str = rcts[0]
-    elif len(rcts) == 2:
-        # 2 species
-        rct_str = rcts[0] + '+' + rcts[1]
+        # build new dct
+        merged_plog_dct = [tuple(merged_plog_dct)]
 
-    if len(prds) == 1:
-        prd_str = prds[0]
-    elif len(prds) >= 2:
-        prd_str = '+'.join(list(prds))
+        if len(mask_nonplog) > 0:
+            nonplog_param_dct = [param_dct[i] for i in mask_nonplog]
+            merged_plog_dct.extend(nonplog_param_dct)
+        param_dct = tuple(merged_plog_dct)
 
-    # Add the +M or (+M) text if it is applicable
-    if param_vals[6] is not None:
-        rct_str += ' ' + param_vals[6]
-        prd_str += ' ' + param_vals[6]
+    return param_dct
 
-    rxn_name = rct_str + ' = ' + prd_str
 
-    return rxn_name
+def merge_plog_dct(param_dct):
+    """ Merge 2 or more duplicate PLOG dictionaries
+
+        :param_dct: values of one rxn_param_dct
+        :type tuple(tuple)
+        :return param_dct
+        :rtype tuple(tuple)
+    """
+    # extract plog dictionaries
+    plog = np.array(
+        [param_dct_vals[4] is not None for param_dct_vals in param_dct], dtype=int)
+    mask_nonplog = np.where(plog == 0)[0]
+    mask_plog = np.where(plog == 1)[0]
+    if len(mask_plog) > 1:  # more than 1 set of plog params
+        # list with all not-none parac_dct_vals[4]
+        plog_param_dct = [list(param_dct[i]) for i in mask_plog]
+        keys_list = [list(plog_param_dct_i[4].keys())
+                     for plog_param_dct_i in plog_param_dct]
+        unique_keys_list = []
+        # if they share the same keys: join them together
+        if all(keys_i == keys_list[0] for keys_i in keys_list):
+            # new dictionary
+            merged_plog_dct = plog_param_dct[0]
+            # extend the plog values with the other parameters
+            for key_i in keys_list[0]:
+                for idx in range(1, len(mask_plog)):
+                    merged_plog_dct[4][key_i].extend(
+                        plog_param_dct[idx][4][key_i])
+            # build new dct
+            merged_plog_dct = [tuple(merged_plog_dct)]
+
+            if len(mask_nonplog) > 0:
+                nonplog_param_dct = [param_dct[i] for i in mask_nonplog]
+                merged_plog_dct.extend(nonplog_param_dct)
+            param_dct = tuple(merged_plog_dct)
+    return param_dct
