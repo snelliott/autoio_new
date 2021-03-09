@@ -34,7 +34,7 @@ def ktp_dct(output_str, reactant, product):
     # Update the dictionary with the pressure-dependend rate constants
     for pressure in _pressures(out_lines):
         _ktp_dct.update(
-            {pressure: _pdep_kts(out_lines, reaction, pressure)}
+            _pdep_kts(out_lines, reaction, pressure)
         )
 
     return _ktp_dct
@@ -222,6 +222,136 @@ def ke_dct(output_str, reactant, product):
                 _ke_dct[float(tmp[0])] = float(tmp[col_idx])
 
     return _ke_dct
+
+
+# Functions to read temperatures and pressures
+def get_temperatures(output_str):
+    """ Reads the temperatures from the MESS output file string
+        that were used in the master-equation calculation.
+        :param output_str: string of lines of MESS output file
+        :type output_str: str
+        :return temperatures: temperatures in the output
+        :rtype: list(float)
+        :return temperature_unit: unit of the temperatures in the output
+        :rtype: str
+    """
+
+    # Get the MESS output lines
+    mess_lines = output_str.splitlines()
+
+    # Find the block of lines where the temperatures can be read
+    temp_str = 'Pressure-Species Rate Tables:'
+    for i, line in enumerate(mess_lines):
+        if temp_str in line:
+            block_start = i
+            break
+
+    # Read the temperatures
+    temperatures = []
+    for i in range(block_start, len(mess_lines)):
+        if 'Temperature =' in mess_lines[i]:
+            tmp = mess_lines[i].strip().split()
+            temperature_unit = tmp[3]
+            if tmp[2] not in temperatures:
+                temperatures.append(float(tmp[2]))
+            # else:
+            #     temperature_unit = tmp[3]
+            #     break
+
+    # Read unit
+    for i in range(block_start, len(mess_lines)):
+        if 'Temperature =' in mess_lines[i]:
+            temperature_unit = mess_lines[i].strip().split()[3]
+            break
+
+    return temperatures, temperature_unit
+
+
+def get_pressures(output_str):
+    """ Reads the pressures from the MESS output file string
+        that were used in the master-equation calculation.
+        :param output_str: string of lines of MESS output file
+        :type output_str: str
+        :return pressures: pressures in the output
+        :rtype: list(str, float)
+        :return pressure_unit: unit of the pressures in the output
+        :rtype: str
+    """
+
+    # Get the MESS output lines
+    mess_lines = output_str.splitlines()
+
+    # Find the block of lines where the pressures can be read
+    pressure_str = 'Pressure-Species Rate Tables:'
+    for i, line in enumerate(mess_lines):
+        if pressure_str in line:
+            block_start = i
+            break
+
+    # Read the pressures
+    pressures = []
+    for i in range(block_start, len(mess_lines)):
+        if 'P(' in mess_lines[i]:
+            pressure_unit = mess_lines[i].strip().split('(')[1].split(')')[0]
+            pressure_start = i+1
+            for j in range(pressure_start, len(mess_lines)):
+                if 'O-O' in mess_lines[j]:
+                    break
+                tmp = mess_lines[j].strip().split()
+                pressures.append(float(tmp[0]))
+            break
+
+    # Append high pressure
+    pressures.append('high')
+
+    return pressures, pressure_unit
+
+
+def get_temperatures_input(input_str):
+    """ Reads the temperatures from the MESS input file string
+        that were used in the master-equation calculation.
+        :param input_str: string of lines of MESS input file
+        :type input_str: str
+        :return temperatures: temperatures in the input
+        :rtype: list(float)
+        :return temperature_unit: unit of the temperatures in the input
+        :rtype: str
+    """
+
+    # Get the MESS input lines
+    mess_lines = input_str.splitlines()
+    for line in mess_lines:
+        if 'TemperatureList' in line:
+            temperatures = [float(val) for val in line.strip().split()[1:]]
+            temperature_unit = line.strip().split('[')[1].split(']')[0]
+            break
+
+    return temperatures, temperature_unit
+
+
+def get_pressures_input(input_str):
+    """ Reads the pressures from the MESS input file string
+        that were used in the master-equation calculation.
+        :param input_str: string of lines of MESS input file
+        :type input_str: str
+        :return pressures: pressures in the input
+        :rtype: list(str, float)
+        :return pressure_unit: unit of the pressures in the input
+        :rtype: str
+    """
+
+    # Get the MESS input lines
+    mess_lines = input_str.splitlines()
+    for line in mess_lines:
+        if 'PressureList' in line:
+            pressures = [float(val) for val in line.strip().split()[1:]]
+            pressure_unit = line.strip().split('[')[1].split(']')[0]
+            break
+
+    # Append high pressure
+    pressures.append('high')
+
+    return pressures, pressure_unit
 
 
 # Helper functions
