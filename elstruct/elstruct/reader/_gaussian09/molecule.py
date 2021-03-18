@@ -60,11 +60,10 @@ def opt_zmatrix(output_str):
         output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('Symbolic Z-matrix:'), app.LINE, '']),
-        symb_ptt=ar.par.Pattern.ATOM_SYMBOL + app.maybe(app.UNSIGNED_INTEGER),
+        symb_ptt=ar.par.Pattern.ATOM_SYMBOL + app.not_followed_by(app.SPACES + app.FLOAT) + app.maybe(app.UNSIGNED_INTEGER),
         key_ptt=app.one_of_these([app.UNSIGNED_INTEGER, app.VARIABLE_NAME]),
         line_end_ptt=app.maybe(app.UNSIGNED_INTEGER),
         last=False)
-
     # Reads the values from the end of the output
     if all(x is not None for x in (symbs, key_mat, name_mat)):
         grad_val = app.one_of_these([app.FLOAT, 'nan', '-nan'])
