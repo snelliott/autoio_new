@@ -7,4 +7,4 @@ ${ts_data}\
 ${tunnel}\
     End
 % endif
-  End\
+  End  ! Barrier\

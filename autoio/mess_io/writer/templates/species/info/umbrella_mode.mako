@@ -8,4 +8,4 @@ ${geo}
   ReferenceAtom        ${ref_atom} 
   Potential[kcal/mol]  ${npotential}
 ${potential} 
-End
+End  ! Umbrella

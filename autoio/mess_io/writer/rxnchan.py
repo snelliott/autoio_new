@@ -129,6 +129,53 @@ def bimolecular(bimol_label,
         template_keys=bimol_keys)
 
 
+def barrier(ts_label, reac_label, prod_label, ts_data,
+            zero_ene=None, tunnel=''):
+    """ Writes the string that defines the `Barrier` section for
+        for a given transition state, modeled as a PES saddle point,
+        for fixed transition state theory. MESS input file string built by
+        formatting input information into strings a filling Mako template.
+
+        :param ts_label: label for input TS used by MESS
+        :type ts_label: str
+        :param reac_label: label for reactant connected to TS used by MESS
+        :type reac_label: str
+        :param prod_label: label for product connected to TS used by MESS
+        :type prod_label: str
+        :param ts_data: MESS string with required electronic structure data
+        :type ts_data: str
+        :param zero_ene: elec+zpve energy relative to PES reference
+        :type zero_ene: float
+        :param tunnel: `Tunnel` section MESS-string for TS
+        :type tunnel: str
+        :rtype: str
+    """
+
+    # Indent the string containing all of data for the saddle point
+    ts_data = util.indent(ts_data, 2)
+    if tunnel != '':
+        tunnel = util.indent(tunnel, 4)
+
+    # Format the precision of the zero energy
+    if zero_ene is not None:
+        zero_ene = '{0:<8.2f}'.format(zero_ene)
+
+    # Create dictionary to fill template
+    ts_sadpt_keys = {
+        'ts_label': ts_label,
+        'reac_label': reac_label,
+        'prod_label': prod_label,
+        'ts_data': ts_data,
+        'zero_ene': zero_ene,
+        'tunnel': tunnel
+    }
+
+    return build_mako_str(
+        template_file_name='barrier.mako',
+        template_src_path=RXNCHAN_PATH,
+        template_keys=ts_sadpt_keys)
+
+
 def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
              zero_ene=None, tunnel=''):
     """ Writes the string that defines the `Barrier` section for
@@ -258,7 +305,7 @@ def dummy(dummy_label, zero_ene=None):
         template_keys=dummy_keys)
 
 
-def configs_union(mol_data_strs):
+def configs_union(mol_data_strs, zero_enes, tunnel_strs=None):
     """ Writes the string that defines the `Union` section, containing
         multiple configurations for a given species, for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -267,13 +314,26 @@ def configs_union(mol_data_strs):
         :type mol_data_strs: list(str)
         :rtype: str
     """
+    
+    # Build the zero energy strings and add them to the union strings
+    union_data = ''
+    for idx, (union_str, zero_ene) in enumerate(zip(mol_data_strs, zero_enes)):
+        zero_ene_str = util.zero_energy_format(zero_ene)
+        zero_ene_str = util.indent(zero_ene_str, 2)
+
+        union_data += union_str
+        union_data += zero_ene_str
+        if tunnel_strs is not None:
+            union_data += '\n' + tunnel_strs[idx] + '\n'
+        union_data += '\n\n'
+        union_data += 'End\nEnd\n'
 
     # Add 'End' statment to each of the data strings
-    mol_data_strs = [string+'End' for string in mol_data_strs]
-    mol_data_strs[-1] += '\n'
+    # mol_data_strs = [string+'End' for string in mol_data_strs]
+    # mol_data_strs[-1] += '\n'
 
     # Concatenate all of the molecule strings
-    union_data = '\n'.join(mol_data_strs)
+    # union_data = '\n'.join(mol_data_strs)
     union_data = util.indent(union_data, 2)
 
     # Add the tunneling string (seems tunneling goes for all TSs in union)

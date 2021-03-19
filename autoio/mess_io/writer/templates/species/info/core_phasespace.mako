@@ -8,4 +8,4 @@ ${geo2}
     PotentialPrefactor[au]          ${pot_prefactor}
     PotentialPowerExponent          ${pot_exp}
     TSTLevel ${tstlvl}
-  End
+  End  ! Core

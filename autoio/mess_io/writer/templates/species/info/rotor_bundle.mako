@@ -7,4 +7,4 @@ ${freq_strs}
   QuantumStatesMax[kcal/mol]      ${quantm_st_max}
   MonteCarloModesList             ${mc_modes_lst}
   MonteCarloSamplingSize          ${mc_samp_size}
-End
+End  ! HRBundle
