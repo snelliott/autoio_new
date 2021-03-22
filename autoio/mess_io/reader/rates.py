@@ -210,9 +210,7 @@ def ke_dct(output_str, reactant, product):
     # Determine col idx where reaction is
     head = out_lines[0].replace('E, kcal/mol', 'E').replace('D, mol/kcal', 'D')
     headers = head.split()
-    print(headers)
     col_idx = headers.index(reaction)
-    print(col_idx)
 
     _ke_dct = {0.0: 0.0}
     for i, line in enumerate(out_lines):

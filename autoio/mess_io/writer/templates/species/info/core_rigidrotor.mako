@@ -6,4 +6,4 @@ ${geo}
     ZeroPointEnergy[1/cm]             0.0
     InterpolationEnergyMax[kcal/mol]  ${interp_emax}
 % endif
-  End\
+  End  ! Core\

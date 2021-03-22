@@ -15,5 +15,5 @@ ${geo}
   PotentialExpansionSize     ${pot_exp_size}
   HamiltonSizeMin            ${hmin}
   HamiltonSizeMax            ${hmax}
-End
+End  ! IntlRot
 \

@@ -4,13 +4,13 @@ Rotor  Hindered   # ${rotor_id}
 Rotor  Hindered
 % endif
 % if geo:
-  Geometry[angstrom]   ${natom}
+  Geometry[angstrom]     ${natom}
 ${geo}
 % endif
-  Group                ${group}
-  Axis                 ${axis}
-  Symmetry             ${symmetry}
-  Potential[kcal/mol]  ${npotential}
+  Group                  ${group}
+  Axis                   ${axis}
+  Symmetry               ${symmetry}
+  Potential[kcal/mol]    ${npotential}
 ${potential} 
 % if hmin is not None:
   HamiltonSizeMin            ${hmin}
@@ -24,4 +24,4 @@ ${potential}
 % if therm_pow_max is not None:
   ThermalPowerMax      ${therm_pow_max}
 % endif
-End
+End  ! HindRot

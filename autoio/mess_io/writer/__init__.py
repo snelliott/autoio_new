@@ -17,6 +17,7 @@ from mess_io.writer.rxnchan import well
 from mess_io.writer.rxnchan import bimolecular
 from mess_io.writer.rxnchan import ts_sadpt
 from mess_io.writer.rxnchan import ts_variational
+from mess_io.writer.rxnchan import barrier
 from mess_io.writer.rxnchan import configs_union
 from mess_io.writer.rxnchan import dummy
 from mess_io.writer.spc import atom
@@ -52,6 +53,7 @@ __all__ = [
     'bimolecular',
     'ts_sadpt',
     'ts_variational',
+    'barrier',
     'configs_union',
     'dummy',
     'atom',

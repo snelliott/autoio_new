@@ -3,7 +3,7 @@ Well ${well_label}
 ${well_data}\
 ## Zero Energy Section
       ZeroEnergy[kcal/mol]      ${zero_ene}
-  End
+  End ! Species
 ## Energy Transfer Sections
 % if edown_str is not None:
 ${edown_str}
@@ -11,4 +11,4 @@ ${edown_str}
 % if collid_freq_str is not None:
 ${collid_freq_str}
 % endif
-End\
+End  ! Well\
