@@ -417,7 +417,6 @@ def _format_rxn_str_for_pdep(reaction, pressure='all'):
         m_str = ' + M'
 
     # Add the M string to both sides of the reaction string
-    print(reaction)
     [lhs, rhs] = reaction.split('=')
     three_body_reaction = lhs + m_str + ' = ' + rhs + m_str
 

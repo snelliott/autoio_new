@@ -216,8 +216,6 @@ def rotor_hindered(group, axis, symmetry, potential,
         natom, geo = util.geometry_format(geo)
         geo = indent(geo, 4)
 
-    print('geo in mess write\n', geo)
-
     # Create dictionary to fill template
     rotor_keys = {
         'group': rotor_group,

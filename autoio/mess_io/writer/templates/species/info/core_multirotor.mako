@@ -6,4 +6,4 @@ Core MultiRotor
   InterpolationEnergyMax[kcal/mol]        ${interp_emax}
   QuantumLevelEnergyMax[kcal/mol]         ${quant_lvl_emax}
 ${int_rot}\
-End
+End  ! Core
