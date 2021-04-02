@@ -17,26 +17,38 @@ KEYWORD_KEYVALUE_PATTERN = (
     app.zero_or_more(app.SPACE) +
     app.capturing(app.LINE_FILL)
 )
+FULL_BLOCK_PTT = app.capturing(app.one_or_more(app.WILDCARD, greedy=False))
 
 
-def read_inp_str(filepath, filename, remove_comments=None):
-    """ read the run parameters from a file
+# Patterns and block
+def paren_block(header, string):
+    """ A patter for a certain block
     """
-    input_file = os.path.join(filepath, filename)
-    try:
-        with open(input_file, 'r') as inp_file:
-            inp_str = inp_file.read()
-        if remove_comments:
-            inp_str = ioformat.remove_comment_lines(inp_str, remove_comments)
-    except FileNotFoundError:
-        print('*ERROR: Input file does not exist: ', input_file)
-        sys.exit()
-
-    return inp_str
+    return apf.first_capture(paren_ptt(header), string)
 
 
-# Reading various section strings from the files #
-def paren_section(string):
+def named_end_blocks(string, header, footer=None):
+    """ A pattern for a certian block
+        rtype: dict[str: str]
+    """ 
+    caps = apf.all_captures(
+        named_end_block_ptt(header, footer=footer), string)
+    if caps is not None:
+        caps = dict(zip((cap[0] for cap in caps), (cap[1] for cap in caps)))
+    return caps
+
+
+def end_block(string, header, name=None, footer=None):
+    """ A pattern for a certain block
+        rtype: str
+    """
+    _ptt = end_block_ptt(header, name=name, footer=footer)
+    cap = apf.first_capture(_ptt, string)
+
+    return cap if cap is not None else None
+
+
+def paren_ptt(string):
     """ Read the string that has the global model information
     """
     return (string + app.SPACE + app.escape('=') + app.SPACE +
@@ -45,29 +57,43 @@ def paren_section(string):
             app.escape(')'))
 
 
-def end_section(string):
+def named_end_block_ptt(header, footer=None):
     """ Read the string that has the global model information
+
+        {header} {name}
+          DATA
+        end {footer}
     """
-    return (string + app.one_or_more(app.SPACE) +
-            app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
-            'end')
+    
+    # Set the top and bottom of the end block pattern
+    top_ptt = (
+        header + app.SPACES + app.capturing(app.one_or_more(app.NONSPACE)))
+
+    bot_ptt = 'end'
+    if footer is not None:
+        bot_ptt += app.SPACES + footer
+
+    return top_ptt + FULL_BLOCK_PTT + bot_ptt
 
 
-def end_section_wname(string, name):
+def end_block_ptt(header, name=None, footer=None):
     """ Read the string that has the global model information
-    """
-    return (string + app.one_or_more(app.SPACE) + name +
-            app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
-            'end')
 
-
-def end_section_wname2(string):
-    """ Read the string that has the global model information
+        {header} {name}
+          DATA
+        end {footer}
     """
-    return (string + app.SPACES +
-            app.capturing(app.one_or_more(app.NONSPACE)) +
-            app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
-            'end')
+    
+    # Set the top and bottom of the end block pattern
+    top_ptt = header
+    if name is not None:
+        top_ptt += app.SPACES + app.capturing(name)
+
+    bot_ptt = 'end'
+    if footer is not None:
+        bot_ptt += app.SPACES + footer
+
+    return top_ptt + FULL_BLOCK_PTT + bot_ptt
 
 
 def keyword_pattern(string):
@@ -81,43 +107,85 @@ def keyword_pattern(string):
     return set_value_type(value)
 
 
-def parse_idx_inp(idx_str):
+def parse_idxs(idx_str):
 
     """ parse idx string
     """
+
+    # remove whitespace
     idx_str = idx_str.strip()
+
+    # handle just single digit
     if idx_str.isdigit():
         idxs = [int(idx_str)]
-    if '-' in idx_str:
-        [idx_begin, idx_end] = idx_str.split('-')
-        idxs = list(range(int(idx_begin), int(idx_end)+1))
-    return idxs
+    
+    # Split by the commas
+    idxs = []
+    for string in idx_str.split(','):
+        if string.isdigit():
+            idxs.append(int(string))
+        elif '-' in idx_str:
+            [idx_begin, idx_end] = string.split('-')
+            idxs.extend(list(range(int(idx_begin), int(idx_end)+1)))
+
+    return tuple(idxs)
 
 
 # Build a keyword dictionary
-def build_keyword_dct(section_str):
+def format_tsk_keywords(keyword_lst):
+    """ format keywords string
+    """
+    keyword_dct = {}
+    for keyword in keyword_lst:
+        [key, val] = keyword.split('=')
+        keyword_dct[key] = set_value_type(val)
+
+    return keyword_dct
+
+
+def keyword_dcts_from_lst(secs_dct):
+    """ a
+        (
+            (section_name, section_str),
+            
+    """
+
+    if secs_dct is not None:
+        for key, val in secs_dct.items():
+            secs_dct[key] = keyword_dct_from_string(val)
+
+    return secs_dct
+
+
+def keyword_dct_from_string(section_str):
     """ Take a section with keywords defined and build
         a dictionary for the keywords
     """
 
-    keyword_dct = {}
-    section_str = ioformat.remove_whitespace(section_str)
-    for line in section_str.splitlines():
-        key_val = apf.first_capture(KEYWORD_KEYVALUE_PATTERN, line)
-        formtd_key, formtd_val = format_param_vals(key_val)
-        keyword_dct[formtd_key] = formtd_val
-    return keyword_dct
+    if section_str is not None:
+        key_dct = {}
+        section_str = ioformat.remove_whitespace(section_str)
+        for line in section_str.splitlines():
+            print('line')
+            key_val = apf.first_capture(KEYWORD_KEYVALUE_PATTERN, line)
+            formtd_key, formtd_val = format_param_vals(key_val)
+            key_dct[formtd_key] = formtd_val
+    else:
+        key_dct = None
+
+    return key_dct
 
 
-def build_keyword_lst(section_str):
+def keyword_lst(section_str):
     """ build lst
     """
 
-    keyword_lst = []
+    _keyword_lst = []
     section_str = ioformat.remove_whitespace(section_str)
     for line in section_str.splitlines():
-        keyword_lst.append(line)
-    return keyword_lst
+        _keyword_lst.append(line)
+
+    return tuple(_keyword_lst)
 
 
 def build_vals_lst(section_str):
@@ -131,7 +199,7 @@ def build_vals_lst(section_str):
     return val_lst
 
 
-# Functions from read_dat file
+# Formats the values associated with various keywords
 def format_param_vals(pvals):
     """ format param vals string
     """
@@ -171,11 +239,12 @@ def set_value_type(value):
     """ set type of value
         right now we handle True/False boolean, int, float, and string
     """
-    if value == 'True':
+
+    if value.lower() == 'true':
         frmtd_value = True
-    elif value == 'False':
+    elif value.lower() == 'false':
         frmtd_value = False
-    elif value == 'None':
+    elif value.lower() == 'none':
         frmtd_value = None
     elif value.isdigit():
         frmtd_value = int(value)

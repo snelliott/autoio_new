@@ -35,7 +35,7 @@ def messrates_inp_str(globkey_str, energy_trans_str, rxn_chan_str):
          energy_trans_str,
          rxn_chan_header_str,
          rxn_chan_str,
-         '\nEnd\n']
+         '\nEnd  ! Mod2\n']
     )
     mess_inp_str = remove_trail_whitespace(mess_inp_str)
 
@@ -46,30 +46,6 @@ def messpf_inp_str(globkey_str, spc_str):
     """ Combine various MESS strings together to combined MESSPF
     """
     return '\n'.join([globkey_str, spc_str]) + '\n'
-
-
-def messhr_inp_str(geo, hind_rot_str):
-    """ Special MESS input string to calculate frequencies and ZPVEs
-        for hindered rotors
-    """
-
-    global_pf_str = global_pf(
-        temperatures=[100.0, 200.0, 300.0, 400.0, 500],
-        rel_temp_inc=0.001,
-        atom_dist_min=0.6)
-    dat_str = molecule(
-        core=core_rigidrotor(geo, 1.0),
-        freqs=[1000.0],
-        elec_levels=[[0.0, 1.0]],
-        hind_rot=hind_rot_str,
-    )
-    spc_str = species(
-        spc_label='Tmp',
-        spc_data=dat_str,
-        zero_ene=0.0
-    )
-
-    return messpf_inp_str(global_pf_str, spc_str)
 
 
 # Write individual sections of the input file

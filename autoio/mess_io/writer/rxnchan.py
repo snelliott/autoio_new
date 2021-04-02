@@ -257,7 +257,7 @@ def ts_variational(ts_label, reac_label, prod_label, rpath_strs,
         full_rpath_str += rpath_str
         full_rpath_str += zero_ene_str
         full_rpath_str += '\n\n'
-        full_rpath_str += 'End\n'
+        full_rpath_str += 'End  ! RPATH PT\n'
 
     # Concatenate all of the variational point strings and indent them
     ts_data = util.indent(full_rpath_str, 4)
@@ -326,10 +326,10 @@ def configs_union(mol_data_strs, zero_enes, tunnel_strs=None):
         if tunnel_strs is not None:
             union_data += '\n' + tunnel_strs[idx] + '\n'
         union_data += '\n\n'
-        union_data += 'End\nEnd\n'
+        union_data += 'End  ! Union1\nEnd  ! Union2\n'
 
     # Add 'End' statment to each of the data strings
-    # mol_data_strs = [string+'End' for string in mol_data_strs]
+    # mol_data_strs = [string+'End  ! UnionN' for string in mol_data_strs]
     # mol_data_strs[-1] += '\n'
 
     # Concatenate all of the molecule strings
