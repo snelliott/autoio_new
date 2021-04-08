@@ -117,7 +117,7 @@ def reactions_block(rxn_param_dct, comments=None):
     # Get the length of the longest reaction name
     max_len = 0
     for rxn, param_dct in rxn_param_dct.items():
-        rxn_name = util.format_rxn_name(rxn, param_dct[0])
+        rxn_name = util.format_rxn_name(rxn)
         if len(rxn_name) > max_len:
             max_len = len(rxn_name)
 
@@ -131,7 +131,7 @@ def reactions_block(rxn_param_dct, comments=None):
         for param_set_i, param_dct_vals in enumerate(param_dct):
             # Convert the reaction name from tuple of tuples to string
             # (Note: this includes '+M' or '(+M)' if appropriate)
-            rxn_name = util.format_rxn_name(rxn, param_dct_vals)
+            rxn_name = util.format_rxn_name(rxn)
 
             if param_dct_vals[3] is not None:  # Chebyshev
                 assert param_dct_vals[0] is not None, (
