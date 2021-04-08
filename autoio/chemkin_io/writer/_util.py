@@ -26,21 +26,18 @@ def name_column_length(names):
     return names_len
 
 
-def format_rxn_name(rxn_key, param_vals):
-    """ Receives a rxn_key and the corresponding param_vals
-        from a rxn_param_dct and writes an appropriate string
-        to be written in a CHEMKIN mech. Adds third body if applicable
+def format_rxn_name(rxn):
+    """ Receives a rxn and creates an appropriate string
+        to be written in a Chemkin mech. Adds third body if applicable
 
-        :params rxn_key: reaction names and third body
-        :type rxn_key: tuple ((rct1,rct2),(prd1,prd2),(thirdbody))
-        :params param_vals: one set of parameters of the reaction
-        :type param_vals: tuple(dct)
+        :param rxn: reaction names and third body
+        :type rxn: tuple ((rct1, rct2), (prd1, prd2), (third_bod1,))
         :return rxn_name: formatted reaction name for writing in the mech
         :rtype: str
     """
-    rcts = rxn_key[0]
-    prds = rxn_key[1]
-    thrbdy = rxn_key[2][0]
+    rcts = rxn[0]
+    prds = rxn[1]
+    thrbdy = rxn[2][0]
     
     # Convert to list if only one species
     if not isinstance(rcts, tuple):
