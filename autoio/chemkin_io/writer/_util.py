@@ -76,10 +76,15 @@ def merge_plog_dct(param_dct):
         :rtype tuple(tuple)
     """
     # extract plog dictionaries
-    plog = np.array(
-        [param_dct_vals[4] is not None for param_dct_vals in param_dct], dtype=int)
-    mask_nonplog = np.where(plog == 0)[0]
-    mask_plog = np.where(plog == 1)[0]
+
+    try:
+        plog = np.array(
+            [param_dct_vals[4] is not None for param_dct_vals in param_dct], dtype=int)
+        mask_nonplog = np.where(plog == 0)[0]
+        mask_plog = np.where(plog == 1)[0]
+    except TypeError: # if for any reason the dct does not have iterables
+        mask_plog = [] 
+
     if len(mask_plog) > 1:  # more than 1 set of plog params
         # merge dictionaries together or add entries
         plog_param_dct = [list(param_dct[i]) for i in mask_plog]
