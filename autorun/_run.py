@@ -57,11 +57,12 @@ def from_input_string(script_str, run_dir, input_str,
         try:
             subprocess.check_call('./{:s}'.format(script_name))
         except subprocess.CalledProcessError as err:
+            warnings.warn("Program run failed in {}".format(run_dir))
             # As long as the program wrote an output, continue with a warning
-            if all(os.path.isfile(name) for name in output_names):
-                warnings.warn("Program run failed in {}".format(run_dir))
-            else:
-                raise err
+            # if all(os.path.isfile(name) for name in output_names):
+                # warnings.warn("Program run failed in {}".format(run_dir))
+            # else:
+               #  raise err
 
         # Read the output string from the run directory
         output_strs = ()
