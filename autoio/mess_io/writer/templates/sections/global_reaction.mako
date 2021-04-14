@@ -13,9 +13,7 @@ ModelEnergyLimit[kcal/mol]             800
 CalculationMethod                      direct
 !
 WellCutoff                             10
-% if well_extend is None:
-WellExtension
-% else:
+% if well_extend is not None:
 WellExtension                          ${well_extend}
 % endif
 ChemicalEigenvalueMax                  0.2

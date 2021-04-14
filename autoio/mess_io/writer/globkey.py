@@ -46,54 +46,6 @@ def messpf_inp_str(globkey_str, spc_str):
     """ Combine various MESS strings together to combined MESSPF
     """
     return '\n'.join([globkey_str, spc_str]) + '\n'
-    
-
-def messhr_inp_str(geo, hind_rot_str):
-    """ Special MESS input string to calculate frequencies and ZPVEs
-        for hindered rotors
-    """
-
-    global_pf_str = global_pf(
-        temperatures=[100.0, 200.0, 300.0, 400.0, 500],
-        rel_temp_inc=0.001,
-        atom_dist_min=0.6)
-    dat_str = molecule(
-        core=mess_io.writer.core_rigidrotor(tors_geo, 1.0),
-        freqs=[1000.0],
-        elec_levels=[[0.0, 1.0]],
-        hind_rot=hind_rot_str,
-    )
-    spc_str = species(
-        spc_label='Tmp',
-        spc_data=dat_str,
-        zero_energy=0.0
-    )
-
-    return messpf_inp_str(globkey_str, spc_str)
-
-
-def messhr_inp_str(geo, hind_rot_str):
-    """ Special MESS input string to calculate frequencies and ZPVEs
-        for hindered rotors
-    """
-
-    global_pf_str = global_pf(
-        temperatures=[100.0, 200.0, 300.0, 400.0, 500],
-        rel_temp_inc=0.001,
-        atom_dist_min=0.6)
-    dat_str = molecule(
-        core=core_rigidrotor(geo, 1.0),
-        freqs=[1000.0],
-        elec_levels=[[0.0, 1.0]],
-        hind_rot=hind_rot_str,
-    )
-    spc_str = species(
-        spc_label='Tmp',
-        spc_data=dat_str,
-        zero_ene=0.0
-    )
-
-    return messpf_inp_str(global_pf_str, spc_str)
 
 
 def messhr_inp_str(geo, hind_rot_str):
@@ -122,7 +74,7 @@ def messhr_inp_str(geo, hind_rot_str):
 
 # Write individual sections of the input file
 def global_reaction(temperatures, pressures,
-                    excess_ene_temp=None, well_extend=None):
+                    excess_ene_temp=None, well_extend='auto'):
     """ Writes the global keywords section of the MESS input file by
         formatting input information into strings a filling Mako template.
 
@@ -147,10 +99,13 @@ def global_reaction(temperatures, pressures,
     else:
         excess_ene_temp_str = None
     if well_extend is not None:
-        assert isinstance(well_extend, float), (
-            'WellExtension value must be a float'
-        )
-        well_extend_str = '{0:.2f}'.format(well_extend)
+        if well_extend != 'auto':
+            assert isinstance(well_extend, float), (
+                'WellExtension value must be a float'
+            )
+            well_extend_str = '{0:.2f}'.format(well_extend)
+        else:
+            well_extend_str = ''
     else:
         well_extend_str = None
 

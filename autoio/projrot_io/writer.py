@@ -142,7 +142,7 @@ def rotors(axis, group):
     rotors_str = '\n{0:<32s}{1:<4d}\n'.format('pivotA', pivota)
     rotors_str += '{0:<32s}{1:<4d}\n'.format('pivotB', pivotb)
     rotors_str += '{0:<32s}{1:<4d}\n'.format('atomsintopA', atomsintopa)
-    rotors_str += '{0:<32s}{1}'.format('topAatoms', topaatoms)
+    rotors_str += '{0:<32s}{1}\n'.format('topAatoms', topaatoms)
 
     return util.remove_trail_whitespace(rotors_str)
 
