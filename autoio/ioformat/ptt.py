@@ -296,7 +296,7 @@ def set_value_type(value):
     else:
         frmtd_value = value
 
-#""" Library of patterns to simplify the parsing of input files
+####""" Library of patterns to simplify the parsing of input files
 #"""
 #
 #import ast
