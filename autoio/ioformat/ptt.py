@@ -1,15 +1,13 @@
 """ Library of patterns to simplify the parsing of input files
 """
 
-import sys
-import os
 import ast
-import ioformat
 import autoparse.find as apf
 import autoparse.pattern as app
+import ioformat
 
 
-# General Patterns that will be helpful
+# PATTERNS
 KEYWORD_KEYVALUE_PATTERN = (
     app.capturing(app.one_or_more(app.NONSPACE)) +
     app.zero_or_more(app.SPACE) +
@@ -18,19 +16,96 @@ KEYWORD_KEYVALUE_PATTERN = (
     app.capturing(app.LINE_FILL)
 )
 FULL_BLOCK_PTT = app.capturing(app.one_or_more(app.WILDCARD, greedy=False))
+# GEN_PTT = app.capturing(app.one_or_more(app.NONSPACE))
+GEN_PTT = app.capturing(app.one_or_more(app.LINE_FILL))
 
 
-# Patterns and block
-def paren_block(header, string):
+def keyword_value_ptt(key=None):
+    """ Build a regex pattern to search for a keyword and its value, defined as
+            key = value
+
+        :param key: string for a specific key to find
+        :type key: str
+        :rtype: str
+    """
+    keywrd = key if key is not None else app.one_or_more(app.NONSPACE)
+    return (app.capturing(keywrd) +
+            app.ZSPACES + app.escape('=') + app.ZSPACES +
+            GEN_PTT)
+
+
+def paren_block_ptt(key=None):
+    """ Build a regex pattern to search for a keyword and its value, defined as
+            key = (value)
+
+        :param key: string for a specific key to find
+        :type key: str
+        :rtype: str
+    """
+    keywrd = key if key is not None else app.one_or_more(app.NONSPACE)
+    return (app.capturing(keywrd) + app.SPACES + app.escape('=') + app.SPACES +
+            app.escape('(') + FULL_BLOCK_PTT + app.escape(')'))
+
+
+def named_end_block_ptt(header, footer=None):
+    """ Build a regex pattern to search for blocks of end
+            key = (value)
+
+            {header} {name}
+               **TEXT**
+            end {footer}
+    """
+
+    # Set the top and bottom of the end block pattern
+    top_ptt = (
+        header + app.SPACES + app.capturing(app.one_or_more(app.NONSPACE)))
+
+    bot_ptt = 'end'
+    if footer is not None:
+        bot_ptt += app.SPACES + footer
+
+    return top_ptt + FULL_BLOCK_PTT + bot_ptt
+
+
+def end_block_ptt(header, name=None, footer=None):
+    """ Read the string that has the global model information
+
+        can also capture with the name if needed...
+
+        {header} {name}
+          DATA
+        end {footer}
+    """
+
+    # Set the top and bottom of the end block pattern
+    top_ptt = header
+    if name is not None:
+        top_ptt += app.SPACES + app.capturing(name)
+
+    bot_ptt = 'end'
+    if footer is not None:
+        bot_ptt += app.SPACES + footer
+
+    return top_ptt + FULL_BLOCK_PTT + bot_ptt
+
+
+# Simple Block Parsers
+def paren_blocks(string, key=None):
     """ A patter for a certain block
     """
-    return apf.first_capture(paren_ptt(header), string)
+    return apf.all_captures(paren_block_ptt(key=key), string)
+
+
+def keyword_value_blocks(string, key=None):
+    """ A patter for a certain block
+    """
+    return apf.all_captures(keyword_value_ptt(key=key), string)
 
 
 def named_end_blocks(string, header, footer=None):
     """ A pattern for a certian block
         rtype: dict[str: str]
-    """ 
+    """
     caps = apf.all_captures(
         named_end_block_ptt(header, footer=footer), string)
     if caps is not None:
@@ -48,90 +123,109 @@ def end_block(string, header, name=None, footer=None):
     return cap if cap is not None else None
 
 
-def paren_ptt(string):
-    """ Read the string that has the global model information
-    """
-    return (string + app.SPACE + app.escape('=') + app.SPACE +
-            app.escape('(') +
-            app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
-            app.escape(')'))
+# Build keyword dictiaonries
+def keyword_dcts_from_blocks(block_dct):
+    """ Build a dict of dicts from string blocks that are stored in
+        a dictionary.
 
-
-def named_end_block_ptt(header, footer=None):
-    """ Read the string that has the global model information
-
-        {header} {name}
-          DATA
-        end {footer}
-    """
-    
-    # Set the top and bottom of the end block pattern
-    top_ptt = (
-        header + app.SPACES + app.capturing(app.one_or_more(app.NONSPACE)))
-
-    bot_ptt = 'end'
-    if footer is not None:
-        bot_ptt += app.SPACES + footer
-
-    return top_ptt + FULL_BLOCK_PTT + bot_ptt
-
-
-def end_block_ptt(header, name=None, footer=None):
-    """ Read the string that has the global model information
-
-        {header} {name}
-          DATA
-        end {footer}
-    """
-    
-    # Set the top and bottom of the end block pattern
-    top_ptt = header
-    if name is not None:
-        top_ptt += app.SPACES + app.capturing(name)
-
-    bot_ptt = 'end'
-    if footer is not None:
-        bot_ptt += app.SPACES + footer
-
-    return top_ptt + FULL_BLOCK_PTT + bot_ptt
-
-
-def keyword_pattern(string):
-    """ Generates the key pattern string
-    """
-    value = (string +
-             app.zero_or_more(app.SPACE) +
-             '=' +
-             app.zero_or_more(app.SPACE) +
-             app.capturing(app.one_or_more(app.NONSPACE)))
-    return set_value_type(value)
-
-
-def parse_idxs(idx_str):
-
-    """ parse idx string
+        :param block_dct: dictionary of strings with a name for a key
+        :type block_dct: dict[str: str]
+        :rtype: dict[str: dict[str:str]]
     """
 
-    # remove whitespace
-    idx_str = idx_str.strip()
+    new_block_dct = {}
+    if block_dct is not None:
+        for key, block in block_dct.items():
 
-    # handle just single digit
-    if idx_str.isdigit():
-        idxs = [int(idx_str)]
-    
-    # Split by the commas
+            key_dct = keyword_dct_from_paren_blocks(block)
+            if key_dct is None:
+                key_dct = keyword_dct_from_block(block)
+
+            new_block_dct[key] = key_dct
+
+    return new_block_dct
+
+
+def keyword_dct_from_paren_blocks(block):
+    """ Obtains the keyword-value pairs that are defined in blocks from parentheses
+        Could be just a bunch of values or a set of keyword-value pairs
+
+            # First check for keyword list or just vals
+    """
+
+    ret = {}
+
+    pblocks = paren_blocks(block)
+    if pblocks is not None:
+        for pblock in pblocks:
+            key_dct = keyword_dct_from_block(pblock[1])
+            if key_dct is not None:
+                ret[pblock[0]] = key_dct
+            else:
+                vals = values_from_block(pblock[1])
+                if vals:
+                    ret[pblock[0]] = vals
+    else:
+        ret = None
+
+    return ret
+
+
+def keyword_dct_from_block(block):
+    """ Take a section with keywords defined and build
+        a dictionary for the keywords
+
+        assumes a block that is a list of key-val pairs
+    """
+
+    key_dct = None
+
+    if block is not None:
+        block = ioformat.remove_whitespace(block)
+        key_val_blocks = keyword_value_blocks(block)
+        if key_val_blocks is not None:
+            key_dct = {}
+            for key, val in key_val_blocks:
+                formtd_key, formtd_val = format_keyword_values(key, val)
+                key_dct[formtd_key] = formtd_val
+
+    return key_dct
+
+
+# Build various objects containing keyword and value information
+def values_from_block(block):
+    """ Takes a multiline string that consists solely of floats and
+        converts this block into a list of numbers
+
+        could call set_value_type for generality I guess
+
+        prob just do a capture of nums (floats, int, etc)
+    """
+    caps = apf.all_captures(app.NUMBER, block)
+    if caps:
+        vals = tuple(float(cap) for cap in caps)
+    else:
+        vals = None
+
+    return vals
+
+
+def idx_lst_from_line(line):
+    """ Build a list of indices from a block of tests
+    """
+
     idxs = []
-    for string in idx_str.split(','):
+    for string in line.strip().split(','):
         if string.isdigit():
             idxs.append(int(string))
-        elif '-' in idx_str:
+        elif '-' in line:
             [idx_begin, idx_end] = string.split('-')
             idxs.extend(list(range(int(idx_begin), int(idx_end)+1)))
 
     return tuple(idxs)
 
 
-# Build a keyword dictionary
+# Formats the values associated with various keywords
 def format_tsk_keywords(keyword_lst):
     """ format keywords string
     """
@@ -143,72 +237,25 @@ def format_tsk_keywords(keyword_lst):
     return keyword_dct
 
 
-def keyword_dcts_from_lst(secs_dct):
-    """ a
-        (
-            (section_name, section_str),
-            
+def format_keyword_values(keyword, value):
+    """ Takes a keyword-value pair in string formats and then returns
+        the pair with their types matching the internal Python version.
+
+        Convert string to string, boolean, int, float, etc
+
+        :param key_val_pair:  keyword and its
+        :type key_val_pair: (str, str)
+        :rtype: (type(str), type(str))
     """
 
-    if secs_dct is not None:
-        for key, val in secs_dct.items():
-            secs_dct[key] = keyword_dct_from_string(val)
+    # [keyword, value] = key_val_pair
 
-    return secs_dct
+    # Format the keyword
+    frmtd_keyword = set_value_type(keyword.strip().lower())
 
-
-def keyword_dct_from_string(section_str):
-    """ Take a section with keywords defined and build
-        a dictionary for the keywords
-    """
-
-    if section_str is not None:
-        key_dct = {}
-        section_str = ioformat.remove_whitespace(section_str)
-        for line in section_str.splitlines():
-            print('line')
-            key_val = apf.first_capture(KEYWORD_KEYVALUE_PATTERN, line)
-            formtd_key, formtd_val = format_param_vals(key_val)
-            key_dct[formtd_key] = formtd_val
-    else:
-        key_dct = None
-
-    return key_dct
-
-
-def keyword_lst(section_str):
-    """ build lst
-    """
-
-    _keyword_lst = []
-    section_str = ioformat.remove_whitespace(section_str)
-    for line in section_str.splitlines():
-        _keyword_lst.append(line)
-
-    return tuple(_keyword_lst)
-
-
-def build_vals_lst(section_str):
-    """ build lst
-    """
-    val_lst = []
-    section_str = ioformat.remove_whitespace(section_str)
-    for line in section_str.splitlines():
-        val_lst.extend((float(val) for val in line.split()))
-
-    return val_lst
-
-
-# Formats the values associated with various keywords
-def format_param_vals(pvals):
-    """ format param vals string
-    """
-    [keyword, value] = pvals
-
-    frmtd_keyword = keyword.strip().lower()
-
-    value = value.strip()
     # Format values if it is a list (of string(s), boolean(s), int(s))
+    # Additional functionality is used to handle when values are lists
+    value = value.strip()
     if all(sym in value for sym in ('[[', ']]')):
         value = value.replace('D', '').replace('d', '')
         value = ast.literal_eval(value)

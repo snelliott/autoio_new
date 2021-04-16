@@ -33,6 +33,7 @@ from ._lib import LINE_FILL
 from ._lib import LINE
 from ._lib import SPACE
 from ._lib import SPACES
+from ._lib import ZSPACES
 from ._lib import LINESPACE
 from ._lib import LINESPACES
 from ._lib import PADDING
@@ -87,6 +88,7 @@ __all__ = [
     'LINE',
     'SPACE',
     'SPACES',
+    'ZSPACES',
     'LINESPACE',
     'LINESPACES',
     'PADDING',

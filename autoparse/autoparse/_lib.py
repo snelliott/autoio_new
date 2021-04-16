@@ -22,6 +22,7 @@ LINE = LINE_START + LINE_FILL + LINE_END
 
 SPACE = r'\s'            # space, possibly newline
 SPACES = one_or_more(SPACE)
+ZSPACES = zero_or_more(SPACE)
 LINESPACE = r'[ \t]'     # non-newline space
 LINESPACES = one_or_more(LINESPACE)
 PADDING = zero_or_more(LINESPACE)
