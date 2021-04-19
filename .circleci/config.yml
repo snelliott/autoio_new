@@ -65,9 +65,6 @@ jobs:
                     source activate automol-env
                     flake8 --exit-zero autowrite
                     pylint --rcfile=../.pylintrc autoread
-    build-debian:
-        docker:
-            - image: continuumio/miniconda3
         working_directory: ~/autoparse     
         steps:
             - checkout  # checkout the code
@@ -90,10 +87,6 @@ jobs:
                     pytest -v --disable-pytest-warnings --cov=autoparse --pyargs autoparse
                     flake8 --exit-zero autoparse
                     pylint --rcfile=../.pylintrc autoparse
-
-    build-debian:
-        docker:
-            - image: continuumio/miniconda3
         working_directory: ~/elstruct
         steps:
             - checkout  # checkout the code
