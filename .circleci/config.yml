@@ -6,7 +6,7 @@ jobs:
         working_directory: ~/autoio     
         steps:
             - checkout  # checkout the code
-            - run: i
+            - run: 
                 name: Create conda environment
                 command: |
                     apt-get update --yes
