@@ -1,6 +1,6 @@
 version: 2
 jobs:
-    build-debian:
+    build-debian1:
         docker:
             - image: continuumio/miniconda3
         working_directory: ~/autoio     
@@ -11,7 +11,7 @@ jobs:
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    conda env create -f environment.yml
+                    conda env create -f autoio/environment.yml
             - run:
                 name: Build/install autoio
                 command: |
@@ -76,7 +76,7 @@ jobs:
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    conda env create -f environment.yml
+                    conda env create -f autoparse/environment.yml
             - run:
                 name: Build/install autoparse
                 command: |
@@ -101,7 +101,7 @@ jobs:
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    conda env create -f environment.yml
+                    conda env create -f elstruct/environment.yml
             - run:
                 name: Test elstruct
                 command: |
