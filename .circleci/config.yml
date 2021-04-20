@@ -6,16 +6,18 @@ jobs:
         working_directory: ~/autoio     
         steps:
             - checkout  # checkout the code
-            - run: 
+            - run: i
                 name: Create conda environment
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    conda env create -f autoio/environment.yml
+                    cd autoio
+                    conda env create -f environment.yml
             - run:
                 name: Build/install autoio
                 command: |
                     source activate autoio-env
+                    cd autoio
                     python setup.py install
             - run:
                 name: Test chemkin_io
