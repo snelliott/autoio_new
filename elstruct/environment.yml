@@ -1,4 +1,4 @@
-name: autoio-env
+name: elstruct-env
 
 channels:
     - auto-mech

@@ -24,7 +24,7 @@ jobs:
                     source activate autoio-env
                     pytest -v --disable-pytest-warnings
                     flake8 --exit-zero chemkin_io
-                    pylint --rcfile=~/.pylintrc chemkin_io
+                    pylint --rcfile=.pylintrc chemkin_io
             - run:
                 name: Test mess_io
                 command: |
@@ -88,9 +88,10 @@ jobs:
                 name: Test autoparse
                 command: |
                     source activate autoparse-env
+                    cd autoparse
                     pytest -v --disable-pytest-warnings --cov=autoparse --pyargs autoparse
                     flake8 --exit-zero autoparse
-                    pylint --rcfile=~/.pylintrc autoparse
+                    pylint --rcfile=../.pylintrc autoparse
     build-debian3:
         docker:
             - image: continuumio/miniconda3

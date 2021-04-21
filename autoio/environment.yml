@@ -24,6 +24,7 @@ dependencies:
     - auto-mech::automol
     - auto-mech::autorun
     - auto-mech::autoparse
+    - auto-mech::elstruct
     - auto-mech::x2z
     - psi4::psi4
     - rdkit::rdkit

@@ -28,4 +28,6 @@ requirements:
         - psi4::psi4
         - auto-mech::autoparse
         - auto-mech::automol
+        - auto-mech::elstruct
+        - auto-mech::autorun
         - auto-mech::x2z
