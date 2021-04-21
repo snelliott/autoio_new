@@ -18,7 +18,7 @@ jobs:
                     source activate autoio-env
                     cd autoio
                     python setup.py install
-                    cd ..
+                    cd ~
             - run:
                 name: Test chemkin_io
                 command: |
@@ -27,6 +27,7 @@ jobs:
                     pytest -v --disable-pytest-warnings
                     flake8 --exit-zero ../chemkin_io
                     pylint --rcfile=../.pylintrc chemkin_io
+                    cd ~
             - run:
                 name: Test mess_io
                 command: |
@@ -34,6 +35,7 @@ jobs:
                     source activate autoio-env
                     flake8 --exit-zero ../mess_io
                     pylint --rcfile=../.pylintrc mess_io
+                    cd ~
             - run:
                 name: Test projrot_io
                 command: |
@@ -41,6 +43,7 @@ jobs:
                     source activate autoio-env
                     flake8 --exit-zero ../projrot_io
                     pylint --rcfile=../.pylintrc projrot_io
+                    cd ~
             - run:
                 name: Test thermp_io
                 command: |
@@ -48,6 +51,7 @@ jobs:
                     source activate autoio-env
                     flake8 --exit-zero ../thermp_io
                     pylint --rcfile=../.pylintrc thermp_io
+                    cd ~
             - run:
                 name: Test varecof_io
                 command: |
@@ -55,6 +59,7 @@ jobs:
                     source activate autoio-env
                     flake8 --exit-zero ../varecof_io
                     pylint --rcfile=../.pylintrc varecof_io
+                    cd ~
             - run:
                 name: Test autoread
                 command: |
@@ -62,6 +67,7 @@ jobs:
                     source activate automol-env
                     flake8 --exit-zero ../autoread
                     pylint --rcfile..~/.pylintrc autoread
+                    cd ~
             - run:
                 name: Test autowrite
                 command: |
@@ -69,6 +75,7 @@ jobs:
                     source activate automol-env
                     flake8 --exit-zero ../autowrite
                     pylint --rcfile=../.pylintrc autowrite
+                    cd ~
     build-debian2:
         docker:
             - image: continuumio/miniconda3
@@ -87,7 +94,7 @@ jobs:
                     source activate autoparse-env
                     cd autoparse
                     python setup.py install
-                    cd ..
+                    cd ~
             - run:
                 name: Test autoparse
                 command: |
@@ -114,7 +121,7 @@ jobs:
                     source activate autorun-env
                     cd autorun
                     python setup.py install
-                    cd ..
+                    cd ~
             - run:
                 name: Test autoparse
                 command: |
