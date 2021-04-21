@@ -10,3 +10,6 @@ setup(name="autorun",
                 "autorun.tests.data"],
       package_data={
           'autorun': ['autorun/tests/data/*']})
+               # "autorun.tests"])
+               # "autorun.aux"])#,
+               # "autorun.tests"])
