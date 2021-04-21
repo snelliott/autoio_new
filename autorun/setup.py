@@ -8,7 +8,5 @@ setup(name="autorun",
       packages=["autorun",
                 "autorun.tests",
                 "autorun.tests.data"],
-               # "autorun.aux"])#,
-               # "autorun.tests"])
       package_data={
-          'autorun': ['autorun/tests/data/*'])
+          'autorun': ['autorun/tests/data/*']})
