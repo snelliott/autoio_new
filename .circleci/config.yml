@@ -22,59 +22,60 @@ jobs:
             - run:
                 name: Test chemkin_io
                 command: |
-                    cd autoio
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings --cov=autoio
-                    flake8 --exit-zero ../chemkin_io
-                    pylint --rcfile=../.pylintrc chemkin_io
+                    cd autoio/chemkin_io
+                    source activate autoio-env
+                    pytest -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io
+                    flake8 --exit-zero ../../chemkin_io
+                    pylint --rcfile=../../.pylintrc chemkin_io
                     cd ~
             - run:
                 name: Test mess_io
                 command: |
-                    cd autoio
+                    cd autoio/mess_io
                     source activate autoio-env
-                    flake8 --exit-zero ../mess_io
-                    pylint --rcfile=../.pylintrc mess_io
+                    flake8 --exit-zero ../../mess_io
+                    pylint --rcfile=../../.pylintrc mess_io
                     cd ~
             - run:
                 name: Test projrot_io
                 command: |
-                    cd autoio
+                    cd autoio/projrot_io
                     source activate autoio-env
-                    flake8 --exit-zero ../projrot_io
-                    pylint --rcfile=../.pylintrc projrot_io
+                    flake8 --exit-zero ../../projrot_io
+                    pylint --rcfile=../../.pylintrc projrot_io
                     cd ~
             - run:
                 name: Test thermp_io
                 command: |
-                    cd autoio
+                    cd autoio/thermp_io
                     source activate autoio-env
-                    flake8 --exit-zero ../thermp_io
-                    pylint --rcfile=../.pylintrc thermp_io
+                    flake8 --exit-zero ../../thermp_io
+                    pylint --rcfile=../../.pylintrc thermp_io
                     cd ~
             - run:
                 name: Test varecof_io
                 command: |
-                    cd autoio
+                    cd autoio/varecof_io
                     source activate autoio-env
-                    flake8 --exit-zero ../varecof_io
-                    pylint --rcfile=../.pylintrc varecof_io
+                    flake8 --exit-zero ../../varecof_io
+                    pylint --rcfile=../../.pylintrc varecof_io
                     cd ~
             - run:
                 name: Test autoread
                 command: |
-                    cd autoio
-                    source activate automol-env
-                    flake8 --exit-zero ../autoread
-                    pylint --rcfile..~/.pylintrc autoread
+                    cd autoio/autoread
+                    source activate autoio-env
+                    flake8 --exit-zero ../../autoread
+                    pylint --rcfile-../../.pylintrc autoread
                     cd ~
             - run:
                 name: Test autowrite
                 command: |
-                    cd autoio
-                    source activate automol-env
-                    flake8 --exit-zero ../autowrite
-                    pylint --rcfile=../.pylintrc autowrite
+                    cd autoio/autowrite
+                    source activate autoio-env
+                    flake8 --exit-zero ../../autowrite
+                    pylint --rcfile=../../.pylintrc autowrite
                     cd ~
     build-debian2:
         docker:
@@ -124,11 +125,11 @@ jobs:
             - run:
                 name: Test autorun
                 command: |
-                    cd autorun
                     source activate autorun-env
+                    cd autorun/autorun
                     pytest -v --disable-pytest-warnings --cov=autorun --pyargs autorun
-                    flake8 --exit-zero ../autorun
-                    pylint --rcfile=../.pylintrc autorun
+                    flake8 --exit-zero ../../autorun
+                    pylint --rcfile=../../.pylintrc autorun
     build-debian4:
         docker:
             - image: continuumio/miniconda3
@@ -148,11 +149,11 @@ jobs:
                     # temporary fix
                     conda install -c conda-forge pylint>=2.3
                     # temporary fix
-                    cd elstruct
+                    cd elstruct/elstruct
                     python setup.py install
                     pytest -v --cov=elstruct .
-                    flake8 --exit-zero ../elstruct
-                    pylint --rcfile=../.pylintrc elstruct
+                    flake8 --exit-zero ../../elstruct
+                    pylint --rcfile=../../.pylintrc elstruct
 workflows:
     version: 2
     build-all:
