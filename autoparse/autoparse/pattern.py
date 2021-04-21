@@ -20,7 +20,7 @@ from autoparse._pattern import series
 from autoparse._more_patterns import lpadded
 from autoparse._more_patterns import rpadded
 from autoparse._more_patterns import padded
-# pattern constants
+# pattern constants #
 from autoparse._lib import STRING_START
 from autoparse._lib import STRING_END
 from autoparse._lib import LINE_START
