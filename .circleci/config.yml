@@ -100,7 +100,7 @@ jobs:
                 command: |
                     source activate autoparse-env
                     cd autoparse/autoparse
-                    pytest -v --disable-pytest-warnings --cov=autoparse
+                    pytest -v --disable-pytest-warnings --cov=autoparse  --pyargs autoparse
                     flake8 --exit-zero ../../autoparse
                     pylint --rcfile=../../.pylintrc autoparse
     build-debian3:

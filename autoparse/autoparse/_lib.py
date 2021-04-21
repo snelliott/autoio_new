@@ -1,10 +1,10 @@
 """ re patterns
 """
-from ._pattern import maybe
-from ._pattern import escape
-from ._pattern import one_of_these
-from ._pattern import one_or_more
-from ._pattern import zero_or_more
+from autoparse._pattern import maybe
+from autoparse._pattern import escape
+from autoparse._pattern import one_of_these
+from autoparse._pattern import one_or_more
+from autoparse._pattern import zero_or_more
 
 STRING_START = r'\A'
 STRING_END = r'\Z'
