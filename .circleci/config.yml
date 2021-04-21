@@ -24,7 +24,7 @@ jobs:
                 command: |
                     cd autoio
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings
+                    pytest -v --disable-pytest-warnings --cov=autoio
                     flake8 --exit-zero ../chemkin_io
                     pylint --rcfile=../.pylintrc chemkin_io
                     cd ~
@@ -123,11 +123,11 @@ jobs:
                     python setup.py install
                     cd ~
             - run:
-                name: Test autoparse
+                name: Test autorun
                 command: |
                     cd autorun
                     source activate autorun-env
-                    pytest -v --disable-pytest-warnings --cov=autoparse --pyargs autorun
+                    pytest -v --disable-pytest-warnings --cov=autorun --pyargs autorun
                     flake8 --exit-zero ../autorun
                     pylint --rcfile=../.pylintrc autorun
     build-debian4:

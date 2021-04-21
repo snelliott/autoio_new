@@ -22,6 +22,7 @@ dependencies:
     - pylint
     - auto-mech::automol
     - auto-mech::autoparse
+    - auto-mech::autorun
     - auto-mech::x2z
     - psi4::psi4
     - rdkit::rdkit
