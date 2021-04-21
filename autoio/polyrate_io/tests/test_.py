@@ -4,8 +4,12 @@
 
 import numpy
 import polyrate_io.writer
-# from _util import read_text_file
+import os
+from _util import read_text_file
+from _util import write_text_file
 # from _util import load_numpy_string_file
+
+PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 # Base data to build the info objects
@@ -60,8 +64,7 @@ def test__pot40():
     inp_str = polyrate_io.writer.potential_file(
         RCT_INFO, SADPT_INFO, MEP_INFOS)
 
-    with open('pot.fu40', 'w') as fobj:
-        fobj.write(inp_str)
+    write_text_file([], 'pot.fu40', inp_str, PATH)
 
 
 if __name__ == '__main__':
