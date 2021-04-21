@@ -11,8 +11,7 @@ jobs:
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    cd autoio
-                    conda env create -f environment.yml
+                    conda env create -f autoio/environment.yml
             - run:
                 name: Build/install autoio
                 command: |
@@ -83,12 +82,12 @@ jobs:
                 name: Build/install autoparse
                 command: |
                     source activate autoparse-env
+                    cd autoparse
                     python setup.py install
             - run:
                 name: Test autoparse
                 command: |
                     source activate autoparse-env
-                    cd autoparse
                     pytest -v --disable-pytest-warnings --cov=autoparse --pyargs autoparse
                     flake8 --exit-zero autoparse
                     pylint --rcfile=../.pylintrc autoparse
@@ -111,8 +110,8 @@ jobs:
                     # temporary fix
                     conda install -c conda-forge pylint>=2.3
                     # temporary fix
+                    cd elstruct
                     python setup.py install
-                    cd tests
                     pytest -v --cov=elstruct .
 workflows:
     version: 2

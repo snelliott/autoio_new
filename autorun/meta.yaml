@@ -1,16 +1,16 @@
 # cmd: conda build . -c auto-mech -c psi4 -c rdkit -c openbabel -c conda-forge
 package:
-    name: elstruct
-    version: "0.2.1"
+    name: autorun
+    version: "0.1.0"
 
 source:
     path: .
 
 requirements:
     build:
-        - python
+        - python=3.7
     run:
-        - python
+        - python=3.7
         - numpy
         - scipy
         - pyyaml
@@ -24,6 +24,7 @@ requirements:
         - openbabel::openbabel
         - conda-forge::qcelemental
         - psi4::psi4
+        - auto-mech::autoio
         - auto-mech::autoparse
         - auto-mech::automol
         - auto-mech::x2z
