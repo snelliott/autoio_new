@@ -21,51 +21,53 @@ jobs:
             - run:
                 name: Test chemkin_io
                 command: |
+                    cd autoio
                     source activate autoio-env
                     pytest -v --disable-pytest-warnings
                     flake8 --exit-zero chemkin_io
-                    pylint --rcfile=.pylintrc chemkin_io
+                    pylint --rcfile=../.pylintrc chemkin_io
             - run:
                 name: Test mess_io
                 command: |
+                    cd autoio
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings
                     flake8 --exit-zero mess_io
-                    pylint --rcfile=~/.pylintrc mess_io
+                    pylint --rcfile=../.pylintrc mess_io
             - run:
                 name: Test projrot_io
                 command: |
+                    cd autoio
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings
                     flake8 --exit-zero projrot_io
-                    pylint --rcfile=~/.pylintrc projrot_io
+                    pylint --rcfile=../.pylintrc projrot_io
             - run:
                 name: Test thermp_io
                 command: |
+                    cd autoio
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings
                     flake8 --exit-zero thermp_io
-                    pylint --rcfile=~/.pylintrc thermp_io
+                    pylint --rcfile=../.pylintrc thermp_io
             - run:
                 name: Test varecof_io
                 command: |
+                    cd autoio
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings
                     flake8 --exit-zero varecof_io
-                    pylint --rcfile=~/.pylintrc varecof_io
+                    pylint --rcfile=../.pylintrc varecof_io
             - run:
                 name: Test autoread
                 command: |
+                    cd autoio
                     source activate automol-env
-                    pytest -v --cov=autoread --pyargs autoread
                     flake8 --exit-zero autoread
-                    pylint --rcfile=~/.pylintrc autoread
+                    pylint --rcfile..~/.pylintrc autoread
             - run:
                 name: Test autowrite
                 command: |
+                    cd autoio
                     source activate automol-env
                     flake8 --exit-zero autowrite
-                    pylint --rcfile=~/.pylintrc autowrite
+                    pylint --rcfile=../.pylintrc autowrite
     build-debian2:
         docker:
             - image: continuumio/miniconda3
@@ -87,8 +89,8 @@ jobs:
             - run:
                 name: Test autoparse
                 command: |
-                    source activate autoparse-env
                     cd autoparse
+                    source activate autoparse-env
                     pytest -v --disable-pytest-warnings --cov=autoparse --pyargs autoparse
                     flake8 --exit-zero autoparse
                     pylint --rcfile=../.pylintrc autoparse
@@ -114,6 +116,8 @@ jobs:
                     cd elstruct
                     python setup.py install
                     pytest -v --cov=elstruct .
+                    flake8 --exit-zero elstruct
+                    pylint --rcfile=../.pylintrc elstruct
 workflows:
     version: 2
     build-all:
