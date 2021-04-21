@@ -99,7 +99,7 @@ jobs:
                 name: Test autoparse
                 command: |
                     source activate autoparse-env
-                    pytest -v --disable-pytest-warnings --cov=autoparse --pyargs autoparse
+                    pytest ~/autoparse -v --disable-pytest-warnings --cov=autoparse
                     cd autoparse
                     flake8 --exit-zero ../autoparse
                     pylint --rcfile=../.pylintrc autoparse
