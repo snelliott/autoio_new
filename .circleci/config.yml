@@ -98,9 +98,9 @@ jobs:
             - run:
                 name: Test autoparse
                 command: |
+                    cd autoparse
                     source activate autoparse-env
                     pytest ~/autoparse -v --disable-pytest-warnings --cov=autoparse
-                    cd autoparse
                     flake8 --exit-zero ../autoparse
                     pylint --rcfile=../.pylintrc autoparse
     build-debian3:
