@@ -99,8 +99,8 @@ jobs:
                 command: |
                     source activate autoparse-env
                     pytest autoparse -v --disable-pytest-warnings --cov=autoparse
-                    cd autoparse
                     flake8 --exit-zero ../autoparse
+                    cd autoparse
                     pylint --rcfile=../.pylintrc autoparse
     build-debian3:
         docker:
