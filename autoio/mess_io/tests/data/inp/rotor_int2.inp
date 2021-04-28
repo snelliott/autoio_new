@@ -16,4 +16,4 @@ InternalRotation   # D5
   PotentialExpansionSize     7
   HamiltonSizeMin            15
   HamiltonSizeMax            110
-End
+End  ! IntlRot

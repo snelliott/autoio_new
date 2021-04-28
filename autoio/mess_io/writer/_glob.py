@@ -7,9 +7,9 @@ from ioformat import build_mako_str
 from ioformat import indent
 from ioformat import remove_trail_whitespace
 from mess_io.writer._sec import rxnchan_header_str
-from mess_io.writer.mol_data import core_rigidrotor
-from mess_io.writer.spc import molecule
-from mess_io.writer.rxnchan import species
+from mess_io.writer._mol_inf import core_rigidrotor
+from mess_io.writer._spc import molecule
+from mess_io.writer._rxnchan import species
 from phydat import phycon
 
 
@@ -53,7 +53,7 @@ def messhr_inp_str(geo, hind_rot_str):
         for hindered rotors
     """
 
-    global_pf_str = global_pf(
+    global_pf_str = global_pf_input(
         temperatures=[100.0, 200.0, 300.0, 400.0, 500],
         rel_temp_inc=0.001,
         atom_dist_min=0.6)
@@ -73,8 +73,8 @@ def messhr_inp_str(geo, hind_rot_str):
 
 
 # Write individual sections of the input file
-def global_reaction(temperatures, pressures,
-                    excess_ene_temp=None, well_extend='auto'):
+def global_rates_input(temperatures, pressures,
+                       excess_ene_temp=None, well_extend='auto'):
     """ Writes the global keywords section of the MESS input file by
         formatting input information into strings a filling Mako template.
 
@@ -118,14 +118,14 @@ def global_reaction(temperatures, pressures,
     }
 
     return build_mako_str(
-        template_file_name='global_reaction.mako',
+        template_file_name='global_rates.mako',
         template_src_path=SECTION_PATH,
         template_keys=globrxn_keys)
 
 
-def global_pf(temperatures=(),
-              temp_step=100, ntemps=30,
-              rel_temp_inc=0.001, atom_dist_min=1.13384):
+def global_pf_input(temperatures=(),
+                    temp_step=100, ntemps=30,
+                    rel_temp_inc=0.001, atom_dist_min=1.13384):
     """ Writes the global keywords section of the MESS input file by
         formatting input information into strings a filling Mako template.
 
@@ -168,7 +168,7 @@ def global_pf(temperatures=(),
         template_keys=globpf_keys)
 
 
-def global_energy_transfer(edown_str, collid_freq_str):
+def global_energy_transfer_input(edown_str, collid_freq_str):
     """ Writes the global energy transfer section of the MESS input file by
         formatting input information into strings a filling Mako template.
 

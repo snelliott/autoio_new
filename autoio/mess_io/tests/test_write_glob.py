@@ -24,13 +24,13 @@ DQ_DT = (0.111, 0.222, 0.333)
 D2Q_DT2 = (0.777, 0.888, 0.999)
 
 
-def test__global_reaction():
-    """ test mess_io.writer.global_reaction
+def test__global_rates_input():
+    """ test mess_io.writer.global_rates_input
     """
 
-    glob_rxn1_str = mess_io.writer.global_reaction(
+    glob_rxn1_str = mess_io.writer.global_rates_input(
         TEMPS, PRESSURES)
-    glob_rxn2_str = mess_io.writer.global_reaction(
+    glob_rxn2_str = mess_io.writer.global_rates_input(
         TEMPS, PRESSURES,
         excess_ene_temp=EXCESS_ENE_TEMP,
         well_extend=WELL_EXTEND)
@@ -39,15 +39,15 @@ def test__global_reaction():
     assert glob_rxn2_str == read_text_file(['data', 'inp'], 'glob_rxn2.inp', PATH)
 
 
-def test__global_pf():
+def test__global_pf_input():
     """ tests writing the section to a file for messpf
     """
 
-    glob_pf1_str = mess_io.writer.global_pf(
+    glob_pf1_str = mess_io.writer.global_pf_input(
         temperatures=TEMPS)
-    glob_pf2_str = mess_io.writer.global_pf(
+    glob_pf2_str = mess_io.writer.global_pf_input(
         temperatures=())
-    glob_pf3_str = mess_io.writer.global_pf(
+    glob_pf3_str = mess_io.writer.global_pf_input(
         temperatures=(),
         temp_step=TEMP_STEP,
         ntemps=NTEMPS,
@@ -102,7 +102,7 @@ def test__pf_output():
 
 
 if __name__ == '__main__':
-    # test__global_reaction()
-    # test__global_pf()
+    # test__global_rates_input()
+    # test__global_pf_input()
     # test__full_str()
     test__pf_output()

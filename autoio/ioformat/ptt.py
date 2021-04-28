@@ -259,22 +259,24 @@ def format_keyword_values(keyword, value):
     if all(sym in value for sym in ('[[', ']]')):
         value = value.replace('D', '').replace('d', '')
         value = ast.literal_eval(value)
-        frmtd_value = []
+        frmtd_value = ()
         for sub_lst in value:
             assert all(isinstance(val, int) for val in sub_lst)
-            frmtd_value.append(['D{}'.format(val) for val in sub_lst])
+            frmtd_value += (
+                tuple('D{}'.format(val) for val in sub_lst),
+            )
     elif all(sym in value for sym in ('[', ']')):
         value = value.replace('[', '').replace(']', '')
         value = value.split(',')
-        frmtd_value = []
+        frmtd_value = ()
         # Set string in list to boolean or integer if needed
         for elm in value:
             elm = elm.strip()
             if ':' in elm:
                 elm_lst = elm.split(':')
-                frmtd_value.append([float(elm_lst[0]), elm_lst[1]])
+                frmtd_value += ((float(elm_lst[0]), elm_lst[1]),)
             else:
-                frmtd_value.append(set_value_type(elm))
+                frmtd_value += (set_value_type(elm),)
     else:
         # Format values if it has singular value
         frmtd_value = set_value_type(value)

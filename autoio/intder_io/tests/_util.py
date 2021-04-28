@@ -15,7 +15,7 @@ def read_text_file(path_lst, file_name, path=PATH):
     """
     file_path = os.path.join(path, *path_lst, file_name)
     with open(file_path, 'r') as fobj:
-        file_str = fobj.read()
+        file_str = fobj.read().rstrip()
     return file_str
 
 

@@ -54,29 +54,29 @@ D2Q_DT2 = (0.777, 0.888, 0.999)
 
 
 def test__flux_mode():
-    """ test mess_io.writer.monte_carlo.fluxional_mode
+    """ test mess_io.writer.fluxional_mode
     """
 
     # Write the fluxional mode string
-    flux_mode1_str = mess_io.writer.monte_carlo.fluxional_mode(
+    flux_mode1_str = mess_io.writer.fluxional_mode(
         FLUX_IDX)
-    flux_mode2_str = mess_io.writer.monte_carlo.fluxional_mode(
+    flux_mode2_str = mess_io.writer.fluxional_mode(
         FLUX_IDX, span=FLUX_SPAN)
 
     assert flux_mode1_str == read_text_file(['data', 'inp'], 'flux_mode1.inp', PATH)
     assert flux_mode2_str == read_text_file(['data', 'inp'], 'flux_mode2.inp', PATH)
 
 
-def test__monte_carlo_species():
-    """ test mess_io.writer.monte_carlo.mc_species
+def test__species():
+    """ test mess_io.writer.mc_species
     """
 
     flux_mode_str = read_text_file(['data', 'inp'], 'flux_mode1.inp', PATH)
 
-    mc_spc1_str = mess_io.writer.monte_carlo.mc_species(
+    mc_spc1_str = mess_io.writer.mc_species(
         GEO, SYM_FACTOR, ELEC_LEVELS,
         flux_mode_str, DATA_FILE_NAME)
-    mc_spc2_str = mess_io.writer.monte_carlo.mc_species(
+    mc_spc2_str = mess_io.writer.mc_species(
         GEO, SYM_FACTOR, ELEC_LEVELS,
         flux_mode_str, DATA_FILE_NAME,
         ref_config_file_name=REF_CONFIG_FILE_NAME,
@@ -89,13 +89,13 @@ def test__monte_carlo_species():
     assert mc_spc2_str == read_text_file(['data', 'inp'], 'mc_spc2.inp', PATH)
 
 
-def test__monte_carlo_dat():
-    """ test mess_io.writer.monte_carlo.mc_data
+def test__dat():
+    """ test mess_io.writer.mc_data
     """
 
-    mc_dat1_str = mess_io.writer.monte_carlo.mc_data(
+    mc_dat1_str = mess_io.writer.mc_data(
         GEOS, ENES)
-    mc_dat2_str = mess_io.writer.monte_carlo.mc_data(
+    mc_dat2_str = mess_io.writer.mc_data(
         GEOS, ENES,
         grads=GRADS,
         hessians=HESSES)
@@ -108,4 +108,4 @@ def test__monte_carlo_dat():
 
 
 if __name__ == '__main__':
-    test__monte_carlo_dat()
+    test__dat()

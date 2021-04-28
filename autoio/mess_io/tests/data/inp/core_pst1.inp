@@ -16,4 +16,4 @@
     PotentialPrefactor[au]          10.0
     PotentialPowerExponent          6.0
     TSTLevel E
-  End
+  End  ! Core

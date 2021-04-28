@@ -7,20 +7,21 @@ from chemkin_io.writer import thermo as writer_therm
 from chemkin_io.writer import _util as util
 
 
-def write_chemkin_file(elem_tuple=None, spc_dct=None, spc_nasa7_dct=None, rxn_param_dct=None,
-                       filename='written_mech.txt', comments=None):
+def write_chemkin_file(elem_tuple=None, spc_dct=None, spc_nasa7_dct=None,
+                       rxn_param_dct=None, comments=None):
     """ Writes a Chemkin-formatted mechanism and/or thermo file. Writes
         the output to a text file.
 
         :param elem_tuple: tuple containing the element names
         :type elem_tuple: tuple
-        :param spc_dct: dct containing the species data
-        :type spc_dct: dct {spc_name:data}
-        :param spc_nasa7_dct: dct containing the NASA-7 thermo data for each species
-        :type spc_nasa7_dct: dct {spc_name:NASA-7 parameters}
-        :param rxn_param_dct: dct containing the reaction parameters
-        :type rxn_param_dct: dct {rxn:params}
+        :param spc_dct: data
+        :type spc_dct: {spc_name:data}
+        :param spc_nasa7_dct: containing NASA-7 thermo data for each species
+        :type spc_nasa7_dct: {spc_name:NASA-7 parameters}
+        :param rxn_param_dct: containing the reaction parameters
+        :type rxn_param_dct: {rxn:params}
     """
+
     total_str = ''
     if elem_tuple:
         elem_str = elements_block(elem_tuple)
@@ -35,10 +36,7 @@ def write_chemkin_file(elem_tuple=None, spc_dct=None, spc_nasa7_dct=None, rxn_pa
         rxn_str = reactions_block(rxn_param_dct, comments=comments)
         total_str += rxn_str
 
-    # Write to a text file
-    file = open(filename, "w")
-    file.writelines(total_str)
-    file.close()
+    return total_str
 
 
 def elements_block(elem_tuple):

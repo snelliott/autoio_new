@@ -4,7 +4,7 @@ Writes MESS input for a molecule
 
 import os
 from ioformat import build_mako_str
-from mess_io.writer import util
+from mess_io.writer import _format as messformat
 
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
@@ -28,7 +28,7 @@ def species(spc_label, spc_data, zero_ene=None):
     """
 
     # Indent the string containing all of data for the well
-    spc_data = util.indent(spc_data, 2)
+    spc_data = messformat.indent(spc_data, 2)
 
     # Format the precision of the zero energy
     if zero_ene is not None:
@@ -66,7 +66,7 @@ def well(well_label, well_data,
     """
 
     # Indent the string containing all of data for the well
-    well_data = util.indent(well_data, 4)
+    well_data = messformat.indent(well_data, 4)
 
     # Format the precision of the zero energy
     if zero_ene is not None:
@@ -74,9 +74,9 @@ def well(well_label, well_data,
 
     # Indent the energy transfer parameter strings if needed
     if edown_str is not None:
-        edown_str = util.indent(edown_str, 4)
+        edown_str = messformat.indent(edown_str, 4)
     if collid_freq_str is not None:
-        collid_freq_str = util.indent(collid_freq_str, 4)
+        collid_freq_str = messformat.indent(collid_freq_str, 4)
 
     # Create dictionary to fill template
     well_keys = {
@@ -101,12 +101,12 @@ def bimolecular(bimol_label,
     """
 
     # Indent the string containing all of data for each species
-    species1_data = util.indent(species1_data, 4)
-    species2_data = util.indent(species2_data, 4)
+    species1_data = messformat.indent(species1_data, 4)
+    species2_data = messformat.indent(species2_data, 4)
 
     # Determine if species is an atom
-    isatom1 = util.is_atom_in_str(species1_data)
-    isatom2 = util.is_atom_in_str(species2_data)
+    isatom1 = messformat.is_atom_in_str(species1_data)
+    isatom2 = messformat.is_atom_in_str(species2_data)
 
     # Format the precision of the ground energy
     ground_energy = '{0:<8.2f}'.format(ground_energy)
@@ -152,9 +152,9 @@ def barrier(ts_label, reac_label, prod_label, ts_data,
     """
 
     # Indent the string containing all of data for the saddle point
-    ts_data = util.indent(ts_data, 2)
+    ts_data = messformat.indent(ts_data, 2)
     if tunnel != '':
-        tunnel = util.indent(tunnel, 4)
+        tunnel = messformat.indent(tunnel, 4)
 
     # Format the precision of the zero energy
     if zero_ene is not None:
@@ -199,9 +199,9 @@ def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
     """
 
     # Indent the string containing all of data for the saddle point
-    ts_data = util.indent(ts_data, 2)
+    ts_data = messformat.indent(ts_data, 2)
     if tunnel != '':
-        tunnel = util.indent(tunnel, 4)
+        tunnel = messformat.indent(tunnel, 4)
 
     # Format the precision of the zero energy
     if zero_ene is not None:
@@ -251,8 +251,8 @@ def ts_variational(ts_label, reac_label, prod_label, rpath_strs,
     # Build the zero energy strings and add them to the rpath strings
     full_rpath_str = ''
     for rpath_str, zero_ene in zip(rpath_strs, zero_enes):
-        zero_ene_str = util.zero_energy_format(zero_ene)
-        zero_ene_str = util.indent(zero_ene_str, 2)
+        zero_ene_str = messformat.zero_energy_format(zero_ene)
+        zero_ene_str = messformat.indent(zero_ene_str, 2)
 
         full_rpath_str += rpath_str
         full_rpath_str += zero_ene_str
@@ -260,9 +260,9 @@ def ts_variational(ts_label, reac_label, prod_label, rpath_strs,
         full_rpath_str += 'End  ! RPATH PT\n'
 
     # Concatenate all of the variational point strings and indent them
-    ts_data = util.indent(full_rpath_str, 4)
+    ts_data = messformat.indent(full_rpath_str, 4)
     if tunnel != '':
-        tunnel = util.indent(tunnel, 4)
+        tunnel = messformat.indent(tunnel, 4)
 
     # Create dictionary to fill template
     var_keys = {
@@ -314,12 +314,12 @@ def configs_union(mol_data_strs, zero_enes, tunnel_strs=None):
         :type mol_data_strs: list(str)
         :rtype: str
     """
-    
+
     # Build the zero energy strings and add them to the union strings
     union_data = ''
     for idx, (union_str, zero_ene) in enumerate(zip(mol_data_strs, zero_enes)):
-        zero_ene_str = util.zero_energy_format(zero_ene)
-        zero_ene_str = util.indent(zero_ene_str, 2)
+        zero_ene_str = messformat.zero_energy_format(zero_ene)
+        zero_ene_str = messformat.indent(zero_ene_str, 2)
 
         union_data += union_str
         union_data += zero_ene_str
@@ -334,11 +334,11 @@ def configs_union(mol_data_strs, zero_enes, tunnel_strs=None):
 
     # Concatenate all of the molecule strings
     # union_data = '\n'.join(mol_data_strs)
-    union_data = util.indent(union_data, 2)
+    union_data = messformat.indent(union_data, 2)
 
     # Add the tunneling string (seems tunneling goes for all TSs in union)
     # if tunnel != '':
-    #     tunnel = util.indent(tunnel, 4)
+    #     tunnel = messformat.indent(tunnel, 4)
 
     # Create dictionary to fill template
     union_keys = {

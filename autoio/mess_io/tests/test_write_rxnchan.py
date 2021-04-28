@@ -62,11 +62,11 @@ def test__species_writer():
     """ Writes the MESS input for a Well
     """
 
-    spc1_str = mess_io.writer.rxnchan.species(
+    spc1_str = mess_io.writer.species(
         SPC1_LABEL, MOL_MESS_STR, zero_ene=None)
     assert spc1_str == read_text_file(['data', 'inp'], 'spc1.inp', PATH)
 
-    spc2_str = mess_io.writer.rxnchan.species(
+    spc2_str = mess_io.writer.species(
         SPC2_LABEL, MOL_MESS_STR, zero_ene=ENE)
     assert spc2_str == read_text_file(['data', 'inp'], 'spc2.inp', PATH)
 
@@ -76,11 +76,11 @@ def test__well_writer():
     """
     # fix
 
-    well1_str = mess_io.writer.rxnchan.well(
+    well1_str = mess_io.writer.well(
         WELL_LABEL, MOL_MESS_STR)
     assert well1_str == read_text_file(['data', 'inp'], 'well1.inp', PATH)
 
-    well2_str = mess_io.writer.rxnchan.well(
+    well2_str = mess_io.writer.well(
         WELL_LABEL, MOL_MESS_STR,
         zero_ene=ENE,
         edown_str=EDOWN_STR,
@@ -92,7 +92,7 @@ def test__bimolecular_writer():
     """ Writes the MESS input for a bimolecular set
     """
 
-    bimol_str = mess_io.writer.rxnchan.bimolecular(
+    bimol_str = mess_io.writer.bimolecular(
         BIMOL_LABEL,
         SPC1_LABEL, ATOM_MESS_STR,
         SPC2_LABEL, MOL_MESS_STR,
@@ -105,12 +105,12 @@ def test__ts_sadpt_writer():
     """
     # fix
 
-    ts_sadpt1_str = mess_io.writer.rxnchan.ts_sadpt(
+    ts_sadpt1_str = mess_io.writer.ts_sadpt(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR)
     assert ts_sadpt1_str == read_text_file(['data', 'inp'], 'ts_sadpt1.inp',
                                            PATH)
 
-    ts_sadpt2_str = mess_io.writer.rxnchan.ts_sadpt(
+    ts_sadpt2_str = mess_io.writer.ts_sadpt(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR,
         zero_ene=ENE, tunnel=TUNNEL_STR)
     assert ts_sadpt2_str == read_text_file(['data', 'inp'], 'ts_sadpt2.inp',
@@ -118,7 +118,7 @@ def test__ts_sadpt_writer():
 
 
 def test__ts_variational_writer():
-    """ ts mess_io.writer.rxnchan.ts_variational
+    """ ts mess_io.writer.ts_variational
     """
     # fix
     var_pt_strings = []
@@ -128,13 +128,13 @@ def test__ts_variational_writer():
         var_pt_string += MOL_MESS_STR
         var_pt_strings.append(var_pt_string)
 
-    ts_var1_str = mess_io.writer.rxnchan.ts_variational(
+    ts_var1_str = mess_io.writer.ts_variational(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL,
         var_pt_strings,
         zero_enes=PATH_ENES, tunnel='')
     assert ts_var1_str == read_text_file(['data', 'inp'], 'ts_var1.inp', PATH)
 
-    ts_var2_str = mess_io.writer.rxnchan.ts_variational(
+    ts_var2_str = mess_io.writer.ts_variational(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL,
         var_pt_strings,
         zero_enes=PATH_ENES, tunnel=TUNNEL_STR)
@@ -145,22 +145,22 @@ def test__dummy_writer():
     """ tests mess_io.writer.dummy
     """
 
-    dummy1_str = mess_io.writer.rxnchan.dummy(
+    dummy1_str = mess_io.writer.dummy(
         BIMOL_LABEL)
     assert dummy1_str == read_text_file(['data', 'inp'], 'dummy1.inp', PATH)
 
-    dummy2_str = mess_io.writer.rxnchan.dummy(
+    dummy2_str = mess_io.writer.dummy(
         BIMOL_LABEL, zero_ene=ENE)
     assert dummy2_str == read_text_file(['data', 'inp'], 'dummy2.inp', PATH)
 
 
 def test__configs_union_writer():
-    """ tests mess_io.writer.rxnchan.configs_union
+    """ tests mess_io.writer.configs_union
     """
 
     mol_strings = [MOL_MESS_STR for _ in range(3)]
 
-    union_str = mess_io.writer.rxnchan.configs_union(
+    union_str = mess_io.writer.configs_union(
         mol_strings)
     assert union_str == read_text_file(['data', 'inp'], 'union.inp', PATH)
 

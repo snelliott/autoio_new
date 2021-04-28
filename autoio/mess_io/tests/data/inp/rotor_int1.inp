@@ -7,4 +7,4 @@ InternalRotation
   PotentialExpansionSize     5
   HamiltonSizeMin            13
   HamiltonSizeMax            101
-End
+End  ! IntlRot

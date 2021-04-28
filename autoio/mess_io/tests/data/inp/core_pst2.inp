@@ -16,4 +16,4 @@
     PotentialPrefactor[au]          12.0
     PotentialPowerExponent          4.0
     TSTLevel EJ
-  End
+  End  ! Core

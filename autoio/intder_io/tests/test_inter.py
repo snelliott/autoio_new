@@ -15,7 +15,6 @@ ZMA = automol.zmat.from_string(
 HESS = load_numpy_string_file(['data'], 'c2h6o.hess')
 
 
-
 def test__input():
     """ test intder_io.writer.
     """

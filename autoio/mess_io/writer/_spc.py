@@ -8,7 +8,7 @@ Takes in data from other MESS writer functions
 
 import os
 from ioformat import build_mako_str
-from mess_io.writer import util
+from mess_io.writer import _format as messformat
 
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
@@ -30,7 +30,7 @@ def atom(mass, elec_levels):
     """
 
     # Build a formatted elec levels string
-    nlevels, levels = util.elec_levels_format(elec_levels)
+    nlevels, levels = messformat.elec_levels_format(elec_levels)
 
     # Create dictionary to fill template
     atom_keys = {
@@ -77,27 +77,27 @@ def molecule(core, elec_levels,
     # Add in infrared intensities at some point
 
     # Build formatted frequencies, infrared intensities and elec levels string
-    nfreqs, freqs = util.freqs_format(freqs)
-    nintens, intens = util.intensities_format(inf_intens)
-    nlevels, levels = util.elec_levels_format(elec_levels)
+    nfreqs, freqs = messformat.freqs_format(freqs)
+    nintens, intens = messformat.intensities_format(inf_intens)
+    nlevels, levels = messformat.elec_levels_format(elec_levels)
 
     # Format the rovib couplings and rotational distortions if needed
     if rovib_coups:
-        rovib_coups = util.format_rovib_coups(rovib_coups)
+        rovib_coups = messformat.format_rovib_coups(rovib_coups)
     else:
         rovib_coups = ''
     if rot_dists:
-        rot_dists = util.format_rot_dist_consts(rot_dists)
+        rot_dists = messformat.format_rot_dist_consts(rot_dists)
     else:
         rot_dists = ''
     if xmat:
-        anharm = util.format_xmat(xmat)
+        anharm = messformat.format_xmat(xmat)
     else:
         anharm = ''
 
     # Indent various strings string if needed
     if hind_rot != '':
-        hind_rot = util.indent(hind_rot, 2)
+        hind_rot = messformat.indent(hind_rot, 2)
 
     # Create dictionary to fill template
     molec_keys = {

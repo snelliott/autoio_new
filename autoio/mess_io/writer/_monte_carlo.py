@@ -8,7 +8,7 @@ import automol.util.mat
 from ioformat import build_mako_str
 from ioformat import remove_trail_whitespace
 from ioformat import indent
-from mess_io.writer import util
+from mess_io.writer import _format as messformat
 
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
@@ -46,13 +46,13 @@ def mc_species(geo, sym_factor, elec_levels,
     """
 
     # Format the molecule specification section
-    atom_list = util.molec_spec_format(geo)
+    atom_list = messformat.molec_spec_format(geo)
 
     # Build a formatted frequencies and elec levels string
-    nlevels, levels = util.elec_levels_format(elec_levels)
+    nlevels, levels = messformat.elec_levels_format(elec_levels)
     levels = indent(levels, 2)
     if freqs:
-        nfreqs, freqs = util.freqs_format(freqs)
+        nfreqs, freqs = messformat.freqs_format(freqs)
     else:
         nfreqs = 0
 
@@ -63,7 +63,7 @@ def mc_species(geo, sym_factor, elec_levels,
         )
 
     # Indent various strings string if needed
-    flux_mode_str = util.indent(flux_mode_str, 4)
+    flux_mode_str = messformat.indent(flux_mode_str, 4)
 
     # Create dictionary to fill template
     monte_carlo_keys = {
@@ -156,7 +156,7 @@ def fluxional_mode(atom_indices, span=360.0):
     """
 
     # Format the aotm indices string
-    atom_indices = util.format_flux_mode_indices(atom_indices)
+    atom_indices = messformat.format_flux_mode_indices(atom_indices)
 
     # Create dictionary to fill template
     flux_mode_keys = {
