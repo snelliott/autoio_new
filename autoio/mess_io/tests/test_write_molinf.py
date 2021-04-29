@@ -151,15 +151,19 @@ TUNNEL_FILE = 'tunnel.dat'
 
 
 def test__core_rigidrotor_writer():
-    """ test mess_io.writer.mol_data.core_rigidrotor
+    """ test mess_io.writer.core_rigidrotor
     """
 
-    core_rigrot1_str = mess_io.writer.mol_data.core_rigidrotor(
+    core_rigrot1_str = mess_io.writer.core_rigidrotor(
         GEO1, SYM_FACTOR1)
 
-    core_rigrot2_str = mess_io.writer.mol_data.core_rigidrotor(
+    core_rigrot2_str = mess_io.writer.core_rigidrotor(
         GEO1, SYM_FACTOR1,
         interp_emax=INTERP_EMAX)
+    with open('data/inp/core_rigrot1.inp', 'r') as fobj:
+        astr = fobj.read()
+    print(repr(core_rigrot1_str))
+    print(repr(astr))
 
     assert core_rigrot1_str == read_text_file(
         ['data', 'inp'], 'core_rigrot1.inp', PATH)
@@ -168,15 +172,15 @@ def test__core_rigidrotor_writer():
 
 
 def test__core_multirotor_writer():
-    """ test mess_io.writer.mol_data.rotor_internal
-        test mess_io.writer.mol_data.mdhr_data
-        test mess_io.writer.mol_data.core_multirotor
+    """ test mess_io.writer.rotor_internal
+        test mess_io.writer.mdhr_data
+        test mess_io.writer.core_multirotor
     """
 
     # Internal Rotor Sections
-    rotor_int1_str = mess_io.writer.mol_data.rotor_internal(
+    rotor_int1_str = mess_io.writer.rotor_internal(
         HR_GROUP, HR_AXIS, HR_SYMMETRY, HR_GRID_SIZE, HR_MASS_EXP_SIZE)
-    rotor_int2_str = mess_io.writer.mol_data.rotor_internal(
+    rotor_int2_str = mess_io.writer.rotor_internal(
         HR_GROUP, HR_AXIS, HR_SYMMETRY, HR_GRID_SIZE, HR_MASS_EXP_SIZE,
         pot_exp_size=POT_EXP_SIZE,
         hmin=HMIN,
@@ -187,13 +191,13 @@ def test__core_multirotor_writer():
     assert rotor_int1_str == read_text_file(['data', 'inp'], 'rotor_int1.inp', PATH)
     assert rotor_int2_str == read_text_file(['data', 'inp'], 'rotor_int2.inp', PATH)
 
-    mdhr_dat_1d_str = mess_io.writer.mol_data.mdhr_data(
+    mdhr_dat_1d_str = mess_io.writer.mdhr_data(
         ONEDPOT)
-    mdhr_dat_2dfr_str = mess_io.writer.mol_data.mdhr_data(
+    mdhr_dat_2dfr_str = mess_io.writer.mdhr_data(
         TWODPOT, freqs=TWODFREQ, nrot=3)
-    mdhr_dat_3dfr_str = mess_io.writer.mol_data.mdhr_data(
+    mdhr_dat_3dfr_str = mess_io.writer.mdhr_data(
         THREEDPOT, freqs=THREEDFREQ, nrot=3)
-    mdhr_dat_4dfr_str = mess_io.writer.mol_data.mdhr_data(
+    mdhr_dat_4dfr_str = mess_io.writer.mdhr_data(
         FOURDPOT, freqs=FOURDFREQ, nrot=3)
 
     assert mdhr_dat_1d_str == read_text_file(
@@ -206,9 +210,9 @@ def test__core_multirotor_writer():
         ['data', 'inp'], 'mdhr_dat_4dfr.inp', PATH)
 
     # MultiRotor Core Sections
-    core_multirot1_str = mess_io.writer.mol_data.core_multirotor(
+    core_multirot1_str = mess_io.writer.core_multirotor(
         GEO1, SYM_FACTOR1, POT_SURF_FILE, rotor_int1_str)
-    core_multirot2_str = mess_io.writer.mol_data.core_multirotor(
+    core_multirot2_str = mess_io.writer.core_multirotor(
         GEO1, SYM_FACTOR1, POT_SURF_FILE, rotor_int1_str,
         interp_emax=INTERP_EMAX,
         quant_lvl_emax=QUANT_LVL_EMAX)
@@ -220,14 +224,14 @@ def test__core_multirotor_writer():
 
 
 def test__core_phasespace_writer():
-    """ test mess_io.writer.mol_data.core_phasespace
+    """ test mess_io.writer.core_phasespace
     """
 
     # Use the writer to create a string for each of the core sections
-    core_pst1_str = mess_io.writer.mol_data.core_phasespace(
+    core_pst1_str = mess_io.writer.core_phasespace(
         GEO1, GEO2, SYM_FACTOR2, STOICH)
 
-    core_pst2_str = mess_io.writer.mol_data.core_phasespace(
+    core_pst2_str = mess_io.writer.core_phasespace(
         GEO1, GEO2, SYM_FACTOR2, STOICH,
         pot_prefactor=POT_PREFACTOR,
         pot_exp=POT_EXP,
@@ -238,23 +242,23 @@ def test__core_phasespace_writer():
 
 
 def test__core_rotd_writer():
-    """ test mess_io.writer.mol_data.core_rotd
+    """ test mess_io.writer.core_rotd
     """
 
-    core_rotd_str = mess_io.writer.mol_data.core_rotd(
+    core_rotd_str = mess_io.writer.core_rotd(
         SYM_FACTOR1, FLUX_FILE, STOICH)
 
     assert core_rotd_str == read_text_file(['data', 'inp'], 'core_rotd.inp', PATH)
 
 
 def test__rotor_hindered_writer():
-    """ test mess_io.writer.mol_data.rotor_hindered
+    """ test mess_io.writer.rotor_hindered
     """
 
-    rotor_hind1_str = mess_io.writer.mol_data.rotor_hindered(
+    rotor_hind1_str = mess_io.writer.rotor_hindered(
         HR_GROUP, HR_AXIS, HR_SYMMETRY, ONEDPOT)
 
-    rotor_hind2_str = mess_io.writer.mol_data.rotor_hindered(
+    rotor_hind2_str = mess_io.writer.rotor_hindered(
         HR_GROUP, HR_AXIS, HR_SYMMETRY, ONEDPOT,
         hmin=HMIN,
         hmax=HMAX,
@@ -270,12 +274,12 @@ def test__rotor_hindered_writer():
 
 
 def test__umbrella_writer():
-    """ test mess_io.writer.mol_data.umbrella
+    """ test mess_io.writer.umbrella
     """
 
-    umbrella1_str = mess_io.writer.mol_data.umbrella_mode(
+    umbrella1_str = mess_io.writer.umbrella_mode(
         UMBR_GROUP, UMBR_PLANE, UMBR_REF, ONEDPOT)
-    umbrella2_str = mess_io.writer.mol_data.umbrella_mode(
+    umbrella2_str = mess_io.writer.umbrella_mode(
         UMBR_GROUP, UMBR_PLANE, UMBR_REF, ONEDPOT,
         geo=GEO1)
 
@@ -284,37 +288,37 @@ def test__umbrella_writer():
 
 
 def test__tunnel_eckart_writer():
-    """ test mess_io.writer.mol_data.tunnel_eckart
+    """ test mess_io.writer.tunnel_eckart
     """
 
-    tunnel_eckart_str = mess_io.writer.mol_data.tunnel_eckart(
+    tunnel_eckart_str = mess_io.writer.tunnel_eckart(
         IMAG_FREQ, WELL_DEPTH1, WELL_DEPTH2)
 
     assert tunnel_eckart_str == read_text_file(
         ['data', 'inp'], 'tunnel_eckart.inp', PATH)
 
 
-def test__tunnel_sct_writer():
-    """ test mess_io.writer.mol_data.tunnel_sct
+def test__tunnel_read_writer():
+    """ test mess_io.writer.tunnel_read
     """
 
-    tunnel_sct1_str = mess_io.writer.mol_data.tunnel_sct(
+    tunnel_read1_str = mess_io.writer.tunnel_read(
         IMAG_FREQ, TUNNEL_FILE)
-    tunnel_sct2_str = mess_io.writer.mol_data.tunnel_sct(
+    tunnel_read2_str = mess_io.writer.tunnel_read(
         IMAG_FREQ, TUNNEL_FILE, cutoff_energy=CUTOFF_ENE)
 
-    assert tunnel_sct1_str == read_text_file(
-        ['data', 'inp'], 'tunnel_sct1.inp', PATH)
-    assert tunnel_sct2_str == read_text_file(
-        ['data', 'inp'], 'tunnel_sct2.inp', PATH)
+    assert tunnel_read1_str == read_text_file(
+        ['data', 'inp'], 'tunnel_read1.inp', PATH)
+    assert tunnel_read2_str == read_text_file(
+        ['data', 'inp'], 'tunnel_read2.inp', PATH)
 
 
 if __name__ == '__main__':
-    # test__core_rigidrotor_writer()
+    test__core_rigidrotor_writer()
     # test__core_multirotor_writer()
     # test__core_phasespace_writer()
     # test__core_rotd_writer()
     # test__rotor_hindered_writer()
-    test__umbrella_writer()
+    # test__umbrella_writer()
     # test__tunnel_eckart_writer()
     # test__tunnel_sct_writer()

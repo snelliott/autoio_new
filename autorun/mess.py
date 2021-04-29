@@ -15,14 +15,14 @@ def torsions(script_str, run_dir, geo, hind_rot_str):
     """
 
     # Write the MESSPF input file
-    global_pf_str = mess_io.writer.global_pf(
-        temperatures=[100.0, 200.0, 300.0, 400.0, 500],
+    global_pf_str = mess_io.writer.global_pf_input(
+        temperatures=(100.0, 200.0, 300.0, 400.0, 500),
         rel_temp_inc=0.001,
         atom_dist_min=0.6)
     dat_str = mess_io.writer.molecule(
         core=mess_io.writer.core_rigidrotor(geo, 1.0),
-        freqs=[1000.0],
-        elec_levels=[[0.0, 1.0]],
+        freqs=(1000.0,),
+        elec_levels=((0.0, 1.0),),
         hind_rot=hind_rot_str,
     )
     spc_str = mess_io.writer.species(

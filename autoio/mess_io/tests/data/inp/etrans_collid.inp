@@ -3,4 +3,4 @@ CollisionFrequency
      Epsilons[1/cm]                   100.000    200.000
      Sigmas[angstrom]                 10.000     20.000
      Masses[amu]                      15.000     25.000
-End
+End  ! Collid

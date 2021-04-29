@@ -45,7 +45,8 @@ def pes(input_string, read_fake=False):
                     prior_line = input_lines[idx-1]
                     line_lst2 = prior_line.split('!')
                     spc = line_lst2[1]
-                    pes_label_dct[spc.strip()] = label # strip gets rid of the spaces before and after
+                    # strip gets rid of the spaces before and after
+                    pes_label_dct[spc.strip()] = label
 
         if 'Bimolecular ' in line:
 
@@ -70,7 +71,8 @@ def pes(input_string, read_fake=False):
                 prior_line = input_lines[idx-1]
                 line_lst2 = prior_line.split('!')
                 spc = line_lst2[1]
-                pes_label_dct[spc.strip()] = label  # strip gets rid of the spaces before and after
+                # strip gets rid of the spaces before and after
+                pes_label_dct[spc.strip()] = label
 
         if 'Barrier ' in line:
 

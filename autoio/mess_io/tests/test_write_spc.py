@@ -22,6 +22,7 @@ CORE_STR = """  Geometry[angstrom]        8
   End"""
 FREQS = (10.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0,
          1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0)
+FREQ_SCALE_FACTOR = 1.833
 INF_INTENS = (1.0, 11.0, 22.0, 33.0, 44.0, 55.0, 66.0, 77.0, 88.0, 99.0,
               110.0, 120.0, 130.0, 140.0, 150.0, 160.0, 170.0, 180.0)
 MASS = 16.0
@@ -46,7 +47,7 @@ def test__atom_writer():
     """ Writes a string containing all info for an atom in MESS style
     """
 
-    atom_str = mess_io.writer.spc.atom(MASS, ELEC_LEVELS1)
+    atom_str = mess_io.writer.atom(MASS, ELEC_LEVELS1)
     assert atom_str == read_text_file(['data', 'inp'], 'atom_data.inp', PATH)
 
 
@@ -54,18 +55,18 @@ def test__molecule_writer():
     """ Writes a string containing all info for a molecule in MESS style
     """
 
-    mol1_str = mess_io.writer.spc.molecule(
+    mol1_str = mess_io.writer.molecule(
         CORE_STR, ELEC_LEVELS2)
     assert mol1_str == read_text_file(['data', 'inp'], 'mol1_data.inp', PATH)
 
-    mol2_str = mess_io.writer.spc.molecule(
+    mol2_str = mess_io.writer.molecule(
         CORE_STR, ELEC_LEVELS2,
         freqs=FREQS,
-        freq_scale_factor=1.833,
+        freq_scale_factor=FREQ_SCALE_FACTOR,
         use_harmfreqs_key=True)
     assert mol2_str == read_text_file(['data', 'inp'], 'mol2_data.inp', PATH)
 
-    mol3_str = mess_io.writer.spc.molecule(
+    mol3_str = mess_io.writer.molecule(
         CORE_STR, ELEC_LEVELS2,
         freqs=FREQS, hind_rot=HR_STR,
         xmat=XMAT,

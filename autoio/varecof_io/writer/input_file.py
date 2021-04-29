@@ -303,3 +303,17 @@ def convert():
         :rtype: string
     """
     return 'MultiInputFile    tst.inp'
+
+
+def machinefile(host_node, num_cores=10):
+    """ Take machine list and write the string for the machine file
+
+        node_dct maybe? {node_name: num_cores}
+    """
+
+    machines = ['{}:{}'.format(host_node, num_cores)]
+    machine_file_str = ''
+    for machine in machines:
+        machine_file_str += machine + '\n'
+
+    return machine_file_str

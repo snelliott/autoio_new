@@ -11,4 +11,4 @@
     SymmetryFactor          3.0
     ZeroPointEnergy[1/cm]             0.0
     InterpolationEnergyMax[kcal/mol]  1500
-  End
+  End  ! Core

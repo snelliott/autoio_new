@@ -16,7 +16,10 @@ def names(block_str, exclude_names=()):
         :rtype: tuple
     """
 
-    spc_names = apf.split_words(block_str)
-    spc_names = tuple(filter(lambda x: x not in exclude_names, spc_names))
+    if block_str is not None:
+        spc_names = apf.split_words(block_str)
+        spc_names = tuple(filter(lambda x: x not in exclude_names, spc_names))
+    else:
+        spc_names = None
 
     return spc_names

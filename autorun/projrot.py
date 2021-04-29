@@ -18,9 +18,30 @@ OUTPUT_NAMES = (
 
 
 # Specialized Runners
+def pot_frequencies(script_str, geoms, grads, hessians, run_path):
+    """ Calculate the frequencies (need to replace)
+
+        all input here are dictionaries (like potentials)
+    """
+
+    # Initialize hr freqs list
+    hr_freqs = {}
+    for point in geoms.keys():
+        _, proj_freqs, _, _ = frequencies(
+            script_str,
+            run_path,
+            [geoms[point]],
+            [grads[point]],
+            [hessians[point]])
+        hr_freqs[point] = proj_freqs
+
+    return hr_freqs
+
+
 def frequencies(script_str, run_dir, geoms, grads, hessians,
                 rotors_str='', aux_dct=None):
-    """ Make frequencies
+    """ Calculate the vibrational frequencies for a single molecule
+        for the RT-projections and RTHr-projections.
     """
 
     output_strs = direct(
@@ -44,12 +65,33 @@ def frequencies(script_str, run_dir, geoms, grads, hessians,
     return rtproj_freqs, hrproj_freqs, rt_imag_freq, hr_imag_freq
 
 
+def small_curvature_tunneling(script_str, run_dir, geoms, grads, hessians,
+                              rpath_coords, rpath_enes, sadpt_idx,
+                              rotors_str=''):
+    """ Determine the transmission
+    """
+
+    projrot_en_str = projrot_io.writer.rpht_path_coord_en(
+        rpath_coords, rpath_enes,
+        bnd1=(), bnd2=())
+    aux_dct = {'RPHt_coord_en.dat': projrot_en_str}
+
+    output_name = 'imactint.dat'
+    output_strs = direct(
+        script_str, run_dir, geoms, grads, hessians,
+        rotors_str=rotors_str, aux_dct=aux_dct,
+        output_names=(output_name,))
+    # coord_proj=cart/int
+
+    return output_strs[0]
+
+
 # Generalized Runner
 def direct(script_str, run_dir, geoms, grads, hessians,
            rotors_str='', aux_dct=None,
            input_name=INPUT_NAME, output_names=OUTPUT_NAMES):
     """ Generates an input file for a ProjRot job, runs it directly, and
-        obtains all of the possible output
+        obtains all of the possible output file strings
     """
 
     input_str = projrot_io.writer.rpht_input(

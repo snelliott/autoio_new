@@ -5,7 +5,7 @@ Writes MESS input for a molecule
 import os
 from ioformat import build_mako_str
 from ioformat import indent
-from mess_io.writer import util
+from mess_io.writer import _format as messformat
 
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
@@ -30,7 +30,7 @@ def core_rigidrotor(geo, sym_factor, interp_emax=None):
     """
 
     # Format the geometry section
-    natom, geo = util.geometry_format(geo)
+    natom, geo = messformat.geometry_format(geo)
 
     # Create dictionary to fill template
     core_keys = {
@@ -68,7 +68,7 @@ def core_multirotor(geo, sym_factor, pot_surf_file, int_rot_str,
     """
 
     # Format the geometry section
-    natom, geo = util.geometry_format(geo)
+    natom, geo = messformat.geometry_format(geo)
 
     # Indent the internal rotor string
     int_rot_str = indent(int_rot_str, 2)
@@ -116,8 +116,8 @@ def core_phasespace(geo1, geo2, sym_factor, stoich,
     assert tstlvl in ('e', 'ej', 't')
 
     # Format the geometry section of each fragment
-    natom1, geo1 = util.geometry_format(geo1)
-    natom2, geo2 = util.geometry_format(geo2)
+    natom1, geo1 = messformat.geometry_format(geo1)
+    natom2, geo2 = messformat.geometry_format(geo2)
 
     # Indent the geometry strings
     geo1 = indent(geo1, 2)
@@ -206,14 +206,15 @@ def rotor_hindered(group, axis, symmetry, potential,
     """
 
     # Format the rotor sections
-    rotor_group = util.format_rotor_key_defs(group)
-    rotor_axis = util.format_rotor_key_defs(axis)
-    rotor_npotential, rotor_potential = util.format_rotor_potential(potential)
+    rotor_group = messformat.format_rotor_key_defs(group)
+    rotor_axis = messformat.format_rotor_key_defs(axis)
+    rotor_npotential, rotor_potential = messformat.format_rotor_potential(
+        potential)
 
     # Format the geom
     natom = 1
     if geo is not None:
-        natom, geo = util.geometry_format(geo)
+        natom, geo = messformat.geometry_format(geo)
         geo = indent(geo, 4)
 
     # Create dictionary to fill template
@@ -276,12 +277,12 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
     )
 
     # Format the sections
-    rotor_group = util.format_rotor_key_defs(group)
-    rotor_axis = util.format_rotor_key_defs(axis)
+    rotor_group = messformat.format_rotor_key_defs(group)
+    rotor_axis = messformat.format_rotor_key_defs(axis)
 
     # Format the geom
     if geo is not None:
-        natom, geo = util.geometry_format(geo)
+        natom, geo = messformat.geometry_format(geo)
         geo = indent(geo, 4)
     else:
         natom = None
@@ -435,14 +436,15 @@ def umbrella_mode(group, plane, ref_atom, potential,
     """
 
     # Format the sections
-    umbr_group = util.format_rotor_key_defs(group)
-    umbr_plane = util.format_rotor_key_defs(plane)
-    umbr_npotential, umbr_potential = util.format_rotor_potential(potential)
+    umbr_group = messformat.format_rotor_key_defs(group)
+    umbr_plane = messformat.format_rotor_key_defs(plane)
+    umbr_npotential, umbr_potential = messformat.format_rotor_potential(
+        potential)
     ref_atom += 1
 
     # Format the geom
     if geo is not None:
-        natom, geo = util.geometry_format(geo)
+        natom, geo = messformat.geometry_format(geo)
         geo = indent(geo, 4)
     else:
         natom = None
@@ -496,7 +498,7 @@ def tunnel_eckart(imag_freq, well_depth1, well_depth2):
         template_keys=tunnel_keys)
 
 
-def tunnel_sct(imag_freq, tunnel_file, cutoff_energy=2500.0):
+def tunnel_read(imag_freq, tunnel_file, cutoff_energy=2500.0):
     """ Writes the string that defines the 'Tunneling' section for a
         small curvature tunneling model for a transition state
         for a MESS input file by formatting input information into
@@ -524,6 +526,6 @@ def tunnel_sct(imag_freq, tunnel_file, cutoff_energy=2500.0):
     }
 
     return build_mako_str(
-        template_file_name='tunnel_sct.mako',
+        template_file_name='tunnel_read.mako',
         template_src_path=SPEC_INFO_PATH,
         template_keys=tunnel_keys)

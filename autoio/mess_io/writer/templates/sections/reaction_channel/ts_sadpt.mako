@@ -5,6 +5,6 @@ ${ts_data}\
 ## Tunnel Section
 % if tunnel != '':
 ${tunnel}\
-    End
+    End  ! Tunnel?
 % endif
   End  ! Barrier\

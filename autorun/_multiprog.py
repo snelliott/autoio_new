@@ -66,32 +66,33 @@ def projected_frequencies(mess_script_str, projrot_script_str, run_dir,
     diff_tors_zpe_2 = harm_tors_zpe_2 - tors_zpe
     if diff_tors_zpe <= diff_tors_zpe_2:
         proj_freqs = rth_freqs1
-        proj_imag_freqs = rt_imag1
+        proj_imag = rt_imag1
         proj_zpe = harm_zpe_notors_1
     else:
         proj_freqs = rth_freqs2
-        proj_imag_freqs = rt_imag2
+        proj_imag = rt_imag2
         proj_zpe = harm_zpe_notors_2
-    
-    # Check imaginary frequencies and set freqs
-    if saddle:
-        if len(proj_imag_freqs) > 1:
-            ioprinter.warning_message(
-               'There is more than one imaginary frequency')
-        proj_imag = max(proj_imag_freqs)
-    else:
-        proj_imag = None
- 
+    print('imag test autorun', rt_imag1, rt_imag2, proj_imag)
+
+    # # Check imaginary frequencies and set freqs
+    # if saddle:
+    #     if len(proj_imag_freqs) > 1:
+    #         ioprinter.warning_message(
+    #            'There is more than one imaginary frequency')
+    #     proj_imag = max(proj_imag_freqs)
+    # else:
+    #     proj_imag = None
+
     # Check if there are significant differences caused by the rotor projection
     diff_tors_zpe *= phycon.EH2KCAL
     diff_tors_zpe_2 *= phycon.EH2KCAL
     if abs(diff_tors_zpe) > 0.2 and abs(diff_tors_zpe_2) > 0.2:
-        ioprinter.warning_message(
+        print(
             'There is a difference of ',
             '{0:.2f} and {1:.2f}'.format(diff_tors_zpe, diff_tors_zpe_2),
             'kcal/mol between harmonic and hindered torsional ZPVEs')
 
-    return proj_freqs, proj_imag, proj_zpe
+    return proj_freqs, proj_imag, proj_zpe, rt_freqs1, tors_freqs
 
 
 # ThermP + PAC99 Runners

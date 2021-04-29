@@ -18,4 +18,4 @@ Rotor  Hindered   # D5
   HamiltonSizeMax            110
   LevelEnergyMax[kcal/mol]   1000.0
   ThermalPowerMax      50.0
-End
+End  ! HindRot

@@ -4,6 +4,8 @@
 """
 
 import os
+from ioformat import remove_comment_lines
+from ioformat import remove_whitespace as remove_whitespace_
 
 
 def current_path():
@@ -58,7 +60,7 @@ def write_file(string, path, file_name):
         file_obj.write(string)
 
 
-def read_file(path, file_name):
+def read_file(path, file_name, remove_comments=None, remove_whitespace=False):
     """ Read a file with specified prefix path
         and name into a string.
 
@@ -70,7 +72,14 @@ def read_file(path, file_name):
     """
 
     fname = os.path.join(path, file_name)
-    with open(fname, 'r', errors='ignore') as file_obj:
-        file_str = file_obj.read()
+    if os.path.exists(fname):
+        with open(fname, 'r', errors='ignore') as file_obj:
+            file_str = file_obj.read()
+            if remove_comments is not None:
+                file_str = remove_comment_lines(file_str, remove_comments)
+            if remove_whitespace:
+                file_str = remove_whitespace_(file_str)
+    else:
+        file_str = None
 
     return file_str
