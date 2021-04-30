@@ -26,6 +26,7 @@ def test__thermo_read_write():
     thermo_str = writer(SPC_NASA7_DCT)
     
     # Run the parser
+    print(thermo_str)
     new_spc_nasa7_dct = parser(thermo_str)
     
     # Run the writer again on the new spc_nasa7_dct

@@ -1,7 +1,8 @@
 """ test elstruct.reader
 """
 from elstruct import reader
-
+from autofile import io_ as io
+import automol
 
 def test__programs():
     """ test elstruct.reader.programs
@@ -54,11 +55,18 @@ def test__vpt2_programs():
         'gaussian09', 'gaussian16'}
 
 
+def test__read_inp_zmatrix():
+    inp_str = io.read_file('run.inp')
+    zma = reader.inp_zmatrix('gaussian09', inp_str)
+    print(automol.zmat.string(zma))
+
+
 if __name__ == '__main__':
-    test__programs()
-    test__gradient_programs()
-    test__hessian_programs()
-    test__opt_geometry_programs()
-    test__opt_zmatrix_programs()
-    test__irc_programs()
-    test__vpt2_programs()
+    #test__programs()
+    #test__gradient_programs()
+    #test__hessian_programs()
+    #test__opt_geometry_programs()
+    #test__opt_zmatrix_programs()
+    #test__irc_programs()
+    #test__vpt2_programs()
+    test__read_inp_zmatrix()

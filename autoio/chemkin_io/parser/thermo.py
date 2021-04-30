@@ -159,6 +159,10 @@ def get_temp_limits(entry, default_midpoint):
         low_limit = float(first_line[45:55])  # characters 46 through 55 
         high_limit = float(first_line[55:65])  # characters 56 through 65
     except ValueError:
+        fline = first_line.split()
+        low_limit = float(fline[-4])
+        high_limit = float(fline[-3])
+        midpoint = float(fline[-2])
         print(f'Error processing the high and/or low temperatures in the following entry:\n{formatted_entry}')
 
     # If the midpoint read fails, replace it with the default value

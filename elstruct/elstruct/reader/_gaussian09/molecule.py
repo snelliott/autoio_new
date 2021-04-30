@@ -110,3 +110,61 @@ def opt_zmatrix(output_str):
         zma = None
 
     return zma
+
+
+def inp_zmatrix(inp_str):
+    """ Reads the input z-matrix from the input file string
+        Returns the Z-Matrix in Bohr and Radians.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: automol molecular geometry data structure
+    """
+
+    # Reads the matrix from the beginning of the input
+    symbs, key_mat, name_mat = ar.vmat.read(
+        inp_str,
+        start_ptt=app.padded(app.NEWLINE).join([
+            app.escape('comment:'), app.LINE, app.LINE, '']),
+        symb_ptt=ar.par.Pattern.ATOM_SYMBOL + app.not_followed_by(app.SPACES + app.FLOAT) + app.maybe(app.UNSIGNED_INTEGER),
+        key_ptt=app.one_of_these([app.UNSIGNED_INTEGER, app.VARIABLE_NAME]),
+        line_end_ptt=app.maybe(app.UNSIGNED_INTEGER),
+        last=False)
+    print('inp str', inp_str)
+    print('syms',  symbs, key_mat, name_mat)
+    # Reads the values from the input
+    if all(x is not None for x in (symbs, key_mat, name_mat)):
+        if len(symbs) == 1:
+            # val_dct = {}
+            val_mat = ((None, None, None),)
+        else:
+            val_dct = ar.setval.read(
+                inp_str,
+                start_ptt=app.padded(app.NEWLINE).join([
+                    app.padded('Variables:', app.NONNEWLINE), '']),
+                entry_sep_ptt='',
+                entry_start_ptt='',
+                sep_ptt=app.maybe(app.LINESPACES).join([
+                    app.NEWLINE]),
+                last=True)
+            val_mat = ar.setval.convert_dct_to_matrix(val_dct, name_mat)
+
+        # Check for the pattern
+        # For the case when variable names are used instead of integer keys:
+        # (otherwise, does nothing)
+        key_dct = dict(map(reversed, enumerate(symbs)))
+        key_dct[None] = 0
+        key_mat = [
+            [key_dct[val]+1 if not isinstance(val, numbers.Real) else val
+             for val in row] for row in key_mat]
+        symb_ptt = app.STRING_START + app.capturing(ar.par.Pattern.ATOM_SYMBOL)
+        symbs = [apf.first_capture(symb_ptt, symb) for symb in symbs]
+
+        # Call the automol constructor
+        zma = automol.zmat.from_data(
+            symbs, key_mat, val_mat, name_mat,
+            one_indexed=True, angstrom=True, degree=True)
+    else:
+        zma = None
+
+    return zma
