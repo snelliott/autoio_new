@@ -146,13 +146,14 @@ def _parse_rate_constants(out_lines, block_start, reaction):
         kts.append(out_lines[i].strip().split()[reaction_col])
 
     # Convert temps and rate constants to floats and combine values
-    temps = tuple(float(temp) for temp in temps)
-    kts = tuple(float(kt)
-                if kt != '***' else kt
-                for kt in kts)
-    kts = (temps, kts)
-
-    return kts
+    # only do so if the rate constant is defined (i.e., not '***')
+    fin_temps = tuple(float(temp) for temp in temps)
+    fin_kts = () 
+    for kt in kts:
+        new_kt = float(kt) if kt != '***' else None
+        fin_kts += (new_kt,)
+    print('mess test:', (fin_temps, fin_kts))
+    return (fin_temps, fin_kts)
 
 
 # Functions for getting k(E) values from main MESS `MicroRateOut` file
