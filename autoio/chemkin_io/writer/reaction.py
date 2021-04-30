@@ -230,14 +230,22 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
         :return arr_str: Chemkin reaction string with Arrhenius parameters
         :rtype: str
     """
-    assert len(high_params) == 3, (
-        f'Arrh params should be 3 but is {len(high_params)} for {reaction}'
+    assert len(high_params) in (3,6), (
+        f'Arrh params should be 3 or 6 but is {len(high_params)} for {reaction}'
     )
 
     # write the arrhenius parameter string
-    arr_str = ''
-    arr_str += _highp_str(reaction, high_params,
-                          max_length=max_length, name_buffer=name_buffer)
+    if len(high_params) == 3:
+        arr_str = _highp_str(reaction, high_params,
+                              max_length=max_length, name_buffer=name_buffer)
+
+    elif len(high_params) == 6:
+        arr_str = _highp_str(reaction, high_params[:3],
+                              max_length=max_length, name_buffer=name_buffer)
+        arr_str += 'DUP\n'
+        arr_str += _highp_str(reaction, high_params[3:],
+                              max_length=max_length, name_buffer=name_buffer)
+        arr_str += 'DUP\n'
 
     # Write the collider efficiencies string
     if colliders:
@@ -396,31 +404,6 @@ def _troe_and_cheb_params(header, params, newline=False, val='exp'):
         params_str += '\n'
 
     return params_str
-
-
-def _format_rxn_str_for_pdep(reaction, pressure='all'):
-    """ Add the bath gas M species to the reaction string for
-        pressure dependent reactions in the appropriate format.
-
-        :param reaction: chemical equation for the reaction
-        :type reaction: str
-        :param pressure: signifies the level of pressure dependence
-        :type pressure: str
-        :return: three_body_reaction: chemical equation with M body
-        :rtype: str
-    """
-    # Determine format of M string to be added to reaction string
-    assert pressure in ('low', 'all')
-    if pressure == 'all':
-        m_str = '(+M) '
-    else:
-        m_str = ' + M'
-
-    # Add the M string to both sides of the reaction string
-    [lhs, rhs] = reaction.split('=')
-    three_body_reaction = lhs + m_str + ' = ' + rhs + m_str
-
-    return three_body_reaction
 
 
 def _format_collider_string(colliders):
