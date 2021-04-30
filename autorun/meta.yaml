@@ -1,22 +1,20 @@
-# cmd: conda build . -c kevinmooreiii -c auto-mech -c psi4 -c rdkit -c openbabel -c conda-forge
+# cmd: conda build . -c auto-mech -c psi4 -c rdkit -c openbabel -c conda-forge
 package:
-    name: autoio
-    version: "0.1.1"
+    name: autorun
+    version: "0.1.0"
 
 source:
     path: .
 
 requirements:
-    host:
+    build:
         - python=3.7
     run:
         - python=3.7
-        - {{ compiler('fortran') }}
         - numpy
         - scipy
         - pyyaml
         - mako
-        - matplotlib
         - pytest
         - pytest-cov
         - future
@@ -26,8 +24,7 @@ requirements:
         - openbabel::openbabel
         - conda-forge::qcelemental
         - psi4::psi4
+        - auto-mech::autoio
         - auto-mech::autoparse
         - auto-mech::automol
-        - auto-mech::elstruct
-        - auto-mech::autorun
         - auto-mech::x2z

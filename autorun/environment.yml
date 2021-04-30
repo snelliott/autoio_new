@@ -1,4 +1,4 @@
-name: elstruct-env
+name: autorun-env
 
 channels:
     - auto-mech
@@ -22,7 +22,7 @@ dependencies:
     - pylint
     - auto-mech::automol
     - auto-mech::autoparse
-    - auto-mech::autorun
+    - auto-mech::autoio
     - auto-mech::x2z
     - psi4::psi4
     - rdkit::rdkit

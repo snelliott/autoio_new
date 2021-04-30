@@ -6,14 +6,14 @@ Extract information from a file using re patterns.
 """
 import re
 from functools import partial
-from ._lib import STRING_START as _STRING_START
-from ._lib import STRING_END as _STRING_END
-from ._lib import LINE_START as _LINE_START
-from ._lib import NEWLINE as _NEWLINE
-from ._lib import SPACES as _SPACES
-from ._lib import LINESPACES as _LINESPACES
-from ._lib import NUMBER as _NUMBER
-from ._pattern import maybe as _maybe
+from autoparse._lib import STRING_START as _STRING_START
+from autoparse._lib import STRING_END as _STRING_END
+from autoparse._lib import LINE_START as _LINE_START
+from autoparse._lib import NEWLINE as _NEWLINE
+from autoparse._lib import SPACES as _SPACES
+from autoparse._lib import LINESPACES as _LINESPACES
+from autoparse._lib import NUMBER as _NUMBER
+from autoparse._pattern import maybe as _maybe
 
 
 def has_match(pattern, string, case=True):

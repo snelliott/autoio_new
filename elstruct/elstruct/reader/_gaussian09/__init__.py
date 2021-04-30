@@ -9,6 +9,7 @@ from elstruct.reader._gaussian09.surface import irc_points
 from elstruct.reader._gaussian09.surface import irc_path
 from elstruct.reader._gaussian09.molecule import opt_geometry
 from elstruct.reader._gaussian09.molecule import opt_zmatrix
+from elstruct.reader._gaussian09.molecule import inp_zmatrix
 from elstruct.reader._gaussian09._vpt2 import vpt2
 from elstruct.reader._gaussian09.prop import dipole_moment
 from elstruct.reader._gaussian09.prop import polarizability
@@ -31,6 +32,7 @@ __all__ = [
     'irc_path',
     'opt_geometry',
     'opt_zmatrix',
+    'inp_zmatrix',
     'vpt2',
     'dipole_moment',
     'polarizability',
