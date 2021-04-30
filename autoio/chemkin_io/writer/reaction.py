@@ -398,31 +398,6 @@ def _troe_and_cheb_params(header, params, newline=False, val='exp'):
     return params_str
 
 
-def _format_rxn_str_for_pdep(reaction, pressure='all'):
-    """ Add the bath gas M species to the reaction string for
-        pressure dependent reactions in the appropriate format.
-
-        :param reaction: chemical equation for the reaction
-        :type reaction: str
-        :param pressure: signifies the level of pressure dependence
-        :type pressure: str
-        :return: three_body_reaction: chemical equation with M body
-        :rtype: str
-    """
-    # Determine format of M string to be added to reaction string
-    assert pressure in ('low', 'all')
-    if pressure == 'all':
-        m_str = '(+M) '
-    else:
-        m_str = ' + M'
-
-    # Add the M string to both sides of the reaction string
-    [lhs, rhs] = reaction.split('=')
-    three_body_reaction = lhs + m_str + ' = ' + rhs + m_str
-
-    return three_body_reaction
-
-
 def _format_collider_string(colliders):
     """ Write the string for the bath gas collider and their efficiencies
         for the Lindemann and Troe functional expressions:
