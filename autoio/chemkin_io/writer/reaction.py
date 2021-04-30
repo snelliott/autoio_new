@@ -230,14 +230,22 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
         :return arr_str: Chemkin reaction string with Arrhenius parameters
         :rtype: str
     """
-    assert len(high_params) == 3, (
-        f'Arrh params should be 3 but is {len(high_params)} for {reaction}'
+    assert len(high_params) in (3,6), (
+        f'Arrh params should be 3 or 6 but is {len(high_params)} for {reaction}'
     )
 
     # write the arrhenius parameter string
-    arr_str = ''
-    arr_str += _highp_str(reaction, high_params,
-                          max_length=max_length, name_buffer=name_buffer)
+    if len(high_params) == 3:
+        arr_str = _highp_str(reaction, high_params,
+                              max_length=max_length, name_buffer=name_buffer)
+
+    elif len(high_params) == 6:
+        arr_str = _highp_str(reaction, high_params[:3],
+                              max_length=max_length, name_buffer=name_buffer)
+        arr_str += 'DUP\n'
+        arr_str += _highp_str(reaction, high_params[3:],
+                              max_length=max_length, name_buffer=name_buffer)
+        arr_str += 'DUP\n'
 
     # Write the collider efficiencies string
     if colliders:
