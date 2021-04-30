@@ -13,6 +13,9 @@ def ktp_dct(output_str, reactant, product):
         for a single reaction for rate constants at all computed pressures,
         including the high-pressure limit.
 
+        Pressures in atm.
+        K(T)s in cm3/mol.s [bimol] or 1/s [unimol]
+
         :param output_str: string of lines of MESS output file
         :type output_str: str
         :param reactant: label for the reactant used in the MESS output
