@@ -58,7 +58,6 @@ from autoparse._lib import NUMBER
 from autoparse._lib import EXPONENTIAL_INTEGER_D
 from autoparse._lib import EXPONENTIAL_FLOAT_D
 from autoparse._lib import VARIABLE_NAME
->>>>>>> relative imports in autoparse fix
 
 __all__ = [
     # pattern generators

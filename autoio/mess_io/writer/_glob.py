@@ -205,9 +205,9 @@ def pf_output(formula_str, temps, logq, dq_dt, d2q_dt2):
     mess_out_str += ' T, K            {}'.format(formula_str)
     for temp, _logq, dq1, dq2 in zip(temps, logq, dq_dt, d2q_dt2):
         mess_out_str += '\n'
-        mess_out_str += '{0:>8.6f}    '.format(temp)
+        mess_out_str += '{0:>8.3f}    '.format(temp)
         mess_out_str += '{0:>8.6f}    '.format(_logq)
-        mess_out_str += '{0:>8.6f}    '.format(dq1)
-        mess_out_str += '{0:>8.6f}    '.format(dq2)
+        mess_out_str += '{0:>8.8f}    '.format(dq1)
+        mess_out_str += '{0:>8.6e}    '.format(dq2)
 
     return mess_out_str
