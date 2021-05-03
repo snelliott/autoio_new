@@ -5,8 +5,8 @@
 import os
 import tempfile
 import varecof_io
-from _util import read_text_file
-from _util import write_text_file
+from ioformat import read_text_file
+from ioformat import write_text_file
 
 
 # Set paths for building files

@@ -3,7 +3,7 @@
 import os
 
 import thermp_io
-from _util import read_text_file
+from ioformat import read_text_file
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))

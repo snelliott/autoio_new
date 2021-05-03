@@ -4,7 +4,7 @@
 import os
 
 import mess_io.writer
-from _util import read_text_file
+from ioformat import read_text_file
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 TEMPS = (100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0)

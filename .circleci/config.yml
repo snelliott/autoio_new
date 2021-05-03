@@ -32,6 +32,7 @@ jobs:
                 command: |
                     cd autoio/mess_io
                     source activate autoio-env
+                    pytest -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io
                     flake8 --exit-zero ../../mess_io
                     pylint --rcfile=../../.pylintrc mess_io
             - run:
@@ -39,6 +40,7 @@ jobs:
                 command: |
                     cd autoio/projrot_io
                     source activate autoio-env
+                    pytest -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
                     flake8 --exit-zero ../../projrot_io
                     pylint --rcfile=../../.pylintrc projrot_io
             - run:
@@ -46,6 +48,7 @@ jobs:
                 command: |
                     cd autoio/thermp_io
                     source activate autoio-env
+                    pytest -v --disable-pytest-warnings --cov=thermp_io --pyargs thermp_io
                     flake8 --exit-zero ../../thermp_io
                     pylint --rcfile=../../.pylintrc thermp_io
             - run:
@@ -53,6 +56,8 @@ jobs:
                 command: |
                     cd autoio/varecof_io
                     source activate autoio-env
+                    pytest -v --disable-pytest-warnings --cov=varecof_io --pyargs varecof_io
+                    flake8 --exit-zero ../../thermp_io
                     flake8 --exit-zero ../../varecof_io
                     pylint --rcfile=../../.pylintrc varecof_io
             - run:
@@ -60,6 +65,7 @@ jobs:
                 command: |
                     cd autoio/autoread
                     source activate autoio-env
+                    pytest -v --disable-pytest-warnings --cov=autoread --pyargs autoread
                     flake8 --exit-zero ../../autoread
                     pylint --rcfile-../../.pylintrc autoread
             - run:
@@ -67,6 +73,7 @@ jobs:
                 command: |
                     cd autoio/autowrite
                     source activate autoio-env
+                    pytest -v --disable-pytest-warnings --cov=autowrite --pyargs autowrite
                     flake8 --exit-zero ../../autowrite
                     pylint --rcfile=../../.pylintrc autowrite
     build-debian2:

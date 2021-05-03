@@ -8,12 +8,11 @@ from autoread._zmat import zmat
 from autoread._zmat import vmat
 from autoread._zmat import setval
 
-
 __all__ = [
     'energy',
     'geom',
     'matrix',
     'zmat',
     'vmat',
-    'setval'
+    'setval',
 ]

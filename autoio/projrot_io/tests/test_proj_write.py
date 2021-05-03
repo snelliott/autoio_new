@@ -3,7 +3,7 @@
 """
 import os
 
-from _util import read_text_file
+from ioformat import read_text_file
 import projrot_io
 
 
