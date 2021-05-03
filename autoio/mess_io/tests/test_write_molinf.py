@@ -3,8 +3,8 @@
 
 import os
 
-from _util import read_text_file
 import mess_io.writer
+from ioformat import read_text_file
 
 
 # Core Data
