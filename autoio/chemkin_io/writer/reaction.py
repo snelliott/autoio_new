@@ -18,9 +18,11 @@ def troe(reaction, high_params, low_params, troe_params, colliders=None,
         :type high_params: list of floats
         :param low_params: Arrhenius low-P parameters
         :type low_params: list of floats
-        :param troe_params: Troe parameters: alpha, T***, T*, and T** (T** is optional)
+        :param troe_params: Troe parameters: alpha, T***, T*, and T**
+            (T** is optional)
         :type troe_params: list of floats
-        :param colliders: names and collision enhancement factors for bath gases
+        :param colliders: names and collision enhancement
+            factors for bath gases
         :type colliders: list((str, float))
         :return troe_str: Chemkin reaction string with Troe parameters
         :rtype: str
@@ -50,7 +52,7 @@ def troe(reaction, high_params, low_params, troe_params, colliders=None,
 
 
 def lindemann(reaction, high_params, low_params, colliders=None,
-              max_length=45, name_buffer=BUFFER):
+              max_length=45):
     """ Write the string containing the Lindemann fitting parameters
         formatted for Chemkin input files
 
@@ -60,7 +62,7 @@ def lindemann(reaction, high_params, low_params, colliders=None,
         :type high_params: list of floats
         :param low_params: Arrhenius low-P parameters
         :type low_params: list of floats
-        :param colliders: names and collision enhancement factors for bath gases
+        :param colliders: names and collision enhancement factors for bathgases
         :type colliders: list((str, float))
         :return lind_str: Chemkin reaction string with Lindemann parameters
         :rtype: str
@@ -100,9 +102,11 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
             :type pressure: float
             :param params: Arrhenius parameters at the specified pressure
             :type params: list of floats
-            :param max_length: length of the longest reaction name in the mechanism
+            :param max_length: length of the longest reaction name
+                in the mechanism
             :type max_length: int
-            :param name_buffer: buffer between the name and the Arrhenius params
+            :param name_buffer: buffer between the name and the
+                Arrhenius params
             :type name_buffer: int
             :return single_str: Chemkin reaction string with PLOG parameters
                 at a single pressure
@@ -110,8 +114,10 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
         """
         plog_buffer = str(max_length+name_buffer-12)
         [a_par, n_par, ea_par] = params
-        single_str = ('{0:<' + plog_buffer + 's}{1:<12.3E}{2:<10.3E}{3:>9.3f}{4:>9.0f} /\n').format(
-            '    PLOG /', pressure, a_par, n_par, ea_par)
+        single_str = (
+            '{0:<' + plog_buffer +
+            's}{1:<12.3E}{2:<10.3E}{3:>9.3f}{4:>9.0f} /\n').format(
+                '    PLOG /', pressure, a_par, n_par, ea_par)
 
         return single_str
 
@@ -119,18 +125,21 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
     unsorted_pressures = plog_param_dct.keys()
     pressures = sorted(unsorted_pressures)
 
-    # Write the header for the reaction, which includes the 1-atm fit if available
+    # Write the header for the reaction, which includes the 1-atm fit if avail
     if 1 in pressures:
         if len(plog_param_dct[1]) > 3:
-            comment = 'Duplicates exist at 1 atm (see below); only single 1-atm fit is written'
-            plog_str = _highp_str(reaction, plog_param_dct[1][:3], max_length=max_length,
-                                  name_buffer=name_buffer, inline_comment=comment
-                                  )
+            comment = (
+                'Duplicates exist at 1 atm (see below);' +
+                ' only single 1-atm fit is written')
+            plog_str = _highp_str(
+                reaction, plog_param_dct[1][:3], max_length=max_length,
+                name_buffer=name_buffer, inline_comment=comment)
         else:
             comment = 'Arrhenius parameters at 1 atm'
-            plog_str = _highp_str(reaction, plog_param_dct[1], max_length=max_length,
-                                  name_buffer=name_buffer, inline_comment=comment
-                                  )
+            plog_str = _highp_str(
+                reaction, plog_param_dct[1], max_length=max_length,
+                name_buffer=name_buffer, inline_comment=comment
+                )
     else:
         comment = 'No fit at 1 atm available'
         plog_str = _highp_str(reaction, [1.0, 0.0, 0.0], max_length=max_length,
@@ -141,15 +150,18 @@ def plog(reaction, plog_param_dct, max_length=45, name_buffer=BUFFER):
     for pressure in pressures:
         plog_params = plog_param_dct[pressure]
         assert len(plog_params) % 3 == 0, (
-            f'Arr params should be a multiple of 3 but is {len(plog_params)} for {reaction}'
+            f'Arr params should be a multiple of 3 but is {len(plog_params)}' +
+            f' for {reaction}'
         )
 
-        # Loop over however many Arrhenius sets there are, writing a PLOG line for each
+        # Loop over however many Arrhenius sets there are,
+        # writing a PLOG line for each
         num_arr_sets = int(len(plog_params)/3)
         for idx in range(num_arr_sets):
             current_plog_params = plog_params[3*idx:3*(idx+1)]
-            plog_str += _pressure_str(pressure, current_plog_params,
-                                      max_length=max_length, name_buffer=name_buffer)
+            plog_str += _pressure_str(
+                pressure, current_plog_params,
+                max_length=max_length, name_buffer=name_buffer)
 
     return plog_str
 
@@ -181,11 +193,13 @@ def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax,
         :rtype: str
     """
     assert len(one_atm_params) == 3, (
-        f'For {reaction}, the length of one_atm_params is {len(one_atm_params)} instead of 3'
+        f'For {reaction}, the length of one_atm_params' +
+        f' is {len(one_atm_params)} instead of 3'
     )
 
     # Write reaction header (with third body added) and high-pressure params
-    # reaction = _format_rxn_str_for_pdep(reaction, pressure='all') #LPM this adds unrequired (+M)
+    # reaction = _format_rxn_str_for_pdep(reaction, pressure='all') #LPM
+    # this adds unrequired (+M)
     if one_atm_params != [1.0, 0.0, 0.0]:  # if the params look real
         comment = 'Arrhenius parameters at 1 atm'
     else:  # if the params look fake
@@ -213,7 +227,8 @@ def chebyshev(reaction, one_atm_params, alpha, tmin, tmax, pmin, pmax,
     return cheb_str
 
 
-def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=BUFFER):
+def arrhenius(reaction, high_params, colliders=None,
+              max_length=45, name_buffer=BUFFER):
     """ Write the string containing the Arrhenius fitting parameters
         formatted for Chemkin input files
 
@@ -221,7 +236,7 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
         :type reaction: str
         :param high_params: Arrhenius high-P (i.e., high-P) parameters
         :type high_params: list of floats
-        :param colliders: names and collision enhancement factors for bath gases
+        :param colliders: names and collision enhancement factors for bathgases
         :type colliders: list((str, float))
         :param max_length: length of the longest reaction name in the mechanism
         :type max_length: int
@@ -230,18 +245,21 @@ def arrhenius(reaction, high_params, colliders=None, max_length=45, name_buffer=
         :return arr_str: Chemkin reaction string with Arrhenius parameters
         :rtype: str
     """
-    assert len(high_params) in (3,6), (
-        f'Arrh params should be 3 or 6 but is {len(high_params)} for {reaction}'
+    assert len(high_params) in (3, 6), (
+        f'Arrh params should be 3 or 6 but is {len(high_params)}' +
+        f' for {reaction}'
     )
 
     # write the arrhenius parameter string
     if len(high_params) == 3:
-        arr_str = _highp_str(reaction, high_params,
-                              max_length=max_length, name_buffer=name_buffer)
+        arr_str = _highp_str(
+            reaction, high_params,
+            max_length=max_length, name_buffer=name_buffer)
 
     elif len(high_params) == 6:
-        arr_str = _highp_str(reaction, high_params[:3],
-                              max_length=max_length, name_buffer=name_buffer)
+        arr_str = _highp_str(
+            reaction, high_params[:3],
+            max_length=max_length, name_buffer=name_buffer)
         arr_str += 'DUP\n'
         arr_str += _highp_str(reaction, high_params[3:],
                               max_length=max_length, name_buffer=name_buffer)
@@ -310,7 +328,8 @@ def fit_info(pressures, temp_dct, err_dct):
     return inf_str
 
 
-def _highp_str(reaction, high_params, max_length=45, name_buffer=BUFFER, inline_comment=None):
+def _highp_str(reaction, high_params, max_length=45,
+               name_buffer=BUFFER, inline_comment=None):
     """ Write the high-pressure Arrhenius parameters as a string
 
         :param reaction: Chemkin formatted string with chemical equation
@@ -323,15 +342,15 @@ def _highp_str(reaction, high_params, max_length=45, name_buffer=BUFFER, inline_
         :type name_buffer: int
         :param inline_comment: optional inline comment
         :type inline_comment: str
-        :return highp_str: Chemkin reaction string with high-P Arrhenius parameters
+        :return highp_str: Chemkin reaction string with high-P Arrhenius params
         :rtype: str
 
     """
     highp_buffer = str(max_length+name_buffer)
     [a_par, n_par, ea_par] = high_params
-    highp_str = ('{0:<' + highp_buffer + 's}{1:<10.3E}{2:>9.3f}{3:>9.0f}').format(
-        reaction, a_par, n_par, ea_par
-    )
+    highp_str = (
+        '{0:<' + highp_buffer + 's}{1:<10.3E}{2:>9.3f}{3:>9.0f}').format(
+            reaction, a_par, n_par, ea_par)
 
     if inline_comment:
         highp_str += '   ! ' + inline_comment
@@ -341,7 +360,8 @@ def _highp_str(reaction, high_params, max_length=45, name_buffer=BUFFER, inline_
     return highp_str
 
 
-def _lowp_str(reaction, low_params, max_length=45, name_buffer=BUFFER, inline_comment=None):
+def _lowp_str(reaction, low_params, max_length=45,
+              name_buffer=BUFFER, inline_comment=None):
     """ Write the low-pressure Arrhenius parameters as a string
 
         :param reaction: Chemkin formatted string with chemical equation
@@ -354,15 +374,15 @@ def _lowp_str(reaction, low_params, max_length=45, name_buffer=BUFFER, inline_co
         :type name_buffer: int
         :param inline_comment: optional inline comment
         :type inline_comment: str
-        :return lowp_str: Chemkin reaction string with low-P Arrhenius parameters
+        :return lowp_str: Chemkin reaction string with low-P Arrhenius params
         :rtype: str
 
     """
     lowp_buffer = str(max_length+name_buffer)
     [a_par, n_par, ea_par] = low_params
-    lowp_str = ('{0:<' + lowp_buffer + 's}{1:<10.3E}{2:>9.3f}{3:>9.0f}  /').format(
-        '    LOW  /', a_par, n_par, ea_par
-    )
+    lowp_str = (
+        '{0:<' + lowp_buffer + 's}{1:<10.3E}{2:>9.3f}{3:>9.0f}  /').format(
+            '    LOW  /', a_par, n_par, ea_par)
 
     if inline_comment:
         lowp_str += '   ! ' + inline_comment

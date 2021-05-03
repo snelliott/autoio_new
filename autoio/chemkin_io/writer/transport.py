@@ -1,5 +1,5 @@
 """
- Writes the string for a Chemkin transport file 
+ Writes the string for a Chemkin transport file
 """
 
 from chemkin_io.writer import _util as util
@@ -15,15 +15,15 @@ def properties(spc_trans_dct):
         used in calculating transport properties during Chemkin simulations.
 
         :param spc_trans_dct:
-        :type spc_trans_dict: {spc_name: 
+        :type spc_trans_dict: {spc_name:
             {'shape_idx': 0 for atomic, 1 for linear, 2 for non-linear,
              'epsilon': Lennard-Jones well depth epsilon/k_B (Kelvins),
              'sigma': Lennard-Jones collision diameter (angstroms),
              'dipole_moment': dipole moment (Debyes),
              'polarizability': polarizability (angstroms^3),
              'zrot': rotational relaxation collision number at 298 K
-            }    
-        }   
+            }
+        }
         :return: chemkin_str: Chemkin string with transport data
         :rtype: str
     """
@@ -65,4 +65,3 @@ def properties(spc_trans_dct):
         chemkin_str += '\n'
 
     return chemkin_str
-

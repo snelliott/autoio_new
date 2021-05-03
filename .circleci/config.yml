@@ -21,60 +21,58 @@ jobs:
             - run:
                 name: Test chemkin_io
                 command: |
-                    source activate autoio-env
                     cd autoio/chemkin_io
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io
-                    flake8 --exit-zero ../../chemkin_io
+                    pytest . -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io
+                    flake8 --exit-zero ../chemkin_io
                     pylint --rcfile=../../.pylintrc chemkin_io
             - run:
                 name: Test mess_io
                 command: |
                     cd autoio/mess_io
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io
-                    flake8 --exit-zero ../../mess_io
+                    pytest . -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io
+                    flake8 --exit-zero ../mess_io
                     pylint --rcfile=../../.pylintrc mess_io
             - run:
                 name: Test projrot_io
                 command: |
                     cd autoio/projrot_io
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
-                    flake8 --exit-zero ../../projrot_io
+                    pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
+                    flake8 --exit-zero ../projrot_io
                     pylint --rcfile=../../.pylintrc projrot_io
             - run:
                 name: Test thermp_io
                 command: |
                     cd autoio/thermp_io
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings --cov=thermp_io --pyargs thermp_io
-                    flake8 --exit-zero ../../thermp_io
+                    pytest . -v --disable-pytest-warnings --cov=thermp_io --pyargs thermp_io
+                    flake8 --exit-zero ../thermp_io
                     pylint --rcfile=../../.pylintrc thermp_io
             - run:
                 name: Test varecof_io
                 command: |
                     cd autoio/varecof_io
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings --cov=varecof_io --pyargs varecof_io
-                    flake8 --exit-zero ../../thermp_io
-                    flake8 --exit-zero ../../varecof_io
+                    pytest . -v --disable-pytest-warnings --cov=varecof_io --pyargs varecof_io
+                    flake8 --exit-zero ../varecof_io
                     pylint --rcfile=../../.pylintrc varecof_io
             - run:
                 name: Test autoread
                 command: |
                     cd autoio/autoread
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings --cov=autoread --pyargs autoread
-                    flake8 --exit-zero ../../autoread
+                    pytest . -v --disable-pytest-warnings --cov=autoread --pyargs autoread
+                    flake8 --exit-zero ../autoread
                     pylint --rcfile-../../.pylintrc autoread
             - run:
                 name: Test autowrite
                 command: |
                     cd autoio/autowrite
                     source activate autoio-env
-                    pytest -v --disable-pytest-warnings --cov=autowrite --pyargs autowrite
-                    flake8 --exit-zero ../../autowrite
+                    pytest . -v --disable-pytest-warnings --cov=autowrite --pyargs autowrite
+                    flake8 --exit-zero ../autowrite
                     pylint --rcfile=../../.pylintrc autowrite
     build-debian2:
         docker:
