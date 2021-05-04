@@ -1,6 +1,6 @@
 # Library: AutoIO
 [//]: # (Badges)
-[![CircleCI](https://circleci.com/gh/snelliott/autoio_new/tree/dev.svg?style=shield)](https://circleci.com/gh/snelliott/autoio_new/tree/dev)
+[![CircleCI](https://circleci.com/gh/Auto-Mech/autoio/tree/dev.svg?style=shield)](https://circleci.com/gh/Auto-Mech/autoio/tree/dev)
 
 Andreas V. Copan, Kevin B. Moore III, Sarah N. Elliott, and Stephen J. Klippenstein
 
