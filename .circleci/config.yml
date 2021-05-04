@@ -127,7 +127,7 @@ jobs:
                     source activate autoparse-env
                     cd autoparse/autoparse
                     pytest -v --disable-pytest-warnings --cov=autoparse  --pyargs autoparse
-                    flake8 --exit-zero ../../autoparse
+                    flake8 --exit-zero ../autoparse
                     pylint --rcfile=../../.pylintrc autoparse
     build-debian3:
         docker:
@@ -153,8 +153,8 @@ jobs:
                 command: |
                     source activate autorun-env
                     cd autorun/autorun
-                    pytest -v --disable-pytest-warnings --cov=autorun --pyargs autorun
-                    flake8 --exit-zero ../../autorun
+                    pytest . -v --disable-pytest-warnings --cov=autorun --pyargs autorun
+                    flake8 --exit-zero ../autorun
                     pylint --rcfile=../../.pylintrc autorun
     build-debian4:
         docker:
