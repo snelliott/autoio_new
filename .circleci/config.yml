@@ -19,23 +19,59 @@ jobs:
                     cd autoio
                     python setup.py install
             - run:
+                name: Test autoread
+                command: |
+                    cd autoio/autoread
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=autoread --pyargs autoread
+            - run:
+                name: Test autowrite
+                command: |
+                    cd autoio/autowrite
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=autowrite --pyargs autowrite
+            - run:
                 name: Test chemkin_io
                 command: |
                     cd autoio/chemkin_io
                     source activate autoio-env
                     pytest . -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io
             - run:
-                name: Test mess_io
+                name: Test intder_io
                 command: |
-                    cd autoio/mess_io
+                    cd autoio/intder_io
                     source activate autoio-env
-                    pytest . -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io
+                    pytest . -v --disable-pytest-warnings --cov=intder_io --pyargs intder_io
+            - run:
+                name: Test ioformat
+                command: |
+                    cd autoio/ioformat
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=ioformat --pyargs ioformat
+            - run:
+                name: Test pac99_io
+                command: |
+                    cd autoio/pac99_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=pac99_io --pyargs pac99_io
             - run:
                 name: Test projrot_io
                 command: |
                     cd autoio/projrot_io
                     source activate autoio-env
                     pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
+            - run:
+                name: Test projrot_io
+                command: |
+                    cd autoio/projrot_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
+            - run:
+                name: Test polyrate_io
+                command: |
+                    cd autoio/polyrate_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=polyrate_io --pyargs polyrate_io
             - run:
                 name: Test thermp_io
                 command: |
@@ -49,17 +85,17 @@ jobs:
                     source activate autoio-env
                     pytest . -v --disable-pytest-warnings --cov=varecof_io --pyargs varecof_io
             - run:
-                name: Test autoread
+                name: Test onedmin_io
                 command: |
-                    cd autoio/autoread
+                    cd autoio/onedmin_io
                     source activate autoio-env
-                    pytest . -v --disable-pytest-warnings --cov=autoread --pyargs autoread
+                    pytest . -v --disable-pytest-warnings --cov=onedmin_io --pyargs onedmin_io
             - run:
-                name: Test autowrite
+                name: Test mess_io
                 command: |
-                    cd autoio/autowrite
+                    cd autoio/mess_io
                     source activate autoio-env
-                    pytest . -v --disable-pytest-warnings --cov=autowrite --pyargs autowrite
+                    pytest . -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io
             - run:
                 name: Test autoio_pylint
                 command: |
