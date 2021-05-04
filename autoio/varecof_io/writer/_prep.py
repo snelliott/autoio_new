@@ -213,8 +213,10 @@ def build_pivot_frames(total_geom, frag_geos_wdummy, bnd_keys):
             # else we build an xy frame to easily place pivot point
             npivot = 2
 
+            print('gota geom\n', total_geom)
             # Find the idx in each fragment bonded to the atom at the pivot pt
             for j, coords in enumerate(geom):
+                print(coords)
                 if coords == total_geom[rxn_idx]:
                     coord_idx = j
                     break

@@ -9,6 +9,7 @@ from autorun import pac99
 from autorun import polyrate
 from autorun import projrot
 from autorun import thermp
+from autorun import varecof
 
 # MultiProgram Runners
 from autorun._multiprog import projected_frequencies
@@ -30,6 +31,7 @@ __all__ = [
     'polyrate',
     'projrot',
     'thermp',
+    'varecof',
     # MultiProgram Runners
     'projected_frequencies',
     'thermo',

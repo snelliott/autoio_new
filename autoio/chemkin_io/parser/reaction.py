@@ -318,7 +318,8 @@ def chebyshev_parameters(rxn_dstr, a_units='moles'):
         app.zero_or_more(app.SPACE) + app.escape('/')
     )
     cheb_pattern = (
-        app.not_preceded_by(app.one_of_these(['T', 'P'])) + 'CHEB' + app.zero_or_more(app.SPACE) +
+        app.not_preceded_by(app.one_of_these(['T', 'P'])) +
+        'CHEB' + app.zero_or_more(app.SPACE) +
         app.escape('/') + app.capturing(app.one_or_more(app.WILDCARD2)
                                         ) + app.escape('/')
     )
@@ -327,36 +328,46 @@ def chebyshev_parameters(rxn_dstr, a_units='moles'):
 
     if cheb_params_raw:
         params = {}
-        # Get the temp and pressure limits; add the Chemkin default values if they don't exist
+        # Get the temp and pressure limits;
+        # add the Chemkin default values if they don't exist
         cheb_temps = apf.first_capture(tcheb_pattern, rxn_dstr)
         cheb_pressures = apf.first_capture(pcheb_pattern, rxn_dstr)
         if cheb_temps is None:
             cheb_temps = ('300.00', '2500.00')
-            print('No Chebyshev temperature limits specified for the below reaction.' +
-                  f' Assuming 300 and 2500 K. \n \n {original_rxn_dstr}\n')
+            print(
+                'No Chebyshev temperature limits specified' +
+                ' for the below reaction.' +
+                f' Assuming 300 and 2500 K. \n \n {original_rxn_dstr}\n')
         if cheb_pressures is None:
             cheb_pressures = ('0.001', '100.00')
-            print('No Chebyshev pressure limits specified for the below reaction.' +
-                  f' Assuming 0.001 and 100 atm. \n \n {original_rxn_dstr}\n')
+            print(
+                'No Chebyshev pressure limits specified' +
+                ' for the below reaction.' +
+                f' Assuming 0.001 and 100 atm. \n \n {original_rxn_dstr}\n')
 
         # Get all the numbers from the CHEB parameters
         cheb_params = []
         for cheb_line in cheb_params_raw:
             cheb_params.extend(cheb_line.split())
 
-        # Get the cheb array dimensions N and M, which are the first two entries of the CHEB params
+        # Get the cheb array dimensions N and M, which are the first two
+        # entries of the CHEB params
         cheb_n = int(math.floor(float(cheb_params[0])))
         cheb_m = int(math.floor(float(cheb_params[1])))
 
-        # Start on the third value (after N and M) and get all the polynomial coefficients
+        # Start on the third value (after N and M)
+        #  and get all the polynomial coefficients
         coeffs = []
         for idx, coeff in enumerate(cheb_params[2:]):
-            if idx+1 > (cheb_n*cheb_m):  # extra coefficients are allowed but ignored
+            # extra coefficients are allowed but ignored
+            if idx+1 > (cheb_n*cheb_m):
                 break
             coeffs.append(coeff)
         assert len(coeffs) == (cheb_n*cheb_m), (
-            f'For the below reaction, there should be {cheb_n*cheb_m} Chebyshev polynomial' +
-            f' coefficients, but there are only {len(coeffs)}. \n \n {original_rxn_dstr}\n'
+            f'For the below reaction, there should be {cheb_n*cheb_m}' +
+            ' Chebyshev polynomial' +
+            f' coefficients, but there are only {len(coeffs)}.' +
+            f' \n \n {original_rxn_dstr}\n'
         )
         alpha = np.array(list(map(float, coeffs)))
 
@@ -433,7 +444,8 @@ def collider_enhance_factors(rxn_dstr):
     species_name = app.one_or_more(species_char)
 
     # Loop over the lines and search for string with collider facts
-    if 'LOW' in rxn_dstr or 'TROE' in rxn_dstr or 'M=' in rxn_dstr or 'M =' in rxn_dstr:
+    if ('LOW' in rxn_dstr or 'TROE' in rxn_dstr
+            or 'M=' in rxn_dstr or 'M =' in rxn_dstr):
         params = {}
         for line in rxn_dstr.splitlines():
             if not any(apf.has_match(string, line) for string in bad_strings):
@@ -521,15 +533,19 @@ def _split_reagent_string(rgt_str):
 
 def fix_duplicates(rcts_prds, params):
     """ This function finds duplicates within the list of
-        reactants and products and converts the params to a list of tuples of tuples.
+        reactants and products and converts the params
+        to a list of tuples of tuples.
 
         :param rcts_prds: reaction keys (i.e., reactant/product sets)
-        :type rcts_prds: list of tuples [((rct1, rct2,...),(prd1, prd2,...),(third body,)),]
+        :type rcts_prds: list of tuples
+            [((rct1, rct2,...),(prd1, prd2,...),(third body,)),]
         :param params: reaction parameters
         :type params: list [(params1),(params2)]
         :return unique_list: unique list of reactants and products
-        :rtype: list of tuples [((rct1, rct2,...),(prd1, prd2,...),(third body,)),]
-        :return unique_params: updated reaction parameters with duplicates included
+        :rtype: list of tuples
+        [((rct1, rct2,...),(prd1, prd2,...),(third body,)),]
+        :return unique_params: updated reaction parameters
+            with duplicates included
         :rtype: list of tuples [((params1),(params1')),...]
     """
     # Get the unique entries and number of occurrences
@@ -561,13 +577,14 @@ def split_plog_dct(param_dct_entry):
         :param_dct_entry: values of one rxn_param_dct
         :type tuple(tuple)
         :return param_dct
-        :rtype tuple(tuple)    
+        :rtype tuple(tuple)
     """
     # convert param_dct [(tup)] to [[lst]]
     param_dct_lst = [list(param_dct_i) for param_dct_i in param_dct_entry]
     # extract plog dictionaries
     plog = np.array(
-        [param_dct_vals[4] is not None for param_dct_vals in param_dct_lst], dtype=int)
+        [param_dct_vals[4] is not None for param_dct_vals in param_dct_lst],
+        dtype=int)
     mask_plog = np.where(plog == 1)[0]
 
     for plog_i in mask_plog:
@@ -582,12 +599,13 @@ def split_plog_dct(param_dct_entry):
                 param_dct_vals_idx = copy.deepcopy(param_dct_vals)
                 param_dct_vals_idx[4] = {}
                 keys_idx = np.array(
-                    [int(len(param_i)/3/(idx+1)) >= 1 for param_i in plog_params], dtype=int)
+                    [int(len(param_i)/3/(idx+1)) >= 1 for param_i in plog_params],
+                    dtype=int)
                 mask_keys = np.where(keys_idx == 1)[0]
                 new_keys = [keys[i] for i in mask_keys]
                 for key_i in new_keys:
-                    param_dct_vals_idx[4][key_i] = param_dct_vals[4][key_i][3 *
-                                                                            idx:3*(idx+1)]
+                    param_dct_vals_idx[4][key_i] = (
+                        param_dct_vals[4][key_i][3 * idx:3*(idx+1)])
                 # append the new dictionary to param_dct_lst
                 new_sets.append(param_dct_vals_idx)
             # replace the original dictionary
@@ -621,7 +639,8 @@ def get_ea_conv_factor(ea_units):
     else:
         raise NotImplementedError(
             f"Invalid ea_units: {ea_units}." +
-            " Options: 'kcal/mole', 'cal/mole', 'joules/mole', 'kjoules/mole', 'kelvins'"
+            " Options: 'kcal/mole', 'cal/mole', 'joules/mole'," +
+            " 'kjoules/mole', 'kelvins'"
         )
 
     return ea_conv_factor

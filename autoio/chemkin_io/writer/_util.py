@@ -38,7 +38,7 @@ def format_rxn_name(rxn):
     rcts = rxn[0]
     prds = rxn[1]
     thrbdy = rxn[2][0]
-    
+
     # Convert to list if only one species
     if not isinstance(rcts, tuple):
         rcts = [rcts]
@@ -79,11 +79,13 @@ def merge_plog_dct(param_dct):
 
     try:
         plog = np.array(
-            [param_dct_vals[4] is not None for param_dct_vals in param_dct], dtype=int)
+            [param_dct_vals[4] is not None for param_dct_vals in param_dct],
+            dtype=int)
         mask_nonplog = np.where(plog == 0)[0]
         mask_plog = np.where(plog == 1)[0]
-    except TypeError: # if for any reason the dct does not have iterables
-        mask_plog = [] 
+    except TypeError:
+        # if for any reason the dct does not have iterables
+        mask_plog = []
 
     if len(mask_plog) > 1:  # more than 1 set of plog params
         # merge dictionaries together or add entries

@@ -1,7 +1,7 @@
 # cmd: conda build . -c auto-mech -c psi4 -c rdkit -c openbabel -c conda-forge
 package:
     name: autorun
-    version: "0.1.0"
+    version: "0.1.1"
 
 source:
     path: .
@@ -27,4 +27,6 @@ requirements:
         - auto-mech::autoio
         - auto-mech::autoparse
         - auto-mech::automol
+        - auto-mech::elstruct
+        - auto-mech::autofile
         - auto-mech::x2z

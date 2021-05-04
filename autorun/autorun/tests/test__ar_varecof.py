@@ -1,10 +1,11 @@
 """ tests varecof runners
 """
 
-
+import os
 import autorun
-from _util import read_text_file
+from ioformat import read_text_file
 
+PATH = os.path.dirname(os.path.realpath(__file__))
 
 def test__frame_geoms():
     """ test autorun.frame__()
@@ -29,8 +30,8 @@ def test__compile_potentials():
                        pot_file_names=(),
                        spc_name='mol')
 
-    pot_str = read_text_file(['data', 'inp'], 'libcorrpot64.so', PATH)
-    ref_pot_str = read_text_file(['data', 'inp'], 'libcorrpot64.so', PATH)
+    pot_str = read_text_file(['data', 'inp'], 'libcorrpot64.so', path=PATH)
+    ref_pot_str = read_text_file(['data', 'inp'], 'libcorrpot64.so', path=PATH)
     assert pot_str == ref_pot_str
 
 
@@ -39,4 +40,3 @@ if __name__ == '__main__':
     test__run()
     test__frame_geoms()
     test__compile_potentials()
-

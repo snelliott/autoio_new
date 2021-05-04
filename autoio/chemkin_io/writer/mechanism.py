@@ -80,9 +80,11 @@ def species_block(spc_ident_dct):
     # Write the spc_str
     spc_str = 'SPECIES \n\n'
     for spc, ident_dct in spc_ident_dct.items():
-        spc_str += ('{0:<'+str(max_spc_len+buffer)+'s}{1:>9s}{2:<' +
-                    str(max_smiles_len+buffer)+'s}{3:>9s}{4:<9s}\n').format(
-            spc, '! SMILES: ', ident_dct['smiles'], 'InChi: ', ident_dct['inchi'])
+        spc_str += (
+            '{0:<'+str(max_spc_len+buffer)+'s}{1:>9s}{2:<' +
+            str(max_smiles_len+buffer)+'s}{3:>9s}{4:<9s}\n').format(
+                spc, '! SMILES: ',
+                ident_dct['smiles'], 'InChi: ', ident_dct['inchi'])
 
     spc_str += '\nEND \n\n\n'
 
@@ -125,7 +127,8 @@ def reactions_block(rxn_param_dct, comments=None):
 
         # preprocess potential duplicate PLOGs written as separate tuples:
         param_dct = util.merge_plog_dct(param_dct)
-        # loop over the parameter entries: might be a single one or a duplicate one
+        # loop over the parameter entries:
+        # might be a single one or a duplicate one
         for param_set_i, param_dct_vals in enumerate(param_dct):
             # Convert the reaction name from tuple of tuples to string
             # (Note: this includes '+M' or '(+M)' if appropriate)
@@ -133,7 +136,8 @@ def reactions_block(rxn_param_dct, comments=None):
 
             if param_dct_vals[3] is not None:  # Chebyshev
                 assert param_dct_vals[0] is not None, (
-                    f'For {rxn}, Chebyshev params included but highP params absent'
+                    f'For {rxn}, Chebyshev params included but' +
+                    ' highP params absent'
                 )
                 # this spot is usually high-P params, but is instead 1-atm for Chebyshev
                 one_atm_params = param_dct_vals[0]
@@ -142,8 +146,9 @@ def reactions_block(rxn_param_dct, comments=None):
                 tmax = param_dct_vals[3]['t_limits'][1]
                 pmin = param_dct_vals[3]['p_limits'][0]
                 pmax = param_dct_vals[3]['p_limits'][1]
-                rxn_str = writer_reac.chebyshev(rxn_name, one_atm_params, alpha,
-                                                tmin, tmax, pmin, pmax, max_length=max_len)
+                rxn_str = writer_reac.chebyshev(
+                    rxn_name, one_atm_params, alpha,
+                    tmin, tmax, pmin, pmax, max_length=max_len)
 
             elif param_dct_vals[4] is not None:  # PLOG
                 plog_dct = param_dct_vals[4]
@@ -155,10 +160,12 @@ def reactions_block(rxn_param_dct, comments=None):
                     f'For {rxn}, Troe params included, highP params absent'
                 )
                 assert param_dct_vals[1] is not None, (
-                    f'For {rxn}, Troe, highP params included, lowP params absent'
+                    f'For {rxn}, Troe, highP params included,' +
+                    ' lowP params absent'
                 )
                 assert rxn[2][0] is not None, (
-                    f'For {rxn}, Troe, highP, lowP params included, third body absent'
+                    f'For {rxn}, Troe, highP, lowP params included,' +
+                    ' third body absent'
                 )
 
                 highp_params = param_dct_vals[0]
@@ -175,13 +182,15 @@ def reactions_block(rxn_param_dct, comments=None):
                     f'For {rxn}, lowP params included, highP params absent'
                 )
                 assert rxn[2][0] is not None, (
-                    f'For {rxn}, highP, lowP params included, third body absent'
+                    f'For {rxn}, highP, lowP params included,' +
+                    ' third body absent'
                 )
                 highp_params = param_dct_vals[0]
                 lowp_params = param_dct_vals[1]
                 collid_factors = param_dct_vals[5]
                 rxn_str = writer_reac.lindemann(
-                    rxn_name, highp_params, lowp_params, colliders=collid_factors,
+                    rxn_name, highp_params, lowp_params,
+                    colliders=collid_factors,
                     max_length=max_len
                 )
 
@@ -192,7 +201,8 @@ def reactions_block(rxn_param_dct, comments=None):
                 highp_params = param_dct_vals[0]
                 collid_factors = param_dct_vals[5]
                 rxn_str = writer_reac.arrhenius(
-                    rxn_name, highp_params, colliders=collid_factors, max_length=max_len)
+                    rxn_name, highp_params,
+                    colliders=collid_factors, max_length=max_len)
 
             if comments and param_set_i == 0:
                 # add inline comments on the first line
@@ -217,4 +227,3 @@ def reactions_block(rxn_param_dct, comments=None):
     total_rxn_str += '\nEND \n'
 
     return total_rxn_str
-

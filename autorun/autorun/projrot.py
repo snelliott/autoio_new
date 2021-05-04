@@ -66,7 +66,7 @@ def frequencies(script_str, run_dir, geoms, grads, hessians,
 
 
 def small_curvature_tunneling(script_str, run_dir, geoms, grads, hessians,
-                              rpath_coords, rpath_enes, sadpt_idx,
+                              rpath_coords, rpath_enes,  # sadpt_idx,
                               rotors_str=''):
     """ Determine the transmission
     """
