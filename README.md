@@ -1,5 +1,4 @@
 # AUTOIO
-<hr>
 [//]: # (Badges)
 [![CircleCI](https://circleci.com/gh/snelliott/autoio_new/tree/dev.svg?style=shield)](https://circleci.com/gh/snelliott/autoio_new/tree/dev)
 
@@ -7,6 +6,7 @@
 
 > Input writing, output parsing, and job submission tools created as part of the AutoMech package. This repository contains the following python packages: elstruct, autoparse, autoio, and autorun.
 
+<hr>
 <hr>
 
 ## ELSTRUCT
@@ -46,6 +46,8 @@ Autoparse provides a user-friendly interface for regex calls and has built speci
 
 ### Usage
 Our pytest tests serve as an example for building filesystems
+
+<hr>
 
 ## AUTOIO
 [//]: # (Badges)
@@ -93,6 +95,8 @@ External Codes
 
 ### Usage
 Our pytest tests serve as an example for building filesystems
+
+<hr>
 
 ## AUTORUN
 [//]: # (Badges)
