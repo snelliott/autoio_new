@@ -5,8 +5,8 @@
 import numpy
 import polyrate_io.writer
 import os
-from _util import read_text_file
-from _util import write_text_file
+from ioformat import read_text_file
+from ioformat import write_text_file
 # from _util import load_numpy_string_file
 
 PATH = os.path.dirname(os.path.realpath(__file__))

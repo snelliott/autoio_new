@@ -2,17 +2,20 @@
   test an intder writer
 """
 
+import os
 import automol
 import intder_io.writer
-from _util import read_text_file
-from _util import load_numpy_string_file
+from ioformat import read_text_file
+from ioformat import write_text_file
+from ioformat import load_numpy_string_file
 
 
+PATH = os.path.dirname(os.path.realpath(__file__))
 GEO = automol.geom.from_string(
-    read_text_file(['data'], 'c2h6o.xyz'))
+    read_text_file(['data'], 'c2h6o.xyz', path=PATH))
 ZMA = automol.zmat.from_string(
-    read_text_file(['data'], 'c2h6o.zmat'))
-HESS = load_numpy_string_file(['data'], 'c2h6o.hess')
+    read_text_file(['data'], 'c2h6o.zmat', path=PATH))
+HESS = load_numpy_string_file(['data'], 'c2h6o.hess', path=PATH)
 
 
 def test__input():
@@ -22,22 +25,17 @@ def test__input():
     inp_str = intder_io.writer.input(GEO)
     inp2_str = intder_io.writer.input(GEO, zma=ZMA)
 
-    with open('input.dat', 'w') as fobj:
-        fobj.write(inp_str)
-    with open('input.dat2', 'w') as fobj:
-        fobj.write(inp2_str)
+    write_text_file(['data'], 'input.dat', inp_str, path=PATH)
+    write_text_file(['data'], 'input.dat2', inp2_str, path=PATH)
 
 
 def test__hess():
     """ test intder_io.writer.
     """
 
-    hess = load_numpy_string_file(['data'], 'c2h6o.hess')
-
+    hess = load_numpy_string_file(['data'], 'c2h6o.hess', path=PATH)
     hess_str = intder_io.writer.cart_hess_file(hess)
-
-    with open('file15', 'w') as fobj:
-        fobj.write(hess_str)
+    write_text_file(['data'], 'file15', hess_str, path=PATH)
 
 
 if __name__ == '__main__':
