@@ -6,8 +6,7 @@
 
 > Input writing, output parsing, and job submission tools created as part of the AutoMech package. This repository contains the following python packages: elstruct, autoparse, autoio, and autorun.
 
-<hr>
-<hr>
+<hr size=20>
 
 ## ELSTRUCT
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/elstruct/badges/version.svg)](https://anaconda.org/auto-mech/elstruct)
