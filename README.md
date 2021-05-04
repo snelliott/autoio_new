@@ -1,10 +1,13 @@
 # AUTOIO
+<hr>
 [//]: # (Badges)
 [![CircleCI](https://circleci.com/gh/snelliott/autoio_new/tree/dev.svg?style=shield)](https://circleci.com/gh/snelliott/autoio_new/tree/dev)
 
-Andreas V. Copan, Kevin B. Moore III, Sarah N. Elliott, and Stephen J. Klippenstein
+ Andreas V. Copan, Kevin B. Moore III, Sarah N. Elliott, and Stephen J. Klippenstein
 
-Input writing, output parsing, and job submission tools created as part of the AutoMech package. This repository contains the following python packages: elstruct, autoparse, autoio, and autorun.
+> Input writing, output parsing, and job submission tools created as part of the AutoMech package. This repository contains the following python packages: elstruct, autoparse, autoio, and autorun.
+
+<hr>
 
 ## ELSTRUCT
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/elstruct/badges/version.svg)](https://anaconda.org/auto-mech/elstruct)
@@ -26,6 +29,8 @@ The elstruct package handles input writing and output reading for electronic str
 
 ### Usage
 Our pytest tests serve as an example for building filesystems
+
+<hr>
 
 ## AUTOPARSE
 [//]: # (Badges)
