@@ -7,6 +7,7 @@ import automol
 import varecof_io
 from phydat import phycon
 from autorun import run_script
+from autorun import from_input_string
 
 
 # Default names of input and output files
@@ -25,12 +26,12 @@ POT_INPUT_NAMES = (
     '{}_corr.f'
     'dummy_corr.f',
     'pot_aux.f',
-    'makefile'),
+    'makefile')
 
 # Names of strings, files that go into the input
 DUMMY_NAME = 'dummy_corr_'
-LIB_NAME = 'libcorrpot.so',
-EXE_NAME = 'molpro.sh',
+LIB_NAME = 'libcorrpot.so'
+EXE_NAME = 'molpro.sh'
 SPC_NAME = 'mol'
 GEOM_PTT = 'GEOMETRY_HERE'
 ENE_PTT = 'molpro_energy'
@@ -44,22 +45,22 @@ DIVSUR_OUTPUT_NAMES1 = ('divsur.out',)
 
 
 # Specialized runners
-def flux_file(script_str, run_dir,
-              aux_dct=None,
-              input_name=INPUT_NAME, output_names=OUTPUT_NAMES):
+def flux_file(script_str, run_dir):
     """  Calculate the flux file
     """
-
-    output_strs = direct()
-
-    ioprinter.info_message(
+#              aux_dct=None,
+#              input_name=INPUT_NAME, output_names=OUTPUT_NAMES):
+#
+#     # output_strs = direct()
+#
+    print(
         'Generating flux file with TS N(E) from VaReCoF output...')
-    run_script(DEFAULT_SCRIPT_DCT['mcflux'], vrc_path)
-   
-    with open():
-        flux_str = fobj.read()
-
-    return flux_str
+    run_script(script_str, run_dir)
+#
+#     with open():
+#         flux_str = fobj.read()
+#
+#     return flux_str
 
 
 # General runners
@@ -68,7 +69,7 @@ def direct(script_str, run_dir,
            input_name=INPUT_NAME, output_names=OUTPUT_NAMES):
     """ Builds all of the VaReCoF input and then returns the output strings
     """
-    
+
     input_str, aux_dcr = _write_varecof_input()
 
     # Run VaReCoF
@@ -82,7 +83,7 @@ def direct(script_str, run_dir,
 
 
 # Helpful runners for the more directly called ones
-def compile_potentials(run_dir, mep_distances, potentials,
+def compile_potentials(vrc_path, mep_distances, potentials,
                        bnd_frm_idxs, fortran_compiler,
                        dist_restrict_idxs=(),
                        pot_labels=(),
@@ -129,7 +130,7 @@ def compile_potentials(run_dir, mep_distances, potentials,
     # Maybe read the potential and return it, prob not needed
 
 
-def frame_oriented_structure(run_dir, script_str, divsur_inp_str):
+def frame_oriented_structure(vrc_path, script_str, divsur_inp_str):
     """ get the divsur.out string containing divsur-frame geoms
     """
 
@@ -141,12 +142,12 @@ def frame_oriented_structure(run_dir, script_str, divsur_inp_str):
     varecof_io.writer.util.divsur_frame_geom_script()
 
     # Read fragment geoms from divsur.out with coordinates in the divsur frame
-    with open(os.path.join(vrc_path, 'divsur.out'), 'r') as divsur_file:
-        output_string = divsur_file.read()
+    # with open(os.path.join(vrc_path, 'divsur.out'), 'r') as divsur_file:
+    #    output_string = divsur_file.read()
 
-    geoms = varecof_io.reader.__(output_string)
+    # geoms = varecof_io.reader.__(output_string)
 
-    return geoms
+    # return geoms
 
 
 # STUFF FROM MECHDRIVER

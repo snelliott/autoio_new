@@ -27,4 +27,6 @@ requirements:
         - auto-mech::autoio
         - auto-mech::autoparse
         - auto-mech::automol
+        - auto-mech::elstruct
+        - auto-mech::autofile
         - auto-mech::x2z
