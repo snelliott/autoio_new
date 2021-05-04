@@ -54,33 +54,33 @@ Our pytest tests serve as an example for building filesystems
 ### Description
 AutoIO generates the input and reads the output for  C++ and Fortran codes used by the AutoMech suite. 
 Interfaces for codes distributed alongside AutoMech:
-- [MESS!] (https://github.com/Auto-Mech/MESS): Master Equation System Solver
-    The scope of this master equation solver code is described in [Reformulation and Solution of the Master Equation for Multiple-Well Chemical Reactions!] (https://pubs.acs.org/doi/10.1021/jp4060704).
+- [MESS](https://github.com/Auto-Mech/MESS): Master Equation System Solver
+    The scope of this master equation solver code is described in [Reformulation and Solution of the Master Equation for Multiple-Well Chemical Reactions](https://pubs.acs.org/doi/10.1021/jp4060704).
     ```python
     >>> conda install mess -c auto-mech
     ```
-- [ProjRot] (https://github.com/Auto-Mech/ProjRot): Rotational Projections
+- [ProjRot](https://github.com/Auto-Mech/ProjRot): Rotational Projections
     Projects rotational frequencies from the hessian and generates the resulting projected frequencies
     ```python
     >>> conda install projrot -c auto-mech
     ```
-- [ThermP!] (https://github.com/Auto-Mech/ThermP): Thermochemistry Properties
+- [ThermP](https://github.com/Auto-Mech/ThermP): Thermochemistry Properties
     Converts partition function to thermochemical proprties
     ```python
     >>> conda install thermps -c auto-mech
     ```
-- [PAC99!] (https://github.com/Auto-Mech/PAC99): Nasa Polynomials
+- [PAC99](https://github.com/Auto-Mech/PAC99): Nasa Polynomials
     Converts thermochemical properties into a polynomial representation
     ```python
     >>> conda install pac99 -c auto-mech
     ```
-- [PAC99!] (https://github.com/Auto-Mech/PAC99): Nasa Polynomials
+- [PAC99](https://github.com/Auto-Mech/PAC99): Nasa Polynomials
     Converts thermochemical properties into a polynomial representation
     ```python
     >>> conda install pac99 -c auto-mech
     ```
-- [OneDMin!] (https://github.com/Auto-Mech/OneDMin): 
-- [VareCof!] (https://github.com/Auto-Mech/OneDMin): 
+- [OneDMin](https://github.com/Auto-Mech/OneDMin): 
+- [VareCof](https://github.com/Auto-Mech/OneDMin): 
 - Polyrate: 
 - 
 External Codes
@@ -101,33 +101,33 @@ Our pytest tests serve as an example for building filesystems
 ### Description
 AutoRUN submits jobs and extracts relevant output through calls to autoio for  C++ and Fortran codes used by the AutoMech suite.
 Interfaces for codes distributed alongside AutoMech:
-- [MESS!] (https://github.com/Auto-Mech/MESS): Master Equation System Solver
-    The scope of this master equation solver code is described in [Reformulation and Solution of the Master Equation for Multiple-Well Chemical Reactions!] (https://pubs.acs.org/doi/10.1021/jp4060704).
+- [MESS](https://github.com/Auto-Mech/MESS): Master Equation System Solver
+    The scope of this master equation solver code is described in [Reformulation and Solution of the Master Equation for Multiple-Well Chemical Reactions](https://pubs.acs.org/doi/10.1021/jp4060704).
     ```python
     >>> conda install mess -c auto-mech
     ```
-- [ProjRot] (https://github.com/Auto-Mech/ProjRot): Rotational Projections
+- [ProjRot](https://github.com/Auto-Mech/ProjRot): Rotational Projections
     Projects rotational frequencies from the hessian and generates the resulting projected frequencies
     ```python
     >>> conda install projrot -c auto-mech
     ```
-- [ThermP!] (https://github.com/Auto-Mech/ThermP): Thermochemistry Properties
+- [ThermP](https://github.com/Auto-Mech/ThermP): Thermochemistry Properties
     Converts partition function to thermochemical proprties
     ```python
     >>> conda install thermps -c auto-mech
     ```
-- [PAC99!] (https://github.com/Auto-Mech/PAC99): Nasa Polynomials
+- [PAC99](https://github.com/Auto-Mech/PAC99): Nasa Polynomials
     Converts thermochemical properties into a polynomial representation
     ```python
     >>> conda install pac99 -c auto-mech
     ```
-- [PAC99!] (https://github.com/Auto-Mech/PAC99): Nasa Polynomials
+- [PAC99](https://github.com/Auto-Mech/PAC99): Nasa Polynomials
     Converts thermochemical properties into a polynomial representation
     ```python
     >>> conda install pac99 -c auto-mech
     ```
-- [OneDMin!] (https://github.com/Auto-Mech/OneDMin): 
-- [VareCof!] (https://github.com/Auto-Mech/OneDMin): 
+- [OneDMin](https://github.com/Auto-Mech/OneDMin): 
+- [VareCof](https://github.com/Auto-Mech/OneDMin): 
 - 
 ### Usage
 Our pytest tests serve as an example for building filesystems
