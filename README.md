@@ -1,4 +1,4 @@
-# AUTOIO
+# AutoIO Library
 [//]: # (Badges)
 [![CircleCI](https://circleci.com/gh/snelliott/autoio_new/tree/dev.svg?style=shield)](https://circleci.com/gh/snelliott/autoio_new/tree/dev)
 
@@ -8,7 +8,7 @@ Input writing, output parsing, and job submission tools created as part of the A
 
 <hr size=20>
 
-## ELSTRUCT
+## elstruct package
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/elstruct/badges/version.svg)](https://anaconda.org/auto-mech/elstruct)
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/elstruct/badges/platforms.svg)](https://anaconda.org/auto-mech/elstruct)
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/elstruct/badges/installer/conda.svg)](https://conda.anaconda.org/auto-mech/elstruct)
@@ -31,7 +31,7 @@ Our pytest tests serve as an example for building filesystems
 
 <hr>
 
-## AUTOPARSE
+## autoparse package
 [//]: # (Badges)
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/autoparse/badges/version.svg)](https://anaconda.org/auto-mech/autoparse)
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/autoparse/badges/platforms.svg)](https://anaconda.org/auto-mech/autoparse)
@@ -48,7 +48,7 @@ Our pytest tests serve as an example for building filesystems
 
 <hr>
 
-## AUTOIO
+## autoIO package
 [//]: # (Badges)
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/autoio/badges/version.svg)](https://anaconda.org/auto-mech/autoio)
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/autoio/badges/platforms.svg)](https://anaconda.org/auto-mech/autoio)
@@ -97,7 +97,7 @@ Our pytest tests serve as an example for building filesystems
 
 <hr>
 
-## AUTORUN
+## autorun package
 [//]: # (Badges)
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/autorun/badges/version.svg)](https://anaconda.org/auto-mech/autorun)
 [![Anaconda-Server Badge](https://anaconda.org/auto-mech/autorun/badges/platforms.svg)](https://anaconda.org/auto-mech/autorun)
