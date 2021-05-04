@@ -146,8 +146,9 @@ jobs:
                     # temporary fix
                     conda install -c conda-forge pylint>=2.3
                     # temporary fix
-                    cd elstruct/elstruct
+                    cd elstruct
                     python setup.py install
+                    cd elstruct
                     pytest -v --cov=elstruct .
                     flake8 --exit-zero ../../elstruct
                     pylint --rcfile=../../.pylintrc elstruct
