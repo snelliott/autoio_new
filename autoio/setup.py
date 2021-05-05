@@ -4,7 +4,7 @@
 from distutils.core import setup
 
 setup(name="autoio",
-      version="0.1.1",
+      version="0.6.1",
       packages=['mess_io',
                 'mess_io.writer',
                 'mess_io.reader',
