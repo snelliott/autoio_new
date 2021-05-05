@@ -1,7 +1,6 @@
 name: autoio-env
 
 channels:
-    - kevinmooreiii
     - auto-mech
     - psi4
     - rdkit
@@ -15,6 +14,7 @@ dependencies:
     - scipy
     - pyyaml
     - mako
+    - networkx
     - matplotlib
     - pytest
     - pytest-cov
@@ -24,6 +24,7 @@ dependencies:
     - auto-mech::automol
     - auto-mech::autorun
     - auto-mech::autoparse
+    # - auto-mech::autoio
     - auto-mech::elstruct
     - auto-mech::x2z
     - psi4::psi4
