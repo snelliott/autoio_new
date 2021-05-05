@@ -30,3 +30,7 @@ dependencies:
     - rdkit::rdkit
     - openbabel::openbabel
     - conda-forge::qcelemental
+    - auto-mech::mess
+    - auto-mech::projrot
+    - auto-mech::pac99
+    - auto-mech::thermp
