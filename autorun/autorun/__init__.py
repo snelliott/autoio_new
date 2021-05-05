@@ -3,6 +3,7 @@
 """
 
 # Single Program Runners
+from autorun._run import run_script
 from autorun import mess
 from autorun import onedmin
 from autorun import pac99
@@ -25,6 +26,7 @@ from autorun._run import read_output
 
 __all__ = [
     # Single Program Runners
+    'run_script',
     'mess',
     'onedmin',
     'pac99',
@@ -38,7 +40,7 @@ __all__ = [
     # Useful Running Functions
     'SCRIPT_DCT',
     'from_input_string',
-    'run_script',
+    # 'run_script',
     'write_input',
     'read_output'
 ]
