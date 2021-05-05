@@ -6,8 +6,8 @@ import autofile
 import automol
 import varecof_io
 from phydat import phycon
-from autorun import run_script
-from autorun import from_input_string
+from autorun._run import run_script
+from autorun._run import from_input_string
 
 
 # Default names of input and output files
