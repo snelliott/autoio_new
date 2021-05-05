@@ -86,13 +86,13 @@ def end_block_ptt(header, name=None, footer=None):
 
 # Simple Block Parsers
 def paren_blocks(string, key=None):
-    """ A patter for a certain block
+    """ A pattern for a certain block
     """
     return apf.all_captures(paren_block_ptt(key=key), string)
 
 
 def keyword_value_blocks(string, key=None):
-    """ A patter for a certain block
+    """ A pattern for a certain block
     """
     return apf.all_captures(keyword_value_ptt(key=key), string)
 
