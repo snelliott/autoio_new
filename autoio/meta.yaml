@@ -1,7 +1,7 @@
 # cmd: conda build .  -c auto-mech -c psi4 -c rdkit -c openbabel -c conda-forge
 package:
     name: autoio
-    version: "0.6.1"
+    version: "0.6.2"
 
 source:
     path: .
@@ -10,24 +10,26 @@ requirements:
     host:
         - python=3.7
     run:
+        - gfortran_linux-64  # [linux]
         - python=3.7
-        - {{ compiler('fortran') }}
         - numpy
         - scipy
         - pyyaml
         - mako
+        - networkx
         - matplotlib
         - pytest
         - pytest-cov
         - future
         - flake8
         - pylint
+        - auto-mech::automol
+        - auto-mech::autorun
+        - auto-mech::autoparse
+        # - auto-mech::autoio
+        - auto-mech::elstruct
+        - auto-mech::x2z
+        - psi4::psi4
         - rdkit::rdkit
         - openbabel::openbabel
         - conda-forge::qcelemental
-        - psi4::psi4
-        - auto-mech::autoparse
-        - auto-mech::automol
-        - auto-mech::elstruct
-        - auto-mech::autorun
-        - auto-mech::x2z
