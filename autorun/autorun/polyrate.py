@@ -1,7 +1,7 @@
 """ Runner
 """
 
-from autorun import from_input_string
+from autorun._run import from_input_string
 
 
 def direct(script_str, run_dir, input_str, pot_str):
