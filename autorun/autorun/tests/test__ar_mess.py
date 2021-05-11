@@ -6,7 +6,6 @@ import tempfile
 import automol
 import autorun
 from ioformat import read_text_file
-from ioformat import load_numpy_string_file
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
@@ -20,15 +19,15 @@ def test__():
     """ test
     """
 
-    with tempfile.mkdtemp(dir=PATH) as run_dir:
+    with tempfile.TemporaryDirectory(dir=PATH) as run_dir:
         script_str = autorun.SCRIPT_DCT['messpf']
 
         tors_freqs, tors_zpves = autorun.mess.torsions(
             script_str, run_dir, GEO, MESS_ROT_STR)
 
-        print('MESS')
-        print(tors_freqs)
-        print(tors_zpves)
+    print('MESS')
+    print(tors_freqs)
+    print(tors_zpves)
 
 
 if __name__ == '__main__':

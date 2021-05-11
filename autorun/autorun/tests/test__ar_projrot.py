@@ -28,7 +28,7 @@ def test__():
 
     # Run ProjRot for frequencies
     script_str = autorun.SCRIPT_DCT['projrot']
-    with tempfile.mkdtemp(dir=PATH) as run_dir:
+    with tempfile.TemporaryDirectory(dir=PATH) as run_dir:
         fa1, fa2, fa3, fa4 = autorun.projrot.frequencies(
             script_str, run_dir, GEOS, GRADS, HESSIANS,
             rotors_str=PROJROT_ROT_STR)

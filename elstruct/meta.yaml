@@ -25,6 +25,6 @@ requirements:
         - conda-forge::qcelemental
         - psi4::psi4
         - auto-mech::autoparse
-        - auto-mech::autorun
+        - auto-mech::autorun>=0.1.2
         - auto-mech::automol
         - auto-mech::x2z
