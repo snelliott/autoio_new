@@ -185,15 +185,15 @@ def keyword_dct_from_block(block):
 
 
 # Build various objects containing keyword and value information
-def values_from_block(block):
+def values_from_block(block, val_ptt=app.NUMBER):
     """ Takes a multiline string that consists solely of floats and
         converts this block into a list of numbers
         could call set_value_type for generality I guess
         prob just do a capture of nums (floats, int, etc)
     """
-    caps = apf.all_captures(app.NUMBER, block)
+    caps = apf.all_captures(val_ptt, block)
     if caps:
-        vals = tuple(float(cap) for cap in caps)
+        vals = tuple(set_value_type(cap) for cap in caps)
     else:
         vals = None
 
@@ -296,6 +296,7 @@ def set_value_type(value):
     else:
         frmtd_value = value
 
+    return frmtd_value
 ####""" Library of patterns to simplify the parsing of input files
 #"""
 #
