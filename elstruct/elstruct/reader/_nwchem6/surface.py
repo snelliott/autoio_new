@@ -1,15 +1,22 @@
 """ gradient and hessian readers
 """
-import numpy
+
+# import numpy
 import autoread as ar
 import autoparse.pattern as app
 
 
-def gradient(output_string):
-    """ read gradient from the output string
+def gradient(output_str):
+    """ Reads the molecular gradient (in Cartesian coordinates) from
+        the output file string. Returns the gradient in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     grad = ar.matrix.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.padded(app.escape('ENERGY GRADIENTS'), app.NONNEWLINE),
             app.LINE, app.LINE, app.LINE, '']),
@@ -20,15 +27,20 @@ def gradient(output_string):
             app.FLOAT,
             app.FLOAT])
         )
-    assert numpy.shape(grad)[1] == 3
+
     return grad
-# def hessian(output_string):
-#     """ read hessian from the output string
-#     """
+
+# def hessian(output_str):
+#    """ Reads the molecular Hessian (in Cartesian coordinates) from
+#        the output file string. Returns the Hessian in atomic units.
 #
+#        :param output_str: string of the program's output file
+#        :type output_str: str
+#        :rtype: tuple(tuple(float))
+#    """
 #     comp_ptt = app.UNSIGNED_INTEGER
 #     mat = ar.matrix.read(
-#         output_string,
+#         output_str,
 #         start_ptt=app.padded(app.NEWLINE).join([
 #             app.padded(app.escape(
 #                 'MASS-WEIGHTED PROJECTED HESSIAN (Hartree/Bohr/Bohr/Kamu)'),

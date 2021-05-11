@@ -3,29 +3,26 @@
 """
 
 import os
-from qcelemental import constants as qcc
+from phydat import phycon
 from ioformat import build_mako_str
 from ioformat import remove_trail_whitespace
 from projrot_io import util
 
-
-# Conversion factors
-BOHR2ANG = qcc.conversion_factor('bohr', 'angstrom')
 
 # OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
 SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_PATH = os.path.join(SRC_PATH, 'templates')
 
 
-def rpht_input(geoms, grads, hessians,
+def rpht_input(geos, grads, hessians,
                saddle_idx=1,
                rotors_str='',
                coord_proj='cartesian',
                proj_rxn_coord=False):
     """ Writes a string for the input file for ProjRot.
 
-        :param geoms: geometry for single species or along a reaction path
-        :type geoms: list(list(float))
+        :param geos: geometry for single species or along a reaction path
+        :type geos: list(list(float))
         :param grads: gradient for single species or along a reaction path
         :type grads: list(list(float))
         :param hessians: Hessian for single species or along a reaction path
@@ -42,20 +39,20 @@ def rpht_input(geoms, grads, hessians,
     """
 
     # Format the molecule info
-    data_str = util.write_data_str(geoms, grads, hessians)
-    natoms = len(geoms[0])
-    # nsteps = len(geoms)
+    data_str = util.write_data_str(geos, grads, hessians)
+    natoms = len(geos[0])
+    # nsteps = len(geos)
     nrotors = rotors_str.count('pivotA')
 
     # Check input into the function (really fix calls to not have this)
-    if not isinstance(geoms, list):
-        geoms = [geoms]
+    if not isinstance(geos, list):
+        geos = [geos]
     if not isinstance(grads, list):
         grads = [grads]
     if not isinstance(hessians, list):
         hessians = [hessians]
 
-    nsteps = len(geoms)
+    nsteps = len(geos)
     assert nsteps == len(hessians)
     if len(grads) != 0:
         assert len(grads) == nsteps
@@ -123,32 +120,94 @@ def rpht_path_coord_en(coords, energies, bnd1=(), bnd2=()):
     return remove_trail_whitespace(path_str)
 
 
-def rotors(axis, group, remdummy=None):
+def rotors(axis, group):
     """ Write the sections that defines the rotors section
 
         :param group: idxs for the atoms of one of the rotational groups
         :type group: list(int)
         :param axis: idxs for the atoms that make up the rotational axis
         :type axis: list(int)
-        :param remdummy: list of idxs of dummy atoms for shifting values
-        :type remdummy: list(int)
-        :rtype str
+        :rtype: str
     """
 
     # Set up the keywords
-    [pivota, pivotb] = axis
+    pivota, pivotb = axis
     atomsintopa = len(group)
-    if remdummy is not None:
-        pivota = int(pivota - remdummy[pivota-1])
-        pivotb = int(pivotb - remdummy[pivotb-1])
-        topaatoms = '  '.join([str(int(val-remdummy[val-1])) for val in group])
-    else:
-        topaatoms = '  '.join([str(val) for val in group])
+
+    pivota += 1
+    pivotb += 1
+    topaatoms = '  '.join([str(val+1) for val in group])
 
     # Build the rotors_str
     rotors_str = '\n{0:<32s}{1:<4d}\n'.format('pivotA', pivota)
     rotors_str += '{0:<32s}{1:<4d}\n'.format('pivotB', pivotb)
     rotors_str += '{0:<32s}{1:<4d}\n'.format('atomsintopA', atomsintopa)
-    rotors_str += '{0:<32s}{1}'.format('topAatoms', topaatoms)
+    rotors_str += '{0:<32s}{1}\n'.format('topAatoms', topaatoms)
 
     return util.remove_trail_whitespace(rotors_str)
+
+
+def projection_distance_aux(dist_cutoff_dct=None):
+    """ Write the auxiliary file for defining atom-atom distance cutoffs used
+        to constuct parts of the molecule for rotors.
+
+        :param dist_cutoff_dct: atom-atom cutoff distances (in Bohr)
+        :type dist_cutoff_dct: dict[(str, str): float]
+        :rtype: str
+    """
+
+    # Set dictionary of default cutoffs and update with the input dct
+    # These distances are already in Angstrom since that is unit for file
+    dist_dct = {
+        ('C', 'H'): 1.50,
+        ('H', 'C'): 1.25,
+        ('C', 'C'): 2.40,
+        ('C', 'N'): 1.80,
+        ('C', 'O'): 1.60,
+        ('O', 'H'): 1.60,
+        ('H', 'O'): 1.50,
+        ('O', 'O'): 1.60,
+        ('S', 'H'): 1.50,
+        ('N', 'H'): 1.30,
+        ('H', 'H'): 1.20
+    }
+    if dist_cutoff_dct is not None:
+        for key, val in dist_cutoff_dct.items():
+            dist_cutoff_dct[key] = val * phycon.BOHR2ANG
+        dist_dct.update(dist_cutoff_dct)
+
+    # Set the header
+    dist_str = (
+        'projection distances\n'
+        '\n'
+        'distances to be read as Atom1 Atom2 distance\n'
+        '\n'
+    )
+
+    # Write the distance strings
+    for (atm1, atm2), dist in dist_dct.items():
+        dist_str += '{0:s} {1:s} {2:.3f}\n'.format(atm1, atm2, dist)
+
+    return dist_str
+
+
+def bmatrix(bmat):
+    """ Write the B-Matrix to a ProjRot style input
+    """
+
+    nd1, nd2, nd3 = bmat.shape
+    bmat_str = '{0:>12d}{1:>12d}\n'.format(nd1, nd2*nd3)
+    bmat_str += bmat_string(bmat)
+
+    return bmat_str
+
+
+def cmatrix(cmat):
+    """ Write the B-Matrix to a ProjRot style input
+    """
+
+    nd1, nd2, nd3, nd4 = cmat.shape
+    cmat_str = '{0:>12d}{1:>12d}\n'.format(nd2, nd3*nd4)
+    cmat_str += cmat_string(cmat)
+
+    return cmat_str

@@ -1,5 +1,5 @@
 """
- writes the string for the chemkin
+ Writes the string for a Chemkin transport file
 """
 
 from chemkin_io.writer import _util as util
@@ -10,31 +10,29 @@ BOHR2ANG = 0.529177
 BOHR2ANG_3 = BOHR2ANG**3
 
 
-def properties(trans_dct):
+def properties(spc_trans_dct):
     """ Writes the string in containing data from several mechanism species
-        used in calculating transport properties during ChemKin simulations.
+        used in calculating transport properties during Chemkin simulations.
 
-        :param trans_dct:
-        :type dict: {name:
-            geos (bohr),
-            epsilons (K)
-            sigmas (Angstrom)
-            tot_dip_moms (Debye)
-            polars (Angstrom^3)
-            z_rots}
-        :return: chemkin_str: ChemKin string with data
+        :param spc_trans_dct:
+        :type spc_trans_dict: {spc_name:
+            {'shape_idx': 0 for atomic, 1 for linear, 2 for non-linear,
+             'epsilon': Lennard-Jones well depth epsilon/k_B (Kelvins),
+             'sigma': Lennard-Jones collision diameter (angstroms),
+             'dipole_moment': dipole moment (Debyes),
+             'polarizability': polarizability (angstroms^3),
+             'zrot': rotational relaxation collision number at 298 K
+            }
+        }
+        :return: chemkin_str: Chemkin string with transport data
         :rtype: str
     """
-
-    # Find the length of the longest name string for formatting
-    # nameslen = util.name_column_length(list(trans_dct.keys()))
 
     # Initialize string with common header
     chemkin_str = util.CKIN_TRANS_HEADER_STR
     chemkin_str += '\n'
 
     # Add the headers for each of the columns
-    # '{0:<'+nameslen+'}'.format('! Species'),
     chemkin_str += (
         '{0:20s}'.format('! Species') +
         '{0:>5s}'.format('Shape') +
@@ -47,7 +45,7 @@ def properties(trans_dct):
     chemkin_str += '\n'
 
     # Add the values to the string
-    for name, dct in trans_dct.items():
+    for name, dct in spc_trans_dct.items():
         shape_idx = dct.get('shape_idx', 2)
         eps = dct.get('epsilon', 0.00) * CM2K
         sig = dct.get('sigma', 0.00) * BOHR2ANG
@@ -55,7 +53,6 @@ def properties(trans_dct):
         polar = dct.get('polarizability', 0.00) * BOHR2ANG_3
         zrot = dct.get('zrot', 1.00)
 
-        # '{0:<'+nameslen+'}'.format(name),
         chemkin_str += (
             '{0:20s}'.format(name) +
             '{0:>5d}'.format(shape_idx) +

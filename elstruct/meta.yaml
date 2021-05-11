@@ -1,7 +1,7 @@
-# cmd: conda build . -c kevinmooreiii -c auto-mech -c psi4 -c rdkit -c openbabel -c conda-forge
+# cmd: conda build . -c auto-mech -c psi4 -c rdkit -c openbabel -c conda-forge
 package:
     name: elstruct
-    version: "0.2.0"
+    version: "0.2.1"
 
 source:
     path: .
@@ -24,6 +24,7 @@ requirements:
         - openbabel::openbabel
         - conda-forge::qcelemental
         - psi4::psi4
-        - kevinmooreiii::autoparse
-        - kevinmooreiii::automol
+        - auto-mech::autoparse
+        - auto-mech::autorun>=0.1.2
+        - auto-mech::automol
         - auto-mech::x2z

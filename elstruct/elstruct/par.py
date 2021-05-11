@@ -1,11 +1,16 @@
 """ elstruct parameters
 """
+
 from elstruct import pclass
 from elstruct import option
 
 
 def standard_case(name):
-    """ return name with standard capitalization
+    """ Reformat name in standard lowercase capitalization.
+
+        :param name: name to reformat
+        :type name: str
+        :rtype: str
     """
     return name.lower()
 
@@ -17,7 +22,7 @@ class Module():
 
 
 class Program():
-    """ Programs to be called """
+    """ Programs supported in elstruct """
     CFOUR2 = 'cfour2'
     GAUSSIAN09 = 'gaussian09'
     GAUSSIAN16 = 'gaussian16'
@@ -29,26 +34,40 @@ class Program():
 
 
 def programs():
-    """ list the available electronic structure backend programs
+    """ List all electronic structure backend programs that are supported.
     """
     return pclass.all_values(Program)
 
 
 def is_program(prog):
-    """ is this a possible backend program?
+    """ Asssess if a program is supported as a backend program.
+
+        :param prog: name of program to test
+        :type prog: str
+        :rtype: bool
     """
-    prog = standard_case(prog)
-    return prog in programs()
+    return standard_case(prog) in programs()
+
+
+class Reference():
+    """ References for density functional and wavefunction methods. """
+    RHF = 'rhf'
+    UHF = 'uhf'
+    ROHF = 'rohf'
+    RKS = 'rks'
+    UKS = 'uks'
 
 
 class Method():
-    """ electronic structure methods
+    """ Program specific names for various electronic structure methods
+        as well as their references.
 
-    (name, {program: singlet name,
-                     multiplet name,
-                     singlet orb modes,
-                     multiplet orb modes})
+        (name, {program: singlet name,
+                         multiplet name,
+                         singlet orb modes,
+                         multiplet orb modes})
     """
+
     HF = ('hf',
           {Program.CFOUR2: (
               'rhf', 'hf',
@@ -73,7 +92,7 @@ class Method():
                ('R',), ('U', 'R'))})
 
     class Corr():
-        """ correlated method names """
+        """ Correlated method names """
         MP2 = ('mp2',
                {Program.CFOUR2: (
                    'mp2', 'mp2',
@@ -133,7 +152,7 @@ class Method():
                           ('R',), ('R',))})
 
     class MultiRef():
-        """ multireference electronic structure methods
+        """ Multireference electronic structure methods
         """
         CASSCF = ('casscf',
                   {Program.MOLPRO2015: (
@@ -157,7 +176,7 @@ class Method():
                        ('R',), ('R', 'R'))})
 
     class Dft():
-        """ DFT method names """
+        """ Density functional theory method names """
         B3LYP = ('b3lyp',
                  {Program.PSI4: (
                      'B3LYP', 'B3LYP',
@@ -198,69 +217,113 @@ class Method():
 
     @classmethod
     def contains(cls, name):
-        """ does this parameter class contain this value?
+        """ Assess if provided method is a part of this class.
+
+            :param cls: class object
+            :type cls: obj
+            :param name: name of method
+            :type name: str
         """
+
         name = standard_case(name)
         names = [row[0] for row in pclass.all_values(cls)]
+
         return name in names
 
     @classmethod
     def is_correlated(cls, name):
-        """ is this a single-reference correlated method?
+        """ Assess if a method is a single-reference correlated method.
+
+            :param cls: class object
+            :type cls: obj
+            :param name: name of method
+            :type name: str
         """
+
         name = standard_case(name)
         corr_names = [row[0] for row in pclass.all_values(cls.Corr)]
+
         return name in corr_names
 
     @classmethod
     def is_multiref(cls, name):
-        """ is this a mulitreference method?
+        """ Assess if a method is a multi-reference correlated method.
+
+            :param cls: class object
+            :type cls: obj
+            :param name: name of method
+            :type name: str
         """
+
         name = standard_case(name)
         multiref_names = [row[0] for row in pclass.all_values(cls.MultiRef)]
+
         return name in multiref_names
 
     @classmethod
     def is_casscf(cls, name):
-        """ is the method casscf?
+        """ Assess if a method is CASSCF.
+
+            :param cls: class object
+            :type cls: obj
+            :param name: name of method
+            :type name: str
         """
-        name = standard_case(name)
-        return name == 'casscf'
+        return standard_case(name) == 'casscf'
 
     @classmethod
     def is_standard_dft(cls, name):
-        """ is this a DFT method?
+        """ Assess if a method corresponds to a density functional
+            currently defined in elstruct.
+
+            :param cls: class object
+            :type cls: obj
+            :param name: name of method
+            :type name: str
         """
+
         name = standard_case(name)
         dft_names = [row[0] for row in pclass.all_values(cls.Dft)]
+
         return name in dft_names
 
     @staticmethod
     def is_nonstandard_dft(name):
-        """ is this a non-standard DFT method?
+        """ Assess if a method corresponds to a user-defined
+            density functional (indicated by 'dft:<name>').
 
-        (indicated by 'dft:<name>')
+            :param name: name of method
+            :type name: str
         """
         return name.lower().startswith('dft:')
 
     @classmethod
     def is_dft(cls, name):
-        """ is this a (standard or non-standard) DFT method?
+        """ Assess if a method corresponds to a density functional
+            (either standard or non-standard).
         """
         return cls.is_standard_dft(name) or cls.is_nonstandard_dft(name)
 
     @classmethod
     def nonstandard_dft_name(cls, name):
-        """ extract the name of a non-standard basis set
+        """ Extract the name of a non-standard density functional
+            (indicated by 'dft:<name>').
 
-        (indicated by 'dft:<name>')
+            :param cls: class object
+            :type cls: obj
+            :param name: name of method
+            :type name: str
         """
         assert cls.is_nonstandard_dft(name)
         return name[4:]
 
 
 def program_methods_info(prog):
-    """ list the methods available for a given program, with their information
+    """ List methods available for a given program, with their information.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :rtype: dict[str: str]
     """
     prog = standard_case(prog)
     return {row[0]: row[1][prog] for row in pclass.all_values(Method)
@@ -268,13 +331,21 @@ def program_methods_info(prog):
 
 
 def program_methods(prog):
-    """ list the methods available for a given program
+    """ List methods available for a given program.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :rtype: tuple(str)
     """
     return tuple(sorted(program_methods_info(prog)))
 
 
 def program_dft_methods(prog):
-    """ list the DFT methods available for a given program
+    """ List density functional theory methods available for a given program.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :rtype: tuple(str)
     """
     prog_methods = program_methods(prog)
     return tuple(method for method in prog_methods
@@ -282,7 +353,11 @@ def program_dft_methods(prog):
 
 
 def program_nondft_methods(prog):
-    """ list the DFT methods available for a given program
+    """ List Hartree-Fock wavefunction methods available for a given program.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :rtype: tuple(str)
     """
     prog_methods = program_methods(prog)
     return tuple(method for method in prog_methods
@@ -290,8 +365,17 @@ def program_nondft_methods(prog):
 
 
 def program_method_name(prog, method, singlet=True):
-    """ list the name of a method for a given program
+    """ Obtain the name of a given method specific to the program provided.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :param method: electronic structure method name
+        :type method: str
+        :param singlet: Parameter specifying name for singlet species
+        :type singlet: bool
+        :rtype: tuple(str)
     """
+
     prog = standard_case(prog)
 
     if Method.is_nonstandard_dft(method):
@@ -308,22 +392,40 @@ def program_method_name(prog, method, singlet=True):
 
 
 def program_method_orbital_types(prog, method, singlet):
-    """ list the possible orbital modes for a given method and program
+    """ Obtain the available orbital modes of a given method
+        specific to the program provided.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :param method: electronic structure method name
+        :type method: str
+        :param singlet: Parameter specifying name for singlet species
+        :type singlet: bool
+        :rtype: tuple(str)
     """
+
     prog = standard_case(prog)
     method = standard_case(method)
     prog_method_dct = program_methods_info(prog)
     assert method in prog_method_dct
     orb_types = (prog_method_dct[method][2] if singlet else
                  prog_method_dct[method][3])
+
     return orb_types
 
 
 def is_program_method(prog, method):
-    """ is this a valid method for this program?
+    """ Assess if the given method is valid for the specific program.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :param method: electronic structure method name
+        :type method: str
     """
+
     prog = standard_case(prog)
     method = standard_case(method)
+
     return method in program_methods(prog)
 
 
@@ -337,10 +439,13 @@ def is_program_method_orbital_type(prog, method, singlet, orb_type):
 
 
 class Basis():
-    """ electronic structure basis sets
+    """ Electronic structure basis sets, defined internally in elstruct,
+        as well as dictionary that maps the name of the basis set into the
+        name for all of the implemented electronic structure programs.
 
-    (name, {program: name})
+        (name, {program: name})
     """
+
     STO3G = ('sto-3g', {Program.CFOUR2: None,
                         Program.GAUSSIAN09: None,
                         Program.GAUSSIAN16: None,
@@ -429,7 +534,7 @@ class Basis():
                          Program.PSI4: None})
 
         class Aug():
-            """ augmented Dunning basis sets """
+            """ Augmented Dunning basis sets """
             AD = ('aug-cc-pvdz', {Program.CFOUR2: None,
                                   Program.GAUSSIAN09: None,
                                   Program.GAUSSIAN16: None,
@@ -471,7 +576,12 @@ class Basis():
 
     @classmethod
     def contains(cls, name):
-        """ does this parameter class contain this value?
+        """ Assess if provided basis set is a part of this class.
+
+            :param cls: class object
+            :type cls: obj
+            :param name: name of basis set
+            :type name: str
         """
         name = standard_case(name)
         names = [row[0] for row in pclass.all_values(cls)]
@@ -481,24 +591,29 @@ class Basis():
 
     @staticmethod
     def is_nonstandard_basis(name):
-        """ is this a non-standard basis set?
+        """ Assess if a basis set corresponds to user-defined
+            basis set (indicated by 'basis:<name>').
 
-        (indicated by 'basis:<name>')
+            :param name: name of basis set
+            :type name: str
         """
         return name.lower().startswith('basis:')
 
     @classmethod
     def nonstandard_basis_name(cls, name):
-        """ extract the name of a non-standard basis set
-
-        (indicated by 'basis:<name>')
+        """ Extract the aname of non-standard basis set
+            (indicated by 'basis:<name>').
         """
         assert cls.is_nonstandard_basis(name)
         return name[6:]
 
 
 def program_bases(prog):
-    """ list the methods available for a given program
+    """ List basis sets available for a given program.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :rtype: dict[str: str]
     """
     prog = standard_case(prog)
     return {row[0]: row[1][prog] for row in pclass.all_values(Basis)
@@ -506,8 +621,14 @@ def program_bases(prog):
 
 
 def program_basis_name(prog, basis):
-    """ list the name of a basis for a given program
+    """ Obtain the name of a given basis set specific to the program provided.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :param basis: electronic structure basis set
+        :type basis: str
     """
+
     prog = standard_case(prog)
 
     if Basis.is_nonstandard_basis(basis):
@@ -523,16 +644,25 @@ def program_basis_name(prog, basis):
 
 
 def is_program_basis(prog, basis):
-    """ is this a valid basis for this program?
+    """ Assess if the given basis set is valid for the specific program.
+
+        :param prog: electronic structure program name
+        :type prog: str
+        :param basis: electronic structure basis set
+        :type basis: str
     """
+
     prog = standard_case(prog)
     basis = standard_case(basis)
+
     return basis in program_bases(prog)
 
 
 class Job():
-    """ The type of job
+    """ Names of electronic structure jobs whose input (output)
+        can be written (read).
     """
+
     ENERGY = 'energy'
     GRADIENT = 'gradient'
     HESSIAN = 'hessian'
@@ -540,20 +670,28 @@ class Job():
     VPT2 = 'vpt2'
     IRCF = 'ircf'
     IRCR = 'ircr'
-    MOLPROP = 'molec_properties'
+    MOLPROP = 'molecular_properties'
 
     @classmethod
     def contains(cls, name):
-        """ does this parameter class contain this value?
+        """ Assess if provided method is a part of this class.
+
+            :param cls: class object
+            :type cls: obj
+            :param name: name of job
+            :type name: str
         """
+
         name = standard_case(name)
         names = pclass.all_values(cls)
         # names = [row for row in pclass.all_values(cls)]
+
         return name in names
 
 
 class Error():
-    """ Job errors
+    """ Types of error messages that can be found in electronic structure
+        program output files.
     """
     SCF_NOCONV = 'scf_noconv'
     CC_NOCONV = 'cc_noconv'
@@ -562,7 +700,8 @@ class Error():
 
 
 class Success():
-    """ Job successes
+    """ Types of sucess errors that can be found in electronic structure
+        program output files.
     """
     SCF_CONV = 'scf_conv'
     CC_CONV = 'cc_conv'
@@ -571,7 +710,7 @@ class Success():
 
 
 class Option():
-    """ Writer option values
+    """ Option values for the electronic structure program writer module
     """
 
     class Scf():
@@ -580,7 +719,7 @@ class Option():
         DIIS_ = option.create('scf_diis', ['bool'])
 
         class Guess():
-            """ _ """
+            """ Initial SCF guess generation methods """
             CORE = option.create('scf_guess_core')
             HUCKEL = option.create('scf_guess_huckel')
             MIX = option.create('scf_guess_mix')
@@ -598,11 +737,11 @@ class Option():
         SHIFT_ = option.create('level_shift', ['num'])
 
     class Opt():
-        """ optimization options (passed to `job_options`) """
+        """ Optimization options (passed to `job_options`) """
         MAXITER_ = option.create('opt_maxiter', ['num'])
 
         class Coord():
-            """ optimization coordinate system """
+            """ Corrdinate system to perform optimization in """
             CARTESIAN = option.create('opt_coord_cartesian')
             ZMATRIX = option.create('opt_coord_zmatrix')
             REDUNDANT = option.create('opt_coord_redundant')

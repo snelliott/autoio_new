@@ -1,505 +1,438 @@
-""" output reading module
+""" Electronic structure program output reading module.
 
-Calls functions from the various program modules. Each module must provide a
-function that matches one in the module template -- both the function name and
-signature are checked. The resulting function signatures are exactly those in
-module_template.py with `prog` inserted as the first argument.
+    Calls functions from the various program modules. Each module must provide
+    a function that matches one in the module template --
+    both the function name and signature are checked
+    before calling the function.
+
+    The resulting function signatures are exactly those in pm.Job.py
+    with `prog` inserted as the first argument.
 """
-import functools
+
+import numpy
 import automol
-from elstruct import program_modules as pm
-from elstruct import par
-from elstruct.reader import module_template
-
-MODULE_NAME = par.Module.READER
+from elstruct.reader import program_modules as pm
 
 
-# energy
 def programs():
-    """ list of available electronic structure programs
-
-    (must at least implement an energy reader)
+    """ Constructs a list of available electronic structure programs.
+        At minimum, each program must have an energy reader to be enumerated.
     """
-    return pm.program_modules_with_functions(
-        MODULE_NAME, [module_template.energy])
+    return pm.program_modules_with_function(pm.Job.ENERGY)
 
 
-def methods(prog):
-    """ list of available electronic structure methods
+# Molecular Info
+def energy(prog, method, output_str):
+    """ Reads the electronic energy from the output string.
+        Returns the energy in Hartrees.
 
-    :param prog: the electronic structure program to use as a backend
-    :type prog: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param method: electronic structure method
+        :type method: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
-    return par.program_methods(prog)
 
-
-def energy(prog, method, output_string):
-    """ read energy from the output string
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param method: electronic structure method
-    :type method: str
-    :param output_string: the program output string
-    :type output_string: str
-    """
-    prog = prog.lower()
-    method = method.lower()
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.energy,
+    ene = pm.call_module_function(
+        prog, pm.Job.ENERGY,
         # *args
-        method, output_string)
+        method, output_str)
+    if ene is not None:
+        assert isinstance(ene, float)
+
+    return ene
 
 
-def energy_(prog, method):
-    """ read energy from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param method: electronic structure method
-    :type method: str
-    """
-    func = functools.partial(energy, prog, method)
-    func.__name__ = '_energy_'
-    return func
-
-
-# gradient
 def gradient_programs():
-    """ list of program modules implementing gradient readers
+    """ Constructs a list of program modules implementing
+        gradient output readers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.gradient)
+    return pm.program_modules_with_function(pm.Job.GRADIENT)
 
 
-def gradient(prog, output_string):
-    """ read gradient from the output string
+def gradient(prog, output_str):
+    """ Reads the gradient from the output string.
+        Returns the gradient in atomic units.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.gradient,
+
+    grad = pm.call_module_function(
+        prog, pm.Job.GRADIENT,
         # *args
-        output_string)
+        output_str)
+
+    # if grad is not None:
+    #     assert all(isinstance(val, float) for val in grad)
+    #     assert numpy.shape(grad)[1] == 3
+
+    return grad
 
 
-def gradient_(prog):
-    """ read gradient from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(gradient, prog)
-    func.__name__ = '_gradient_'
-    return func
-
-
-# hessian
 def hessian_programs():
-    """ list of program modules implementing hessian readers
+    """ Constructs a list of program modules implementing
+        Hessian output readers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.hessian)
+    return pm.program_modules_with_function(pm.Job.HESSIAN)
 
 
-def hessian(prog, output_string):
-    """ read hessian from the output string
+def hessian(prog, output_str):
+    """ Reads the Hessian from the output string.
+        Returns the Hessian in atomic units.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.hessian,
+
+    hess = pm.call_module_function(
+        prog, pm.Job.HESSIAN,
         # *args
-        output_string)
+        output_str)
 
+    if hess is not None:
+        assert numpy.allclose(hess, numpy.transpose(hess))
 
-def hessian_(prog):
-    """ read hessian from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(hessian, prog)
-    func.__name__ = '_hessian_'
-    return func
+    return hess
 
 
 def harmonic_frequencies_programs():
-    """ list of program modules implementing harmonic_frequencies readers
+    """ Constructs a list of program modules implementing
+        harmonic vibrarional frequency output readers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.harmonic_frequencies)
+    return pm.program_modules_with_function(pm.Job.HARM_FREQS)
 
 
-def harmonic_frequencies(prog, output_string):
-    """ read harmonic_frequencies from the output string
+def harmonic_frequencies(prog, output_str):
+    """ Reads the harmonic vibrational frequencies from the output string.
+        Returns the frequencies in cm-1.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
+    """
+
+    harm_freqs = pm.call_module_function(
+        prog, pm.Job.HARM_FREQS,
+        # *args
+        output_str)
+
+    if harm_freqs is not None:
+        assert all(isinstance(val, float) for val in harm_freqs)
+        assert numpy.shape(harm_freqs)[1] == 3
+
+
+def normal_coordinates_programs():
+    """ Constructs a list of program modules implementing
+        normal coordinate output readers.
+    """
+    return pm.program_modules_with_function(pm.Job.NORM_COORDS)
+
+
+def normal_coordinates(prog, output_str):
+    """ Reads the displacement along the normal modes from the output string.
+        Returns the coordinates in Bohr.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.harmonic_frequencies,
+        prog, pm.Job.NORM_COORDS,
         # *args
-        output_string)
+        output_str)
 
 
-def harmonic_frequencies_(prog):
-    """ read harmonic_frequencies from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(harmonic_frequencies, prog)
-    func.__name__ = '_harmonic_frequencies_'
-    return func
-
-
-def normal_coords_programs():
-    """ list of program modules implementing normal mode readers
-    """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.normal_coords)
-
-
-def normal_coords(prog, output_string):
-    """ read normal modes from the output string
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
-    """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.normal_coords,
-        # *args
-        output_string)
-
-def normal_coords_(prog):
-    """ read normal_coords from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(normal_coords, prog)
-    func.__name__ = '_normal_coords_'
-    return func
-
-# irc_information
 def irc_programs():
-    """ list of program modules implementing irc_points readers
+    """ Constructs a list of program modules implementing
+        Intrinsic Reaction Coordinate output readers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.irc_points)
+    return pm.program_modules_with_function(pm.Job.IRC_PTS)
 
 
-def irc_points(prog, output_string):
-    """ read irc_points from the output string
+def irc_points(prog, output_str):
+    """ Reads the geometries, gradients, and Hessians at each point along the
+        Intrinsic Reaction Coordinate from the output string.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.irc_points,
+        prog, pm.Job.IRC_PTS,
         # *args
-        output_string)
+        output_str)
 
 
-def irc_points_(prog):
-    """ read irc_points from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(irc_points, prog)
-    func.__name__ = '_irc_points_'
-    return func
-
-
-def irc_path(prog, output_string):
+def irc_path(prog, output_str):
     """ read irc_path from the output string
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.irc_path,
+        prog, pm.Job.IRC_PATH,
         # *args
-        output_string)
+        output_str)
 
 
-def irc_path_(prog):
-    """ read irc_path from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(irc_path, prog)
-    func.__name__ = '_irc_path_'
-    return func
-
-
-# optimization
 def opt_geometry_programs():
-    """ list of program modules implementing optimized geometry readers
+    """ Constructs a list of program modules implementing
+        optimized geometry output readers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.opt_geometry)
+    return pm.program_modules_with_function(pm.Job.OPT_GEO)
 
 
-def opt_geometry(prog, output_string):
-    """ read optimized geometry from the output string
+def opt_geometry(prog, output_str):
+    """ Reads the optimized geometry from the output string.
+        Returns the geometry in Bohr.
 
-    (for robustness: if geometry read fails [esp for monatomics], try reading
-    the z-matrix and converting)
+        For robustness: if geometry read fails, try reading
+        the z-matrix and converting.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     try:
-        geo = _opt_geometry(prog, output_string)
+        geo = _opt_geometry(prog, output_str)
     except TypeError:
-        zma = opt_zmatrix(prog, output_string)
-        geo = automol.zmatrix.geometry(zma)
+        zma = opt_zmatrix(prog, output_str)
+        geo = automol.zmat.geometry(zma)
     return geo
 
 
-def _opt_geometry(prog, output_string):
-    """ read optimized geometry from the output string
+def _opt_geometry(prog, output_str):
+    """ Reads the optimized geometry from the output string.
+        Returns the geometry in Bohr.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.opt_geometry,
+        prog, pm.Job.OPT_GEO,
         # *args
-        output_string)
+        output_str)
 
 
-def opt_geometry_(prog):
-    """ read optimized geometry from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(opt_geometry, prog)
-    func.__name__ = '_opt_geometry_'
-    return func
-
-
-# z-matrix geometry optimizations
 def opt_zmatrix_programs():
-    """ list of program modules implementing optimized zmatrix readers
+    """ Contucts a list of program modules implementing
+        optimized Z-Matrix output readers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.opt_zmatrix)
+    return pm.program_modules_with_function(pm.Job.OPT_ZMA)
 
 
-def opt_zmatrix(prog, output_string):
-    """ read optimized zmatrix from the output string
+def opt_zmatrix(prog, output_str):
+    """ Reads the optimized Z-Matrix from the output string.
+        Returns the geometry in Bohr+Radians.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.opt_zmatrix,
+        prog, pm.Job.OPT_ZMA,
         # *args
-        output_string)
+        output_str)
 
 
-def opt_zmatrix_(prog):
-    """ read optimized zmatrix from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
+def inp_zmatrix_programs():
+    """ Contucts a list of program modules implementing
+        optimized Z-Matrix output readers.
     """
-    func = functools.partial(opt_zmatrix, prog)
-    func.__name__ = '_opt_zmatrix_'
-    return func
+    return pm.program_modules_with_function(pm.Job.INP_ZMA)
 
 
-# vpt2
+def inp_zmatrix(prog, input_str):
+    """ Reads the optimized Z-Matrix from the output string.
+        Returns the geometry in Bohr+Radians.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
+    """
+    return pm.call_module_function(
+        prog, pm.Job.INP_ZMA,
+        # *args
+        input_str)
+
+
 def vpt2_programs():
-    """ list of program modules implementing vpt2 readers
+    """ Constructs a list of program modules implementing
+        2nd-order vibrational perturbation theory (VPT2) output readers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.vpt2)
+    return pm.program_modules_with_function(pm.Job.VPT2)
 
 
-def vpt2(prog, output_string):
-    """ read vpt2 from the output string
+def vpt2(prog, output_str):
+    """ Reads VPT2 information from the output string.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.vpt2,
+        prog, pm.Job.VPT2,
         # *args
-        output_string)
+        output_str)
 
 
-def vpt2_(prog):
-    """ read vpt2 from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(vpt2, prog)
-    func.__name__ = '_vpt2_'
-    return func
-
-
-# dipole moment
 def dipole_moment_programs():
-    """ list of program modules implementing dipole_moment readers
+    """ Constructs a list of program modules implementing
+        static dipole moment output readers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.dipole_moment)
+    return pm.program_modules_with_function(pm.Job.DIP_MOM)
 
 
-def dipole_moment(prog, output_string):
-    """ read dipole_moment from the output string
+def dipole_moment(prog, output_str):
+    """ Reads the static dipole moment from the output string.
+        Returns the dipole moment in Debye.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.dipole_moment,
+        prog, pm.Job.DIP_MOM,
         # *args
-        output_string)
+        output_str)
 
 
-def dipole_moment_(prog):
-    """ read dipole_moment from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(dipole_moment, prog)
-    func.__name__ = '_dipole_moment_'
-    return func
-
-
-# dipole moment
 def polarizability_programs():
-    """ list of program modules implementing polarizability readers
+    """ Constructs a list of program modules implementing
+        polarizability tensor output readers.
     """
-    return pm.program_modules_with_function(
-        MODULE_NAME, module_template.polarizability)
+    return pm.program_modules_with_function(pm.Job.POLAR)
 
 
-def polarizability(prog, output_string):
-    """ read polarizability from the output string
+def polarizability(prog, output_str):
+    """ Reads the polarizability tensor from the output string.
+        Returns the dipole moment in _.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
-    """
-    return pm.call_module_function(
-        prog, MODULE_NAME, module_template.polarizability,
-        # *args
-        output_string)
-
-
-def polarizability_(prog):
-    """ read polarizability from the output string (callable)
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    """
-    func = functools.partial(polarizability, prog)
-    func.__name__ = '_polarizability_'
-    return func
-
-
-# status
-def has_normal_exit_message(prog, output_string):
-    """ does this output string have a normal exit message?
-
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.has_normal_exit_message,
+        prog, pm.Job.POLAR,
         # *args
-        output_string)
+        output_str)
+
+
+# Status
+def has_normal_exit_message(prog, output_str):
+    """ Assess whether the output file string contains the
+        normal program exit message.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
+    """
+    return pm.call_module_function(
+        prog, pm.Job.EXIT_MSG,
+        # *args
+        output_str)
 
 
 def error_list(prog):
-    """ list of errors that be identified from the output file
+    """ Constructs a list of errors that be identified from the output file.
 
-    :param prog: the electronic structure program to use as a backend
-    :type prog: str
+        :param prog: the electronic structure program to use as a backend
+        :type prog: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.error_list)
+        prog, pm.Job.ERR_LST)
 
 
 def success_list(prog):
-    """ list of successs that be identified from the output file
+    """ Constructs a list of successes that be identified from the output file.
 
-    :param prog: the electronic structure program to use as a backend
-    :type prog: str
+        :param prog: the electronic structure program to use as a backend
+        :type prog: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.success_list)
+        prog, pm.Job.SUCCESS_LST)
 
 
-def has_error_message(prog, error, output_string):
-    """ does this output string have an error message?
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param error: a key indicating the type of error message
-    :type error: str
-    :param output_string: the program output string
-    :type output_string: str
+def has_error_message(prog, error, output_str):
+    """ Assess whether the output file string contains error messages
+        for any of the procedures in the job.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param error: a key indicating the type of error message
+        :type error: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.has_error_message,
+        prog, pm.Job.ERR_MSG,
         # *args
-        error, output_string)
+        error, output_str)
 
 
-def check_convergence_messages(prog, error, success, output_string):
-    """ does this output string have an error message?
+def check_convergence_messages(prog, error, success, output_str):
+    """ Assess whether the output file string contains messages
+        denoting all of the requested procedures in the job have converged.
 
-    :param prog: electronic structure program to use as a backend
-    :type prog: str
-    :param error: a key indicating the type of error message
-    :type error: str
-    :param success: a key indicating the type of success message
-    :type success: str
-    :param output_string: the program output string
-    :type output_string: str
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param error: a key indicating the type of error message
+        :type error: str
+        :param success: a key indicating the type of success message
+        :type success: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.check_convergence_messages,
+        prog, pm.Job.CONV_MSG,
         # *args
-        error, success, output_string)
+        error, success, output_str)
 
 
-# versions
-def program_name(prog, output_string):
-    """ get the name of the electronic structure code from the output
+# Versions
+def program_name(prog, output_str):
+    """ Reads the name of the electronic structure code from the output file.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.program_name, output_string)
+        prog, pm.Job.PROG_NAME,
+        # *args
+        output_str)
 
 
-def program_version(prog, output_string):
-    """ get the name of the electronic structure code from the output
+def program_version(prog, output_str):
+    """ Reads the version of the electronic structure code from the output file.
+
+        :param prog: electronic structure program to use as a backend
+        :type prog: str
+        :param output_str: string of the program's output file
+        :type output_str: str
     """
     return pm.call_module_function(
-        prog, MODULE_NAME, module_template.program_version, output_string)
+        prog, pm.Job.PROG_VERS,
+        # *args
+        output_str)

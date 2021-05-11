@@ -2,18 +2,32 @@
   Read the the ThermP output
 """
 
+import autoparse.pattern as app
+import autoparse.find as apf
+
 
 def hf298k(output_str):
     """ Read the Heat of Formation at 298 K.
 
-        :param output_str: String for output file of ThermP
+        :param output_str: string for output file of ThermP
         :type output_str: str
-        :return hf298k: 298 K Heat of Formation [units]
-        :rtype: float
+        :rtype: tuple(float)
     """
 
-    lines = output_str.splitlines()
-    line = lines[-1]
-    hf_val = float(line.split()[-1])
+    ptt = (
+        'h298' +
+        app.SPACES +
+        'final' +
+        app.SPACES +
+        app.capturing(app.FLOAT)
+    )
 
-    return hf_val
+    caps = apf.all_captures(ptt, output_str)
+
+    if caps:
+        hfs = tuple(float(val) for val in caps)
+        hfs = hfs[0]
+    else:
+        hfs = None
+
+    return hfs

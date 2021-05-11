@@ -1,9 +1,11 @@
 """ matrix parsers
 """
+
 import numpy
 from autoparse import cast as _cast
 import autoparse.find as apf
 import autoparse.pattern as app
+
 
 VALUE_PATTERN = app.one_of_these([app.FLOAT])
 
@@ -16,26 +18,27 @@ def read(string,
          last=True,
          tril=False,
          case=False):
-    """ read matrix from a string
+    """ Reads an M x N matrix from a string by capturing the matrix values,
+        which can be rectangular or lower-triangular, and
+        may or may not be broken into multiple blocks.
 
-    captures values from a matrix, which can be rectangular or
-    lower-triangular, and may or may not be broken into multiple blocks
-
-    :param val_ptt: matches numeric matrix entry
-    :type val_ptt: str
-    :param start_ptt: matches before the start of the matrix
-    :type start_ptt: str
-    :param block_start_ptt: matches at the start of each block within the
-        matrix
-    :type block_start_ptt: str
-    :param line_start_ptt: matches at the start of each line in the matrix or
-        matrix block
-    :param line_start_ptt: str
-    :param last: capture the last match, instead of the first?
-    :type last: bool
-    :param case: make the match case-sensitive?
-    :type case: bool
+        :param val_ptt: matches numeric matrix entry
+        :type val_ptt: str
+        :param start_ptt: matches before start of the matrix
+        :type start_ptt: str
+        :param block_start_ptt: matches at start of each block within the
+            matrix
+        :type block_start_ptt: str
+        :param line_start_ptt: matches at start of each line in the matrix or
+            matrix block
+        :param line_start_ptt: str
+        :param last: capture the last match, instead of the first?
+        :type last: bool
+        :param case: make the match case-sensitive?
+        :type case: bool
+        :rtype: tuple(tuple(float))
     """
+
     line_ptt_ = line_pattern(val_ptt=val_ptt, start_ptt=line_start_ptt,
                              capture_values=True)
     block_ptt_ = block_pattern(val_ptt=val_ptt, start_ptt=block_start_ptt,
@@ -78,12 +81,28 @@ def read(string,
 
 
 def _matrix(rows):
+    """ Format the values of matrix read from a string into a tuple-of-tuples.
+
+        :param rows: rows of values of matrix
+        :type rows: numpy.ndarray
+        :rtype: tuple(tuple(float))
+    """
+
     mat = numpy.array(rows)
     assert mat.ndim == 2
+
     return tuple(map(tuple, mat))
 
 
 def _symmetric_matrix_from_lower_triangle(tril_rows):
+    """ Build a full M x M symmetric matrix from the rows of
+        a lower triangular matrix.
+
+        :param tril_rows: rows of lower triangular matrix
+        :type tril_rows: list(float)
+        :rtype: tuple(tuple(float))
+    """
+
     nrows = len(tril_rows)
     mat = numpy.zeros((nrows, nrows), dtype=numpy.object_)
     for row_idx, tril_row in enumerate(tril_rows):
@@ -91,15 +110,30 @@ def _symmetric_matrix_from_lower_triangle(tril_rows):
         mat[:row_idx+1, row_idx] = tril_row
     # make sure we ended up with a square symmetric matrix
     assert mat.ndim == 2 and mat.shape[0] == mat.shape[1]
+
     return tuple(map(tuple, mat))
 
 
 def _block_rows(block_str, val_ptt, line_ptt_, case=False):
+    """ Reads th rows of a blokc of text.
+
+        :param block_str: string to read lines from
+        :type block_str: str
+        :param val_ptt: matches numeric matrix entry
+        :type val_ptt: str
+        :param line_ptt_: pattern for matching line of the block
+        :type line_ptt_: str
+        :param case: make the match case-sensitive?
+        :type case: bool
+        :rtype: list(float)
+    """
+
     rows = []
     val_ptt_ = app.capturing(val_ptt)
     for line_str in apf.all_captures(line_ptt_, block_str, case=case):
         row = _cast(apf.all_captures(val_ptt_, line_str))
         rows.append(row)
+
     return rows
 
 
@@ -108,8 +142,21 @@ def blocks_pattern(val_ptt=VALUE_PATTERN,
                    block_start_ptt=None,
                    line_start_ptt=None,
                    capture_blocks=False):
-    """ multi-block matrix pattern
+    """ Build a pattern that matches a multi-block matrix.
+
+        :param val_ptt: matches numeric matrix entry
+        :type val_ptt: str
+        :param start_ptt: pattern before start of the matrix block
+        :type start_ptt: str
+        :param block_start_ptt: matches at start of each block of
+        :type block_start_ptt: str
+        :param line_start_ptt: matches at start of each line of each block
+        :type line_start_ptt: str
+        :param capture_blocks: add capturing pattern for the matrix block
+        :type capture_blocks: bool
+        :rtype: list(float)
     """
+
     block_ptt = block_pattern(val_ptt=val_ptt, start_ptt=block_start_ptt,
                               line_start_ptt=line_start_ptt)
 
@@ -127,8 +174,19 @@ def block_pattern(val_ptt=VALUE_PATTERN,
                   start_ptt=None,
                   line_start_ptt=None,
                   capture_block=False):
-    """ matrix block pattern
+    """ Build a pattern that matches a block with a single matrix.
+
+        :param val_ptt: matches numeric matrix entry
+        :type val_ptt: str
+        :param start_ptt: pattern before start of the matrix block
+        :type start_ptt: str
+        :param line_start_ptt: matches at start of each line of each block
+        :type line_start_ptt: str
+        :param capture_blocks: add capturing pattern for the matrix block
+        :type capture_blocks: bool
+        :rtype: list(float)
     """
+
     line_ptt = line_pattern(val_ptt=val_ptt, start_ptt=line_start_ptt)
     block_ptt_ = app.series(line_ptt, app.padded(app.NEWLINE))
 
@@ -143,8 +201,17 @@ def block_pattern(val_ptt=VALUE_PATTERN,
 def line_pattern(val_ptt=VALUE_PATTERN,
                  start_ptt=None,
                  capture_values=False):
-    """ matrix line pattern
+    """ Build a pattern that matches a line from a block with a single matrix.
+
+        :param val_ptt: matches numeric matrix entry
+        :type val_ptt: str
+        :param start_ptt: matches at start of the line of the block
+        :type start_ptt: str
+        :param capture_values: add capturing pattern for the values in the line
+        :type capture_values: bool
+        :rtype: list(float)
     """
+
     vals_ptt = app.series(val_ptt, app.LINESPACES)
 
     if capture_values:
@@ -154,4 +221,5 @@ def line_pattern(val_ptt=VALUE_PATTERN,
         ([] if start_ptt is None else [start_ptt]) + [vals_ptt])
 
     ptt = app.LINE_START + app.padded(app.LINESPACES.join(parts))
+
     return ptt

@@ -1,7 +1,7 @@
 """ re pattern generators that use _lib constants
 """
-from ._pattern import zero_or_more as _zero_or_more
-from ._lib import LINESPACE as _LINESPACE
+from autoparse._pattern import zero_or_more as _zero_or_more
+from autoparse._lib import LINESPACE as _LINESPACE
 
 
 def lpadded(pattern, fill_pattern=_LINESPACE):

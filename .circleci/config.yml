@@ -1,6 +1,6 @@
 version: 2
 jobs:
-    build-debian:
+    build-debian1:
         docker:
             - image: continuumio/miniconda3
         working_directory: ~/autoio     
@@ -11,61 +11,99 @@ jobs:
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    conda env create -f environment.yml
+                    conda env create -f autoio/environment.yml
             - run:
                 name: Build/install autoio
                 command: |
                     source activate autoio-env
+                    cd autoio
                     python setup.py install
-            - run:
-                name: Test chemkin_io
-                command: |
-                    source activate autoio-env
-                    pytest -v --disable-pytest-warnings
-                    flake8 --exit-zero chemkin_io
-                    pylint --rcfile=../.pylintrc chemkin_io
-            - run:
-                name: Test mess_io
-                command: |
-                    source activate autoio-env
-                    pytest -v --disable-pytest-warnings
-                    flake8 --exit-zero mess_io
-                    pylint --rcfile=../.pylintrc mess_io
-            - run:
-                name: Test projrot_io
-                command: |
-                    source activate autoio-env
-                    pytest -v --disable-pytest-warnings
-                    flake8 --exit-zero projrot_io
-                    pylint --rcfile=../.pylintrc projrot_io
-            - run:
-                name: Test thermp_io
-                command: |
-                    source activate autoio-env
-                    pytest -v --disable-pytest-warnings
-                    flake8 --exit-zero thermp_io
-                    pylint --rcfile=../.pylintrc thermp_io
-            - run:
-                name: Test varecof_io
-                command: |
-                    source activate autoio-env
-                    pytest -v --disable-pytest-warnings
-                    flake8 --exit-zero varecof_io
-                    pylint --rcfile=../.pylintrc varecof_io
             - run:
                 name: Test autoread
                 command: |
-                    source activate automol-env
-                    pytest -v --cov=autoread --pyargs autoread
-                    flake8 --exit-zero autoread
-                    pylint --rcfile=../.pylintrc autoread
+                    cd autoio/autoread
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=autoread --pyargs autoread
             - run:
                 name: Test autowrite
                 command: |
-                    source activate automol-env
-                    flake8 --exit-zero autowrite
-                    pylint --rcfile=../.pylintrc autoread
-    build-debian:
+                    cd autoio/autowrite
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=autowrite --pyargs autowrite
+            - run:
+                name: Test chemkin_io
+                command: |
+                    cd autoio/chemkin_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io
+            - run:
+                name: Test intder_io
+                command: |
+                    cd autoio/intder_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=intder_io --pyargs intder_io
+            - run:
+                name: Test ioformat
+                command: |
+                    cd autoio/ioformat
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=ioformat --pyargs ioformat
+            - run:
+                name: Test pac99_io
+                command: |
+                    cd autoio/pac99_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=pac99_io --pyargs pac99_io
+            - run:
+                name: Test projrot_io
+                command: |
+                    cd autoio/projrot_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
+            - run:
+                name: Test projrot_io
+                command: |
+                    cd autoio/projrot_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
+            - run:
+                name: Test polyrate_io
+                command: |
+                    cd autoio/polyrate_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=polyrate_io --pyargs polyrate_io
+            - run:
+                name: Test thermp_io
+                command: |
+                    cd autoio/thermp_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=thermp_io --pyargs thermp_io
+            - run:
+                name: Test varecof_io
+                command: |
+                    cd autoio/varecof_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=varecof_io --pyargs varecof_io
+            - run:
+                name: Test onedmin_io
+                command: |
+                    cd autoio/onedmin_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=onedmin_io --pyargs onedmin_io
+            - run:
+                name: Test mess_io
+                command: |
+                    cd autoio/mess_io
+                    source activate autoio-env
+                    pytest . -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io
+            - run:
+                name: Test autoio_pylint
+                command: |
+                    cd autoio
+                    source activate autoio-env
+                    flake8 --exit-zero ../autoio
+                    pylint --rcfile=../../.pylintrc autoio
+    build-debian2:
         docker:
             - image: continuumio/miniconda3
         working_directory: ~/autoparse     
@@ -76,22 +114,49 @@ jobs:
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    conda env create -f environment.yml
+                    conda env create -f autoparse/environment.yml
             - run:
                 name: Build/install autoparse
                 command: |
                     source activate autoparse-env
+                    cd autoparse
                     python setup.py install
             - run:
                 name: Test autoparse
                 command: |
                     source activate autoparse-env
-                    cd autoparse
-                    pytest -v --disable-pytest-warnings --cov=autoparse --pyargs autoparse
-                    flake8 --exit-zero autoparse
-                    pylint --rcfile=../.pylintrc autoparse
-
-    build-debian:
+                    cd autoparse/autoparse
+                    pytest -v --disable-pytest-warnings --cov=autoparse  --pyargs autoparse
+                    flake8 --exit-zero ../autoparse
+                    pylint --rcfile=../../.pylintrc autoparse
+    build-debian3:
+        docker:
+            - image: continuumio/miniconda3
+        working_directory: ~/autorun
+        steps:
+            - checkout  # checkout the code
+            - run: 
+                name: Create conda environment
+                command: |
+                    apt-get update --yes
+                    apt-get install --yes libxrender-dev build-essential
+                    conda env create -f autorun/environment.yml
+            - run:
+                name: Build/install autorun
+                command: |
+                    source activate autorun-env
+                    cd autorun
+                    python setup.py install
+                    cd ~
+            - run:
+                name: Test autorun
+                command: |
+                    source activate autorun-env
+                    cd autorun/autorun
+                    pytest . -v --disable-pytest-warnings --cov=autorun --pyargs autorun
+                    flake8 --exit-zero ../autorun
+                    pylint --rcfile=../../.pylintrc autorun
+    build-debian4:
         docker:
             - image: continuumio/miniconda3
         working_directory: ~/elstruct
@@ -102,7 +167,7 @@ jobs:
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    conda env create -f environment.yml
+                    conda env create -f elstruct/environment.yml
             - run:
                 name: Test elstruct
                 command: |
@@ -110,11 +175,17 @@ jobs:
                     # temporary fix
                     conda install -c conda-forge pylint>=2.3
                     # temporary fix
+                    cd elstruct
                     python setup.py install
-                    cd tests
+                    cd elstruct
                     pytest -v --cov=elstruct .
+                    flake8 --exit-zero ../../elstruct
+                    pylint --rcfile=../../.pylintrc elstruct
 workflows:
     version: 2
     build-all:
         jobs:
-            - build-debian
+            - build-debian1
+            - build-debian2
+            - build-debian3
+            - build-debian4

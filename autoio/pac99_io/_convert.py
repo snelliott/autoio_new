@@ -3,21 +3,26 @@
 """
 
 
-def pac2ckin_poly(name, atom_dict, pac_poly_str):
-    """ convert the polynimal from pac format to chemkin polynomial
+def pac2ckin_poly(name, atom_dict, pac99_poly_str):
+    """ Convert a NASA polynomial from its format given in PAC99 input
+        to the format used in ChemKin mechanisms.
+
         :param name: species name
         :type name: str
-        :param atom_dict: number of each atom
+        :param atom_dict: number of each atom in the species
         :type atom_dict: dict[str: int]
+        :param pac99_poly_str: PAC99-format NASA polynomial
+        :type pac99_poly_str: str
+        :rtype: str
     """
 
     # Parse the lines of the pac string containing the desired coefficients
     las = [0.0 for i in range(7)]
     has = [0.0 for i in range(7)]
-    las[0:5] = _parse_line16(pac_poly_str.splitlines()[6][0:80])
-    las[5:7] = _parse_line16(pac_poly_str.splitlines()[7][48:80])
-    has[0:5] = _parse_line16(pac_poly_str.splitlines()[9][0:80])
-    has[5:7] = _parse_line16(pac_poly_str.splitlines()[10][48:80])
+    las[0:5] = _parse_line16(pac99_poly_str.splitlines()[6][0:80])
+    las[5:7] = _parse_line16(pac99_poly_str.splitlines()[7][48:80])
+    has[0:5] = _parse_line16(pac99_poly_str.splitlines()[9][0:80])
+    has[5:7] = _parse_line16(pac99_poly_str.splitlines()[10][48:80])
 
     if 'H' in atom_dict:
         num_h = atom_dict['H']
@@ -35,6 +40,7 @@ def pac2ckin_poly(name, atom_dict, pac_poly_str):
         num_o = atom_dict['O']
     else:
         num_o = 0
+
     # Build a string for the NASA polynomial in ChemKin format
     line1 = "%s        H%3d C%3d O%3d N%3d G%9.1F%10.1F%9.1F      1\n" % (
         name.ljust(16)[0:16],
@@ -51,9 +57,12 @@ def pac2ckin_poly(name, atom_dict, pac_poly_str):
 
 
 def _parse_line16(string):
-    """
-    Parse string containing exponental numbers of length 16 chars.
-    Note: Numbers may not have a space in between.
+    """ Parse the values of a string containing exponental numbers
+        of length 16 chars, where the numbers may not have a space in between.
+
+        :param string: string containing the exponential numbers
+        :type string: str
+        :rtype: list(float)
     """
 
     assert len(string) % 16 == 0, 'Given string should have 16n chararacters'

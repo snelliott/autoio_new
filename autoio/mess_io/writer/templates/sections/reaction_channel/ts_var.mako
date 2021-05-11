@@ -5,5 +5,5 @@ ${ts_data}\
 % if tunnel != '':
 ${tunnel}
 % endif
-  End
-End
+  End  ! Variation
+End  ! Barrier

@@ -1,5 +1,6 @@
-""" Format things
+""" Format utilities
 """
+import numpy as np
 
 CKIN_TRANS_HEADER_STR = """! THEORETICAL TRANSPORT PROPERTIES
 !
@@ -25,14 +26,18 @@ def name_column_length(names):
     return names_len
 
 
-def format_rxn_name(rxn_key, param_vals):
-    """ Receives a rxn_key and the corresponding param_vals
-        from a rxn_param_dct and writes it to a string that
-        the above functions can handle. Adds +M or (+M) if
-        applicable.
+def format_rxn_name(rxn):
+    """ Receives a rxn and creates an appropriate string
+        to be written in a Chemkin mech. Adds third body if applicable
+
+        :param rxn: reaction names and third body
+        :type rxn: tuple ((rct1, rct2), (prd1, prd2), (third_bod1,))
+        :return rxn_name: formatted reaction name for writing in the mech
+        :rtype: str
     """
-    rcts = rxn_key[0]
-    prds = rxn_key[1]
+    rcts = rxn[0]
+    prds = rxn[1]
+    thrbdy = rxn[2][0]
 
     # Convert to list if only one species
     if not isinstance(rcts, tuple):
@@ -53,41 +58,54 @@ def format_rxn_name(rxn_key, param_vals):
             prd_str += '+' + prd
 
     # Add the +M or (+M) text if it is applicable
-    if param_vals[6] is not None:
-        rct_str += param_vals[6]
-        prd_str += param_vals[6]
+    if thrbdy is not None:
+        rct_str += thrbdy
+        prd_str += thrbdy
+
     rxn_name = rct_str + '=' + prd_str
 
     return rxn_name
 
-def format_rxn_name_luna(rxn_key, param_vals):
-    """ Receives a rxn_key and the corresponding param_vals 
-        from a rxn_param_dct and writes it to a string that 
-        the above functions can handle. Adds +M or (+M) if
-        applicable.
+
+def merge_plog_dct(param_dct):
+    """ Merge 2 or more duplicate PLOG dictionaries
+
+        :param_dct: values of one rxn_param_dct
+        :type tuple(tuple)
+        :return param_dct
+        :rtype tuple(tuple)
     """
-    rcts = rxn_key[0]
-    prds = rxn_key[1]
+    # extract plog dictionaries
 
-    # write strings
-    if len(rcts) == 1:
-        # 1 species
-        rct_str = rcts[0]
-    elif len(rcts) == 2:
-        # 2 species
-        rct_str = rcts[0] + '+' + rcts[1]
+    try:
+        plog = np.array(
+            [param_dct_vals[4] is not None for param_dct_vals in param_dct],
+            dtype=int)
+        mask_nonplog = np.where(plog == 0)[0]
+        mask_plog = np.where(plog == 1)[0]
+    except TypeError:
+        # if for any reason the dct does not have iterables
+        mask_plog = []
 
-    if len(prds) == 1:
-        prd_str = prds[0]
-    elif len(prds) >= 2:
-        prd_str = '+'.join(list(prds))
+    if len(mask_plog) > 1:  # more than 1 set of plog params
+        # merge dictionaries together or add entries
+        plog_param_dct = [list(param_dct[i]) for i in mask_plog]
+        merged_plog_dct = plog_param_dct[0]
+        # new dictionary
+        for plog_param_dct_i in plog_param_dct[1:]:
+            # extend the plog values with the other parameters
+            for key_i, plog_params in plog_param_dct_i[4].items():
+                try:
+                    merged_plog_dct[4][key_i].extend(plog_params)
+                except KeyError:
+                    merged_plog_dct[4][key_i] = plog_params
 
-    
-    # Add the +M or (+M) text if it is applicable
-    if param_vals[6] is not None:
-        rct_str += ' ' + param_vals[6]
-        prd_str += ' ' + param_vals[6]
+        # build new dct
+        merged_plog_dct = [tuple(merged_plog_dct)]
 
-    rxn_name = rct_str + ' = ' + prd_str
-    
-    return rxn_name
+        if len(mask_nonplog) > 0:
+            nonplog_param_dct = [param_dct[i] for i in mask_nonplog]
+            merged_plog_dct.extend(nonplog_param_dct)
+        param_dct = tuple(merged_plog_dct)
+
+    return param_dct

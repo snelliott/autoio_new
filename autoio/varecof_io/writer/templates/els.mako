@@ -1,5 +1,5 @@
 MolproExecFile	                ${exe_path}
-GeometryPattern                 ${geom_ptt}
+GeometryPattern                 ${geo_ptt}
 EnergyPattern                   ${ene_ptt}
 BaseFileName                    ${base_name}
 DebugLevel                      5

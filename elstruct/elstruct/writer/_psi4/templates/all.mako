@@ -47,6 +47,12 @@ energy('${method}')
 % elif job_key == 'optimization' and method == 'hf' and reference == 'rohf':
 optimize('${method}', dertype=1)
 % elif job_key == 'optimization' and method == 'hf' and reference == 'uhf':
+set {
+  intrafrag_step_limit     0.1
+  intrafrag_step_limit_min 0.1
+  intrafrag_step_limit_max 0.1
+}
+set full_hess_every 0
 optimize('${method}', dertype=1)
 % elif job_key == 'optimization':
 optimize('${method}')

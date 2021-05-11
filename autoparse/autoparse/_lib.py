@@ -1,10 +1,10 @@
 """ re patterns
 """
-from ._pattern import maybe
-from ._pattern import escape
-from ._pattern import one_of_these
-from ._pattern import one_or_more
-from ._pattern import zero_or_more
+from autoparse._pattern import maybe
+from autoparse._pattern import escape
+from autoparse._pattern import one_of_these
+from autoparse._pattern import one_or_more
+from autoparse._pattern import zero_or_more
 
 STRING_START = r'\A'
 STRING_END = r'\Z'
@@ -22,6 +22,7 @@ LINE = LINE_START + LINE_FILL + LINE_END
 
 SPACE = r'\s'            # space, possibly newline
 SPACES = one_or_more(SPACE)
+ZSPACES = zero_or_more(SPACE)
 LINESPACE = r'[ \t]'     # non-newline space
 LINESPACES = one_or_more(LINESPACE)
 PADDING = zero_or_more(LINESPACE)

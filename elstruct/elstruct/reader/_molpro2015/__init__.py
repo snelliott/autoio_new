@@ -1,4 +1,5 @@
-""" molpro2015 output reading module """
+""" Molpro2015 output reading module """
+
 from elstruct.reader._molpro2015.energ import energy
 from elstruct.reader._molpro2015.surface import gradient
 from elstruct.reader._molpro2015.surface import hessian

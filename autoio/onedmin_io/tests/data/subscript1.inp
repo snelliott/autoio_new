@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Set the name of the executable
+export ONEDMINEXE='run/ondemin.x'
+# Run several auto1dmin.x instances
+cd job/run1
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run2
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run3
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run4
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run5
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run6
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run7
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run8
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run9
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run10
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run11
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run12
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run13
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run14
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run15
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run16
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run17
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run18
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run19
+time $ONEDMINEXE < input.dat > output.dat &
+cd ../run20
+time $ONEDMINEXE < input.dat > output.dat &
+wait

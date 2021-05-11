@@ -1,11 +1,11 @@
 Umbrella
-% if geom:
+% if geo:
   Geometry[angstrom]   ${natom}
-${geom}
+${geo}
 % endif
   Group                ${group}
   Axis                 ${axis}
   ReferenceAtom        ${ref_atom} 
   Potential[kcal/mol]  ${npotential}
 ${potential} 
-End
+End  ! Umbrella

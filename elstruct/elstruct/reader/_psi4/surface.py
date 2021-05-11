@@ -8,37 +8,54 @@ import autoparse.pattern as app
 import autoparse.find as apf
 
 
-def gradient(output_string):
-    """ get gradient from output
+def gradient(output_str):
+    """ Reads the molecular gradient (in Cartesian coordinates) from
+        the output file string. Returns the gradient in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     comp_ptt = app.UNSIGNED_INTEGER
     grad = ar.matrix.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('## Gradient (Symmetry 0) ##'),
             app.LINE, '', app.LINE, '', '']),
         line_start_ptt=comp_ptt)
-    assert numpy.shape(grad)[1] == 3
+
     return grad
 
 
-def hessian(output_string):
-    """ get hessian from output
+def hessian(output_str):
+    """ Reads the molecular Hessian (in Cartesian coordinates) from
+        the output file string. Returns the Hessian in atomic units.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(tuple(float))
     """
+
     comp_ptt = app.UNSIGNED_INTEGER
     hess = ar.matrix.read(
-        output_string,
+        output_str,
         start_ptt=app.padded(app.NEWLINE).join([
             app.escape('## Hessian (Symmetry 0) ##'), app.LINE, '']),
         block_start_ptt=app.padded(app.NEWLINE).join([
             '', app.series(comp_ptt, app.LINESPACES), '', '']),
         line_start_ptt=comp_ptt)
-    assert numpy.allclose(hess, numpy.transpose(hess))
+
     return hess
 
 
-def irc_points(output_string):
-    """ obtain the geometry, gradient, and hessian at each point along the irc
+def irc_points(output_str):
+    """ Reads the geometries, gradients, and Hessians at each point along the
+        Intrinsic Reaction Coordinate from the output string.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: (geom data structure, tuple(tuple(float)), tuple(tuple(float)))
     """
 
     # Set pattern to find the end of each IRC optimization
@@ -51,7 +68,7 @@ def irc_points(output_string):
         (pattern +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          app.escape('    Back-transformation to cartesian coordinates...')),
-        output_string)
+        output_str)
 
     # Set pattern for grabbing the geometry from the block
     geo_head_ptt = (
@@ -80,7 +97,14 @@ def irc_points(output_string):
     return geoms, grads, hessians
 
 
-def irc_path(output_string):
+def irc_path(output_str):
+    """ Reads the coordinates and electronic energies (relative to saddple point)
+        of the Intrinsic Reaction Coordinate.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(automol geom data structure)
+    """
     """ get the coordinates and energies relative to the saddle point
     """
 
@@ -89,7 +113,7 @@ def irc_path(output_string):
         (app.escape('@IRC              ****     IRC Steps     ****') +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          app.escape('---Fragment 1 Intrafragment Coordinates---')),
-        output_string)
+        output_str)
 
     pattern = (
         app.escape('@IRC') + app.SPACES + app.INTEGER + app.SPACES +
@@ -115,7 +139,7 @@ def irc_path(output_string):
         (app.escape('@IRC            ****      IRC Report      ****') +
          app.capturing(app.one_or_more(app.WILDCARD, greedy=False)) +
          app.escape('@IRC              ****     IRC Steps     ****')),
-        output_string)
+        output_str)
 
     pattern = (
         app.escape('@IRC') + app.SPACES + app.INTEGER + app.SPACES +

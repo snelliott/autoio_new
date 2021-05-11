@@ -3,9 +3,9 @@ InternalRotation   # ${rotor_id}
 % else:
 InternalRotation
 % endif
-% if geom:
+% if geo:
   Geometry[angstrom]   ${natom}
-${geom}
+${geo}
 % endif
   Group                      ${group}
   Axis                       ${axis}
@@ -15,5 +15,5 @@ ${geom}
   PotentialExpansionSize     ${pot_exp_size}
   HamiltonSizeMin            ${hmin}
   HamiltonSizeMax            ${hmax}
-End
+End  ! IntlRot
 \

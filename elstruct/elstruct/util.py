@@ -1,47 +1,75 @@
 """ front-end reader utilities
 """
+
 import numpy
-# import scipy.linalg
 from qcelemental import constants as qcc
 import automol
 
 X = numpy.newaxis
 
-EH2WAVENUM = qcc.conversion_factor("hartree", "wavenumber")
-
 
 def rotational_constants(geo):
-    """ get the rotational constants in atomic units
+    """ Calculate the rotational constants in atomic units.
+        (may want to convert to other units here)
 
-    (may want to convert to other units here)
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :rtype: tuple(gloat)
     """
-    cons = automol.geom.rotational_constants(geo, amu=True)
-    return cons
+    return automol.geom.rotational_constants(geo, amu=True)
 
 
 def normal_coordinates(geo, hess, project=True):
-    """ normal coordinates
+    """ Calculate normal coordinates from the molecular Hessian (in Bohr).
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param hess: Hessian correpsonding to the geometry
+        :type hess: tuple(tuple(float))
+        :param project: project out rotations and translations of Hessian
+        :type project: bool
+        :rtype: tuple(tuple(float))
     """
+
     norm_coos, _, _ = _frequency_analysis(geo, hess, project=project)
+
     return norm_coos
 
 
 def harmonic_frequencies(geo, hess, project=True):
-    """ harmonic frequencies (in cm^-1)
+    """ Calculate harmonic vibrational frequencies from the molecular Hessian
+        (in cm-1; imaginary entries returned as negative).
 
-    (imaginary entries returned as negative)
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param hess: Hessian correpsonding to the geometry
+        :type hess: tuple(tuple(float))
+        :param project: project out rotations and translations of Hessian
+        :type project: bool
+        :rtype: tuple(tuple(float))
     """
+
     _, freqs_re, freqs_im = _frequency_analysis(geo, hess, project=project)
     freqs = numpy.subtract(freqs_re, freqs_im)
     freqs = tuple(freqs)
+
     return freqs
 
 
 def _frequency_analysis(geo, hess, project=True):
-    """ harmonic frequency analysis
+    """ Froms the mass-weighted Hessian and diagonalizes it to obtain
+        the normal coordinates and harmonic vibrational frequencies.
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param hess: Hessian correpsonding to the geometry
+        :type hess: tuple(tuple(float))
+        :param project: project out rotations and translations of Hessian
+        :type project: bool
+        :rtype: tuple(tuple(float))
     """
+
     mw_hess = mass_weighted_hessian(geo, hess, project=project)
-    # print(mw_hess)
     fcs, mw_norm_coos = numpy.linalg.eigh(mw_hess)
 
     conv = qcc.conversion_factor("hartree", "wavenumber")
@@ -52,12 +80,23 @@ def _frequency_analysis(geo, hess, project=True):
     mw_vec = mass_weighting_vector(geo)
     norm_coos = mw_norm_coos
     norm_coos = _normalize_columns(mw_vec * mw_norm_coos)
+
     return norm_coos, freqs_re, freqs_im
 
 
 def mass_weighted_hessian(geo, hess, project=True):
-    """ translation/rotation-projected mass-weighted hessian
+    """ Form the mass-weighted Hessian and, if requested,
+        project out the rotations and translations.
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param hess: Hessian correpsonding to the geometry
+        :type hess: tuple(tuple(float))
+        :param project: project out rotations and translations of Hessian
+        :type project: bool
+        :rtype: tuple(tuple(float))
     """
+
     mw_vec = mass_weighting_vector(geo)
     mw_mat = numpy.outer((1. / mw_vec), (1. / mw_vec))
     mw_hess = numpy.multiply(hess, mw_mat)
@@ -67,19 +106,25 @@ def mass_weighted_hessian(geo, hess, project=True):
                                                            mass_weighted=True)
         rot_norm_coos = rotational_normal_coordinates(geo,
                                                       mass_weighted=True)
-        # print(trans_norm_coos)
-        # print(rot_norm_coos)
         tr_norm_coos = numpy.hstack([trans_norm_coos, rot_norm_coos])
         proj = numpy.eye(dim) - numpy.dot(tr_norm_coos, tr_norm_coos.T)
         # proj = scipy.linalg.orth(proj, rcond=0.5)
         mw_hess = numpy.dot(numpy.dot(proj.T, mw_hess), proj)
 
     mw_hess = tuple(map(tuple, mw_hess))
+
     return mw_hess
 
 
 def translational_normal_coordinates(geo, axes=None, mass_weighted=False):
     """ translational normal coordinates
+
+        :param geo: cartesian or z-matrix geometry
+        :type geo: tuple
+        :param axes:
+        :type axes: 
+        :param mass_weighted:
+        :type mass_weighted: bool
     """
     if axes is None:
         axes = numpy.eye(3)
@@ -126,27 +171,30 @@ def rotational_normal_coordinates(geo, axes=None, mass_weighted=False):
 
 
 def mass_weighting_vector(geo):
-    """ mass-weighting vector
+    """ Build a vector of mass weights (1/sqrt(m)) for each atom in a geometry.
     """
     amas = automol.geom.masses(geo, amu=False)
     mw_vec = numpy.sqrt(numpy.repeat(amas, 3))
     return mw_vec
 
 
+# move to automol
 def _normalize_columns(mat):
     """normalize the columns of a matrix
-    :param mat: matrix
-    :type mat: numpy.ndarray
-    :rtype: numpy.ndarray
+
+        :param mat: matrix
+        :type mat: numpy.ndarray
+        :rtype: numpy.ndarray
     """
     norms = list(map(numpy.linalg.norm, numpy.transpose(mat)))
     return numpy.divide(mat, norms)
 
 
 def _column_vector(vec):
-    """form an n x 1 column vector, flattening if necessary
-    :param vec: vector or array
-    :type vec: numpy.ndarray
-    :rtype: numpy.ndarray
+    """ Form an n x 1 column vector, flattening if necessary.
+
+        :param vec: vector or array
+        :type vec: numpy.ndarray
+        :rtype: numpy.ndarray
     """
     return numpy.reshape(vec, (-1, 1))

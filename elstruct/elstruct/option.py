@@ -3,6 +3,7 @@
 thought: we could have default values specified through the keys like so:
     MAXITER_ = create('scf_maxiter', ['num=50'])
 """
+
 from string import Formatter as _Formatter
 import re
 import yaml
@@ -13,14 +14,24 @@ PATTERN = r'<(.*)>(\[.*\])'
 
 
 def create(name_, keys_=()):
-    """ create an option specifier
+    """ Create an option specifier.
+
+        :param name:  name of the option to create
+        :type name: str
+        :param keys: provide keys associated with the option
+        :type keys: tuple(obj)
     """
+
     keys_str = ','.join('{{{}}}'.format(key) for key in keys_)
+
     return FORMAT.format(name_, keys_str)
 
 
 def specify(osp_, *args, **kwargs):
     """ set values for an option specifier
+        Function allow positional arguments, even though .format does not
+
+        :param osp_: option specifier
     """
     # allow positional arguments, even though .format doesn't
     _keys = keys(osp_)

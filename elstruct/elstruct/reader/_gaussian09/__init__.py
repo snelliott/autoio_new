@@ -1,14 +1,16 @@
-""" gaussian09 output reading module """
+""" Gaussian09 output reading module """
+
 from elstruct.reader._gaussian09.energ import energy
 from elstruct.reader._gaussian09.surface import gradient
 from elstruct.reader._gaussian09.surface import hessian
 from elstruct.reader._gaussian09.surface import harmonic_frequencies
-from elstruct.reader._gaussian09.surface import normal_coords
+from elstruct.reader._gaussian09.surface import normal_coordinates
 from elstruct.reader._gaussian09.surface import irc_points
 from elstruct.reader._gaussian09.surface import irc_path
 from elstruct.reader._gaussian09.molecule import opt_geometry
 from elstruct.reader._gaussian09.molecule import opt_zmatrix
-from elstruct.reader._gaussian09.vpt2 import vpt2
+from elstruct.reader._gaussian09.molecule import inp_zmatrix
+from elstruct.reader._gaussian09._vpt2 import vpt2
 from elstruct.reader._gaussian09.prop import dipole_moment
 from elstruct.reader._gaussian09.prop import polarizability
 from elstruct.reader._gaussian09.status import has_normal_exit_message
@@ -25,11 +27,12 @@ __all__ = [
     'gradient',
     'hessian',
     'harmonic_frequencies',
-    'normal_coords',
+    'normal_coordinates',
     'irc_points',
     'irc_path',
     'opt_geometry',
     'opt_zmatrix',
+    'inp_zmatrix',
     'vpt2',
     'dipole_moment',
     'polarizability',
