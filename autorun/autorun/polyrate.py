@@ -14,7 +14,7 @@ def direct(script_str, run_dir, input_str, pot_str):
     output_str = from_istring(
         script_str, run_dir, input_str,
         aux_dct=aux_dct,
-        inputput_name=input_name,
+        input_name=input_name,
         output_names=(output_name,))
 
     return input_str, output_str
