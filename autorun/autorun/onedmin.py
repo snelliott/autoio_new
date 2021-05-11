@@ -6,7 +6,7 @@ import os
 import random
 import automol
 import autofile
-import elstruct
+# import elstruct
 import onedmin_io
 
 
@@ -46,27 +46,27 @@ def write_elstruct_inp(lj_info, mod_lj_thy_info):
 
     assert prog in ('gaussian09', 'gaussian16', 'molpro2015')
 
-    # Get the job running options
-    script_str, _, kwargs, _ = qchem_params(
-        *mod_lj_thy_info[0:2])
-
-    # Write the string
-    elstruct_inp_str = elstruct.writer.energy(
-        geom='GEOMETRY',
-        charge=charge,
-        mult=mult,
-        method=method,
-        basis=basis,
-        prog=prog,
-        mol_options=('nosym', 'noorient'),
-        memory=kwargs['memory'],
-        comment='SAMPLE GEOM',
-        orb_type=orb_lbl
-    )
-
-    elstruct_sp_str = '\n'.join(script_str.splitlines()[1:])
-
-    return elstruct_inp_str, elstruct_sp_str
+#    # Get the job running options
+#    script_str, _, kwargs, _ = qchem_params(
+#        *mod_lj_thy_info[0:2])
+#
+#    # Write the string
+#    elstruct_inp_str = elstruct.writer.energy(
+#        geom='GEOMETRY',
+#        charge=charge,
+#        mult=mult,
+#        method=method,
+#        basis=basis,
+#        prog=prog,
+#        mol_options=('nosym', 'noorient'),
+#        memory=kwargs['memory'],
+#        comment='SAMPLE GEOM',
+#        orb_type=orb_lbl
+#    )
+#
+#    elstruct_sp_str = '\n'.join(script_str.splitlines()[1:])
+#
+#    return elstruct_inp_str, elstruct_sp_str
 
 
 def write_onedmin_sub(njobs, job_path, onedmin_path,
