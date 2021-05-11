@@ -2,8 +2,14 @@
   Centralized autorun functions
 """
 
-# Single Program Runners
+# Useful Running Functions
+from autorun._script import SCRIPT_DCT
+from autorun._run import from_input_string
 from autorun._run import run_script
+from autorun._run import write_input
+from autorun._run import read_output
+
+# Single Program Runners
 from autorun import mess
 from autorun import onedmin
 from autorun import pac99
@@ -16,17 +22,14 @@ from autorun import varecof
 from autorun._multiprog import projected_frequencies
 from autorun._multiprog import thermo
 
-# Useful Running Functions
-from autorun._script import SCRIPT_DCT
-from autorun._run import from_input_string
-from autorun._run import run_script
-from autorun._run import write_input
-from autorun._run import read_output
-
 
 __all__ = [
     # Single Program Runners
+    'SCRIPT_DCT',
     'run_script',
+    'from_input_string',
+    'write_input',
+    'read_output',
     'mess',
     'onedmin',
     'pac99',
@@ -36,11 +39,5 @@ __all__ = [
     'varecof',
     # MultiProgram Runners
     'projected_frequencies',
-    'thermo',
-    # Useful Running Functions
-    'SCRIPT_DCT',
-    'from_input_string',
-    # 'run_script',
-    'write_input',
-    'read_output'
+    'thermo'
 ]

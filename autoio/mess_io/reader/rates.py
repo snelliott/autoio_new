@@ -152,7 +152,7 @@ def _parse_rate_constants(out_lines, block_start, reaction):
     for kt in kts:
         new_kt = float(kt) if kt != '***' else None
         fin_kts += (new_kt,)
-    print('mess test:', (fin_temps, fin_kts))
+
     return (fin_temps, fin_kts)
 
 
