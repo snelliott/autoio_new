@@ -1,8 +1,9 @@
 """
-Executes the automation part of 1DMin
+Executes the automation part of OneDMin
 """
 
 import os
+from random import randrange
 from ioformat import build_mako_str
 
 
@@ -11,13 +12,17 @@ SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_PATH = os.path.join(SRC_PATH, 'templates')
 
 
-def input_file(ranseed, nsamp, smin, smax,
-               target_xyz_name, bath_xyz_name,
+def input_file(nsamp, smin, smax, ranseed=None,
+               target_xyz_name='target.xyz', bath_xyz_name='bath.xyz',
                spin_method=2):
     """ writes the 1dmin input file for each instance
     """
 
-    assert isinstance(ranseed, int)  # check size of seed?
+    if ranseed is not None:
+        assert isinstance(ranseed, int)
+    else:
+        ranseed = randrange(1E8, 1E9)
+
     assert isinstance(nsamp, int)
     assert target_xyz_name.endswith('.xyz')
     assert bath_xyz_name.endswith('.xyz')
@@ -41,17 +46,23 @@ def input_file(ranseed, nsamp, smin, smax,
         template_keys=inp_keys)
 
 
-def submission_script(njobs, job_path, onedmin_path, exe_name='ondemin.x'):
+def submission_script(njobs, run_dir, exe_path):
     """ launches the job
+
+        :param njobs: number of OneDMin processes to run
+        :type njobs: int
+        :param run_dir: directory to run each OneDMin process
+        :type run_dir: str
+        :param exe_path: full path to the OneDMin executable
+        :type exe_path: str
     """
 
-    # Set the full path to the onedmin executable
-    exe_path = os.path.join(onedmin_path, exe_name)
-
     # Write the string for running all of the job lines
-    job_lines = 'cd {0}/run1\n'.format(job_path)
+    # job_lines = 'mkdir -p {0}/run1\n'.format(run_dir)
+    job_lines = 'cd {0}/run1\n'.format(run_dir)
     job_lines += 'time $ONEDMINEXE < input.dat > output.dat &\n'
     for i in range(njobs-1):
+        # job_lines += 'mkdir -p ../run{0}\n'.format(str(i+2))
         job_lines += 'cd ../run{0}\n'.format(str(i+2))
         job_lines += 'time $ONEDMINEXE < input.dat > output.dat &\n'
     job_lines += 'wait\n'

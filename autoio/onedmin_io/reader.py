@@ -8,6 +8,8 @@ import autoparse.find as apf
 
 def lennard_jones(output_string):
     """ reads the lennard jones params from the output
+
+        this function works the lj.out file
     """
 
     print('output_string\n', output_string)
@@ -22,12 +24,9 @@ def lennard_jones(output_string):
     sigmas = apf.all_captures(sigma_ptt, output_string)
     epsilons = apf.all_captures(epsilon_ptt, output_string)
     if sigmas is not None:
-        sigmas = [float(val) for val in sigmas]
+        sigmas = tuple(float(val) for val in sigmas)
     if epsilons is not None:
-        epsilons = [float(val) for val in epsilons]
-
-    print('sigs', sigmas)
-    print('eps', epsilons)
+        epsilons = tuple(float(val) for val in epsilons)
 
     return sigmas, epsilons
 
