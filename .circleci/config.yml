@@ -61,12 +61,6 @@ jobs:
                     source activate autoio-env
                     pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
             - run:
-                name: Test projrot_io
-                command: |
-                    cd autoio/projrot_io
-                    source activate autoio-env
-                    pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
-            - run:
                 name: Test polyrate_io
                 command: |
                     cd autoio/polyrate_io
