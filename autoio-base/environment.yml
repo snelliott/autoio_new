@@ -1,7 +1,7 @@
-name: autoio-interfaces-env
+name: autoio-base-env
 
 channels:
-    - auto-mech
+    # - auto-mech
     - psi4
     - rdkit
     - openbabel
@@ -25,13 +25,12 @@ dependencies:
     - rdkit::rdkit
     - openbabel::openbabel
     - conda-forge::qcelemental
-    - auto-mech::autochem
-    - auto-mech::autoio-base
-    - auto-mech::x2z
-    - auto-mech::mess
-    - auto-mech::projrot
-    - auto-mech::pac99
-    - auto-mech::thermp
+    # - auto-mech::autochem
+    # - auto-mech::autoio-base
     # - auto-mech::autoio-interfaces
-    # - auto-mech::autofile
     # - auto-mech::mechanalyzer
+    # - auto-mech::x2z
+    # - auto-mech::mess
+    # - auto-mech::projrot
+    # - auto-mech::pac99
+    # - auto-mech::thermp

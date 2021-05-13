@@ -49,7 +49,7 @@ setup(
         'onedmin_io': 'onedmin_io',
         'pac99_io': 'pac99_io',
         'intder_io': 'intder_io',
-        'elstruct': 'elstruct'
+        'elstruct': 'elstruct',
         'thermp_io': 'thermp_io',
         'autorun': 'autorun'},
     package_data={
