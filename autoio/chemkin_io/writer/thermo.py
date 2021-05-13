@@ -11,7 +11,7 @@ def thermo_entry(spc_name, nasa7_params):
     notes = nasa7_params[0]
     composition = nasa7_params[1]
     phase = nasa7_params[2]
-    temp_limits = nasa7_params[3]
+    tlimits = nasa7_params[3]
     try:
         high_coeffs = nasa7_params[4][0]
     except TypeError:
@@ -19,10 +19,11 @@ def thermo_entry(spc_name, nasa7_params):
     low_coeffs = nasa7_params[4][1]
 
     line1 = (
-        '{0:<16s}{1:<2s}{2:<6s}{3:<20s}{4:<1s}{5:>10.2f}{6:>10.2f}{7:>8.2f}{8:>5s}{9:<2s}\n'
-        ).format(
-            spc_name, '', notes, composition, phase, temp_limits[0],
-            temp_limits[1], temp_limits[2], '', ' 1')
+        '{0:<16s}{1:<2s}{2:<6s}'.format(spc_name, '', notes) +
+        '{0:>20s}{1:<1s}{2:>10.2f}'.format(composition, phase, tlimits[0]) +
+        '{0:>10.2f}{1:>8.2f}'.format(tlimits[1], tlimits[2]) +
+        '{0:>5s}{1:<2s}\n'.format('', ' 1')
+    )
     # note: need to fix line 1 to incorporate
     # more detailed composition information
     line2 = (

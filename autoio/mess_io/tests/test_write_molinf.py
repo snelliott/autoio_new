@@ -214,7 +214,7 @@ def test__core_multirotor_writer():
         GEO1, SYM_FACTOR1, POT_SURF_FILE, rotor_int1_str,
         interp_emax=INTERP_EMAX,
         quant_lvl_emax=QUANT_LVL_EMAX)
-    
+
     assert core_multirot1_str == read_text_file(
         ['data', 'inp'], 'core_multirot1.inp', PATH)
     assert core_multirot2_str == read_text_file(
@@ -314,14 +314,3 @@ def test__tunnel_read_writer():
         ['data', 'inp'], 'tunnel_read1.inp', PATH)
     assert tunnel_read2_str == read_text_file(
         ['data', 'inp'], 'tunnel_read2.inp', PATH)
-
-
-if __name__ == '__main__':
-    test__core_rigidrotor_writer()
-    # test__core_multirotor_writer()
-    # test__core_phasespace_writer()
-    # test__core_rotd_writer()
-    # test__rotor_hindered_writer()
-    # test__umbrella_writer()
-    # test__tunnel_eckart_writer()
-    # test__tunnel_sct_writer()

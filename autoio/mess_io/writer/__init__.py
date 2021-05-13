@@ -50,7 +50,7 @@ __all__ = [
     # energy transfer
     'energy_down',
     'collision_frequency',
-    # reaction channel 
+    # reaction channel
     'species',
     'well',
     'bimolecular',

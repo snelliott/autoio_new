@@ -13,8 +13,8 @@ rxn_smis_lst = [
     'CCC'
 ]
 for i, smi in enumerate(rxn_smis_lst):
-
-    zma = automol.geom.zmatrix(automol.inchi.geometry(automol.smiles.inchi(smi)))
+    zma = automol.geom.zmatrix(
+        automol.inchi.geometry(automol.smiles.inchi(smi)))
     print()
     print(smi)
     print(zma)

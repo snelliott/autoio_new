@@ -4,8 +4,8 @@
 import os
 import numpy
 import pandas
-import mess_io.writer
 from ioformat import read_text_file
+import mess_io.writer
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
@@ -18,7 +18,7 @@ ATOM_DIST_MIN = 1.05
 EXCESS_ENE_TEMP = 10000.0
 WELL_EXTEND = 20000.0
 
-# For output
+# For messpf output
 FORMULA = 'CH4O'
 THM_TEMPS = numpy.array([
     100., 200., 300., 400., 500., 600., 700., 800., 900., 1000.,
@@ -59,8 +59,6 @@ DATA = numpy.array([
     [166.772, 0.0924669, 5.89903e-05, 882.657, 2157.52],
     [63.7335, 0.0123569, -2.32761e-05, 133.973, 10.5319]
 ])
-print(len(DATA))
-print(len(THM_TEMPS))
 THM_VALS = pandas.DataFrame(
     data=DATA,
     index=THM_TEMPS,
@@ -151,5 +149,3 @@ def test__pf_output():
 
     assert pf1_str == read_text_file(['data', 'out'], 'pf.dat2', PATH)
     assert pf2_str == read_text_file(['data', 'out'], 'pf.dat3', PATH)
-
-test__pf_output()

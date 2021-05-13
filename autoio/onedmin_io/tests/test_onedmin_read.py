@@ -1,30 +1,36 @@
-""" Tests the writing of the energy transfer section
+""" Read various OneDMin output files
 """
 
 import os
 import numpy
-import onedmin_io
+from ioformat import read_text_file
+import onedmin_io.reader
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-DATA_PATH = os.path.join(PATH, 'data')
-DATA_NAME = 'onedmin.out'
-# with open(os.path.join(DATA_PATH, DATA_NAME), 'r') as datfile:
-#    OUT_STR = datfile.read()
+LJ_OUT_STR = read_text_file(['data'], 'lj.out', PATH)
+ONEDMIN_OUT_STR = read_text_file(['data'], 'onedmin.out', PATH)
 
 
 def test__lennard_jones():
     """ test onedmin_io.reader.lennard_jones
     """
 
-    ref_sigmas = ()
-    ref_epsilons = ()
+    ref_sigmas = (6.587188430859643, 6.908800920151311, 6.609902938887646)
+    ref_epsilons = (17.88616, 15.23453, 17.731)
 
-    # sigmas, epsilons = onedmin_io.reader.lennard_jones(OUT_STR)
+    sigmas, epsilons = onedmin_io.reader.lennard_jones(LJ_OUT_STR)
 
-    # assert numpy.allclose(ref_sigmas, sigmas)
-    # assert numpy.allclose(ref_epsilons, epsilons)
+    assert numpy.allclose(ref_sigmas, sigmas)
+    assert numpy.allclose(ref_epsilons, epsilons)
 
 
-if __name__ == '__main__':
-    test__lennard_jones()
+def test__program_version():
+    """ test onedmin_io.reader.program_version
+    """
+
+    ref_prog = '1.0'
+
+    prog = onedmin_io.reader.program_version(ONEDMIN_OUT_STR)
+
+    assert prog == ref_prog

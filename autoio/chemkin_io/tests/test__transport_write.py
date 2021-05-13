@@ -1,13 +1,19 @@
 """
- tests writers
+ tests chemkin_io.writer.transport.properties
 """
 
 from chemkin_io.writer.transport import properties as writer
 
-SPC_TRANS_DCT = {'O2': {'shape_idx': 1, 'epsilon': 107.4, 'sigma': 3.458, 
-                    'dipole_moment': 0.00, 'polarizability': 1.600,
-                    'zrot': 3.800}
-            }
+
+SPC_TRANS_DCT = {
+    'O2': {'shape_idx': 1,
+           'epsilon': 107.4,
+           'sigma': 3.458, 
+           'dipole_moment': 0.00,
+           'polarizability': 1.600,
+           'zrot': 3.800
+    }
+}
 
 TRANS_STR = """! THEORETICAL TRANSPORT PROPERTIES
 !
@@ -21,13 +27,9 @@ TRANS_STR = """! THEORETICAL TRANSPORT PROPERTIES
 O2                      1     154.525   1.830   0.000   0.237   3.800
 """
 
+
 def test__transport_write():
     """ Tests the transport writer
     """
     trans_str = writer(SPC_TRANS_DCT)
     assert trans_str == TRANS_STR
-
-
-if __name__ == '__main__':
-    test__transport_write()
-

@@ -7,6 +7,7 @@ import subprocess
 from automol import geom
 from phydat import phycon
 
+
 # Obtain the path to a convert struct executable
 SRC_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -183,6 +184,7 @@ def format_delmlt_string(asym, bsym):
     ).format(asym, bsym)
 
     return delmlt_string
+
 
 def format_restrict_dist_string(sym1, sym2, name):
     """ build string that has the distance comparison

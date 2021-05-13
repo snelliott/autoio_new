@@ -1,9 +1,9 @@
 """ Tests the writing of the energy transfer section
 """
-import os
 
-import onedmin_io.writer
+import os
 from ioformat import read_text_file
+import onedmin_io.writer
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
@@ -46,8 +46,3 @@ def test__submission_script():
         NJOBS, RUN_DIR, EXE_PATH)
 
     assert subscript_str == read_text_file(['data'], 'subscript.inp', PATH)
-
-
-if __name__ == '__main__':
-    test__input_file()
-    test__submission_script()
