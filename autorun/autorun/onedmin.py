@@ -107,8 +107,11 @@ def direct(sp_script_str, run_dir, nsamp, njobs,
     # Write the main input files for all runs (breaks if ranseeds not given)
     input_strs = ()
     for ranseed in ranseeds:
-        input_strs += (onedmin_io.writer.input_file(
-            nsamp, smin, smax, ranseed=ranseed, spin_method=spin_method),)
+        input_strs += (
+            onedmin_io.writer.input_file(
+                nsamp, smin, smax,
+                ranseed=ranseed, spin_method=spin_method),
+        )
 
     # Write the aux inputs; same for all runs
     tgt_str = automol.geom.string(tgt_geo)

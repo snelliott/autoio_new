@@ -23,30 +23,31 @@ OPT_OUTPUT_NAMES = ('dint.geo',)
 
 
 # autorun functions
-def optimized_geom(script_str, run_dir,
-                   geo, basis_str, coef_str):
-    """ Optimize the geometry using DiNT.
-    """
-
-    input_str = dint_io.writer.optimization_input(geo)
-    aux_dct = {
-        'basis.dat': basis_str,
-        'coef.dat': coef_str
-        # 'tinker.xyz': tinker_xyz
-    }
-
-    output_strs = direct(
-        script_str, run_dir, input_str,
-        aux_dct=aux_dct,
-        input_name='input',
-        output_names=('dint.geo',))
-
-    # Parse out the info
-    opt_geo = dint_io.reader.geo(output_strs[0])
-    rot_consts = dint_io.reader.geo(output_strs[0])
-    energy = dint_io.reader.geo(output_strs[0])
-
-    return opt_geo, rot_consts, energy
+# def optimized_geom(script_str, run_dir,
+#                    geo, basis_str, coef_str):
+#     """ Optimize the geometry using DiNT.
+#     """
+#
+#     # input_str = dint_io.writer.optimization_input(geo)
+#     input_str = ''
+#     aux_dct = {
+#         'basis.dat': basis_str,
+#         'coef.dat': coef_str
+#         # 'tinker.xyz': tinker_xyz
+#     }
+#
+#     output_strs = direct(
+#         script_str, run_dir, input_str,
+#         aux_dct=aux_dct,
+#         input_name='input',
+#         output_names=('dint.geo',))
+#
+#     # Parse out the info
+#     opt_geo = dint_io.reader.geo(output_strs[0])
+#     rot_consts = dint_io.reader.geo(output_strs[0])
+#     energy = dint_io.reader.geo(output_strs[0])
+#
+#     return opt_geo, rot_consts, energy
 
 
 def sampling():

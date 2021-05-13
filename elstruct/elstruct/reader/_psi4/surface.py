@@ -104,8 +104,6 @@ def irc_path(output_str):
         :type output_str: str
         :rtype: tuple(automol geom data structure)
     """
-    """ get the coordinates and energies relative to the saddle point
-    """
 
     # coordinates
     block = apf.last_capture(

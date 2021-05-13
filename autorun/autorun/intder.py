@@ -1,22 +1,29 @@
-""" Runner
+""" Run INTDER code
 """
 
+import intder_io
+from autorun._run import from_input_string
+
+
+INPUT_NAME = 'intder.inp'
+OUTPUT_NAMES = ('intder.out',)
 
 
 def direct(script_str, run_dir,
-           geo_str, hess_str, 
-           zma=None):
-    """ Generates an input file for a ThermP job runs it directly.
+           geo, hess, zma=None,
+           input_name=INPUT_NAME,
+           output_names=OUTPUT_NAMES):
+    """ Run INTDER
     """
-    
-    input_str = intder_io.writer.input(geo, zma=zma)
 
+    input_str = intder_io.writer.input_file(geo, zma=zma)
+    hess_str = intder_io.writer.cart_hess_file(hess)
     aux_dct = {'file15': hess_str}
-    input_name = 'intder.inp'
-    output_name = 'intder.out'
-    output_str = from_input_string(
+
+    output_strs = from_input_string(
         script_str, run_dir, input_str,
         aux_dct=aux_dct,
-        output_name=output_name)
+        input_name=input_name,
+        output_names=output_names)
 
-    return input_str, output_str
+    return output_strs

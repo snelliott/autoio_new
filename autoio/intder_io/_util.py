@@ -30,7 +30,7 @@ def header_format(geo):
 
     return build_mako_str(
         template_file_name='header.mako',
-        template_src_path=SECTION_PATH,
+        template_src_path=TEMPLATE_PATH,
         template_keys=header_keys)
 
 
