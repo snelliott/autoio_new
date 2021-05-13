@@ -1,4 +1,5 @@
 [MASTER]
+ignore=*yaml*
 disable=
     assignment-from-no-return,
     arguments-out-of-order,
