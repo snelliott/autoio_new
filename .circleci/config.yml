@@ -90,7 +90,7 @@ jobs:
                     cd autoio-interfaces
                     source activate autoio-interfaces-env
                     flake8 --exit-zero ../autoio-interfaces
-                    pylint --rcfile=../../.pylintrc autoio-interfaces
+                    pylint --rcfile=../.pylintrc *
     test-autoio-base:
         docker:
             - image: continuumio/miniconda3
@@ -139,7 +139,7 @@ jobs:
                     cd autoio-base
                     source activate autoio-base-env
                     flake8 --exit-zero ../autoio-base
-                    pylint --rcfile=../../.pylintrc autoio-base
+                    pylint --rcfile=../.pylintrc *
 workflows:
     version: 2
     build-all:
