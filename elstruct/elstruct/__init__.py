@@ -1,4 +1,5 @@
 """ electronic structure interfaces """
+
 from elstruct import writer
 from elstruct import reader
 from elstruct import run

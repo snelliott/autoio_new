@@ -1,9 +1,11 @@
 """ functions operating on the thermo block string
 """
+
 import itertools
 import numpy as np
 import autoparse.pattern as app
 import autoparse.find as apf
+
 
 COMMENTS_PATTERN = app.escape('!') + app.capturing(
     app.one_or_more(app.WILDCARD2))

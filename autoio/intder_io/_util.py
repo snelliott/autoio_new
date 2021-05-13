@@ -1,18 +1,19 @@
-""" utility
+""" Utilility functions to format the data into strings appropriate
+    for INTDER input files.
 """
 
+import os
 from itertools import chain
-import automol
-import ioformat
+import automol.geom
+import automol.zmat
+import automol.util
+from ioformat import build_mako_str
+from ioformat import indent
 
 
-HEADER_STR = """# FILES #
-intder
-
-Total Energy distribution
-
-# 1       2   3    4    5    6    7    8    9   10   11   12   13   14   15   16 #
-  {}     {}    0    2    0 2000    0    0    0    1    3    0    0    0    0    0"""
+# OBTAIN THE PATH TO THE DIRECTORY CONTAINING THE TEMPLATES #
+SRC_PATH = os.path.dirname(os.path.realpath(__file__))
+TEMPLATE_PATH = os.path.join(SRC_PATH, 'templates')
 
 
 def header_format(geo):
@@ -25,9 +26,12 @@ def header_format(geo):
     else:
         nintl = 3 * natom - 5
 
-    header_str = HEADER_STR.format(natom, nintl)
+    header_keys = {'natom': natom, 'nintl': nintl}
 
-    return header_str
+    return build_mako_str(
+        template_file_name='header.mako',
+        template_src_path=TEMPLATE_PATH,
+        template_keys=header_keys)
 
 
 def internals_format(zma):
@@ -75,15 +79,8 @@ def symbols_format(geo):
     """
 
     symbs = automol.geom.symbols(geo)
-    # nsymbs = len(symbs)
-
     symb_str = automol.util.vec.string(
         symbs, num_per_row=6, val_format='{0:>6s}')
-    # for i, symb in enumerate(symbs):
-    #     if ((i+1) % 6) == 0 and (i+1) != nsymbs:
-    #         symb_str += '{0:>6s}\n'.format(symb)
-    #     else:
-    #         symb_str += '{0:>6s}'.format(symb)
 
     symb_str = ioformat.indent(symb_str, 6)
 
@@ -91,19 +88,17 @@ def symbols_format(geo):
 
 
 def hessian_format(hess):
-    """ format hessian
+    """ Format a mass-weighted Hessian into a string for the
+        auxiliary input file for INTDER.
+        
+        :param hess: mass-weighted Hessian
+        :type hess: numpy.ndarray
+        :rtype: str
     """
 
-    # Flatten the Hessian and print
-    # natom = len(hess)
-    hess = list(chain.from_iterable(hess))
-
+    # Flatten the Hessian out for ease of writing the string
+    hess = tuple(chain.from_iterable(hess))
     hess_str = automol.util.vec.string(
         hess, num_per_row=3, val_format='{0:>20.10f}')
-    # hess_str = ''
-    # for i, val in enumerate(hess):
-    #     hess_str += '{0:>20.10f}'.format(val)
-    #     if ((i+1) % 3) == 0 and (i+1) != natom:
-    #         hess_str += '\n'
 
     return hess_str

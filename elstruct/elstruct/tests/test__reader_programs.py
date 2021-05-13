@@ -1,7 +1,8 @@
 """ test elstruct.reader
 """
+
 from elstruct import reader
-import automol
+
 
 def test__programs():
     """ test elstruct.reader.programs
@@ -52,23 +53,3 @@ def test__vpt2_programs():
     """
     assert set(reader.vpt2_programs()) >= {
         'gaussian09', 'gaussian16'}
-
-
-# def test__read_inp_zmatrix():
-#     """ test input zmatrix reading
-#     """
-#     with open('run.inp') as f:
-#         inp_str = f.read('run.inp')
-#     zma = reader.inp_zmatrix('gaussian09', inp_str)
-#     print(automol.zmat.string(zma))
-
-
-if __name__ == '__main__':
-    #test__programs()
-    #test__gradient_programs()
-    #test__hessian_programs()
-    #test__opt_geometry_programs()
-    #test__opt_zmatrix_programs()
-    #test__irc_programs()
-    #test__vpt2_programs()
-    test__read_inp_zmatrix()

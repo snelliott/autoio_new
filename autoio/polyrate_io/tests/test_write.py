@@ -1,15 +1,15 @@
 """
   test an intder writer
 """
-import os
 
+import os
 import numpy
 import polyrate_io.writer
-# from _util import read_text_file
-# from _util import load_numpy_string_file
+from ioformat import read_text_file
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+
 # Base data to build the info objects
 GEO = (('C', (-4.0048955763, -0.3439866053, -0.0021431734)),
        ('O', (-1.3627056155, -0.3412713280, 0.0239463418)),
@@ -39,33 +39,19 @@ HESSES = [HESS for i in range(21)]
 SVALS = list(x for x in numpy.arange(1.0, 22.0, 1.0))
 VVALS = list(x for x in numpy.arange(1.0, 22.0, 1.0))
 
-
 # Build info objects
 RCT_INFO = (HESS, -10.0, 0.0)
-# PRD_INFO = (HESS, -20.0, 22.0)
+PRD_INFO = (HESS, -20.0, 22.0)
 SADPT_INFO = (HESS, 10.0)
 MEP_INFOS = ()
 for i in range(21):
     MEP_INFOS += ((HESSES[i], VVALS[i], SVALS[i], GEOS[i], GRADS[i]),)
 
 
-def test__input():
-    """ test polyrate_io.writer.
-    """
-    print('not implemented')
-
-
 def test__pot40():
-    """ test polyrate_io.writer.
+    """ test polyrate_io.writer.potential_file
     """
 
     inp_str = polyrate_io.writer.potential_file(
         RCT_INFO, SADPT_INFO, MEP_INFOS)
-
-    with open('pot.fu40', 'w') as fobj:
-        fobj.write(inp_str)
-
-
-if __name__ == '__main__':
-    # test__input()
-    test__pot40()
+    assert inp_str == read_text_file(['data'], 'pot.fu40', PATH)

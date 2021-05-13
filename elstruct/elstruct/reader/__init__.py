@@ -47,7 +47,6 @@ from elstruct.reader._reader import program_version
 __all__ = [
     # energy
     'programs',
-    'methods',
     'energy',
     # gradient
     'gradient_programs',

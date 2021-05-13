@@ -7,7 +7,7 @@ Bimolecular P1
         1  0.0
         3  150.0
         9  450.0
-  End
+  End  ! Frag1
 !---------------------------------------------------
   Fragment Mol1
     RRHO
@@ -25,7 +25,7 @@ Bimolecular P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]    0.0
-  End
+  End  ! Frag2
 !---------------------------------------------------
   GroundEnergy[kcal/mol]    -35.00
-End
+End  ! Bimol

@@ -1,18 +1,17 @@
-"""
- tests pf reader
+""" test mess_io.reader.pfs
 """
 
-import numpy
 import os
+import numpy
 import mess_io.reader
 from ioformat import read_text_file
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-OUT_STR = read_text_file(['data', 'out'], 'messpf.dat', PATH)
+OUT_STR = read_text_file(['data', 'out'], 'pf.dat1', PATH)
 
 
-def test__pf():
+def test__partition_function():
     """ test mess_io.reader.pfs.partition_function
     """
 
@@ -92,25 +91,6 @@ def test__pf():
     assert numpy.allclose(pf_dct[0], ref_pf_dct[0])
     assert numpy.allclose(pf_dct[2], ref_pf_dct[2])
     assert numpy.allclose(pf_dct[3], ref_pf_dct[3])
-    # for temp in sorted(list(ref_pf_dct.keys())):
-    #     assert numpy.allclose(pf_dct[temp], ref_pf_dct[temp])
-
-
-def test__thermo():
-    """ test mess_io.reader.pfs.entropy
-        test mess_io.reader.pfs.heat_capacity
-    """
-
-    pf_dct = mess_io.reader.pfs.partition_function(OUT_STR)
-
-    assert len(pf_dct) == len(ref_pf_dct)
-    assert numpy.allclose(pf_dct[0], ref_pf_dct[0])
-    print(pf_dct[1], ref_pf_dct[1])
-    assert numpy.allclose(pf_dct[1], ref_pf_dct[1])
-    assert numpy.allclose(pf_dct[2], ref_pf_dct[2])
-    assert numpy.allclose(pf_dct[3], ref_pf_dct[3])
-    # for temp in sorted(list(ref_pf_dct.keys())):
-    #     assert numpy.allclose(pf_dct[temp], ref_pf_dct[temp])
 
 
 def test__thermo():
@@ -195,8 +175,3 @@ def test__thermo():
     for temp in sorted(list(s_dct.keys())):
         assert numpy.allclose(s_dct[temp], ref_s_dct[temp])
         assert numpy.allclose(cp_dct[temp], ref_cp_dct[temp])
-
-
-if __name__ == '__main__':
-    test__pf()
-    test__thermo()

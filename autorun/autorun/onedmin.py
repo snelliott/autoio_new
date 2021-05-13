@@ -1,105 +1,180 @@
-"""
-input file writing routines for parallel OneDMin runs
+""" Run OneDMin
 """
 
-# import os
-import random
-import automol
-# import autofile
-# import elstruct
+from statistics import mean
+import automol.geom
 import onedmin_io
+import elstruct.writer
+from autorun._run import from_parallel_input_strings
 
 
-def write_input(nsamp, smin=2.0, smax=6.0,
-                target_name='target.xyz', bath_name='bath.xyz',
-                spin_method=1):
-    """ write the input file
+INPUT_NAME = 'input.dat'
+OUTPUT_NAMES = ('output.dat', 'lj.out', 'min_geoms.dat', 'zero_ene')
+
+
+# Specialized runners
+def lennard_jones_params(sp_script_str, run_dir, nsamp, njobs,
+                         tgt_geo, bath_geo, thy_info, charge, mult,
+                         smin=2.0, smax=6.0, spin_method=1, ranseeds=None):
+    """ Calculate an averaged Lennard-Jones epsilon and sigma parameter
+        for the interaction potential between a target and bath molecule.
+
+        :param sp_script_str: submission script for single-point calculation
+        :type sp_script_str: str
+        :param run_dir: directory where all OneDMin jobs are run
+        :type run_dir: str
+        :param nsamp: number of samples to run PER OneDMin job
+        :type nsamp: int
+        :param njobs: number of OneDMin instances to run in parallel
+        :type njobs: int
+        :param tgt_geo: geometry of the target molecule
+        :type tgt_geo: automol geometry data structure
+        :param bath_geo: geometry of the bath molecule
+        :type bath_geo: automol geometry data structure
+        :param thy_info: theory info object (prog, method, basis, orb_lbl)
+        :type thy_info: tuple(str, str, str, str)
+        :param charge: charge of the target-molecule complex
+        :type charge: int
+        :param mult: multiplicity of the target-molecule complex
+        :type mult: int
+        :param smin: minimum allowed intermolecular separation
+        :type smin: float
+        :param smax: maximum allowed intermolecular separation
+        :type smax: float
+        :param spin_method: parameter for the spin method
+        :type spin_method: int
+        :param ranseed: seed-integer for the orientational sampling
+        :type ranseed: int
+        :rtype: (float, float)
     """
 
-    ranseed = random.randrange(1E8, 1E9)
+    # maybe set the number of ranseeds to number of jobs?
+    assert njobs == len(ranseeds)
 
-    inp_str = onedmin_io.writer.input_file(
-        ranseed, nsamp, smin, smax,
-        target_name, bath_name,
-        spin_method=spin_method)
+    output_strs_lst = direct(
+        sp_script_str, run_dir, nsamp, njobs,
+        tgt_geo, bath_geo, thy_info, charge, mult,
+        smin=smin, smax=smax, spin_method=spin_method, ranseeds=ranseeds)
 
-    return inp_str
+    # Parse out the lj parameters and take the average
+    run_sigmas, run_epsilons = [], []
+    for output_strs in output_strs_lst:
+        sigmas, epsilons = onedmin_io.reader.lennard_jones(output_strs[1])
+        run_sigmas += sigmas
+        run_epsilons += epsilons
+
+    avg_sigma = mean(sigmas)
+    avg_epsilon = mean(epsilons)
+
+    return avg_sigma, avg_epsilon
 
 
-def write_xyz(tgt_geo, bath_geo):
-    """ Write the geom strings
+# General runners
+def direct(sp_script_str, run_dir, nsamp, njobs,
+           tgt_geo, bath_geo, thy_info, charge, mult,
+           smin=2.0, smax=6.0, spin_method=1, ranseeds=None):
+    """ Write input and run output.
+
+        :param sp_script_str: submission script for single-point calculation
+        :type sp_script_str: str
+        :param run_dir: directory where all OneDMin jobs are run
+        :type run_dir: str
+        :param nsamp: number of samples to run PER OneDMin job
+        :type nsamp: int
+        :param njobs: number of OneDMin instances to run in parallel
+        :type njobs: int
+        :param tgt_geo: geometry of the target molecule
+        :type tgt_geo: automol geometry data structure
+        :param bath_geo: geometry of the bath molecule
+        :type bath_geo: automol geometry data structure
+        :param thy_info: theory info object (prog, method, basis, orb_lbl)
+        :type thy_info: tuple(str, str, str, str)
+        :param charge: charge of the target-molecule complex
+        :type charge: int
+        :param mult: multiplicity of the target-molecule complex
+        :type mult: int
+        :param smin: minimum allowed intermolecular separation
+        :type smin: float
+        :param smax: maximum allowed intermolecular separation
+        :type smax: float
+        :param spin_method: parameter for the spin method
+        :type spin_method: int
+        :param ranseed: seed-integer for the orientational sampling
+        :type ranseed: int
+        :rtype: (float, float)
     """
 
+    # Write the main input files for all runs (breaks if ranseeds not given)
+    input_strs = ()
+    for ranseed in ranseeds:
+        input_strs += (
+            onedmin_io.writer.input_file(
+                nsamp, smin, smax,
+                ranseed=ranseed, spin_method=spin_method),
+        )
+
+    # Write the aux inputs; same for all runs
     tgt_str = automol.geom.string(tgt_geo)
     bath_str = automol.geom.string(bath_geo)
 
-    return tgt_str, bath_str
+    elstruct_inp_str, onedmin_exe_name = _set_pot_info(thy_info, charge, mult)
+
+    aux_dct = {
+        'target.xyz': tgt_str,
+        'bath.xyz': bath_str,
+        'qc.mol': elstruct_inp_str,
+        'qc.x': sp_script_str
+    }
+
+    # Write the script string for submission (for all runs)
+    script_str = onedmin_io.writer.submission_script(
+        njobs, run_dir, onedmin_exe_name)
+
+    # Run the code
+    output_strs_lst = from_parallel_input_strings(
+        script_str, run_dir, input_strs,
+        aux_dct=aux_dct,
+        input_name=INPUT_NAME,
+        output_names=OUTPUT_NAMES)
+
+    return output_strs_lst
 
 
-# def write_elstruct_inp(lj_info, mod_lj_thy_info):
-#     """ writes the electronic structure input file
-#     """
-#
-#     # Unpack info objects
-#     [_, charge, mult] = lj_info
-#     [prog, method, basis, orb_lbl] = mod_lj_thy_info
-#
-#     assert prog in ('gaussian09', 'gaussian16', 'molpro2015')
-#
-# #    # Get the job running options
-#    script_str, _, kwargs, _ = qchem_params(
-#        *mod_lj_thy_info[0:2])
-#
-#    # Write the string
-#    elstruct_inp_str = elstruct.writer.energy(
-#        geom='GEOMETRY',
-#        charge=charge,
-#        mult=mult,
-#        method=method,
-#        basis=basis,
-#        prog=prog,
-#        mol_options=('nosym', 'noorient'),
-#        memory=kwargs['memory'],
-#        comment='SAMPLE GEOM',
-#        orb_type=orb_lbl
-#    )
-#
-#    elstruct_sp_str = '\n'.join(script_str.splitlines()[1:])
-#
-#    return elstruct_inp_str, elstruct_sp_str
-#
-#
-# def write_onedmin_sub(njobs, job_path, onedmin_path,
-#                       exe_name='onedmin-dd-molpro.x'):
-#     """ Write the OneDMin submission script
-#     """
-#     return onedmin_io.writer.submission_script(
-#         njobs, job_path, onedmin_path, exe_name=exe_name)
-#
-#
-# # Make the dirs
-# def build_rundir(etrans_run_path):
-#     """ build the run directory
-#     """
-#
-#     # for idx in range(100):
-#     bld_locs = ['ONEDMIN', 0]
-#     bld_save_fs = autofile.fs.build(etrans_run_path)
-#     bld_save_fs[-1].create(bld_locs)
-#     run_path = bld_save_fs[-1].path(bld_locs)
-#
-#     print('Build Path for OneDMin calculations')
-#     print(run_path)
-#
-#     return run_path
-#
-#
-# def make_jobdir(etrans_run_path, idx):
-#     """ write the files
-#     """
-#     job_path = os.path.join(
-#         etrans_run_path, 'run{0}'.format(str(idx+1))
-#     )
-#     os.makedirs(job_path)
-#
-#     return job_path
+def _set_pot_info(thy_info, charge, mult):
+    """ Figure out what the executables and elstruct should be based
+        on the desired thy info.
+
+        :param thy_info: theory info object (prog, method, basis, orb_lbl)
+        :type thy_info: tuple(str, str, str, str)
+        :param charge: charge of the target-molecule complex
+        :type charge: int
+        :param mult: multiplicity of the target-molecule complex
+        :type mult: int
+        :rtype: (str, str)
+    """
+
+    prog, method, basis, orb_lbl = thy_info
+
+    if prog == 'exp6':
+        elstruct_inp_str = None
+        onedmin_exe_name = 'onedmin-exp6.x'
+    else:
+        elstruct_inp_str = elstruct.writer.energy(
+            geo='GEOMETRY',
+            charge=charge,
+            mult=mult,
+            method=method,
+            basis=basis,
+            prog=prog,
+            mol_options=('nosym', 'noorient'),
+            # memory=kwargs['memory'],
+            memory=10.0,
+            comment='SAMPLE GEOM',
+            orb_type=orb_lbl
+        )
+        if 'gaussian' in prog:
+            onedmin_exe_name = 'onedmin-dd-gaussian.x'
+        else:
+            onedmin_exe_name = 'onedmin-dd-molpro.x'
+
+    return elstruct_inp_str, onedmin_exe_name

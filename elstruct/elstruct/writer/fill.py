@@ -75,7 +75,8 @@ def geometry_strings(geo, frozen_coordinates, zma_sign='='):
         symbs = automol.zmat.symbols(zma)
         key_mat = automol.zmat.key_matrix(zma, shift=1)
         name_mat = automol.zmat.name_matrix(zma)
-        val_dct = automol.zmat.value_dictionary(zma, angstrom=True, degree=True)
+        val_dct = automol.zmat.value_dictionary(
+            zma, angstrom=True, degree=True)
         geo_str = aw.zmat.matrix_block(symbs, key_mat, name_mat)
 
         vval_dct = {key: val for key, val in val_dct.items()
@@ -248,7 +249,7 @@ def _reference(prog, method, mult, orb_restricted):
     """
     # Need a multiref version
     if elstruct.par.Method.is_dft(method):
-        reference = _dft_reference(prog, mult, orb_restricted)
+        reference = _dft_reference(prog, orb_restricted)
     elif method == elstruct.par.Method.HF[0]:
         reference = _hf_reference(prog, mult, orb_restricted)
     else:
@@ -257,7 +258,7 @@ def _reference(prog, method, mult, orb_restricted):
     return reference
 
 
-def _dft_reference(prog, mult, orb_restricted):
+def _dft_reference(prog, orb_restricted):
     """ dft
     """
     if prog in (Program.GAUSSIAN09, Program.GAUSSIAN16):

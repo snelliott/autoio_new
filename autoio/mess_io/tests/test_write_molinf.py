@@ -160,15 +160,11 @@ def test__core_rigidrotor_writer():
     core_rigrot2_str = mess_io.writer.core_rigidrotor(
         GEO1, SYM_FACTOR1,
         interp_emax=INTERP_EMAX)
-    with open('data/inp/core_rigrot1.inp', 'r') as fobj:
-        astr = fobj.read()
-    print(repr(core_rigrot1_str))
-    print(repr(astr))
 
     assert core_rigrot1_str == read_text_file(
-        ['data', 'inp'], 'core_rigrot1.inp', PATH)
+        ['data', 'inp'], 'core_rigrot1.inp', PATH, strip=True)
     assert core_rigrot2_str == read_text_file(
-        ['data', 'inp'], 'core_rigrot2.inp', PATH)
+        ['data', 'inp'], 'core_rigrot2.inp', PATH, strip=True)
 
 
 def test__core_multirotor_writer():
@@ -188,8 +184,10 @@ def test__core_multirotor_writer():
         geo=GEO1,
         rotor_id=HR_ID)
 
-    assert rotor_int1_str == read_text_file(['data', 'inp'], 'rotor_int1.inp', PATH)
-    assert rotor_int2_str == read_text_file(['data', 'inp'], 'rotor_int2.inp', PATH)
+    assert rotor_int1_str == read_text_file(
+        ['data', 'inp'], 'rotor_int1.inp', PATH)
+    assert rotor_int2_str == read_text_file(
+        ['data', 'inp'], 'rotor_int2.inp', PATH)
 
     mdhr_dat_1d_str = mess_io.writer.mdhr_data(
         ONEDPOT)
@@ -216,7 +214,7 @@ def test__core_multirotor_writer():
         GEO1, SYM_FACTOR1, POT_SURF_FILE, rotor_int1_str,
         interp_emax=INTERP_EMAX,
         quant_lvl_emax=QUANT_LVL_EMAX)
-    
+
     assert core_multirot1_str == read_text_file(
         ['data', 'inp'], 'core_multirot1.inp', PATH)
     assert core_multirot2_str == read_text_file(
@@ -237,8 +235,10 @@ def test__core_phasespace_writer():
         pot_exp=POT_EXP,
         tstlvl=TSTLVL)
 
-    assert core_pst1_str == read_text_file(['data', 'inp'], 'core_pst1.inp', PATH)
-    assert core_pst2_str == read_text_file(['data', 'inp'], 'core_pst2.inp', PATH)
+    assert core_pst1_str == read_text_file(
+        ['data', 'inp'], 'core_pst1.inp', PATH)
+    assert core_pst2_str == read_text_file(
+        ['data', 'inp'], 'core_pst2.inp', PATH)
 
 
 def test__core_rotd_writer():
@@ -248,7 +248,8 @@ def test__core_rotd_writer():
     core_rotd_str = mess_io.writer.core_rotd(
         SYM_FACTOR1, FLUX_FILE, STOICH)
 
-    assert core_rotd_str == read_text_file(['data', 'inp'], 'core_rotd.inp', PATH)
+    assert core_rotd_str == read_text_file(
+        ['data', 'inp'], 'core_rotd.inp', PATH)
 
 
 def test__rotor_hindered_writer():
@@ -268,9 +269,9 @@ def test__rotor_hindered_writer():
         rotor_id=HR_ID)
 
     assert rotor_hind1_str == read_text_file(
-        ['data', 'inp'], 'rotor_hind1.inp', PATH)
+        ['data', 'inp'], 'rotor_hind1.inp', path=PATH)
     assert rotor_hind2_str == read_text_file(
-        ['data', 'inp'], 'rotor_hind2.inp', PATH)
+        ['data', 'inp'], 'rotor_hind2.inp', path=PATH)
 
 
 def test__umbrella_writer():
@@ -283,8 +284,10 @@ def test__umbrella_writer():
         UMBR_GROUP, UMBR_PLANE, UMBR_REF, ONEDPOT,
         geo=GEO1)
 
-    assert umbrella1_str == read_text_file(['data', 'inp'], 'umbrella1.inp', PATH)
-    assert umbrella2_str == read_text_file(['data', 'inp'], 'umbrella2.inp', PATH)
+    assert umbrella1_str == read_text_file(
+        ['data', 'inp'], 'umbrella1.inp', PATH)
+    assert umbrella2_str == read_text_file(
+        ['data', 'inp'], 'umbrella2.inp', PATH)
 
 
 def test__tunnel_eckart_writer():
@@ -311,14 +314,3 @@ def test__tunnel_read_writer():
         ['data', 'inp'], 'tunnel_read1.inp', PATH)
     assert tunnel_read2_str == read_text_file(
         ['data', 'inp'], 'tunnel_read2.inp', PATH)
-
-
-if __name__ == '__main__':
-    test__core_rigidrotor_writer()
-    # test__core_multirotor_writer()
-    # test__core_phasespace_writer()
-    # test__core_rotd_writer()
-    # test__rotor_hindered_writer()
-    # test__umbrella_writer()
-    # test__tunnel_eckart_writer()
-    # test__tunnel_sct_writer()

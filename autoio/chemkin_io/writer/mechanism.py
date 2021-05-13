@@ -139,7 +139,8 @@ def reactions_block(rxn_param_dct, comments=None):
                     f'For {rxn}, Chebyshev params included but' +
                     ' highP params absent'
                 )
-                # this spot is usually high-P params, but is instead 1-atm for Chebyshev
+                # this spot is usually high-P params,
+                # but is instead 1-atm for Chebyshev
                 one_atm_params = param_dct_vals[0]
                 alpha = param_dct_vals[3]['alpha_elm']
                 tmin = param_dct_vals[3]['t_limits'][0]
