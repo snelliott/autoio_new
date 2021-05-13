@@ -148,7 +148,7 @@ def _parse_rate_constants(out_lines, block_start, reaction):
     # Convert temps and rate constants to floats and combine values
     # only do so if the rate constant is defined (i.e., not '***')
     fin_temps = tuple(float(temp) for temp in temps)
-    fin_kts = () 
+    fin_kts = ()
     for kt in kts:
         new_kt = float(kt) if kt != '***' else None
         fin_kts += (new_kt,)

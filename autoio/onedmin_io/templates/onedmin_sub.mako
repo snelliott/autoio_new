@@ -3,5 +3,5 @@
 # Set the name of the executable
 export ONEDMINEXE='${exe_path}'
 
-# Run several auto1dmin.x instances
+# Run several OneDMin instances
 ${job_lines}

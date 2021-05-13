@@ -63,8 +63,10 @@ def test__flux_mode():
     flux_mode2_str = mess_io.writer.fluxional_mode(
         FLUX_IDX, span=FLUX_SPAN)
 
-    assert flux_mode1_str == read_text_file(['data', 'inp'], 'flux_mode1.inp', PATH)
-    assert flux_mode2_str == read_text_file(['data', 'inp'], 'flux_mode2.inp', PATH)
+    assert flux_mode1_str == read_text_file(
+        ['data', 'inp'], 'flux_mode1.inp', PATH)
+    assert flux_mode2_str == read_text_file(
+        ['data', 'inp'], 'flux_mode2.inp', PATH)
 
 
 def test__species():

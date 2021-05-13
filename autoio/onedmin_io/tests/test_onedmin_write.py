@@ -1,12 +1,13 @@
 """ Tests the writing of the energy transfer section
 """
-import os
 
-import onedmin_io
+import os
 from ioformat import read_text_file
+import onedmin_io.writer
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+
 # Input parameters
 RANSEED = 28384920
 NSAMP = 10
@@ -17,9 +18,8 @@ SMAX = 5.0
 
 # Submission script parameters
 NJOBS = 20
-JOB_PATH = 'job'
-ONEDMIN_PATH = 'run'
-EXE_NAME = '1dmin.x'
+RUN_DIR = 'job'
+EXE_PATH = 'onedmin.x'
 
 
 def test__input_file():
@@ -27,12 +27,11 @@ def test__input_file():
     """
 
     onedmin_inp1_str = onedmin_io.writer.input_file(
-        RANSEED, NSAMP, SMIN, SMAX,
-        TARGET_XYZ_NAME, BATH_XYZ_NAME)
+        NSAMP, SMIN, SMAX, ranseed=RANSEED)
 
     onedmin_inp2_str = onedmin_io.writer.input_file(
-        RANSEED, NSAMP, SMIN, SMAX,
-        TARGET_XYZ_NAME, BATH_XYZ_NAME,
+        NSAMP, SMIN, SMAX, ranseed=RANSEED,
+        target_xyz_name=TARGET_XYZ_NAME, bath_xyz_name=BATH_XYZ_NAME,
         spin_method=1)
 
     assert onedmin_inp1_str == read_text_file(['data'], 'onedmin1.inp', PATH)
@@ -43,17 +42,7 @@ def test__submission_script():
     """ test onedmin_io.writer.submission_script
     """
 
-    subscript1_str = onedmin_io.writer.submission_script(
-        NJOBS, JOB_PATH, ONEDMIN_PATH)
+    subscript_str = onedmin_io.writer.submission_script(
+        NJOBS, RUN_DIR, EXE_PATH)
 
-    subscript2_str = onedmin_io.writer.submission_script(
-        NJOBS, JOB_PATH, ONEDMIN_PATH,
-        exe_name=EXE_NAME)
-
-    assert subscript1_str == read_text_file(['data'], 'subscript1.inp', PATH)
-    assert subscript2_str == read_text_file(['data'], 'subscript2.inp', PATH)
-
-
-if __name__ == '__main__':
-    test__input_file()
-    test__submission_script()
+    assert subscript_str == read_text_file(['data'], 'subscript.inp', PATH)

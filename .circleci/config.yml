@@ -1,6 +1,6 @@
 version: 2
 jobs:
-    build-debian1:
+    test-autoio:
         docker:
             - image: continuumio/miniconda3
         working_directory: ~/autoio     
@@ -61,12 +61,6 @@ jobs:
                     source activate autoio-env
                     pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
             - run:
-                name: Test projrot_io
-                command: |
-                    cd autoio/projrot_io
-                    source activate autoio-env
-                    pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
-            - run:
                 name: Test polyrate_io
                 command: |
                     cd autoio/polyrate_io
@@ -103,7 +97,7 @@ jobs:
                     source activate autoio-env
                     flake8 --exit-zero ../autoio
                     pylint --rcfile=../../.pylintrc autoio
-    build-debian2:
+    test-autoparse:
         docker:
             - image: continuumio/miniconda3
         working_directory: ~/autoparse     
@@ -129,7 +123,7 @@ jobs:
                     pytest -v --disable-pytest-warnings --cov=autoparse  --pyargs autoparse
                     flake8 --exit-zero ../autoparse
                     pylint --rcfile=../../.pylintrc autoparse
-    build-debian3:
+    test-autorun:
         docker:
             - image: continuumio/miniconda3
         working_directory: ~/autorun
@@ -156,7 +150,7 @@ jobs:
                     pytest . -v --disable-pytest-warnings --cov=autorun --pyargs autorun
                     flake8 --exit-zero ../autorun
                     pylint --rcfile=../../.pylintrc autorun
-    build-debian4:
+    test-elstruct:
         docker:
             - image: continuumio/miniconda3
         working_directory: ~/elstruct
@@ -185,7 +179,7 @@ workflows:
     version: 2
     build-all:
         jobs:
-            - build-debian1
-            - build-debian2
-            - build-debian3
-            - build-debian4
+            - test-autoio
+            - test-autoparse
+            - test-autorun
+            - test-elstruct

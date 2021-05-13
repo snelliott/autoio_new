@@ -54,8 +54,6 @@ def direct(script_str, run_dir, input_str, aux_dct=None,
            input_name=INPUT_NAME,
            output_names=OUTPUT_NAMES):
     """
-        :param input_writer: elstruct writer module function for desired job
-        :type input_writer: elstruct function
         :param aux_dct: auxiliary input strings dict[name: string]
         :type aux_dct: dict[str: str]
         :param script_str: string of bash script that contains

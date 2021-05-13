@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Set the name of the executable
-export ONEDMINEXE='run/ondemin.x'
-# Run several auto1dmin.x instances
+export ONEDMINEXE='onedmin.x'
+# Run several OneDMin instances
 cd job/run1
 time $ONEDMINEXE < input.dat > output.dat &
 cd ../run2

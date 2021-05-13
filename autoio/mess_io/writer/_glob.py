@@ -35,7 +35,7 @@ def messrates_inp_str(globkey_str, energy_trans_str, rxn_chan_str):
          energy_trans_str,
          rxn_chan_header_str,
          rxn_chan_str,
-         '\nEnd  ! Mod2\n']
+         '\nEnd  ! Model\n']
     )
     mess_inp_str = remove_trail_whitespace(mess_inp_str)
 
@@ -195,19 +195,23 @@ def global_energy_transfer_input(edown_str, collid_freq_str):
 
 
 # Write data to output file formats if you want to make a formatted output file
-def pf_output(formula_str, temps, logq, dq_dt, d2q_dt2):
+def pf_output(fml_str, temps, logq, dq_dt, d2q_dt2, svals=None, cpvals=None):
     """ Writes partition function data into a string that is formatted like the
         output file
     """
 
     mess_out_str = 'Natural log of the partition function '
     mess_out_str += 'and its derivatives:\n'
-    mess_out_str += ' T, K            {}'.format(formula_str)
-    for temp, _logq, dq1, dq2 in zip(temps, logq, dq_dt, d2q_dt2):
+    mess_out_str += ' T, K            {}'.format(fml_str)
+    for idx, _ in enumerate(temps):
         mess_out_str += '\n'
-        mess_out_str += '{0:>8.3f}    '.format(temp)
-        mess_out_str += '{0:>8.6f}    '.format(_logq)
-        mess_out_str += '{0:>8.8f}    '.format(dq1)
-        mess_out_str += '{0:>8.6e}    '.format(dq2)
+        mess_out_str += '{0:>8.3f}    '.format(temps[idx])
+        mess_out_str += '{0:>8.6f}    '.format(logq[idx])
+        mess_out_str += '{0:>8.8f}    '.format(dq_dt[idx])
+        mess_out_str += '{0:>8.6e}    '.format(d2q_dt2[idx])
+        if svals is not None:
+            mess_out_str += '{0:>8.6f}    '.format(svals[idx])
+        if cpvals is not None:
+            mess_out_str += '{0:>8.6f}    '.format(cpvals[idx])
 
     return mess_out_str

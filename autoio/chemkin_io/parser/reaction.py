@@ -12,8 +12,8 @@ from autoparse import cast as ap_cast
 from ioformat import headlined_sections
 from phydat import phycon
 
-# Various strings needed to parse the data sections of the Reaction block
 
+# Various strings needed to parse the data sections of the Reaction block
 CHEMKIN_ARROW = (app.maybe(app.escape('<')) + app.escape('=') +
                  app.maybe(app.escape('>')))
 CHEMKIN_PLUS_EM = app.PLUS + 'M'
@@ -599,7 +599,7 @@ def split_plog_dct(param_dct_entry):
                 param_dct_vals_idx = copy.deepcopy(param_dct_vals)
                 param_dct_vals_idx[4] = {}
                 keys_idx = np.array(
-                    [int(len(param_i)/3/(idx+1)) >= 1 for param_i in plog_params],
+                    [int(len(par_i)/3/(idx+1)) >= 1 for par_i in plog_params],
                     dtype=int)
                 mask_keys = np.where(keys_idx == 1)[0]
                 new_keys = [keys[i] for i in mask_keys]

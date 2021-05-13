@@ -17,5 +17,6 @@ Barrier B1 W1 P1
     Tunneling  Eckart
       ImaginaryFrequency[1/cm]  2000
       WellDepth[kcal/mol]       10
-      WellDepth[kcal/mol]       20    End
+      WellDepth[kcal/mol]       20
   End
+End  ! Barrier
