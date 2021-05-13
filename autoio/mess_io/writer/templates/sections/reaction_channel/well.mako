@@ -2,8 +2,10 @@ Well ${well_label}
   Species
 ${well_data}\
 ## Zero Energy Section
+% if zero_ene is not None:
       ZeroEnergy[kcal/mol]      ${zero_ene}
-  End ! Species
+% endif
+  End  ! Species
 ## Energy Transfer Sections
 % if edown_str is not None:
 ${edown_str}

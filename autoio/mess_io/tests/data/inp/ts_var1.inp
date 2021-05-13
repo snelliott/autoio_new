@@ -16,7 +16,7 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      1.00
-    End
+    End  ! RPATH PT
     +++++++++++++++++++++++++++++++++++! Path Point 2
     RRHO
       Core RigidRotor
@@ -33,7 +33,7 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      2.00
-    End
+    End  ! RPATH PT
     +++++++++++++++++++++++++++++++++++! Path Point 3
     RRHO
       Core RigidRotor
@@ -50,7 +50,7 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      3.00
-    End
+    End  ! RPATH PT
     +++++++++++++++++++++++++++++++++++! Path Point 4
     RRHO
       Core RigidRotor
@@ -67,7 +67,7 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      4.00
-    End
+    End  ! RPATH PT
     +++++++++++++++++++++++++++++++++++! Path Point 5
     RRHO
       Core RigidRotor
@@ -84,7 +84,7 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      5.00
-    End
+    End  ! RPATH PT
     +++++++++++++++++++++++++++++++++++! Path Point 6
     RRHO
       Core RigidRotor
@@ -101,7 +101,7 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      6.00
-    End
+    End  ! RPATH PT
     +++++++++++++++++++++++++++++++++++! Path Point 7
     RRHO
       Core RigidRotor
@@ -118,7 +118,7 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      7.00
-    End
+    End  ! RPATH PT
     +++++++++++++++++++++++++++++++++++! Path Point 8
     RRHO
       Core RigidRotor
@@ -135,7 +135,7 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      8.00
-    End
+    End  ! RPATH PT
     +++++++++++++++++++++++++++++++++++! Path Point 9
     RRHO
       Core RigidRotor
@@ -152,7 +152,7 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      9.00
-    End
+    End  ! RPATH PT
     +++++++++++++++++++++++++++++++++++! Path Point 10
     RRHO
       Core RigidRotor
@@ -169,6 +169,6 @@ Barrier B1 W1 P1
         1  0.0
         3  50.0
       ZeroEnergy[kcal/mol]      10.00
-    End
-  End
-End
+    End  ! RPATH PT
+  End  ! Variational
+End  ! Barrier

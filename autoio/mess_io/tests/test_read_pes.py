@@ -1,5 +1,4 @@
-"""
- tests pes reader
+""" test mess_io.reader.pes
 """
 
 import os
@@ -12,8 +11,8 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 INP_STR = read_text_file(['data', 'inp'], 'mess.inp', PATH)
 
 
-def test__pes():
-    """ tests mess_io.reader.pes
+def test__():
+    """ test mess_io.reader.pes
     """
 
     # Test reading with removing any fake wells
@@ -64,7 +63,3 @@ def test__pes():
     assert all(numpy.isclose(energy_dct2[key], ref_energy_dct2[key])
                for key in energy_dct2)
     assert conn_lst2 == ref_conn_lst2
-
-
-if __name__ == '__main__':
-    test__pes()

@@ -28,7 +28,7 @@ def test__energy_trans_writer():
         mass2=25.0)
     assert collid_str == read_text_file(['data', 'inp'], 'etrans_collid.inp', PATH)
 
-    glob_etrans_str = mess_io.writer.global_energy_transfer(
+    glob_etrans_str = mess_io.writer.global_energy_transfer_input(
         edown_str, collid_str)
     assert glob_etrans_str == read_text_file(
         ['data', 'inp'], 'glob_etrans.inp', PATH)

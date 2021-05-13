@@ -13,5 +13,4 @@ Barrier B1 W1 P1
     ElectronicLevels[1/cm]    2
       1  0.0
       3  50.0
-    ZeroEnergy[kcal/mol]      None
-  End
+End  ! Barrier

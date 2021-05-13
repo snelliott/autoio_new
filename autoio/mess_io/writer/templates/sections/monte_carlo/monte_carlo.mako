@@ -5,7 +5,9 @@ ${flux_mode_str}\
     DataFile                     ${data_file_name}
     ElectronicLevels[1/cm]       ${nlevels}
 ${levels}
+% if ground_ene is not None:
     GroundEnergy[kcal/mol]       ${ground_ene}
+% endif
 % if reference_ene is not None:
     ReferenceEnergy[kcal/mol]    ${reference_ene}
 % endif
