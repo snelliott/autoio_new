@@ -1,8 +1,9 @@
 """ status checkers
 """
-import elstruct.par
+
 import autoparse.pattern as app
 import autoparse.find as apf
+import elstruct.par
 
 
 # Exit message for the program

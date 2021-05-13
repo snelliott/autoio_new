@@ -122,7 +122,7 @@ def translational_normal_coordinates(geo, axes=None, mass_weighted=False):
         :param geo: cartesian or z-matrix geometry
         :type geo: tuple
         :param axes:
-        :type axes: 
+        :type axes:
         :param mass_weighted:
         :type mass_weighted: bool
     """

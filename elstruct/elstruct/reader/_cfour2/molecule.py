@@ -59,9 +59,10 @@ def opt_zmatrix(output_str):
 
     # Remove any asterisks(*) from the entries in the name matrix
     if all(x is not None for x in (symbs, key_mat, name_mat)):
-        name_mat = tuple([[name.replace('*', '')
-                           if name is not None else None for name in name_row]
-                          for name_row in name_mat])
+        name_mat = tuple(tuple(
+            name.replace('*', '')
+            if name is not None else None for name in name_row)
+            for name_row in name_mat)
 
         # complicated string patterns for the value dictionary read
         start_ptt = app.padded(app.NEWLINE).join(

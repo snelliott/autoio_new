@@ -5,7 +5,7 @@ from ioformat import build_mako_str
 import elstruct.par
 import elstruct.option
 from elstruct.writer import fill
-from elstruct.writer._orca4._par import OPTION_EVAL_DCT
+
 
 PROG = elstruct.par.Program.ORCA4
 
@@ -116,4 +116,3 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         template_src_path=TEMPLATE_DIR,
         template_keys=fill_dct,
         remove_whitespace=False)
-

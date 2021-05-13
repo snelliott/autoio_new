@@ -125,4 +125,3 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         template_src_path=TEMPLATE_DIR,
         template_keys=fill_dct,
         remove_whitespace=False)
-
