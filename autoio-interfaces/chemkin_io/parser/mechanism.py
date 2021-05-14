@@ -4,7 +4,7 @@
 import autoparse.pattern as app
 import autoparse.find as apf
 from ioformat import remove_comment_lines
-from ioformat import remove_whitespace
+from ioformat import remove_whitespace_from_string
 
 
 def species_block(mech_str, remove_comments=True):
@@ -173,7 +173,7 @@ def _clean_up(mech_str, remove_comments=True):
     if remove_comments:
         mech_str = remove_comment_lines(
             mech_str, delim_pattern=app.escape('!'))
-    mech_str = remove_whitespace(mech_str)
+    mech_str = remove_whitespace_from_string(mech_str)
 
     return mech_str
 

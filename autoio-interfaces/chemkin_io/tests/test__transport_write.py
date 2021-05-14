@@ -8,11 +8,11 @@ from chemkin_io.writer.transport import properties as writer
 SPC_TRANS_DCT = {
     'O2': {'shape_idx': 1,
            'epsilon': 107.4,
-           'sigma': 3.458, 
+           'sigma': 3.458,
            'dipole_moment': 0.00,
            'polarizability': 1.600,
            'zrot': 3.800
-    }
+           }
 }
 
 TRANS_STR = """! THEORETICAL TRANSPORT PROPERTIES

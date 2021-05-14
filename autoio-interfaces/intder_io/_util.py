@@ -69,7 +69,7 @@ def geometry_format(geo):
         geo_str += '{:>14.5f}{:>14.5f}{:>14.5f}\n'.format(*xyz)
 
     # Remove final newline character and indent the lines
-    geo_str = ioformat.indent(geo_str.rstrip(), 4)
+    geo_str = indent(geo_str.rstrip(), 4)
 
     return geo_str
 
@@ -82,7 +82,7 @@ def symbols_format(geo):
     symb_str = automol.util.vec.string(
         symbs, num_per_row=6, val_format='{0:>6s}')
 
-    symb_str = ioformat.indent(symb_str, 6)
+    symb_str = indent(symb_str, 6)
 
     return symb_str
 
@@ -90,7 +90,7 @@ def symbols_format(geo):
 def hessian_format(hess):
     """ Format a mass-weighted Hessian into a string for the
         auxiliary input file for INTDER.
-        
+
         :param hess: mass-weighted Hessian
         :type hess: numpy.ndarray
         :rtype: str

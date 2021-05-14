@@ -21,8 +21,8 @@ def read(string,
          entry_end_ptt=None,
          sep_ptt=SEP_PATTERN,
          last=True,
-         case=False,
-         matrix=True):
+         # matrix=True):
+         case=False):
     """ Read the lines from a string where the values of the coordinates of a
         Z-matrix are set (e.g., lines such as R1 = 5.00 generally given below
         a Z-matrix).

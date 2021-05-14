@@ -95,7 +95,7 @@ def headlined_sections(string, headline_pattern):
 
 
 # Clean up strings by removing unneccessary whitespace and comments
-def remove_whitespace(string):
+def remove_whitespace_from_string(string):
     """ Removes leading spaces, trailing spaces, and empty lines from a string.
 
         :param string: string to clean up

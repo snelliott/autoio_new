@@ -149,8 +149,8 @@ def _parse_rate_constants(out_lines, block_start, reaction):
     # only do so if the rate constant is defined (i.e., not '***')
     fin_temps = tuple(float(temp) for temp in temps)
     fin_kts = ()
-    for kt in kts:
-        new_kt = float(kt) if kt != '***' else None
+    for kt_i in kts:
+        new_kt = float(kt_i) if kt_i != '***' else None
         fin_kts += (new_kt,)
 
     return (fin_temps, fin_kts)

@@ -5,8 +5,14 @@
 
 import automol
 import autowrite as aw
-import elstruct
 from elstruct.par import Reference, Program
+from elstruct.option import is_valid as _option_is_valid
+from elstruct.option import name as _option_name
+from elstruct.pclass import values as _pclass_values
+from elstruct.par import Option
+from elstruct.par import program_basis_name
+from elstruct.par import program_method_name
+from elstruct.par import Method
 
 
 class TemplateKey():
@@ -161,8 +167,8 @@ def evaluate_options(options, option_eval_dct):
     options = list(options)
     option_names = tuple(sorted(option_eval_dct.keys()))
     for idx, option in enumerate(options):
-        if elstruct.option.is_valid(option):
-            name = elstruct.option.name(option)
+        if _option_is_valid(option):
+            name = _option_name(option)
             assert name in option_names
             options[idx] = option_eval_dct[name](option)
 
@@ -182,8 +188,8 @@ def intercept_scf_guess_option(options, option_eval_dct):
     guess_options = []
     scf_options = []
     for opt in options:
-        if (elstruct.option.is_valid(opt) and opt in
-                elstruct.pclass.values(elstruct.par.Option.Scf.Guess)):
+        if (_option_is_valid(opt) and opt in
+                _pclass_values(Option.Scf.Guess)):
             guess_options.append(opt)
         else:
             scf_options.append(opt)
@@ -216,18 +222,18 @@ def program_method_names(prog, method, basis, mult, orb_restricted):
     prog_reference = _reference(prog, method, mult, orb_restricted)
 
     # Determine the method
-    if elstruct.par.Method.is_casscf(method):
+    if Method.is_casscf(method):
         prog_method = prog_reference
-    elif method == elstruct.par.Method.HF[0]:
+    elif method == Method.HF[0]:
         if prog in (Program.GAUSSIAN09, Program.GAUSSIAN16):
             prog_method = prog_reference
         else:
-            prog_method = elstruct.par.program_method_name(prog, method)
+            prog_method = program_method_name(prog, method)
     else:
-        prog_method = elstruct.par.program_method_name(prog, method)
+        prog_method = program_method_name(prog, method)
 
     # Set the basis
-    prog_basis = elstruct.par.program_basis_name(prog, basis)
+    prog_basis = program_basis_name(prog, basis)
 
     return prog_method, prog_reference, prog_basis
 
@@ -248,9 +254,9 @@ def _reference(prog, method, mult, orb_restricted):
         :rtype: str
     """
     # Need a multiref version
-    if elstruct.par.Method.is_dft(method):
+    if Method.is_dft(method):
         reference = _dft_reference(prog, orb_restricted)
-    elif method == elstruct.par.Method.HF[0]:
+    elif method == Method.HF[0]:
         reference = _hf_reference(prog, mult, orb_restricted)
     else:
         reference = _corr_reference(prog, mult, orb_restricted)

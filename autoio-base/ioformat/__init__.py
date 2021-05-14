@@ -6,7 +6,7 @@ from ioformat._format import build_mako_str
 from ioformat._format import indent
 from ioformat._format import addchar
 from ioformat._format import headlined_sections
-from ioformat._format import remove_whitespace
+from ioformat._format import remove_whitespace_from_string
 from ioformat._format import remove_trail_whitespace
 from ioformat._format import remove_comment_lines
 from ioformat import pathtools
@@ -22,7 +22,7 @@ __all__ = [
     'indent',
     'addchar',
     'headlined_sections',
-    'remove_whitespace',
+    'remove_whitespace_from_string',
     'remove_trail_whitespace',
     'remove_comment_lines',
     'addchar',

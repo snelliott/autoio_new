@@ -9,7 +9,7 @@ import projrot_io.writer
 from autorun.projrot import frequencies
 from autorun.thermp import direct as thermp_direct
 from autorun.pac99 import nasa_polynomial
-import autorun
+from autorun.mess import torsions as mess_torsions
 
 
 # PROJROT + MESS Runners
@@ -23,7 +23,7 @@ def projected_frequencies(mess_script_str, projrot_script_str, run_dir,
     """
 
     # Calculate the torsional frequencies using MESS
-    tors_freqs, _ = autorun.mess.torsions(
+    tors_freqs, _ = mess_torsions(
         mess_script_str, run_dir, mess_geo, mess_hr_str)
 
     # Calculate the projected vibrational frequencies using ProjRot

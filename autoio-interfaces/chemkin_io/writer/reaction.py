@@ -8,7 +8,8 @@ BUFFER = 5
 
 # Functions to write the parameters in the correct format
 def troe(reaction, high_params, low_params, troe_params, colliders=None,
-         max_length=45, name_buffer=BUFFER):
+         # max_length=45, name_buffer=BUFFER):
+         max_length=45):
     """ Write the string containing the Lindemann fitting parameters
         formatted for Chemkin input files.
 
@@ -39,7 +40,7 @@ def troe(reaction, high_params, low_params, troe_params, colliders=None,
 
     troe_str = _highp_str(reaction, high_params,
                           max_length=max_length, name_buffer=BUFFER)
-    troe_str += _lowp_str(reaction, low_params,
+    troe_str += _lowp_str(low_params,
                           max_length=max_length, name_buffer=BUFFER)
     troe_str += _troe_and_cheb_params('TROE',
                                       troe_params, newline=True, val='exp')
@@ -69,7 +70,7 @@ def lindemann(reaction, high_params, low_params, colliders=None,
     """
     lind_str = _highp_str(reaction, high_params,
                           max_length=max_length, name_buffer=BUFFER)
-    lind_str += _lowp_str(reaction, low_params,
+    lind_str += _lowp_str(low_params,
                           max_length=max_length, name_buffer=BUFFER)
 
     # Write the collider efficiencies string
@@ -360,7 +361,8 @@ def _highp_str(reaction, high_params, max_length=45,
     return highp_str
 
 
-def _lowp_str(reaction, low_params, max_length=45,
+# def _lowp_str(reaction, low_params, max_length=45,
+def _lowp_str(low_params, max_length=45,
               name_buffer=BUFFER, inline_comment=None):
     """ Write the low-pressure Arrhenius parameters as a string
 

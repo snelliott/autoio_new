@@ -4,7 +4,7 @@
 import ast
 import autoparse.find as apf
 import autoparse.pattern as app
-import ioformat
+from ioformat._format import remove_whitespace_from_string
 
 
 # PATTERNS
@@ -195,7 +195,7 @@ def keyword_dct_from_block(block, formatvals=True):
     key_dct = None
 
     if block is not None:
-        block = ioformat.remove_whitespace(block)
+        block = remove_whitespace_from_string(block)
         key_val_blocks = keyword_value_blocks(block)
         if key_val_blocks is not None:
             key_dct = {}

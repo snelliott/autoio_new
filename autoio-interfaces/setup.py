@@ -60,6 +60,7 @@ setup(
                     'writer/templates/species/*.mako',
                     'writer/templates/species/info/*.mako',
                     'tests/data/*.txt'],
+        'intder_io': ['templates/*.mako'],
         'projrot_io': ['templates/*.mako',
                        'tests/data/*.txt'],
         'polyrate_io': ['tests/templates/*.mako',

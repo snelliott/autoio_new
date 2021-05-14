@@ -142,10 +142,10 @@ def test__pf_output():
         svals=THM_VALS['svals'].values,
         cpvals=THM_VALS['cpvals'].values)
 
-    with open('pf.dat2', 'w') as f:
-        f.write(pf1_str)
-    with open('pf.dat3', 'w') as f:
-        f.write(pf2_str)
+    with open('pf.dat2', 'w') as fil:
+        fil.write(pf1_str)
+    with open('pf.dat3', 'w') as fil:
+        fil.write(pf2_str)
 
     assert pf1_str == read_text_file(['data', 'out'], 'pf.dat2', PATH)
     assert pf2_str == read_text_file(['data', 'out'], 'pf.dat3', PATH)

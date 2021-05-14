@@ -60,7 +60,7 @@ def test__string_alter():
         'E = F            3.00 0.00 0.00  \n  PLOG / 0.01  6.0 2.5 105\n\n'
     ]
 
-    out_str = ioformat.remove_whitespace(INI_STR)
+    out_str = ioformat.remove_whitespace_from_string(INI_STR)
     assert out_str == (
         '! From Theory\n'
         'A + B = C + D    1.00 0.00 0.00\n'

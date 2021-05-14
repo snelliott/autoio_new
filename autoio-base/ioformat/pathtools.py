@@ -4,8 +4,8 @@
 """
 
 import os
-from ioformat import remove_comment_lines
-from ioformat import remove_whitespace as remove_whitespace_
+from ioformat._format import remove_comment_lines
+from ioformat._format import remove_whitespace_from_string as remove_whitespace_
 
 
 def current_path():

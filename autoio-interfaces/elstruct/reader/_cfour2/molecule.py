@@ -62,7 +62,7 @@ def opt_zmatrix(output_str):
         name_mat = tuple(tuple(
             name.replace('*', '')
             if name is not None else None for name in name_row)
-            for name_row in name_mat)
+                         for name_row in name_mat)
 
         # complicated string patterns for the value dictionary read
         start_ptt = app.padded(app.NEWLINE).join(
