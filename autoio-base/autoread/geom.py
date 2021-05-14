@@ -75,8 +75,8 @@ def read_xyz(string, symb_ptt=par.Pattern.ATOM_SYMBOL,
     lines = string.splitlines()
     try:
         natms = int(lines[0])
-    except ValueError:
-        raise ValueError('Invalid xyz string')
+    except ValueError as valerr:
+        raise ValueError('invalid xyz string') from valerr
 
     geo_str = '\n'.join(lines[2:natms+2])
     symbs, xyzs = read(geo_str, symb_ptt=symb_ptt, val_ptt=val_ptt)
