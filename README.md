@@ -43,7 +43,7 @@ Our pytest tests serve as an example for building filesystems
 >>> conda install autoparse -c auto-mech
 ```
 ### Description
-Autoparse provides a user-friendly interface for regex calls and has built specific series of calls for parsing strings of interest to the AutoMech suite
+Set of wrappers for python.re that allow for more intelligible regular expressions syntax.
 
 ### Usage
 Our pytest tests serve as an example for building filesystems
