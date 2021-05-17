@@ -21,6 +21,7 @@ setup(
               'pac99_io',
               'intder_io',
               'thermp_io',
+              'autorun',
               'elstruct',
               'elstruct.writer',
               'elstruct.reader',

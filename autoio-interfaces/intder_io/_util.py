@@ -26,8 +26,8 @@ def header_format(geo):
     else:
         nintl = 3 * natom - 5
 
-    header_keys = {'natom': natom, 'nintl': nintl}
-
+    header_keys = {'natom': natom, 'nintl': nintl,
+                   'comment': ''}
     return build_mako_str(
         template_file_name='header.mako',
         template_src_path=TEMPLATE_PATH,
