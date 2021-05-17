@@ -194,12 +194,12 @@ def get_temp_limits(entry, default_midpoint):
     # If the midpoint read fails, replace it with the default value
     try:
         midpoint = float(first_line[65:73])  # characters 66 through 73
-    except ValueError:
+    except ValueError as valerr:
         if default_midpoint is None:
             raise ImportError(
                 'No default mipoint temp in the file and no midpoint temp' +
                 f' for the following entry:\n{formatted_entry}'
-            )
+            ) from valerr
         midpoint = default_midpoint
         print(
             f'Using default midpoint temperature, {default_midpoint}' +
@@ -256,7 +256,8 @@ def get_coeffs(entry):
                 high_coeffs.extend(list((
                     float(line[0:15]), float(line[15:30]))))
                 low_coeffs = list((
-                    float(line[30:45]), float(line[45:60]), float(line[60:75])))
+                    float(line[30:45]), float(line[45:60]),
+                    float(line[60:75])))
             except ValueError:
                 print(
                     f'Error reading values in line {idx + 1}' +

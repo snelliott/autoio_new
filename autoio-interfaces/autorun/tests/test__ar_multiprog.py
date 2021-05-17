@@ -4,8 +4,8 @@
 import os
 import tempfile
 import automol
-import autorun
 from ioformat import read_text_file
+import autorun
 # from ioformat import load_numpy_string_file
 
 

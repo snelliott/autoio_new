@@ -3,10 +3,11 @@
 """
 import os
 import numpy
-import projrot_io
 from ioformat import read_text_file
+import projrot_io
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+
 
 def test__reader():
     """ test projrot_io.reader.rpht_output

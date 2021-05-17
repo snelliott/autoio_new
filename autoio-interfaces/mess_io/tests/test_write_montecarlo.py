@@ -3,8 +3,8 @@ Tests writing the input for a Monte Carlo sampling routine
 """
 
 import os
-import mess_io.writer
 from ioformat import read_text_file
+import mess_io.writer
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))

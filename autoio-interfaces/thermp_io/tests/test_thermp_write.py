@@ -2,8 +2,8 @@
 """
 import os
 
-import thermp_io
 from ioformat import read_text_file
+import thermp_io
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))

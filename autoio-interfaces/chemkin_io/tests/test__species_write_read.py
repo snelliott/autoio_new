@@ -6,12 +6,12 @@ from chemkin_io.parser.species import names as parser
 
 SPC_IDENT_DCT = {
     'O': {'smiles': 'smiles_1',
-          'inchi':'inchi_1',
+          'inchi': 'inchi_1',
           'charge': '',
           'mult': '',
           'sens': ''},
     'H': {'smiles': 'smiles_2',
-          'inchi':'inchi_2',
+          'inchi': 'inchi_2',
           'charge': '',
           'mult': '',
           'sens': ''}

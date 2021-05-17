@@ -4,8 +4,8 @@
 import os
 import tempfile
 import automol
-import autorun
 from ioformat import read_text_file
+import autorun
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))

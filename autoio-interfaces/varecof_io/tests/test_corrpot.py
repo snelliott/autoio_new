@@ -4,9 +4,9 @@
 
 import os
 import tempfile
-import varecof_io
 from ioformat import read_text_file
 from ioformat import write_text_file
+import varecof_io
 
 
 # Set paths for building files

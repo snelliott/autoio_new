@@ -68,7 +68,7 @@ def geometry_format(geo):
     geo_str = ''
     for (asymb, xyz) in geo:
         geo_str += '{:<4s}{:>14.5f}{:>14.5f}{:>14.5f}\n'.format(
-            asymb, *tuple([val*0.529177 for val in xyz]))
+            asymb, *tuple((val*0.529177 for val in xyz)))
 
     # Remove final newline character and indent the lines
     geo_str = indent(geo_str.rstrip(), 4)

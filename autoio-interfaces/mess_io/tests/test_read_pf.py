@@ -3,8 +3,8 @@
 
 import os
 import numpy
-import mess_io.reader
 from ioformat import read_text_file
+import mess_io.reader
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))

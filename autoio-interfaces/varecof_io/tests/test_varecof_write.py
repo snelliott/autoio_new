@@ -3,8 +3,8 @@
 """
 import os
 
-import varecof_io.writer
 from ioformat import read_text_file
+import varecof_io.writer
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))

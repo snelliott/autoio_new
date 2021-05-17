@@ -591,7 +591,7 @@ def split_plog_dct(param_dct_entry):
         param_dct_vals = param_dct_lst[plog_i]
         keys, plog_params = zip(*list(param_dct_vals[4].items()))
 
-        if any([int(len(param_i)/3) > 1 for param_i in plog_params]):
+        if any((int(len(param_i)/3) > 1 for param_i in plog_params)):
             new_sets = []
 
             for idx in range(max([int(len(param_i)/3)

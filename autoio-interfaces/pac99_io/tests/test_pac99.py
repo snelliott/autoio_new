@@ -2,8 +2,8 @@
 """
 import os
 
-import pac99_io
 from ioformat import read_text_file
+import pac99_io
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
