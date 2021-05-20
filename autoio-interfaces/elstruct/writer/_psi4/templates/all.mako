@@ -26,9 +26,9 @@ ${'\n'.join('    {}'.format(dih_str) for dih_str in frozen_dih_strs)}
 % endif
 ## 2. theory block
 set basis ${basis}
-set scf_type pk
 set reference ${reference}
-set mp2_type conv
+set scf_type ${scf_typ}
+set mp2_type ${mp2_typ}
 % if scf_options:
 ${scf_options}
 % endif

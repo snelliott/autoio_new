@@ -48,6 +48,33 @@ def hessian(output_str):
     return hess
 
 
+def harmonic_frequencies(output_str):
+    """ Reads the harmonic vibrational frequencies from
+        the output file string. Returns the frequencies in cm-1.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: tuple(float)
+    """
+
+    pattern = app.escape('Freq [cm^-1]') + app.capturing(app.LINE_FILL)
+
+    captures = apf.all_captures(pattern, output_str)
+    if captures is not None:
+        freqs = ()
+        for capture in captures:
+            vals = capture.split()
+            for val in vals:
+                if 'i' not in val:
+                    freqs += (float(val),)
+                else:
+                    freqs += (-1.0*float(val.replace('i', '')),)
+    else:
+        freqs = None
+
+    return freqs
+
+
 def irc_points(output_str):
     """ Reads the geometries, gradients, and Hessians at each point along the
         Intrinsic Reaction Coordinate from the output string.

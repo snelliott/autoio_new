@@ -125,7 +125,9 @@ def harmonic_frequencies(prog, output_str):
 
     if harm_freqs is not None:
         assert all(isinstance(val, float) for val in harm_freqs)
-        assert numpy.shape(harm_freqs)[1] == 3
+        # assert numpy.shape(harm_freqs)[1] == 3
+
+    return harm_freqs
 
 
 def normal_coordinates_programs():

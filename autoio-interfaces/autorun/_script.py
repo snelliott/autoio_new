@@ -60,7 +60,7 @@ G09 = (
 PSI4 = (
     "#!/usr/bin/env bash\n"
     "ulimit -c 0\n"
-    "psi4 -i run.inp -o run.out >> stdout.log &> stderr.log"
+    "psi4 -i run.inp -o run.out -n 8 >> stdout.log &> stderr.log"
 )
 MOLPRO = (
     "#!/usr/bin/env bash\n"
@@ -105,5 +105,6 @@ SCRIPT_DCT = {
     'molpro2015': MOLPRO,
     'molpro2015_mppx': MOLPRO_MPPX,
     'molpro2015_mr': MOLPRO_MREF,
-    'molpro2015_mr_mppx': MOLPRO_MREF_MPPX
+    'molpro2015_mr_mppx': MOLPRO_MREF_MPPX,
+    'psi4': PSI4
 }

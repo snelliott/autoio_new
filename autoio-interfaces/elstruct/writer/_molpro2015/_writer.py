@@ -87,6 +87,7 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     memory_mw = int(memory * (1024.0 / 8.0))
 
     # Set the job directives and options
+    # mol_options = fill.evaluate_options(mol_options, OPTION_EVAL_DCT)
     scf_options = fill.evaluate_options(scf_options, OPTION_EVAL_DCT)
     casscf_options = fill.evaluate_options(casscf_options, OPTION_EVAL_DCT)
     corr_options = fill.evaluate_options(corr_options, OPTION_EVAL_DCT)

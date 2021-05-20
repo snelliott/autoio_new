@@ -167,7 +167,7 @@ def evaluate_options(options, option_eval_dct):
     options = list(options)
     option_names = tuple(sorted(option_eval_dct.keys()))
     for idx, option in enumerate(options):
-        if _option_is_valid(option):
+        if _option_is_valid(option):  # failing for some reason
             name = _option_name(option)
             assert name in option_names
             options[idx] = option_eval_dct[name](option)
