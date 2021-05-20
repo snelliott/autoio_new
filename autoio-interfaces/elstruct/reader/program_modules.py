@@ -128,9 +128,9 @@ READER_MODULE_DCT = {
     ),
     par.Program.PSI4: (
         Job.ENERGY, Job.GRADIENT,
-        Job.HESSIAN,
+        Job.HESSIAN, Job.HARM_FREQS,
         Job.IRC_PTS, Job.IRC_PATH,
-        Job.OPT_GEO, Job.OPT_ZMA,
+        Job.OPT_GEO, Job.OPT_ZMA, Job.INP_ZMA,
         Job.EXIT_MSG, Job.ERR_LST,
         Job.ERR_MSG, Job.CONV_MSG,
         Job.PROG_NAME, Job.PROG_VERS

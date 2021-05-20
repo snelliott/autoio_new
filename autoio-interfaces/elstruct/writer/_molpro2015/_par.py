@@ -22,6 +22,8 @@ class MultiReference():
 
 
 OPTION_EVAL_DCT = {
+    elstruct.option.name(elstruct.par.Option.Mol.NOSYMM_):
+    'nosym',
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
     option.name(Option.Scf.DIIS_):

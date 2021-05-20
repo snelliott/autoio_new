@@ -90,6 +90,10 @@ class Method():
            Program.PSI4: (
                'hf', 'uhf',
                ('R',), ('U', 'R'))})
+    DF_HF = ('df-hf',
+             {Program.PSI4: (
+                 'hf', 'uhf',
+                 ('R',), ('U', 'R'))})
 
     class Corr():
         """ Correlated method names """
@@ -115,6 +119,10 @@ class Method():
                 Program.PSI4: (
                     'mp2', 'mp2',
                     ('R',), ('U', 'R'))})
+        DF_MP2 = ('df-mp2',
+                  {Program.PSI4: (
+                   'mp2', 'mp2',
+                   ('R',), ('U', 'R'))})
         CCSD = ('ccsd',
                 {Program.CFOUR2: (
                     'ccsd', 'ccsd',
@@ -187,6 +195,10 @@ class Method():
                   Program.GAUSSIAN16: (
                       'b3lyp', 'b3lyp',
                       ('R',), ('U',))})
+        DF_B3LYP = ('df-b3lyp',
+                    {Program.PSI4: (
+                        'B3LYP', 'B3LYP',
+                        ('R',), ('U',))})
         WB97XD = ('wb97xd',
                   {Program.PSI4: (
                       'WB97X-D', 'WB97X-D',
@@ -316,6 +328,18 @@ class Method():
         """
         assert cls.is_nonstandard_dft(name)
         return name[4:]
+
+    @staticmethod
+    def is_density_fitting(name):
+        """ Assess if a method is `density-fitting` variant.
+
+            :param cls: class object
+            :type cls: obj
+            :param name: name of method
+            :type name: str
+        """
+        return 'df-' in standard_case(name)
+
 
 
 def program_methods_info(prog):
@@ -712,6 +736,10 @@ class Success():
 class Option():
     """ Option values for the electronic structure program writer module
     """
+
+    class Mol():
+        """ Options for molecules """
+        NOSYMM_ = option.create('no_symmetry')
 
     class Scf():
         """ SCF options (passed to `scf_options`) """

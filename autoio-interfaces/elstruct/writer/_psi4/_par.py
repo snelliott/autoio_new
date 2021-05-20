@@ -14,6 +14,8 @@ REF_DCT = {
 }
 
 OPTION_EVAL_DCT = {
+    elstruct.option.name(elstruct.par.Option.Mol.NOSYMM_):
+    'symmetry c1',
     elstruct.option.name(elstruct.par.Option.Scf.MAXITER_):
     lambda osp: 'set scf maxiter {}'.format(*elstruct.option.values(osp)),
     elstruct.option.name(elstruct.par.Option.Scf.DIIS_):
