@@ -9,9 +9,9 @@ import mess_io.writer
 PATH = os.path.dirname(os.path.realpath(__file__))
 
 WELL_MERGE_LST = (
-    ('W1', 'W2'),
-    ('W3', 'W4', 'W5'),
-    ('W6', 'W7', 'W8', 'W9')
+    ('W2', 'W1'),
+    ('W5', 'W4', 'W3'),
+    ('W9', 'W8', 'W7', 'W6')
 )
 
 
@@ -28,5 +28,3 @@ def test__():
 
     assert lump1_str == ref_lump1_str.rstrip()
     assert lump2_str == ref_lump2_str.rstrip()
-
-test__()

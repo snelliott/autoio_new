@@ -15,9 +15,9 @@ def test__():
     """
 
     ref_well_merge_lst = (
-        ('W1', 'W2'),
-        ('W3', 'W4', 'W5'),
-        ('W6', 'W7', 'W8', 'W9')
+        ('W2', 'W1'),
+        ('W5', 'W4', 'W3'),
+        ('W9', 'W8', 'W7', 'W6')
     )
 
     well_merge_lst = mess_io.reader.merged_wells(AUX_STR)
