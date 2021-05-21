@@ -31,6 +31,7 @@ class Program():
     NWCHEM6 = 'nwchem6'
     ORCA4 = 'orca4'
     PSI4 = 'psi4'
+    QCHEM5 = 'qchem5'
 
 
 def programs():
@@ -759,6 +760,10 @@ class Option():
         WFN_ = option.create(
             'casscf_wavefunction',
             ['nelec', 'sym', 'spin', 'charge', 'nstates'])
+
+    class Correlation():
+        """ Options for correlated methods"""
+        ALL_ELEC_ = option.create('all_electron')
 
     class MRCorr():
         """ Correlated multiref method options (passed to `corr_options`) """

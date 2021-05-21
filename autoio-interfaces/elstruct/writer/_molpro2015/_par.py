@@ -38,4 +38,6 @@ OPTION_EVAL_DCT = {
     lambda osp: 'shift={}'.format(*option.values(osp)),
     option.name(Option.Opt.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
+    elstruct.option.name(elstruct.par.Option.Corr.ALL_ELEC_):
+    'core',
 }
