@@ -12,6 +12,7 @@ from mess_io.writer._glob import global_energy_transfer_input
 from mess_io.writer._glob import pf_output
 from mess_io.writer._etrans import energy_down
 from mess_io.writer._etrans import collision_frequency
+from mess_io.writer._lump import well_lump_scheme
 from mess_io.writer._rxnchan import species
 from mess_io.writer._rxnchan import well
 from mess_io.writer._rxnchan import bimolecular
@@ -50,6 +51,8 @@ __all__ = [
     # energy transfer
     'energy_down',
     'collision_frequency',
+    # well lumping
+    'well_lump_scheme',
     # reaction channel
     'species',
     'well',
