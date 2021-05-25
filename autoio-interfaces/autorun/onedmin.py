@@ -1,7 +1,6 @@
 """ Run OneDMin
 """
 
-from statistics import mean
 import automol.geom
 import onedmin_io
 import elstruct.writer
@@ -57,16 +56,13 @@ def lennard_jones_params(sp_script_str, run_dir, nsamp, njobs,
         smin=smin, smax=smax, spin_method=spin_method, ranseeds=ranseeds)
 
     # Parse out the lj parameters and take the average
-    run_sigmas, run_epsilons = [], []
+    sigmas, epsilons = (), ()
     for output_strs in output_strs_lst:
         sigmas, epsilons = onedmin_io.reader.lennard_jones(output_strs[1])
-        run_sigmas += sigmas
-        run_epsilons += epsilons
+        sigmas += sigmas
+        epsilons += epsilons
 
-    avg_sigma = mean(sigmas)
-    avg_epsilon = mean(epsilons)
-
-    return avg_sigma, avg_epsilon
+    return sigmas, epsilons
 
 
 # General runners
