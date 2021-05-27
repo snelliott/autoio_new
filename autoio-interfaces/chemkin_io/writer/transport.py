@@ -2,12 +2,8 @@
  Writes the string for a Chemkin transport file
 """
 
+from phydat import phycon
 from chemkin_io.writer import _util as util
-
-# conversion factors
-CM2K = 1.438776877
-BOHR2ANG = 0.529177
-BOHR2ANG_3 = BOHR2ANG**3
 
 
 def properties(spc_trans_dct):
@@ -15,8 +11,9 @@ def properties(spc_trans_dct):
         used in calculating transport properties during Chemkin simulations.
 
         :param spc_trans_dct:
+        # below is output units, not input
         :type spc_trans_dict: {spc_name:
-            {'shape_idx': 0 for atomic, 1 for linear, 2 for non-linear,
+            {'geo: molecular geometry object (ang)
              'epsilon': Lennard-Jones well depth epsilon/k_B (Kelvins),
              'sigma': Lennard-Jones collision diameter (angstroms),
              'dipole_moment': dipole moment (Debyes),
@@ -44,13 +41,16 @@ def properties(spc_trans_dct):
     )
     chemkin_str += '\n'
 
-    # Add the values to the string
+    # Add the values to the string, formatting as necessary
     for name, dct in spc_trans_dct.items():
-        shape_idx = dct.get('shape_idx', 2)
-        eps = dct.get('epsilon', 0.00) * CM2K
-        sig = dct.get('sigma', 0.00) * BOHR2ANG
+
+        geo = dct.get('geo')
+        shape_idx = util.format_shape_idx(geo) if geo is not None else 2
+
+        eps = dct.get('epsilon', 0.00) * phycon.WAVEN2KEL
+        sig = dct.get('sigma', 0.00) * phycon.BOHR2ANG
         dmom = dct.get('dipole_moment', 0.00)
-        polar = dct.get('polarizability', 0.00) * BOHR2ANG_3
+        polar = dct.get('polarizability', 0.00) * phycon.BOHR2ANG**3
         zrot = dct.get('zrot', 1.00)
 
         chemkin_str += (

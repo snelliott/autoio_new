@@ -17,12 +17,26 @@ def gradient(output_str):
     """
 
     comp_ptt = app.UNSIGNED_INTEGER
-    grad = ar.matrix.read(
-        output_str,
-        start_ptt=app.padded(app.NEWLINE).join([
+
+    start_ptts = (
+        (app.padded(app.NEWLINE).join([
             app.escape('## Gradient (Symmetry 0) ##'),
-            app.LINE, '', app.LINE, '', '']),
-        line_start_ptt=comp_ptt)
+            app.LINE, '', app.LINE, '', ''])),
+        (app.padded(app.NEWLINE).join([
+            app.escape('-Total gradient:'),
+            app.LINE, app.LINE, ''])),
+        (app.padded(app.NEWLINE).join([
+            app.escape('-Total Gradient:'),
+            app.LINE, app.LINE, '']))
+    )
+
+    for ptt in start_ptts:
+        grad = ar.matrix.read(
+            output_str,
+            start_ptt=ptt,
+            line_start_ptt=comp_ptt)
+        if grad is not None:
+            break
 
     return grad
 
@@ -178,3 +192,9 @@ def irc_path(output_str):
         energies = None
 
     return (coords, energies)
+
+
+if __name__ == '__main__':
+    with open('out2', 'r') as fobj:
+        OUT_STR = fobj.read()
+    print(gradient(OUT_STR))

@@ -131,8 +131,10 @@ READER_MODULE_DCT = {
         Job.HESSIAN, Job.HARM_FREQS,
         Job.IRC_PTS, Job.IRC_PATH,
         Job.OPT_GEO, Job.OPT_ZMA, Job.INP_ZMA,
+        Job.DIP_MOM, Job.POLAR,
         Job.EXIT_MSG, Job.ERR_LST,
         Job.ERR_MSG, Job.CONV_MSG,
         Job.PROG_NAME, Job.PROG_VERS
-    )
+    ),
+    par.Program.QCHEM5: ()
 }

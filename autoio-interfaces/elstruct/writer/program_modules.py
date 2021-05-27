@@ -75,5 +75,6 @@ WRITER_MODULE_DCT = {
         Job.ENERGY, Job.GRADIENT, Job.HESSIAN, Job.OPTIMIZATION),
     par.Program.PSI4: (
         Job.ENERGY, Job.GRADIENT, Job.HESSIAN, Job.OPTIMIZATION,
-        Job.IRC)
+        Job.MOLPROP, Job.IRC),
+    par.Program.QCHEM5: (),
 }

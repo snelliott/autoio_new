@@ -13,8 +13,8 @@ RANSEED = 28384920
 NSAMP = 10
 TARGET_XYZ_NAME = 'target.xyz'
 BATH_XYZ_NAME = 'bath.xyz'
-SMIN = 2.0
-SMAX = 5.0
+SMIN = 3.77945
+SMAX = 9.44863
 
 # Submission script parameters
 NJOBS = 20

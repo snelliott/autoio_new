@@ -1,5 +1,5 @@
 !===================================================
-!  GLOBAL KEYWORD SECTION
+!  GLOBAL KEYWORDS
 !===================================================
 TemperatureList[K]                     ${temperatures}
 PressureList[atm]                      ${pressures}

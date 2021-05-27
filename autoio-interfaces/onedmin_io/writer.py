@@ -1,9 +1,9 @@
-"""
-Executes the automation part of OneDMin
+""" Writes files for OneDmin.
 """
 
 import os
 from random import randrange
+from phydat import phycon
 from ioformat import build_mako_str
 
 
@@ -15,7 +15,23 @@ TEMPLATE_PATH = os.path.join(SRC_PATH, 'templates')
 def input_file(nsamp, smin, smax, ranseed=None,
                target_xyz_name='target.xyz', bath_xyz_name='bath.xyz',
                spin_method=2):
-    """ writes the 1dmin input file for each instance
+    """ Writes the input file string for a single instance of OneDMin.
+
+        :param nsamp: number of samples
+        :type nsamp: int
+        :param smin: minimum-allowed intermolecular distance (in bohr)
+        :type smin: float
+        :param smax: maximum-allowed intermolecular distance (in bohr)
+        :type smax: float
+        :param ranseed: 10-digit integer for orientation sampling
+        :type ranseed: int
+        :param: target_xyz_name: name of xyz file with target molecule
+        :type target_xyz_name: str
+        :param: bath_xyz_name: name of xyz file with bath molecule
+        :type bath_xyz_name: str
+        :param spin_method: parameter to control orientational spinning
+        :type spin_method: int
+        :rtype: str
     """
 
     if ranseed is not None:
@@ -28,6 +44,10 @@ def input_file(nsamp, smin, smax, ranseed=None,
     assert bath_xyz_name.endswith('.xyz')
     assert isinstance(smin, float)
     assert isinstance(smax, float)
+
+    # Format smin and smax
+    smin = '{0:.3f}'.format(smin * phycon.BOHR2ANG)
+    smax = '{0:.3f}'.format(smax * phycon.BOHR2ANG)
 
     # Set the dictionary for the 1DMin input file
     inp_keys = {
@@ -47,7 +67,8 @@ def input_file(nsamp, smin, smax, ranseed=None,
 
 
 def submission_script(njobs, run_dir, exe_path):
-    """ launches the job
+    """ Writes a special BASH submission script for launching
+        parallel instances of OneDMin.
 
         :param njobs: number of OneDMin processes to run
         :type njobs: int
@@ -55,6 +76,7 @@ def submission_script(njobs, run_dir, exe_path):
         :type run_dir: str
         :param exe_path: full path to the OneDMin executable
         :type exe_path: str
+        :rtype: str
     """
 
     # Write the string for running all of the job lines

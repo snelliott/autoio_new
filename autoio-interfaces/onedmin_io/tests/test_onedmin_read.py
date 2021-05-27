@@ -34,3 +34,14 @@ def test__program_version():
     prog = onedmin_io.reader.program_version(ONEDMIN_OUT_STR)
 
     assert prog == ref_prog
+
+
+def test__ranseed():
+    """ test onedmin_io.reader.random_seed_value
+    """
+
+    ref_ranseed = 153214316
+
+    ranseed = onedmin_io.reader.random_seed_value(ONEDMIN_OUT_STR)
+
+    assert ranseed == ref_ranseed

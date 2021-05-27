@@ -27,8 +27,8 @@ MULT = 1
 
 NSAMP = 3
 NJOBS = 3
-SMIN = 2.0
-SMAX = 5.0
+SMIN = 3.779
+SMAX = 9.448
 
 SPIN_METHOD = 1
 RANSEEDS = (153214316, 129539275, 174930586)
@@ -38,8 +38,6 @@ def test__exp6():
     """ test
     """
 
-    ref_sig = 3.29978
-    ref_eps = 21.910873333333335
 
     script_str = None
     lj_sig, lj_eps = autorun.onedmin.lennard_jones_params(
