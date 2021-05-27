@@ -83,6 +83,8 @@ set opt_type irc
 set irc_direction ${irc_direction}
 _, wfn = frequency('${method}', return_wfn=True)
 optimize('${method}')
+% elif job_key == 'molecular_properties':
+properties('${method}', properties=['dipole', 'polarizability'])
 % endif
 % if job_key == 'hessian':
 hess = wfn.hessian()

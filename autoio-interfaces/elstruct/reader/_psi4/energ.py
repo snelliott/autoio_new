@@ -57,10 +57,51 @@ def _mp2_energy(output_str):
         :rtype: float
     """
 
+    start_ptts = (
+        (app.LINESPACES.join([
+            '', app.escape('MP2 Total Energy (a.u.)'), app.escape(':')])),
+        (app.LINESPACES.join([
+            '', app.escape('MP2 total energy'), app.escape('=')]))
+    )
+
+    for ptt in start_ptts:
+        ene = ar.energy.read(output_str, start_ptt=ptt)
+        if ene is not None:
+            break
+
+    return ene
+
+
+def _ccsd_energy(output_str):
+    """ Reads the CCSD energy from the output file string.
+        Returns the energy in Hartrees.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: float
+    """
+
     ene = ar.energy.read(
         output_str,
         start_ptt=app.LINESPACES.join([
-            '', app.escape('MP2 Total Energy (a.u.)'), app.escape(':')]))
+            '', app.escape('* CCSD correlation energy'), app.escape('=')]))
+
+    return ene
+
+
+def _ccsd_t_energy(output_str):
+    """ Reads the CCSD(T) energy from the output file string.
+        Returns the energy in Hartrees.
+
+        :param output_str: string of the program's output file
+        :type output_str: str
+        :rtype: float
+    """
+
+    ene = ar.energy.read(
+        output_str,
+        start_ptt=app.LINESPACES.join([
+            '', app.escape('* CCSD(T) correlation energy'), app.escape('=')]))
 
     return ene
 
@@ -136,6 +177,8 @@ ENERGY_READER_DCT = {
     elstruct.par.Method.DF_HF[0]: _df_hf_energy,
     elstruct.par.Method.Corr.MP2[0]: _mp2_energy,
     elstruct.par.Method.Corr.DF_MP2[0]: _df_mp2_energy,
+    elstruct.par.Method.Corr.CCSD[0]: _ccsd_energy,
+    elstruct.par.Method.Corr.CCSD_T[0]: _ccsd_t_energy,
 }
 
 METHODS = elstruct.par.program_methods(PROG)

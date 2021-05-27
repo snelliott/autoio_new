@@ -1,5 +1,5 @@
 !===================================================
-!  GLOBAL KEYWORD SECTION
+!  GLOBAL KEYWORDS
 !===================================================
 % if temperatures != '':
 TemperatureList[K]                     ${temperatures}

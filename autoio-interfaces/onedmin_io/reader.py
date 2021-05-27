@@ -41,3 +41,21 @@ def program_version(output_string):
     capture = apf.last_capture(pattern, output_string)
 
     return capture
+
+
+def random_seed_value(output_string):
+    """ Read the ranseed from the standard log file.
+    """
+
+    pattern = (
+        'RANSEED' + app.SPACES +
+        '=' + app.SPACES +
+        app.capturing(app.INTEGER)
+    )
+    capture = apf.first_capture(pattern, output_string)
+    if capture:
+        ranseed = int(capture)
+    else:
+        ranseed = None
+
+    return ranseed
