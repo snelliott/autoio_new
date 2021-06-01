@@ -50,7 +50,7 @@ def lennard_jones_params(sp_script_str, run_dir, nsamp, njobs,
     # maybe set the number of ranseeds to number of jobs?
     assert njobs == len(ranseeds)
 
-    _, output_strs_lst = direct(
+    _, _, output_strs_lst = direct(
         sp_script_str, run_dir, nsamp, njobs,
         tgt_geo, bath_geo, thy_info, charge, mult,
         smin=smin, smax=smax, spin_method=spin_method, ranseeds=ranseeds)
@@ -133,7 +133,7 @@ def direct(sp_script_str, run_dir, nsamp, njobs,
         input_name=INPUT_NAME,
         output_names=OUTPUT_NAMES)
 
-    return input_str_lst, output_str_lst
+    return input_str_lst, elstruct_inp_str, output_str_lst
 
 
 def _set_pot_info(thy_info, charge, mult):

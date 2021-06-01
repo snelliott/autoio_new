@@ -729,6 +729,7 @@ class Error():
     CC_NOCONV = 'cc_noconv'
     OPT_NOCONV = 'opt_noconv'
     IRC_NOCONV = 'irc_noconv'
+    SYMM_NOFIND = 'symm_nofind'
 
 
 class Success():

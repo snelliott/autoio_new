@@ -146,7 +146,7 @@ def core_phasespace(geo1, geo2, sym_factor, stoich,
         template_keys=core_keys)
 
 
-def core_rotd(sym_factor, flux_file_name, stoich):
+def core_read(sym_factor, flux_file_name, stoich):
     """ Writes the string that defines the `Core` section for a
         variational reaction-coordinate transition-state theory model of a
         transition state for a MESS input file by
