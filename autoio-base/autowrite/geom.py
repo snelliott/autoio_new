@@ -57,7 +57,7 @@ def write_xyz_trajectory(symbs, xyzs_lst, comments=None):
         :param symbs: atomic symbols of the atoms
         :type symbs: tuple(str)
         :param xyzs_lst: xyz coordinates for a set of molecular geometries
-        :type xyzs_lst: tuple(automol geometry data structure)
+        :type xyzs_lst: tuple(tuple(float))
         :param comments: list of comments for each of the molecular geometries
         :type comments: tuple(str)
         :rtype: str

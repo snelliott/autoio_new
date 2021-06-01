@@ -48,9 +48,17 @@ def _has_opt_nonconvergence_error_message(output_str):
     return apf.has_match(pattern, output_str, case=False)
 
 
+def _has_symmetry_detection_error_message(output_str):
+    """ does this output string have an optimization non-convergence message?
+    """
+    pattern = app.escape('Unrecognized point group bits:')
+    return apf.has_match(pattern, output_str, case=False)
+
+
 ERROR_READER_DCT = {
     elstruct.par.Error.SCF_NOCONV: _has_scf_nonconvergence_error_message,
     elstruct.par.Error.OPT_NOCONV: _has_opt_nonconvergence_error_message,
+    elstruct.par.Error.SYMM_NOFIND: _has_symmetry_detection_error_message
 }
 SUCCESS_READER_DCT = {
     elstruct.par.Success.SCF_CONV: _has_scf_convergence_message,
@@ -88,6 +96,7 @@ def check_convergence_messages(error, success, output_str):
     job_success = False
     has_error = ERROR_READER_DCT[error](output_str)
     if has_error:
+        print('has error:', error)
         has_success = SUCCESS_READER_DCT[success](output_str)
         if has_success:
             job_success = True
