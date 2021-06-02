@@ -3,7 +3,7 @@
 
 import os
 import tempfile
-import numpy
+# import numpy
 import autorun.onedmin
 
 
@@ -44,6 +44,7 @@ def test__exp6():
         TGT_GEO, BATH_GEO, EXP6_THY_INFO, CHARGE, MULT,
         smin=SMIN, smax=SMAX, spin_method=1, ranseeds=RANSEEDS)
 
+    print(lj_sig, lj_eps)
     # assert numpy.isclose(lj_sig, ref_sig)
     # assert numpy.isclose(lj_eps, ref_eps)
 

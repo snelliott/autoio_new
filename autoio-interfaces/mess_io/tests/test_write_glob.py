@@ -119,9 +119,6 @@ def test__full_str():
     pf_str = mess_io.writer.messpf_inp_str(
         glob_keys_str, pf_str)
 
-    print(pf_str)
-    print(read_text_file(['data', 'inp'], 'full_pf.inp', PATH))
-
     assert rates_str == read_text_file(['data', 'inp'], 'full_rates.inp', PATH)
     assert pf_str == read_text_file(['data', 'inp'], 'full_pf.inp', PATH)
 
@@ -146,6 +143,3 @@ def test__pf_output():
 
     assert pf1_str == read_text_file(['data', 'out'], 'pf.dat2', PATH)
     assert pf2_str == read_text_file(['data', 'out'], 'pf.dat3', PATH)
-
-test__full_str()
-
