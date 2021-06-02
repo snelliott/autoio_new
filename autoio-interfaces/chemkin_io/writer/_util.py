@@ -79,10 +79,10 @@ def format_shape_idx(geo):
         :rtype: int
     """
 
-    if automol.geom.is_atom(geom):
+    if automol.geom.is_atom(geo):
         shape_idx = 0
     else:
-        if automol.geom.is_linear(geom):
+        if automol.geom.is_linear(geo):
             shape_idx = 1
         else:
             shape_idx = 2

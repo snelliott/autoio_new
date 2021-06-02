@@ -109,16 +109,18 @@ def test__full_str():
         test mess_io.writer.messpf_inp_str
     """
 
-    glob_rxn_str = read_text_file(['data', 'inp'], 'glob_pf1.inp', PATH)
-    glob_pf_str = read_text_file(['data', 'inp'], 'glob_pf1.inp', PATH)
-    glob_etrans_str = read_text_file(['data', 'inp'], 'glob_etrans.inp', PATH)
-    rxn_chan_str = '<FAKE REACTION CHANNEL_STR>'
-    pf_str = '<FAKE PF CHANNEL_STR>'
+    glob_keys_str = '<FAKE GLOB KEYS STR>'
+    glob_etrans_str = '<FAKE ETRANS STR>'
+    rxn_chan_str = '<FAKE REACTION CHANNEL STR>'
+    pf_str = '<FAKE PF CHANNEL STR>'
 
     rates_str = mess_io.writer.messrates_inp_str(
-        glob_rxn_str, glob_etrans_str, rxn_chan_str)
+        glob_keys_str, glob_etrans_str, rxn_chan_str)
     pf_str = mess_io.writer.messpf_inp_str(
-        glob_pf_str, pf_str)
+        glob_keys_str, pf_str)
+
+    print(pf_str)
+    print(read_text_file(['data', 'inp'], 'full_pf.inp', PATH))
 
     assert rates_str == read_text_file(['data', 'inp'], 'full_rates.inp', PATH)
     assert pf_str == read_text_file(['data', 'inp'], 'full_pf.inp', PATH)
@@ -142,10 +144,8 @@ def test__pf_output():
         svals=THM_VALS['svals'].values,
         cpvals=THM_VALS['cpvals'].values)
 
-    with open('pf.dat2', 'w') as fil:
-        fil.write(pf1_str)
-    with open('pf.dat3', 'w') as fil:
-        fil.write(pf2_str)
-
     assert pf1_str == read_text_file(['data', 'out'], 'pf.dat2', PATH)
     assert pf2_str == read_text_file(['data', 'out'], 'pf.dat3', PATH)
+
+test__full_str()
+

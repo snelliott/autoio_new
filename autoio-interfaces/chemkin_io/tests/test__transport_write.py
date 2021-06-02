@@ -40,8 +40,8 @@ TRANS_STR = """! THEORETICAL TRANSPORT PROPERTIES
 ! (6) Z_rot, rotational relaxation collision number at 298 K.
 ! Species           Shape     Epsilon   Sigma      Mu   Alpha   Z_Rot
 He                      0      11.442   2.715   0.000   0.204   2.000
-O2                      1     154.525   1.830   0.000   0.237   3.800
-H2O                     2     637.056   2.943   1.851   1.407   4.000
+O2                      1     154.527   1.830   0.000   0.237   3.800
+H2O                     2     637.062   2.943   1.851   1.407   4.000
 """
 
 

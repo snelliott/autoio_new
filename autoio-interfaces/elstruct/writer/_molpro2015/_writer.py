@@ -68,8 +68,6 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         :type gen_lines: dict[idx:str]
     """
 
-    print('orb rest test:', orb_restricted)
-
     # Set the spin
     spin = mult - 1
 
