@@ -102,10 +102,10 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         scf_typ = 'df'
         mp2_typ = 'df'
     else:
-        try:
+        if automol.zmat.is_valid(geo):
             is_atom = bool(automol.zmat.count(geo) == 1)
             is_diatom = bool(automol.zmat.count(geo) == 2)
-        except:
+        else:
             is_atom = automol.geom.is_atom(geo)
             is_diatom = automol.geom.is_atom(geo)
         scf_typ = 'pk' if not (is_atom or is_diatom) else 'direct'

@@ -71,7 +71,8 @@ def inp_zmatrix(output_str):
 
     # Read the matrix and the values from the output
     start_ptt = app.LINE_FILL + app.NEWLINE + app.LINE_FILL + app.NEWLINE
-    symbs, key_mat, name_mat, val_mat = ar.zmat.read(block, start_ptt=start_ptt)
+    symbs, key_mat, name_mat, val_mat = ar.zmat.read(
+        block, start_ptt=start_ptt)
 
     # Call the automol constructor
     if all(x is not None for x in (symbs, key_mat, name_mat, val_mat)):

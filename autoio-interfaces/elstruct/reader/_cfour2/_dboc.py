@@ -1,10 +1,11 @@
-def core_writer():
-    """
-    """
-    keyword in input is FROZEN_CORE=ON which is the default (i.e. always put this in
-    unless the all_electron option is given
+""" Auxiliary CFOUR energy readers
+"""
 
-def relativistic_energy():
+import autoparse.pattern as app
+import autoparse.find as apf
+
+
+def relativistic_energy(output_str):
     """ Read a relativistic energy
     """
 
@@ -23,7 +24,7 @@ def relativistic_energy():
         'Hartree'
     )
 
-    cap = apf.capture(ptt, output_str)
+    cap = apf.last_capture(ptt, output_str)
     val = float(cap) if cap is not None else None
 
     return val
@@ -41,7 +42,7 @@ def diagonal_born_oppenheimer_correction(output_str):
         'a.u.'
     )
 
-    cap = apf.capture(ptt, output_str)
+    cap = apf.last_capture(ptt, output_str)
     val = float(cap) if cap is not None else None
 
     return val
