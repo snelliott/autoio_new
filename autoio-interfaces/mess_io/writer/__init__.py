@@ -12,6 +12,7 @@ from mess_io.writer._glob import global_energy_transfer_input
 from mess_io.writer._glob import pf_output
 from mess_io.writer._etrans import energy_down
 from mess_io.writer._etrans import collision_frequency
+from mess_io.writer._lump import well_lump_scheme
 from mess_io.writer._rxnchan import species
 from mess_io.writer._rxnchan import well
 from mess_io.writer._rxnchan import bimolecular
@@ -35,7 +36,6 @@ from mess_io.writer._mol_inf import tunnel_read
 from mess_io.writer._monte_carlo import mc_species
 from mess_io.writer._monte_carlo import mc_data
 from mess_io.writer._monte_carlo import fluxional_mode
-from mess_io.writer._sec import rxnchan_header_str
 from mess_io.writer._sec import species_separation_str
 
 
@@ -50,6 +50,8 @@ __all__ = [
     # energy transfer
     'energy_down',
     'collision_frequency',
+    # well lumping
+    'well_lump_scheme',
     # reaction channel
     'species',
     'well',
@@ -77,6 +79,5 @@ __all__ = [
     'mc_data',
     'fluxional_mode',
     # section library
-    'rxnchan_header_str',
     'species_separation_str'
 ]

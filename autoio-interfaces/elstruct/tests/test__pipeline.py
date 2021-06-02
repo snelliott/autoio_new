@@ -206,6 +206,7 @@ def _test_pipeline(script_str, writer, readers,
         _, out_str = elstruct.run.direct(
             writer, script_str, run_dir, *args, **kwargs)
 
+        print('out str\n', out_str)
         assert elstruct.reader.has_normal_exit_message(prog, out_str)
 
         for i, reader in enumerate(readers):
@@ -234,7 +235,7 @@ def _test_pipeline(script_str, writer, readers,
 
 
 if __name__ == '__main__':
-    test__energy()
-    test__gradient()
+    # test__energy()
+    # test__gradient()
     test__hessian()
-    test__optimization()
+    # test__optimization()

@@ -22,6 +22,8 @@ class MultiReference():
 
 
 OPTION_EVAL_DCT = {
+    elstruct.option.name(elstruct.par.Option.Mol.NOSYMM_):
+    'nosym',
     option.name(Option.Scf.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
     option.name(Option.Scf.DIIS_):
@@ -36,4 +38,6 @@ OPTION_EVAL_DCT = {
     lambda osp: 'shift={}'.format(*option.values(osp)),
     option.name(Option.Opt.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
+    elstruct.option.name(elstruct.par.Option.Corr.ALL_ELEC_):
+    'core',
 }

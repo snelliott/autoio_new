@@ -33,5 +33,6 @@ def test__energy_trans_writer():
 
     glob_etrans_str = mess_io.writer.global_energy_transfer_input(
         edown_str, collid_str)
+
     assert glob_etrans_str == read_text_file(
         ['data', 'inp'], 'glob_etrans.inp', PATH)

@@ -26,9 +26,9 @@ ${'\n'.join('    {}'.format(dih_str) for dih_str in frozen_dih_strs)}
 % endif
 ## 2. theory block
 set basis ${basis}
-set scf_type pk
 set reference ${reference}
-set mp2_type conv
+set scf_type ${scf_typ}
+set mp2_type ${mp2_typ}
 % if scf_options:
 ${scf_options}
 % endif
@@ -83,6 +83,8 @@ set opt_type irc
 set irc_direction ${irc_direction}
 _, wfn = frequency('${method}', return_wfn=True)
 optimize('${method}')
+% elif job_key == 'molecular_properties':
+properties('${method}', properties=['dipole', 'polarizability'])
 % endif
 % if job_key == 'hessian':
 hess = wfn.hessian()

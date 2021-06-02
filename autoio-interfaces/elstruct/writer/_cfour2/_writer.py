@@ -151,3 +151,11 @@ def _set_cc_prog(method, reference):
         corr_options = ()
 
     return corr_options
+
+
+# def core_writer():
+#     """
+#     """
+#     keyword in input is FROZEN_CORE=ON which is the default
+#     (i.e. always put this in
+#     unless the all_electron option is given

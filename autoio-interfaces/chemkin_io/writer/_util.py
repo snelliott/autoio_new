@@ -1,6 +1,9 @@
 """ Format utilities
 """
+
 import numpy as np
+import automol.geom
+
 
 CKIN_TRANS_HEADER_STR = """! THEORETICAL TRANSPORT PROPERTIES
 !
@@ -65,6 +68,26 @@ def format_rxn_name(rxn):
     rxn_name = rct_str + '=' + prd_str
 
     return rxn_name
+
+
+def format_shape_idx(geo):
+    """ Determine the shape index that signifies the overall
+        molecular structure.
+
+        :param geo: molecular geometry
+        :type geo: automol.geom objects
+        :rtype: int
+    """
+
+    if automol.geom.is_atom(geo):
+        shape_idx = 0
+    else:
+        if automol.geom.is_linear(geo):
+            shape_idx = 1
+        else:
+            shape_idx = 2
+
+    return shape_idx
 
 
 def merge_plog_dct(param_dct):

@@ -31,6 +31,7 @@ class Program():
     NWCHEM6 = 'nwchem6'
     ORCA4 = 'orca4'
     PSI4 = 'psi4'
+    QCHEM5 = 'qchem5'
 
 
 def programs():
@@ -90,6 +91,10 @@ class Method():
            Program.PSI4: (
                'hf', 'uhf',
                ('R',), ('U', 'R'))})
+    DF_HF = ('df-hf',
+             {Program.PSI4: (
+                 'hf', 'uhf',
+                 ('R',), ('U', 'R'))})
 
     class Corr():
         """ Correlated method names """
@@ -115,10 +120,17 @@ class Method():
                 Program.PSI4: (
                     'mp2', 'mp2',
                     ('R',), ('U', 'R'))})
+        # DF_MP2 = ('df-mp2',
+        #           {Program.PSI4: (
+        #            'mp2', 'mp2',
+        #            ('R',), ('U', 'R'))})
         CCSD = ('ccsd',
                 {Program.CFOUR2: (
                     'ccsd', 'ccsd',
-                    ('R',), ('R',)),
+                    ('R',), ('U', 'R',)),
+                 # Program.PSI4: (
+                 #    'ccsd', 'ccsd',
+                 #    ('R',), ('U', 'R',)),
                  Program.MOLPRO2015: (
                      'ccsd', 'uccsd',
                      ('R',), ('R', 'R'))})
@@ -132,6 +144,9 @@ class Method():
                    Program.MRCC2018: (
                        'ccsd(t)', 'ccsd(t)',
                        ('R',), ('R', 'R'))})
+        # Program.PSI4: (
+        #  'ccsd(t)', 'ccsd(t)',
+        #  ('R',), ('U', 'R'))})
         CCSDT = ('ccsdt',
                  {Program.MOLPRO2015: (
                      'mrcc,method=ccsdt', 'mrcc,method=ccsdt',
@@ -187,6 +202,10 @@ class Method():
                   Program.GAUSSIAN16: (
                       'b3lyp', 'b3lyp',
                       ('R',), ('U',))})
+        DF_B3LYP = ('df-b3lyp',
+                    {Program.PSI4: (
+                        'B3LYP', 'B3LYP',
+                        ('R',), ('U',))})
         WB97XD = ('wb97xd',
                   {Program.PSI4: (
                       'WB97X-D', 'WB97X-D',
@@ -316,6 +335,17 @@ class Method():
         """
         assert cls.is_nonstandard_dft(name)
         return name[4:]
+
+    @staticmethod
+    def is_density_fitting(name):
+        """ Assess if a method is `density-fitting` variant.
+
+            :param cls: class object
+            :type cls: obj
+            :param name: name of method
+            :type name: str
+        """
+        return 'df-' in standard_case(name)
 
 
 def program_methods_info(prog):
@@ -465,6 +495,7 @@ class Basis():
                           Program.NWCHEM6: None,
                           Program.ORCA4: None,
                           Program.PSI4: None})
+        P321S = ('3-21g*', {Program.PSI4: None})
         P631 = ('6-31g', {Program.CFOUR2: None,
                           Program.GAUSSIAN09: None,
                           Program.GAUSSIAN16: None,
@@ -697,6 +728,7 @@ class Error():
     CC_NOCONV = 'cc_noconv'
     OPT_NOCONV = 'opt_noconv'
     IRC_NOCONV = 'irc_noconv'
+    SYMM_NOFIND = 'symm_nofind'
 
 
 class Success():
@@ -712,6 +744,10 @@ class Success():
 class Option():
     """ Option values for the electronic structure program writer module
     """
+
+    class Mol():
+        """ Options for molecules """
+        NOSYMM_ = option.create('no_symmetry')
 
     class Scf():
         """ SCF options (passed to `scf_options`) """
@@ -731,6 +767,10 @@ class Option():
         WFN_ = option.create(
             'casscf_wavefunction',
             ['nelec', 'sym', 'spin', 'charge', 'nstates'])
+
+    class Corr():
+        """ Options for correlated methods"""
+        ALL_ELEC_ = option.create('all_electron')
 
     class MRCorr():
         """ Correlated multiref method options (passed to `corr_options`) """

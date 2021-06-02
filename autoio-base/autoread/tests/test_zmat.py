@@ -46,6 +46,12 @@ ZMA3_STR = (
     'R5  = 2.83748   A5  = 107.091   D5  = 299.596        \n')
 ZMA4_STR = (
     'C \n')
+ZMA5_STR = (
+    'O \n'
+    'O 1 1.454 \n'
+    'H 1 0.976 2 96.77 \n'
+    'H 2 0.976 1 96.77 3 129.37 \n'
+)
 
 ZMA_OUT1_STR = (
     ' comment:\n'
@@ -157,17 +163,6 @@ def test_zmat():
     """ test autoread.zmat
     """
 
-    def _val_mats_similar(val_mat, ref_val_mat):
-        """ Check if two value matrices are the same
-        """
-        for i, row in enumerate(val_mat):
-            for j, val in enumerate(row):
-                ref_val = ref_val_mat[i][j]
-                if val is None:
-                    assert ref_val is None
-                else:
-                    assert numpy.isclose(val, ref_val)
-
     # Simple ZMA reads
     start_ptt = (
         app.padded(app.escape('Geometry (in Angstrom),'), app.NONNEWLINE) +
@@ -216,10 +211,6 @@ def test_zmat():
                    (2.06458, 108.982, 240.404),
                    (1.83748, 107.091, 299.596))
     _val_mats_similar(val_mat, ref_val_mat)
-    # assert val_dct == {
-    #     'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
-    #     'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
-    #     'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
 
     symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA4_STR,
@@ -259,10 +250,6 @@ def test_zmat():
                    (2.06458, 108.982, 240.404),
                    (1.83748, 107.091, 299.596))
     _val_mats_similar(val_mat, ref_val_mat)
-    # assert val_dct == {
-    #     'R1': 2.67535, 'R2': 2.06501, 'A2': 109.528, 'R3': 2.06501,
-    #     'A3': 109.528, 'D3': 120.808, 'R4': 2.06458, 'A4': 108.982,
-    #     'D4': 240.404, 'R5': 1.83748, 'A5': 107.091, 'D5': 299.596}
 
 
 def test__matrix():
@@ -383,6 +370,21 @@ def test__matrix():
                         ('R4', 'A4', 'D4'),
                         ('R5', 'A5', 'D5'))
 
+    symbs, key_mat, name_mat = autoread.vmat.read(
+        ZMA5_STR,
+        name_ptt=app.FLOAT)
+    assert symbs == ('O', 'O', 'H', 'H')
+    assert key_mat == ((None, None, None),
+                       (1, None, None),
+                       (1, 2, None),
+                       (2, 1, 3))
+    ref_name_mat = (
+        (None, None, None),
+        (1.454, None, None),
+        (0.976, 96.77, None),
+        (0.976, 96.77, 129.37))
+    _val_mats_similar(name_mat, ref_name_mat)
+
 
 def test__setval():
     """ test autoread.zmat.setval
@@ -435,3 +437,16 @@ def test__setval():
         'R1': 1.43218364, 'R2': 1.09538054, 'A2': 112.03775543,
         'R3': 1.09538307, 'A3': 112.04463832, 'R4': 1.09084803,
         'A4': 108.31761858, 'D4': 240.16203078, 'D5': 299.84441753}
+
+
+# Helper
+def _val_mats_similar(val_mat, ref_val_mat):
+    """ Check if two value matrices are the same
+    """
+    for i, row in enumerate(val_mat):
+        for j, val in enumerate(row):
+            ref_val = ref_val_mat[i][j]
+            if val is None:
+                assert ref_val is None
+            else:
+                assert numpy.isclose(val, ref_val)

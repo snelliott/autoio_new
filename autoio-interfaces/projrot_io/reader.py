@@ -37,4 +37,4 @@ def rpht_output(output_str):
     # Sort imaginary freqeuncies in descending order
     imag_freqs.sort(reverse=True)
 
-    return sorted(real_freqs), sorted(imag_freqs)
+    return tuple(sorted(real_freqs)), tuple(sorted(imag_freqs))

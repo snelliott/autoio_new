@@ -230,11 +230,13 @@ def idx_lst_from_line(line):
     """
 
     idxs = []
+    print('line', line)
     for string in line.strip().split(','):
-        if string.isdigit():
-            idxs.append(int(string))
+        _strip_string = string.strip()
+        if _strip_string.isdigit():
+            idxs.append(int(_strip_string))
         elif '-' in line:
-            [idx_begin, idx_end] = string.split('-')
+            [idx_begin, idx_end] = _strip_string.split('-')
             idxs.extend(list(range(int(idx_begin), int(idx_end)+1)))
 
     return tuple(idxs)

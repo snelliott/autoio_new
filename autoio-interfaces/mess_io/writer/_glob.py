@@ -7,7 +7,6 @@ from ioformat import build_mako_str
 from ioformat import indent
 from ioformat import remove_trail_whitespace
 from phydat import phycon
-from mess_io.writer._sec import rxnchan_header_str
 from mess_io.writer._mol_inf import core_rigidrotor
 from mess_io.writer._spc import molecule
 from mess_io.writer._rxnchan import species
@@ -20,26 +19,25 @@ SECTION_PATH = os.path.join(TEMPLATE_PATH, 'sections')
 
 
 # Write the full input file strings
-def messrates_inp_str(globkey_str, energy_trans_str, rxn_chan_str):
+def messrates_inp_str(globkey_str, rxn_chan_str,
+                      energy_trans_str=None, well_lump_str=None):
     """ Combine various MESS strings together to combined MESS rates
     """
 
-    rxn_chan_header_str = rxnchan_header_str()
-    mess_inp_str = '\n'.join(
-        [globkey_str,
-         '!',
-         '!',
-         # '! == MESS MODEL ==',
-         'Model',
-         '!',
-         energy_trans_str,
-         rxn_chan_header_str,
-         rxn_chan_str,
-         '\nEnd  ! Model\n']
-    )
-    mess_inp_str = remove_trail_whitespace(mess_inp_str)
+    # Create dictionary to fill template
+    full_rxn_inp_keys = {
+        'globkey_str': globkey_str,
+        'energy_trans_str': energy_trans_str,
+        'well_lump_str': well_lump_str,
+        'rxn_chan_str': rxn_chan_str
+    }
 
-    return mess_inp_str
+    mess_inp_str = build_mako_str(
+        template_file_name='full_rates_inp.mako',
+        template_src_path=SECTION_PATH,
+        template_keys=full_rxn_inp_keys)
+
+    return remove_trail_whitespace(mess_inp_str)
 
 
 def messpf_inp_str(globkey_str, spc_str):

@@ -1,7 +1,6 @@
 """ Run OneDMin
 """
 
-from statistics import mean
 import automol.geom
 import onedmin_io
 import elstruct.writer
@@ -51,28 +50,25 @@ def lennard_jones_params(sp_script_str, run_dir, nsamp, njobs,
     # maybe set the number of ranseeds to number of jobs?
     assert njobs == len(ranseeds)
 
-    output_strs_lst = direct(
+    _, _, output_strs_lst = direct(
         sp_script_str, run_dir, nsamp, njobs,
         tgt_geo, bath_geo, thy_info, charge, mult,
         smin=smin, smax=smax, spin_method=spin_method, ranseeds=ranseeds)
 
     # Parse out the lj parameters and take the average
-    run_sigmas, run_epsilons = [], []
+    sigmas, epsilons = (), ()
     for output_strs in output_strs_lst:
         sigmas, epsilons = onedmin_io.reader.lennard_jones(output_strs[1])
-        run_sigmas += sigmas
-        run_epsilons += epsilons
+        sigmas += sigmas
+        epsilons += epsilons
 
-    avg_sigma = mean(sigmas)
-    avg_epsilon = mean(epsilons)
-
-    return avg_sigma, avg_epsilon
+    return sigmas, epsilons
 
 
 # General runners
 def direct(sp_script_str, run_dir, nsamp, njobs,
            tgt_geo, bath_geo, thy_info, charge, mult,
-           smin=2.0, smax=6.0, spin_method=1, ranseeds=None):
+           smin=3.779, smax=11.339, spin_method=1, ranseeds=None):
     """ Write input and run output.
 
         :param sp_script_str: submission script for single-point calculation
@@ -105,9 +101,9 @@ def direct(sp_script_str, run_dir, nsamp, njobs,
     """
 
     # Write the main input files for all runs (breaks if ranseeds not given)
-    input_strs = ()
+    input_str_lst = ()
     for ranseed in ranseeds:
-        input_strs += (
+        input_str_lst += (
             onedmin_io.writer.input_file(
                 nsamp, smin, smax,
                 ranseed=ranseed, spin_method=spin_method),
@@ -131,13 +127,13 @@ def direct(sp_script_str, run_dir, nsamp, njobs,
         njobs, run_dir, onedmin_exe_name)
 
     # Run the code
-    output_strs_lst = from_parallel_input_strings(
-        script_str, run_dir, input_strs,
+    output_str_lst = from_parallel_input_strings(
+        script_str, run_dir, input_str_lst,
         aux_dct=aux_dct,
         input_name=INPUT_NAME,
         output_names=OUTPUT_NAMES)
 
-    return output_strs_lst
+    return input_str_lst, elstruct_inp_str, output_str_lst
 
 
 def _set_pot_info(thy_info, charge, mult):

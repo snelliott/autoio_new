@@ -85,12 +85,31 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     if not elstruct.par.Method.is_correlated(method):
         assert not corr_options
 
+    # scf_type pk breaks for H atom b3lyp
+    # print('OPTDCT', OPTION_EVAL_DCT)
+    # print('mol_options1', mol_options)
+    # mol_options = fill.evaluate_options(mol_options, OPTION_EVAL_DCT)
     scf_options = fill.evaluate_options(scf_options, OPTION_EVAL_DCT)
     casscf_options = fill.evaluate_options(casscf_options, OPTION_EVAL_DCT)
     job_options = fill.evaluate_options(job_options, OPTION_EVAL_DCT)
+    # print('mol_options2', mol_options)
 
     if saddle:
         job_options += ('set full_hess_every 0', 'set opt_type ts',)
+
+    # Set the SCF Type
+    if 'df-' in method:
+        scf_typ = 'df'
+        mp2_typ = 'df'
+    else:
+        if automol.zmat.is_valid(geo):
+            is_atom = bool(automol.zmat.count(geo) == 1)
+            is_diatom = bool(automol.zmat.count(geo) == 2)
+        else:
+            is_atom = automol.geom.is_atom(geo)
+            is_diatom = automol.geom.is_atom(geo)
+        scf_typ = 'pk' if not (is_atom or is_diatom) else 'direct'
+        mp2_typ = 'conv'
 
     # Set the gen lines blocks
     if gen_lines is not None:
@@ -111,6 +130,8 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
         fill.TemplateKey.METHOD: prog_method,
         fill.TemplateKey.REFERENCE: prog_reference,
         fill.TemplateKey.SCF_OPTIONS: '\n'.join(scf_options),
+        'scf_typ': scf_typ,
+        'mp2_typ': mp2_typ,
         fill.TemplateKey.CORR_OPTIONS: '\n'.join(corr_options),
         fill.TemplateKey.JOB_KEY: job_key,
         fill.TemplateKey.JOB_OPTIONS: '\n'.join(job_options),
@@ -132,15 +153,36 @@ def _frozen_coordinate_strings(geo, frozen_coordinates):
     if not frozen_coordinates:
         dis_strs = ang_strs = dih_strs = ()
     else:
-        coo_dct = automol.zmat.coordinates(geo, shift=1)
+        coo_dct = automol.zmat.coordinates(geo)
         assert all(coo_name in coo_dct for coo_name in frozen_coordinates)
 
         def _coordinate_strings(coo_names):
+            """ Build frozen-coordinate strings for coordinates that
+                do not involve the dummy atom since Psi4 does not use
+                dummy atoms in its optimizer
+            """
+
+            # Get the frz coord names in zma
             frz_coo_names = [coo_name for coo_name in frozen_coordinates
                              if coo_name in coo_names]
+
+            # Get frz coord keys that do not include dummy index
+            dummys = automol.zmat.dummy_keys(geo)
+            frz_coo_keys_wdum = [coo_dct[name] for name in frz_coo_names]
+            frz_coo_keys_nodum = []
+            for frz_key_set in frz_coo_keys_wdum:
+                for frz_keys in frz_key_set:
+                    if not any(dkey in frz_keys for dkey in dummys):
+                        frz_coo_keys_nodum.append(frz_keys)
+            # Shift the final set down to preclude the dummy atom
+            # then increment up for string
+            frz_coo_keys = [automol.zmat.shift_down(geo, keys)
+                            for keys in frz_coo_keys_nodum]
+            frz_coo_keys = [tuple(val+1 for val in keys)
+                            for keys in frz_coo_keys]
             frz_coo_strs = tuple(' '.join(map(str, coo_keys))
-                                 for frz_coo_name in frz_coo_names
-                                 for coo_keys in coo_dct[frz_coo_name])
+                                 for coo_keys in frz_coo_keys)
+
             return frz_coo_strs
 
         dis_strs = _coordinate_strings(

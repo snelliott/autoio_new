@@ -53,14 +53,14 @@ def frequencies(script_str, run_dir, geoms, grads, hessians,
         rtproj_freqs, rt_imag_freq = projrot_io.reader.rpht_output(
             rtproj_str)
     else:
-        rtproj_freqs, rt_imag_freq = [], []
+        rtproj_freqs, rt_imag_freq = (), ()
 
     hrproj_str = output_strs[1]
     if hrproj_str is not None:
         hrproj_freqs, hr_imag_freq = projrot_io.reader.rpht_output(
             hrproj_str)
     else:
-        hrproj_freqs, hr_imag_freq = [], []
+        hrproj_freqs, hr_imag_freq = (), ()
 
     return rtproj_freqs, hrproj_freqs, rt_imag_freq, hr_imag_freq
 
