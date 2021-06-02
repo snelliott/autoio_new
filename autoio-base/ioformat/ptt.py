@@ -235,7 +235,6 @@ def idx_lst_from_line(line):
     """
 
     idxs = []
-    print('line', line)
     for string in line.strip().split(','):
         _strip_string = string.strip()
         if _strip_string.isdigit():
