@@ -123,8 +123,6 @@ def _df_mp2_energy(output_str):
     )
     block = apf.last_capture(block_ptt, output_str)
 
-    print('block', block)
-
     if block is not None:
         start_ptt = 'Total Energy' + app.SPACES + '=' + app.SPACES
         ene = ar.energy.read(block, start_ptt=start_ptt)
@@ -176,7 +174,7 @@ ENERGY_READER_DCT = {
     elstruct.par.Method.HF[0]: _hf_energy,
     elstruct.par.Method.DF_HF[0]: _df_hf_energy,
     elstruct.par.Method.Corr.MP2[0]: _mp2_energy,
-    elstruct.par.Method.Corr.DF_MP2[0]: _df_mp2_energy,
+    # elstruct.par.Method.Corr.DF_MP2[0]: _df_mp2_energy,
     elstruct.par.Method.Corr.CCSD[0]: _ccsd_energy,
     elstruct.par.Method.Corr.CCSD_T[0]: _ccsd_t_energy,
 }

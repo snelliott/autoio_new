@@ -120,17 +120,17 @@ class Method():
                 Program.PSI4: (
                     'mp2', 'mp2',
                     ('R',), ('U', 'R'))})
-        DF_MP2 = ('df-mp2',
-                  {Program.PSI4: (
-                   'mp2', 'mp2',
-                   ('R',), ('U', 'R'))})
+        # DF_MP2 = ('df-mp2',
+        #           {Program.PSI4: (
+        #            'mp2', 'mp2',
+        #            ('R',), ('U', 'R'))})
         CCSD = ('ccsd',
                 {Program.CFOUR2: (
                     'ccsd', 'ccsd',
                     ('R',), ('U', 'R',)),
-                 Program.PSI4: (
-                    'ccsd', 'ccsd',
-                    ('R',), ('U', 'R',)),
+                 # Program.PSI4: (
+                 #    'ccsd', 'ccsd',
+                 #    ('R',), ('U', 'R',)),
                  Program.MOLPRO2015: (
                      'ccsd', 'uccsd',
                      ('R',), ('R', 'R'))})
@@ -143,10 +143,10 @@ class Method():
                        ('R',), ('R',)),
                    Program.MRCC2018: (
                        'ccsd(t)', 'ccsd(t)',
-                       ('R',), ('R', 'R')),
-                   Program.PSI4: (
-                    'ccsd(t)', 'ccsd(t)',
-                    ('R',), ('U', 'R'))})
+                       ('R',), ('R', 'R'))})
+        # Program.PSI4: (
+        #  'ccsd(t)', 'ccsd(t)',
+        #  ('R',), ('U', 'R'))})
         CCSDT = ('ccsdt',
                  {Program.MOLPRO2015: (
                      'mrcc,method=ccsdt', 'mrcc,method=ccsdt',
@@ -769,7 +769,7 @@ class Option():
             'casscf_wavefunction',
             ['nelec', 'sym', 'spin', 'charge', 'nstates'])
 
-    class Correlation():
+    class Corr():
         """ Options for correlated methods"""
         ALL_ELEC_ = option.create('all_electron')
 

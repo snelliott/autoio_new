@@ -1,5 +1,5 @@
 !===================================================
-!  GLOBAL KEYWORD SECTION
+!  GLOBAL KEYWORDS
 !===================================================
 Temperature(step[K],size)              100    30
 RelativeTemperatureIncrement           0.001

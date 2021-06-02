@@ -82,8 +82,13 @@ def read(string,
 
     block_ptt_ = block_ptt_ if start_ptt is None else start_ptt + block_ptt_
 
-    block_str = (apf.last_capture(block_ptt_, string, case=case) if last else
-                 apf.first_capture(block_ptt_, string, case=case))
+    if block_ptt_ is not None:
+        if last:
+            block_str = apf.last_capture(block_ptt_, string, case=case)
+        else:
+            block_str = apf.first_capture(block_ptt_, string, case=case)
+    else:
+        block_str = None
 
     if block_str is not None:
         lines = block_str.splitlines()
