@@ -348,7 +348,6 @@ class Method():
         return 'df-' in standard_case(name)
 
 
-
 def program_methods_info(prog):
     """ List methods available for a given program, with their information.
 

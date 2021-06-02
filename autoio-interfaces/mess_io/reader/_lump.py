@@ -1,6 +1,7 @@
 """ Read the merged wells from the auxiliary file
 """
 
+
 def merged_wells(mess_aux_str):
     """ Parse the auxiliary MESS output file string for all of the groups
         of wells which merged from a Master Equation simulation.

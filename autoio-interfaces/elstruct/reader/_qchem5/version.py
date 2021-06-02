@@ -3,9 +3,6 @@
     have program name and version together and return a tuple
 """
 
-import autoparse.pattern as app
-import autoparse.find as apf
-
 
 def program_name(output_str):
     """ Reads the program name from the output file string.
@@ -52,10 +49,3 @@ def _get_prog_string(output_str):
             break
 
     return prog_string
-
-
-if __name__ == '__main__':
-    with open('prop.out') as fobj:
-        OUTSTR = fobj.read()
-    print(program_version(OUTSTR))
-    print(program_name(OUTSTR))
