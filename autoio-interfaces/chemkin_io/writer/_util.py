@@ -22,8 +22,7 @@ def name_column_length(names):
     maxlen = 0
     for name in names:
         maxlen = max(maxlen, len(name))
-    if maxlen <= 9:
-        maxlen = 9
+    maxlen = max(maxlen, 9)
     names_len = str(maxlen + 3)
 
     return names_len
