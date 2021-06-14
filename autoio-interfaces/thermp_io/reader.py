@@ -4,6 +4,7 @@
 
 import autoparse.pattern as app
 import autoparse.find as apf
+from phydat import phycon
 
 
 def hf298k(output_str):
@@ -26,7 +27,7 @@ def hf298k(output_str):
 
     if caps:
         hfs = tuple(float(val) for val in caps)
-        hfs = hfs[0]
+        hfs = hfs[0] * phycon.KCAL2EH
     else:
         hfs = None
 

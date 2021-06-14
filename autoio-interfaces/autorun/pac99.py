@@ -88,8 +88,3 @@ def _check(output_strs):
         success = False
 
     return success
-
-
-# Old Run pac99
-# proc = subprocess.Popen('pac99', stdin=subprocess.PIPE)
-# proc.communicate(bytes(formula, 'utf-8'))
