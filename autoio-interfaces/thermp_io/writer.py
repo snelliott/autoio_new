@@ -3,6 +3,7 @@
 
 import os
 from ioformat import build_mako_str
+from phydat import phycon
 from thermp_io import util
 
 
@@ -18,7 +19,7 @@ def input_file(ntemps, formula, delta_h, enthalpy_temp=0.0, break_temp=1000.0):
         :type ntemps: int
         :param formula: chemical formula for species
         :type formula: str
-        :param delta_h: enthalpy of formation
+        :param delta_h: enthalpy of formation [Eh]
         :type delta_h: float
         :param enthalpy_temp: temperature corresponding to enthalpy
         :type enthalpy_temp: float
@@ -33,6 +34,9 @@ def input_file(ntemps, formula, delta_h, enthalpy_temp=0.0, break_temp=1000.0):
     for key, val in atom_dict.items():
         composition_str += '{0}  {1}\n'.format(key, val)
     composition_str = composition_str.rstrip()
+
+    # Get the delta H in kcal
+    delta_h = '{0:.3f}'.format(delta_h * phycon.EH2KCAL)
 
     # Create a fill value dictionary
     thermp_keys = {
