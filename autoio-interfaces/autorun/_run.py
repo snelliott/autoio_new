@@ -40,7 +40,10 @@ def from_input_string(script_str, run_dir, input_str,
             script_obj.write(script_str)
 
         # Make the script executable
-        os.chmod(script_name, mode=os.stat(script_name).st_mode | stat.S_IEXEC)
+        os.chmod(
+            script_name,
+            mode=(os.stat(script_name).st_mode |
+                  stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
 
         # Write the input string to the run directory
         with open(input_name, 'w') as input_obj:
@@ -132,7 +135,10 @@ def from_parallel_input_strings(script_str, run_dir, input_strs,
             script_obj.write(script_str)
 
         # Make the script executable
-        os.chmod(script_name, mode=os.stat(script_name).st_mode | stat.S_IEXEC)
+        os.chmod(
+            script_name,
+            mode=(os.stat(script_name).st_mode |
+                  stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
 
     # Write the inputs in each sub run dir
     for sub_run_dir, input_str in zip(sub_run_dirs, input_strs):
@@ -241,7 +247,10 @@ def run_script(script_str, run_dir, script_name=SCRIPT_NAME):
                 script_obj.write(script_str)
 
         # Make the script executable
-        os.chmod(script_name, mode=os.stat(script_name).st_mode | stat.S_IEXEC)
+        os.chmod(
+            script_name,
+            mode=(os.stat(script_name).st_mode |
+                  stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
 
         # Call the program
         try:
