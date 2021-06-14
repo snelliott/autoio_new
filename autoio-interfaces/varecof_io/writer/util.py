@@ -225,14 +225,11 @@ def divsur_frame_geom_script():
         geometries contained in the divsur.out file
         (only requires the divsur.inp file)
     """
-    # conv_cmd = [
-    #     os.path.join(SRC_PATH, 'convert_struct'),
-    #     'divsur.inp'
-    # ]
+
     conv_cmd = [
         '/lcrc/project/CMRP/amech/VaReCoF/build/convert_struct',
         'divsur.inp'
     ]
-    devnull = open(os.devnull, 'w')
-    subprocess.check_call(
-        conv_cmd, stdout=devnull, stderr=devnull)
+    with open(os.devnull, 'w') as nullfile:
+        subprocess.check_call(
+            conv_cmd, stdout=nullfile, stderr=nullfile)
