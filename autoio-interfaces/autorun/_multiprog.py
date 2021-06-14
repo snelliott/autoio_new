@@ -16,7 +16,8 @@ from autorun.mess import torsions as mess_torsions
 def projected_frequencies(mess_script_str, projrot_script_str, run_dir,
                           mess_hr_str, projrot_hr_str,
                           mess_geo, projrot_geo, hess,
-                          dist_cutoff_dct1=None, dist_cutoff_dct2=None):
+                          dist_cutoff_dct1=None, dist_cutoff_dct2=None,
+                          saddle=False):
     """ Compute the harmonic vibrational frequencies and ZPVE after projecting
         out the hindered rotors. Tests different cutoffs for defininig rotors
         and sees which reproduces the harmonic frequency result; takes that one
@@ -38,7 +39,8 @@ def projected_frequencies(mess_script_str, projrot_script_str, run_dir,
         rotors_str=projrot_hr_str, aux_dct=aux_dct1)
 
     if dist_cutoff_dct2 is not None:
-        dist_cutoff_dct2 = {('H', 'O'): 2.83459, ('H', 'C'): 2.83459}
+        dist_cutoff_dct2 = {('H', 'O'): 2.83459, ('H', 'C'): 2.83459,
+                            ('C', 'O'): 3.7807}
     rotor_dist2_str = projrot_io.writer.projection_distance_aux(
         dist_cutoff_dct=dist_cutoff_dct2)
     aux_dct2 = {'dist_rotpr.dat': rotor_dist2_str}
@@ -72,16 +74,15 @@ def projected_frequencies(mess_script_str, projrot_script_str, run_dir,
         proj_freqs = rth_freqs2
         proj_imag = rt_imag2
         proj_zpe = harm_zpe_notors_2
-    print('imag test autorun', rt_imag1, rt_imag2, proj_imag)
 
-    # # Check imaginary frequencies and set freqs
-    # if saddle:
-    #     if len(proj_imag_freqs) > 1:
-    #         ioprinter.warning_message(
-    #            'There is more than one imaginary frequency')
-    #     proj_imag = max(proj_imag_freqs)
-    # else:
-    #     proj_imag = None
+    # Check imaginary frequencies and set freqs
+    if saddle:
+        if len(proj_imag) > 1:
+            print(
+               'There is more than one imaginary frequency')
+        proj_imag = max(proj_imag)
+    else:
+        proj_imag = None
 
     # Check if there are significant differences caused by the rotor projection
     diff_tors_zpe *= phycon.EH2KCAL
@@ -100,6 +101,8 @@ def thermo(thermp_script_str, pac99_script_str, run_dir,
            pf_str, name, formula, hform0,
            enthalpyt=0.0, breakt=1000.0, convert=False):
     """ Runs ThermP and PAC99 together and parse out the results
+
+        return hform298 k in Eh
     """
 
     # Obtain the temperatures from the pf.dat file used to fit the thermo
