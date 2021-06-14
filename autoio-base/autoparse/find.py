@@ -1,5 +1,4 @@
-"""
-autoparse.find
+""" autoparse.find
 **************
 
 Extract information from a file using re patterns.
@@ -18,6 +17,15 @@ from autoparse._pattern import maybe as _maybe
 
 def has_match(pattern, string, case=True):
     """ does this string have a pattern match?
+
+    :param pattern: pattern to search for
+    :type pattern: str
+    :param string: string to search
+    :type string: str
+    :param case: if capitalization matters
+    :type case: bool
+    :return: is there a match
+    :rtype: bool
     """
     match = _re_search(pattern, string, case=case)
     return match is not None
@@ -25,6 +33,15 @@ def has_match(pattern, string, case=True):
 
 def full_match(pattern, string, case=True):
     """ does this pattern match this *entire* string?
+
+    :param pattern: pattern to search for
+    :type pattern: str
+    :param string: string to search
+    :type string: str
+    :param case: if capitalization matters
+    :type case: bool
+    :return: does it fully match
+    :rtype: bool
     """
     pattern_ = _STRING_START + pattern + _STRING_END
     return has_match(pattern_, string, case=case)
@@ -32,6 +49,15 @@ def full_match(pattern, string, case=True):
 
 def starts_with(pattern, string, case=True):
     """ does the string start with this pattern
+
+    :param pattern: pattern to search for
+    :type pattern: str
+    :param string: string to search
+    :type string: str
+    :param case: if capitalization matters
+    :type case: bool
+    :return: does it start with the pattern
+    :rtype: bool
     """
     start_pattern = _STRING_START + pattern
     return has_match(start_pattern, string, case=case)
@@ -39,6 +65,15 @@ def starts_with(pattern, string, case=True):
 
 def ends_with(pattern, string, case=True):
     """ does the string end with this pattern
+
+    :param pattern: pattern to search for
+    :type pattern: str
+    :param string: string to search
+    :type string: str
+    :param case: if capitalization matters
+    :type case: bool
+    :return: does it end with the pattern
+    :rtype: bool
     """
     end_pattern = pattern + _STRING_END
     return has_match(end_pattern, string, case=case)
@@ -52,6 +87,15 @@ def matcher(pattern, case=True):
 
 def all_captures(pattern, string, case=True):
     """ capture(s) for all matches of a capturing pattern
+
+    :param pattern: pattern to search for
+    :type pattern: str
+    :param string: string to search
+    :type string: str
+    :param case: if capitalization matters
+    :type case: bool
+    :return: all the instances of this pattern
+    :rtype: list
     """
     caps = _re_findall(pattern, string, case=case)
     if caps is not None:
@@ -63,6 +107,15 @@ def all_captures(pattern, string, case=True):
 
 def first_capture(pattern, string, case=True):
     """ capture(s) from first match for a capturing pattern
+
+    :param pattern: pattern to search for
+    :type pattern: str
+    :param string: string to search
+    :type string: str
+    :param case: if capitalization matters
+    :type case: bool
+    :return: first instance of this pattern
+    :rtype: str
     """
     match = _re_search(pattern, string, case=case)
     return (match.group(1) if match and len(match.groups()) == 1 else
@@ -71,6 +124,15 @@ def first_capture(pattern, string, case=True):
 
 def last_capture(pattern, string, case=True):
     """ capture(s) from first match for a capturing pattern
+
+    :param pattern: pattern to search for
+    :type pattern: str
+    :param string: string to search
+    :type string: str
+    :param case: if capitalization matters
+    :type case: bool
+    :return: last instance of this pattern
+    :rtype: str
     """
     caps_lst = all_captures(pattern, string, case=case)
     return caps_lst[-1] if caps_lst else None

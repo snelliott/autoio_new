@@ -23,6 +23,7 @@ GEN_PTT = app.capturing(app.one_or_more(app.LINE_FILL))
 def keyword_value_ptt(key=None):
     """ Build a regex pattern to search for a keyword and its value, defined as
             key = value
+
         :param key: string for a specific key to find
         :type key: str
         :rtype: str
@@ -36,6 +37,7 @@ def keyword_value_ptt(key=None):
 def paren_block_ptt(key=None):
     """ Build a regex pattern to search for a keyword and its value, defined as
             key = (value)
+
         :param key: string for a specific key to find
         :type key: str
         :rtype: str
@@ -114,6 +116,7 @@ def keyword_value_blocks(string, key=None):
 
 def named_end_blocks(string, header, footer=None):
     """ A pattern for a certian block
+
         rtype: dict[str: str]
     """
     caps = apf.all_captures(
@@ -132,6 +135,7 @@ def symb_block(string, symb, header):
 
 def end_block(string, header, name=None, footer=None):
     """ A pattern for a certain block
+
         rtype: str
     """
     _ptt = end_block_ptt(header, name=name, footer=footer)
@@ -144,6 +148,7 @@ def end_block(string, header, name=None, footer=None):
 def keyword_dcts_from_blocks(block_dct):
     """ Build a dict of dicts from string blocks that are stored in
         a dictionary.
+
         :param block_dct: dictionary of strings with a name for a key
         :type block_dct: dict[str: str]
         :rtype: dict[str: dict[str:str]]
@@ -258,6 +263,7 @@ def format_keyword_values(keyword, value):
     """ Takes a keyword-value pair in string formats and then returns
         the pair with their types matching the internal Python version.
         Convert string to string, boolean, int, float, etc
+
         :param key_val_pair:  keyword and its
         :type key_val_pair: (str, str)
         :rtype: (type(str), type(str))
