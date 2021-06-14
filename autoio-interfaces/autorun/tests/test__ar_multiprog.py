@@ -44,7 +44,6 @@ def test__thermo():
             PF_STR, NAME, FORMULA, HFORM0,
             enthalpyt=ENTHALPYT, breakt=BREAKT, convert=True)
 
-
         assert numpy.isclose(hform298, ref_hform298)
         assert nasa_poly == read_text_file(['data'], 'ch4nasa.ckin', path=PATH)
 
