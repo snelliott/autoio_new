@@ -93,13 +93,21 @@ jobs:
                     pylint --rcfile=../.pylintrc $(git ls-files '*.py')
             - store_artifacts:
                     path: autoto-interfaces/chemkin_io/htmlcov
+            - store_artifacts:
                     path: autoto-interfaces/intder_io/htmlcov
+            - store_artifacts:
                     path: autoto-interfaces/pac99_io/htmlcov
+            - store_artifacts:
                     path: autoto-interfaces/projrot_io/htmlcov
+            - store_artifacts:
                     path: autoto-interfaces/polyrate_io/htmlcov
+            - store_artifacts:
                     path: autoto-interfaces/thermp_io/htmlcov
+            - store_artifacts:
                     path: autoto-interfaces/varecof_io/htmlcov
+            - store_artifacts:
                     path: autoto-interfaces/onedmin_io/htmlcov
+            - store_artifacts:
                     path: autoto-interfaces/mess_io/htmlcov
     test-autoio-base:
         docker:
@@ -152,8 +160,11 @@ jobs:
                     pylint --rcfile=../.pylintrc $(git ls-files '*.py')
             - store_artifacts:
                     path: autoto-base/autoparse/htmlcov
+            - store_artifacts:
                     path: autoto-base/autoread/htmlcov
+            - store_artifacts:
                     path: autoto-base/autowrite/htmlcov
+            - store_artifacts:
                     path: autoto-base/ioformat/htmlcov
 workflows:
     version: 2
