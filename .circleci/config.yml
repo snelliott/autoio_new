@@ -3,7 +3,6 @@ jobs:
     test-autoio-interfaces:
         docker:
             - image: continuumio/miniconda3
-        working_directory: ~/autoio-interfaces
         steps:
             - checkout  # checkout the code
             - run: 
@@ -112,7 +111,6 @@ jobs:
     test-autoio-base:
         docker:
             - image: continuumio/miniconda3
-        working_directory: ~/autoio-base
         steps:
             - checkout  # checkout the code
             - run: 
