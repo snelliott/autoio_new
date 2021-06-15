@@ -23,67 +23,67 @@ jobs:
                 command: |
                     cd autoio-interfaces/chemkin_io
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io
+                    pytest . -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io --cov-report=html
             - run:
                 name: Test intder_io
                 command: |
                     cd autoio-interfaces/intder_io
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=intder_io --pyargs intder_io
+                    pytest . -v --disable-pytest-warnings --cov=intder_io --pyargs intder_io --cov-report=html
             - run:
                 name: Test pac99_io
                 command: |
                     cd autoio-interfaces/pac99_io
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=pac99_io --pyargs pac99_io
+                    pytest . -v --disable-pytest-warnings --cov=pac99_io --pyargs pac99_io --cov-report=html
             - run:
                 name: Test projrot_io
                 command: |
                     cd autoio-interfaces/projrot_io
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
+                    pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io --cov-report=html
             - run:
                 name: Test polyrate_io
                 command: |
                     cd autoio-interfaces/polyrate_io
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=polyrate_io --pyargs polyrate_io
+                    pytest . -v --disable-pytest-warnings --cov=polyrate_io --pyargs polyrate_io --cov-report=html
             - run:
                 name: Test thermp_io
                 command: |
                     cd autoio-interfaces/thermp_io
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=thermp_io --pyargs thermp_io
+                    pytest . -v --disable-pytest-warnings --cov=thermp_io --pyargs thermp_io --cov-report=html
             - run:
                 name: Test varecof_io
                 command: |
                     cd autoio-interfaces/varecof_io
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=varecof_io --pyargs varecof_io
+                    pytest . -v --disable-pytest-warnings --cov=varecof_io --pyargs varecof_io --cov-report=html
             - run:
                 name: Test onedmin_io
                 command: |
                     cd autoio-interfaces/onedmin_io
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=onedmin_io --pyargs onedmin_io
+                    pytest . -v --disable-pytest-warnings --cov=onedmin_io --pyargs onedmin_io --cov-report=html
             - run:
                 name: Test mess_io
                 command: |
                     cd autoio-interfaces/mess_io
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io
+                    pytest . -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io --cov-report=html
             - run:
                 name: Test autorun
                 command: |
                     cd autoio-interfaces/autorun
                     source activate autoio-interfaces-env
-                    pytest . -v --disable-pytest-warnings --cov=autorun --pyargs autorun
+                    pytest . -v --disable-pytest-warnings --cov=autorun --pyargs autorun --cov-report=html
             - run:
                 name: Test elstruct
                 command: |
                     cd autoio-interfaces/elstruct
                     source activate autoio-interfaces-env
-                    pytest -v --cov=elstruct .
+                    pytest -v --cov=elstruct . --cov-report=html
             - run:
                 name: Test autoio-interfaces_pylint
                 command: |
@@ -91,6 +91,16 @@ jobs:
                     source activate autoio-interfaces-env
                     flake8 --exit-zero ../autoio-interfaces
                     pylint --rcfile=../.pylintrc $(git ls-files '*.py')
+            - store_artifacts:
+                    path: autoto-interfaces/chemkin_io/htmlcov
+                    path: autoto-interfaces/intder_io/htmlcov
+                    path: autoto-interfaces/pac99_io/htmlcov
+                    path: autoto-interfaces/projrot_io/htmlcov
+                    path: autoto-interfaces/polyrate_io/htmlcov
+                    path: autoto-interfaces/thermp_io/htmlcov
+                    path: autoto-interfaces/varecof_io/htmlcov
+                    path: autoto-interfaces/onedmin_io/htmlcov
+                    path: autoto-interfaces/mess_io/htmlcov
     test-autoio-base:
         docker:
             - image: continuumio/miniconda3
@@ -140,6 +150,11 @@ jobs:
                     source activate autoio-base-env
                     flake8 --exit-zero ../autoio-base
                     pylint --rcfile=../.pylintrc $(git ls-files '*.py')
+            - store_artifacts:
+                    path: autoto-base/autoparse/htmlcov
+                    path: autoto-base/autoread/htmlcov
+                    path: autoto-base/autowrite/htmlcov
+                    path: autoto-base/ioformat/htmlcov
 workflows:
     version: 2
     build-all:
