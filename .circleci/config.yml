@@ -1,9 +1,9 @@
 version: 2
 jobs:
-    test-autoio:
+    test-autoio-interfaces:
         docker:
             - image: continuumio/miniconda3
-        working_directory: ~/autoio     
+        working_directory: ~/autoio-interfaces
         steps:
             - checkout  # checkout the code
             - run: 
@@ -11,96 +11,90 @@ jobs:
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    conda env create -f autoio/environment.yml
+                    conda env create -f autoio-interfaces/environment.yml
             - run:
-                name: Build/install autoio
+                name: Build/install autoio-interfaces
                 command: |
-                    source activate autoio-env
-                    cd autoio
+                    source activate autoio-interfaces-env
+                    cd autoio-interfaces
                     python setup.py install
-            - run:
-                name: Test autoread
-                command: |
-                    cd autoio/autoread
-                    source activate autoio-env
-                    pytest . -v --disable-pytest-warnings --cov=autoread --pyargs autoread
-            - run:
-                name: Test autowrite
-                command: |
-                    cd autoio/autowrite
-                    source activate autoio-env
-                    pytest . -v --disable-pytest-warnings --cov=autowrite --pyargs autowrite
             - run:
                 name: Test chemkin_io
                 command: |
-                    cd autoio/chemkin_io
-                    source activate autoio-env
+                    cd autoio-interfaces/chemkin_io
+                    source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io
             - run:
                 name: Test intder_io
                 command: |
-                    cd autoio/intder_io
-                    source activate autoio-env
+                    cd autoio-interfaces/intder_io
+                    source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=intder_io --pyargs intder_io
-            - run:
-                name: Test ioformat
-                command: |
-                    cd autoio/ioformat
-                    source activate autoio-env
-                    pytest . -v --disable-pytest-warnings --cov=ioformat --pyargs ioformat
             - run:
                 name: Test pac99_io
                 command: |
-                    cd autoio/pac99_io
-                    source activate autoio-env
+                    cd autoio-interfaces/pac99_io
+                    source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=pac99_io --pyargs pac99_io
             - run:
                 name: Test projrot_io
                 command: |
-                    cd autoio/projrot_io
-                    source activate autoio-env
+                    cd autoio-interfaces/projrot_io
+                    source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io
             - run:
                 name: Test polyrate_io
                 command: |
-                    cd autoio/polyrate_io
-                    source activate autoio-env
+                    cd autoio-interfaces/polyrate_io
+                    source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=polyrate_io --pyargs polyrate_io
             - run:
                 name: Test thermp_io
                 command: |
-                    cd autoio/thermp_io
-                    source activate autoio-env
+                    cd autoio-interfaces/thermp_io
+                    source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=thermp_io --pyargs thermp_io
             - run:
                 name: Test varecof_io
                 command: |
-                    cd autoio/varecof_io
-                    source activate autoio-env
+                    cd autoio-interfaces/varecof_io
+                    source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=varecof_io --pyargs varecof_io
             - run:
                 name: Test onedmin_io
                 command: |
-                    cd autoio/onedmin_io
-                    source activate autoio-env
+                    cd autoio-interfaces/onedmin_io
+                    source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=onedmin_io --pyargs onedmin_io
             - run:
                 name: Test mess_io
                 command: |
-                    cd autoio/mess_io
-                    source activate autoio-env
+                    cd autoio-interfaces/mess_io
+                    source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io
             - run:
-                name: Test autoio_pylint
+                name: Test autorun
                 command: |
-                    cd autoio
-                    source activate autoio-env
-                    flake8 --exit-zero ../autoio
-                    pylint --rcfile=../../.pylintrc autoio
-    test-autoparse:
+                    cd autoio-interfaces/autorun
+                    source activate autoio-interfaces-env
+                    pytest . -v --disable-pytest-warnings --cov=autorun --pyargs autorun
+            - run:
+                name: Test elstruct
+                command: |
+                    cd autoio-interfaces/elstruct
+                    source activate autoio-interfaces-env
+                    pytest -v --cov=elstruct .
+            - run:
+                name: Test autoio-interfaces_pylint
+                command: |
+                    cd autoio-interfaces
+                    source activate autoio-interfaces-env
+                    flake8 --exit-zero ../autoio-interfaces
+                    pylint --rcfile=../.pylintrc $(git ls-files '*.py')
+    test-autoio-base:
         docker:
             - image: continuumio/miniconda3
-        working_directory: ~/autoparse     
+        working_directory: ~/autoio-base
         steps:
             - checkout  # checkout the code
             - run: 
@@ -108,78 +102,47 @@ jobs:
                 command: |
                     apt-get update --yes
                     apt-get install --yes libxrender-dev build-essential
-                    conda env create -f autoparse/environment.yml
+                    conda env create -f autoio-base/environment.yml
             - run:
-                name: Build/install autoparse
+                name: Build/install autoio-base
                 command: |
-                    source activate autoparse-env
-                    cd autoparse
+                    source activate autoio-base-env
+                    cd autoio-base
                     python setup.py install
             - run:
                 name: Test autoparse
                 command: |
-                    source activate autoparse-env
-                    cd autoparse/autoparse
-                    pytest -v --disable-pytest-warnings --cov=autoparse  --pyargs autoparse
-                    flake8 --exit-zero ../autoparse
-                    pylint --rcfile=../../.pylintrc autoparse
-    test-autorun:
-        docker:
-            - image: continuumio/miniconda3
-        working_directory: ~/autorun
-        steps:
-            - checkout  # checkout the code
-            - run: 
-                name: Create conda environment
-                command: |
-                    apt-get update --yes
-                    apt-get install --yes libxrender-dev build-essential
-                    conda env create -f autorun/environment.yml
+                    source activate autoio-base-env
+                    cd autoio-base/autoparse
+                    pytest . -v --disable-pytest-warnings --cov=autoparse  --pyargs autoparse
             - run:
-                name: Build/install autorun
+                name: Test autoread
                 command: |
-                    source activate autorun-env
-                    cd autorun
-                    python setup.py install
-                    cd ~
+                    cd autoio-base/autoread
+                    source activate autoio-base-env
+                    pytest . -v --disable-pytest-warnings --cov=autoread --pyargs autoread
             - run:
-                name: Test autorun
+                name: Test autowrite
                 command: |
-                    source activate autorun-env
-                    cd autorun/autorun
-                    pytest . -v --disable-pytest-warnings --cov=autorun --pyargs autorun
-                    flake8 --exit-zero ../autorun
-                    pylint --rcfile=../../.pylintrc autorun
-    test-elstruct:
-        docker:
-            - image: continuumio/miniconda3
-        working_directory: ~/elstruct
-        steps:
-            - checkout  # checkout the code
-            - run: 
-                name: Create conda environment
-                command: |
-                    apt-get update --yes
-                    apt-get install --yes libxrender-dev build-essential
-                    conda env create -f elstruct/environment.yml
+                    cd autoio-base/autowrite
+                    source activate autoio-base-env
+                    pytest . -v --disable-pytest-warnings --cov=autowrite --pyargs autowrite
             - run:
-                name: Test elstruct
+                name: Test ioformat
                 command: |
-                    source activate elstruct-env
-                    # temporary fix
-                    conda install -c conda-forge pylint>=2.3
-                    # temporary fix
-                    cd elstruct
-                    python setup.py install
-                    cd elstruct
-                    pytest -v --cov=elstruct .
-                    flake8 --exit-zero ../../elstruct
-                    pylint --rcfile=../../.pylintrc elstruct
+                    cd autoio-base/ioformat
+                    source activate autoio-base-env
+                    pytest . -v --disable-pytest-warnings --cov=ioformat --pyargs ioformat
+            - run:
+                name: Test autoio-base_pylint
+                command: |
+                    cd autoio-base
+                    source activate autoio-base-env
+                    flake8 --exit-zero ../autoio-base
+                    pylint --rcfile=../.pylintrc $(git ls-files '*.py')
 workflows:
     version: 2
     build-all:
         jobs:
-            - test-autoio
-            - test-autoparse
-            - test-autorun
-            - test-elstruct
+            - test-autoio-base
+            - test-autoio-interfaces

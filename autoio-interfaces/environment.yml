@@ -1,0 +1,37 @@
+name: autoio-interfaces-env
+
+channels:
+    - auto-mech
+    - psi4
+    - rdkit
+    - openbabel
+    - conda-forge
+
+dependencies:
+    - gfortran_linux-64  # [linux]
+    - python=3.7
+    - numpy=1.15.4
+    - scipy=1.5.0
+    - pyyaml
+    - mako
+    - networkx
+    - matplotlib
+    - pytest
+    - pytest-cov
+    - future
+    - flake8
+    - pylint
+    - psi4::psi4
+    - rdkit::rdkit
+    - openbabel::openbabel
+    - conda-forge::qcelemental
+    - auto-mech::autochem
+    - auto-mech::autoio-base
+    - auto-mech::x2z
+    - auto-mech::mess
+    - auto-mech::projrot
+    - auto-mech::pac99
+    - auto-mech::thermp
+    # - auto-mech::autoio-interfaces
+    # - auto-mech::autofile
+    # - auto-mech::mechanalyzer
