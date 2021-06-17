@@ -43,7 +43,6 @@ def internals_format(zma):
     # Write the stretch, bend, and torsion coordinates
     intl_str = ''
     for i, row in enumerate(key_mat[1:]):
-        print(row)
         intl_str += 'STRE{0:>6d}{1:>6d}\n'.format(
             i+1, row[0])
     for i, row in enumerate(key_mat[2:]):

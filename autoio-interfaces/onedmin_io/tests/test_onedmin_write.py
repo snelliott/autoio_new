@@ -37,6 +37,23 @@ def test__input_file():
     assert onedmin_inp1_str == read_text_file(['data'], 'onedmin1.inp', PATH)
     assert onedmin_inp2_str == read_text_file(['data'], 'onedmin2.inp', PATH)
 
+    # Test for random seed
+    onedmin_inp3_str = onedmin_io.writer.input_file(
+        NSAMP, SMIN, SMAX, ranseed=None)
+    lines = onedmin_inp3_str.strip().splitlines()
+
+    # Convert first line to int (should work if ranseed is correct)
+    # Check if it falls in allowed range set in function
+    seed = int(lines[0])
+    assert 1.0e7 < seed < 9.9e7
+
+    # Check remaining lines
+    assert lines[1] == '10'
+    assert lines[2] == 'target.xyz'
+    assert lines[3] == 'bath.xyz'
+    assert lines[4] == '2.000 5.000'
+    assert lines[5] == '2'
+
 
 def test__submission_script():
     """ test onedmin_io.writer.submission_script
