@@ -18,6 +18,26 @@ ATOM_DIST_MIN = 1.05
 EXCESS_ENE_TEMP = 10000.0
 WELL_EXTEND = 20000.0
 
+# For messhr input
+GEO = (
+    ('C', (0.0, 0.0, 0.0)),
+    ('C', (0.0, 0.0, 2.886481067591814)),
+    ('H', (0.0, 1.9289757370835872, -0.7491252306539922)),
+    ('H', (1.6705367921659746, -0.9644784199111662, -0.7491252306539922)),
+    ('H', (-1.6705367921659746, -0.9644784199111662, -0.7491252306539922)),
+    ('H', (1.6705367921659746, 0.9644784199111662, 3.6356062982458064)),
+    ('H', (-0.0, -1.9289757370835872, 3.6356062982458064)),
+    ('H', (-1.6705367921659746, 0.9644784199111662, 3.6356062982458064)))
+HR_STR = """Rotor  Hindered   # D5
+  Group                  3   4   5
+  Axis                   1   2
+  Symmetry               3
+  Potential[kcal/mol]    8
+    0.00    0.45    1.55    2.66    3.13    2.66
+    1.55    0.45
+End  ! HindRot\n"""
+
+
 # For messpf output
 FORMULA = 'CH4O'
 THM_TEMPS = numpy.array([
@@ -73,12 +93,18 @@ def test__global_rates_input():
     glob1_str = mess_io.writer.global_rates_input(
         TEMPS, PRESSURES)
     glob2_str = mess_io.writer.global_rates_input(
+        TEMPS, PRESSURES, well_extend=None)
+    glob3_str = mess_io.writer.global_rates_input(
         TEMPS, PRESSURES,
         excess_ene_temp=EXCESS_ENE_TEMP,
         well_extend=WELL_EXTEND)
 
+    with open('a', 'w') as f:
+        f.write(glob2_str)
+
     assert glob1_str == read_text_file(['data', 'inp'], 'glob_rxn1.inp', PATH)
     assert glob2_str == read_text_file(['data', 'inp'], 'glob_rxn2.inp', PATH)
+    assert glob3_str == read_text_file(['data', 'inp'], 'glob_rxn3.inp', PATH)
 
 
 def test__global_pf_input():
@@ -102,6 +128,14 @@ def test__global_pf_input():
         ['data', 'inp'], 'glob_pf2.inp', PATH, strip=True)
     assert glob3_str == read_text_file(
         ['data', 'inp'], 'glob_pf3.inp', PATH, strip=True)
+
+
+def test__messhr_inp_str():
+    """ test mess_io.writer.messhr_inp_str_str
+    """
+
+    messhr_str = mess_io.writer.messhr_inp_str(GEO, HR_STR)
+    assert messhr_str == read_text_file(['data', 'inp'], 'full_hr.inp', PATH)
 
 
 def test__full_str():

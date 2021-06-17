@@ -105,7 +105,6 @@ def test__bimolecular_writer():
 def test__ts_sadpt_writer():
     """ ts sadpt writer
     """
-    # fix
 
     ts_sadpt1_str = mess_io.writer.ts_sadpt(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR)
@@ -115,7 +114,6 @@ def test__ts_sadpt_writer():
     ts_sadpt2_str = mess_io.writer.ts_sadpt(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR,
         zero_ene=ENE, tunnel=TUNNEL_STR)
-    print(ts_sadpt2_str)
     assert ts_sadpt2_str == read_text_file(
         ['data', 'inp'], 'ts_sadpt2.inp', PATH, strip=True)
 
@@ -157,17 +155,18 @@ def test__dummy_writer():
     assert dummy2_str == read_text_file(['data', 'inp'], 'dummy2.inp', PATH)
 
 
-def __configs_union_writer():
+def test__configs_union_writer():
     """ tests mess_io.writer.configs_union
     """
 
-    mol_strings = [MOL_MESS_STR for _ in range(3)]
+    mol_strs = [MOL_MESS_STR for _ in range(3)]
+    tunnel_strs = [TUNNEL_STR for _ in range(3)]
     zero_enes = (1.00, 2.00, 3.00)
 
-    union_str = mess_io.writer.configs_union(
-        mol_strings, zero_enes)
-    assert union_str == read_text_file(['data', 'inp'], 'union.inp', PATH)
+    union1_str = mess_io.writer.configs_union(
+        mol_strs, zero_enes)
+    union2_str = mess_io.writer.configs_union(
+        mol_strs, zero_enes, tunnel_strs=tunnel_strs)
 
-
-if __name__ == '__main__':
-    test__ts_sadpt_writer()
+    assert union1_str == read_text_file(['data', 'inp'], 'union1.inp', PATH)
+    assert union2_str == read_text_file(['data', 'inp'], 'union2.inp', PATH)

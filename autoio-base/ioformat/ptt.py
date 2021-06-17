@@ -247,17 +247,6 @@ def idx_lst_from_line(line):
 
 
 # Formats the values associated with various keywords
-def format_tsk_keywords(keyword_lst):
-    """ format keywords string
-    """
-    keyword_dct = {}
-    for keyword in keyword_lst:
-        [key, val] = keyword.split('=')
-        keyword_dct[key] = set_value_type(val)
-
-    return keyword_dct
-
-
 def format_keyword_values(keyword, value):
     """ Takes a keyword-value pair in string formats and then returns
         the pair with their types matching the internal Python version.
@@ -267,8 +256,6 @@ def format_keyword_values(keyword, value):
         :type key_val_pair: (str, str)
         :rtype: (type(str), type(str))
     """
-
-    # [keyword, value] = key_val_pair
 
     # Format the keyword
     frmtd_keyword = set_value_type(keyword.strip().lower())
