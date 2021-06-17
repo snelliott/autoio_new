@@ -2,8 +2,8 @@
 """
 
 import numpy
-import autoread
 import autoparse.pattern as app
+import autoread
 
 
 ZMA1_STR = (
@@ -214,10 +214,7 @@ def test_zmat():
 
     symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
         ZMA4_STR,
-        mat_entry_start_ptt=',',
-        mat_entry_sep_ptt=',',
-        setv_sep_ptt=app.padded(app.one_of_these(['', app.NEWLINE])),
-        last=False)
+        setv_sep_ptt=app.padded(app.one_of_these(['', app.NEWLINE])))
     assert symbs == ('C',)
     assert key_mat == ((None, None, None),)
     assert name_mat == ((None, None, None),)
@@ -250,6 +247,14 @@ def test_zmat():
                    (2.06458, 108.982, 240.404),
                    (1.83748, 107.091, 299.596))
     _val_mats_similar(val_mat, ref_val_mat)
+
+    # Check finding nothing (using fake start ptt not in ZMA1_STR)
+    symbs, key_mat, name_mat, val_mat = autoread.zmat.read(
+        ZMA1_STR, start_ptt='FAKE ZMA HEAD')
+    assert symbs is None
+    assert key_mat is None
+    assert name_mat is None
+    assert val_mat is None
 
 
 def test__matrix():
@@ -384,6 +389,30 @@ def test__matrix():
         (0.976, 96.77, None),
         (0.976, 96.77, 129.37))
     _val_mats_similar(name_mat, ref_name_mat)
+
+    # Check grabbing first zma (ZMA5 here)
+    symbs, key_mat, name_mat = autoread.vmat.read(
+        ZMA5_STR + '\n\n\n' + ZMA3_STR + '\n\n\n' + ZMA1_STR,
+        name_ptt=app.FLOAT,
+        last=False)
+    assert symbs == ('O', 'O', 'H', 'H')
+    assert key_mat == ((None, None, None),
+                       (1, None, None),
+                       (1, 2, None),
+                       (2, 1, 3))
+    ref_name_mat = (
+        (None, None, None),
+        (1.454, None, None),
+        (0.976, 96.77, None),
+        (0.976, 96.77, 129.37))
+    _val_mats_similar(name_mat, ref_name_mat)
+
+    # Check grabbing nothing
+    symbs, key_mat, name_mat = autoread.vmat.read(
+        '', name_ptt=app.FLOAT)
+    assert symbs is None
+    assert key_mat is None
+    assert name_mat is None
 
 
 def test__setval():

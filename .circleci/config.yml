@@ -108,6 +108,10 @@ jobs:
                     path: autoio-interfaces/onedmin_io/htmlcov
             - store_artifacts:
                     path: autoio-interfaces/mess_io/htmlcov
+            - store_artifacts:
+                    path: autoio-interfaces/elstruct/htmlcov
+            - store_artifacts:
+                    path: autoio-interfaces/autorun/htmlcov
     test-autoio-base:
         docker:
             - image: continuumio/miniconda3
