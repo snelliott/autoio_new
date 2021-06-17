@@ -23,60 +23,70 @@ jobs:
                     cd autoio-interfaces/chemkin_io
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io --cov-report=html
+                    coverage report
             # - run:
             #    name: Test intder_io
             #    command: |
             #        cd autoio-interfaces/intder_io
             #        source activate autoio-interfaces-env
             #        pytest . -v --disable-pytest-warnings --cov=intder_io --pyargs intder_io --cov-report=html
+            #        coverage report
             - run:
                 name: Test pac99_io
                 command: |
                     cd autoio-interfaces/pac99_io
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=pac99_io --pyargs pac99_io --cov-report=html
+                    coverage report
             - run:
                 name: Test projrot_io
                 command: |
                     cd autoio-interfaces/projrot_io
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=projrot_io --pyargs projrot_io --cov-report=html
+                    coverage report
             - run:
                 name: Test polyrate_io
                 command: |
                     cd autoio-interfaces/polyrate_io
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=polyrate_io --pyargs polyrate_io --cov-report=html
+                    coverage report
             - run:
                 name: Test thermp_io
                 command: |
                     cd autoio-interfaces/thermp_io
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=thermp_io --pyargs thermp_io --cov-report=html
+                    coverage report
             - run:
                 name: Test varecof_io
                 command: |
                     cd autoio-interfaces/varecof_io
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=varecof_io --pyargs varecof_io --cov-report=html
+                    coverage report
             - run:
                 name: Test onedmin_io
                 command: |
                     cd autoio-interfaces/onedmin_io
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=onedmin_io --pyargs onedmin_io --cov-report=html
+                    coverage report
             - run:
                 name: Test mess_io
                 command: |
                     cd autoio-interfaces/mess_io
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=mess_io --pyargs mess_io --cov-report=html
+                    coverage report
             - run:
                 name: Test autorun
                 command: |
                     cd autoio-interfaces/autorun
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=autorun --pyargs autorun --cov-report=html
+                    coverage report
             - run:
                 name: Test elstruct
                 command: |
@@ -135,24 +145,28 @@ jobs:
                     source activate autoio-base-env
                     cd autoio-base/autoparse
                     pytest . -v --disable-pytest-warnings --cov=autoparse  --pyargs autoparse --cov-report=html
+                    coverage report
             - run:
                 name: Test autoread
                 command: |
                     cd autoio-base/autoread
                     source activate autoio-base-env
                     pytest . -v --disable-pytest-warnings --cov=autoread --pyargs autoread --cov-report=html
+                    coverage report
             - run:
                 name: Test autowrite
                 command: |
                     cd autoio-base/autowrite
                     source activate autoio-base-env
                     pytest . -v --disable-pytest-warnings --cov=autowrite --pyargs autowrite --cov-report=html
+                    coverage report
             - run:
                 name: Test ioformat
                 command: |
                     cd autoio-base/ioformat
                     source activate autoio-base-env
                     pytest . -v --disable-pytest-warnings --cov=ioformat --pyargs ioformat --cov-report=html
+                    coverage report
             - run:
                 name: Test autoio-base_pylint
                 command: |

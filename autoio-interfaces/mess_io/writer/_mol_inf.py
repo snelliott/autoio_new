@@ -308,7 +308,7 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
         template_keys=rotor_keys)
 
 
-def rotor_bundle(enegrid_step=5.0, enegrid_max=50.0,
+def rotor_bundle(enegrid_step=5.0, enegrid_max=50.0,  # pragma: no cover
                  quantm_st_max=100.0, mc_samp_size=2000.0):
     """ Write a HinderedRotor Bundle string
 
