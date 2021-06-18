@@ -203,10 +203,61 @@ def test__idx_line_parser():
     assert ioformat.ptt.idx_lst_from_line(lines[5]) == (24, 25, 26, 28, 29, 30)
 
 
-if __name__ == '__main__':
-    test__keyword_value_dct_parser()
-    test__keyword_value_block_parser()
-    test__end_block_parsers()
-    test__symb_block_parsers()
-    test__paren_block_parsers()
-    test__idx_line_parser()
+def test__keyword_line_parsers():
+    """ test ioformat.ptt.format_keyword_values
+    """
+
+    # keys
+    key1 = 'key1'
+    key2 = 'KEY1'
+
+    # vals
+    val1 = 'val1'
+    val2 = '[[D1, D2, D3], [D4, D5], [D6]]'
+    val3 = '[[d1, d2, d3], [d4, d5], [d6]]'
+    val4 = '[1, 1.0, 1.0e5, true, false, none, mult]'
+    val5 = '[1:a, 2:b]'
+
+    formtd_key, formtd_val = ioformat.ptt.format_keyword_values(key1, val1)
+    assert formtd_key == 'key1'
+    assert formtd_val == 'val1'
+
+    formtd_key, formtd_val = ioformat.ptt.format_keyword_values(key2, val1)
+    assert formtd_key == 'key1'
+    assert formtd_val == 'val1'
+
+    formtd_key, formtd_val = ioformat.ptt.format_keyword_values(key1, val2)
+    assert formtd_key == 'key1'
+    assert formtd_val == (('D1', 'D2', 'D3'), ('D4', 'D5'), ('D6',))
+
+    formtd_key, formtd_val = ioformat.ptt.format_keyword_values(key1, val3)
+    assert formtd_key == 'key1'
+    assert formtd_val == (('D1', 'D2', 'D3'), ('D4', 'D5'), ('D6',))
+
+    formtd_key, formtd_val = ioformat.ptt.format_keyword_values(key1, val4)
+    assert formtd_key == 'key1'
+    assert formtd_val == (1, 1.0, 1.0e5, True, False, None, 'mult')
+
+    formtd_key, formtd_val = ioformat.ptt.format_keyword_values(key1, val5)
+    assert formtd_key == 'key1'
+    assert formtd_val == ((1.0, 'a'), (2.0, 'b'))
+
+
+def test__misc():
+    """ test misc
+    """
+
+    block = (
+        "key1 = 1\n"
+        "key2 = 1.0\n"
+        "key3 = 1.0e5"
+    )
+
+    assert ioformat.ptt.keyword_dct_from_block(block, formatvals=False) == {
+        "key1": "1",
+        "key2": "1.0",
+        "key3": "1.0e5"
+    }
+
+    block = "( a b c d e )"
+    assert ioformat.ptt.values_from_block(block) is None  # checks for number
