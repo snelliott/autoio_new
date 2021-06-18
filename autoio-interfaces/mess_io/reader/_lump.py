@@ -1,8 +1,10 @@
 """ Read the merged wells from the auxiliary file
 """
 
+import numpy
 
-def merged_wells(mess_aux_str):
+
+def merged_wells(mess_aux_str, temp):
     """ Parse the auxiliary MESS output file string for all of the groups
         of wells which merged from a Master Equation simulation.
 
@@ -14,30 +16,22 @@ def merged_wells(mess_aux_str):
     # Get the lines
     mess_lines = mess_aux_str.splitlines()
 
-    # Read the block of text that has all of the species
-    merge_well_lines = []
+    # Build of merged wells including number of species
+    # Parses number of wells, temperature, line
+    merged_well_lines = []
     for i, line in enumerate(mess_lines):
         if 'number of species =' in line:
-            merge_well_lines.append(mess_lines[i+1])
+            well_temp = float(mess_lines[i-1].strip().split()[-2])
+            if numpy.isclose(temp, well_temp):
+                nspc = int(line.strip().split()[-1])
+                merged_well_lines.append((nspc, i))
 
-    # Read the block of text that has all of the species
-    start_idx = None
-    for i, line in enumerate(mess_lines):
-        if 'number of species =' in line:
-            start_idx = i+1
-            num_merged_spc = int(line.strip().split()[-1])
-            break
-
-    # Use the number of merged species and line idx to get lines of all wells
     merged_well_lst = ()
-    if start_idx is not None:
-        merge_well_lines = []
-        for idx in range(num_merged_spc):
-            merge_well_lines.append(mess_lines[start_idx+2*idx])
-
-        # Parse the merged wells
-        merged_well_lst = ()
-        for line in merge_well_lines:
-            merged_well_lst += (tuple(line.strip().split()),)
+    for nspc, line_idx in merged_well_lines:
+        for idx in range(nspc):
+            well_line = mess_lines[line_idx+1+idx*2]
+            well_names = well_line.strip().split()
+            if len(well_names) > 1:
+                merged_well_lst += (tuple(well_names),)
 
     return merged_well_lst

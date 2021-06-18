@@ -14,12 +14,9 @@ def test__():
     """ test mess_io.reader._lump.merged_wells
     """
 
-    ref_well_merge_lst = (
-        ('W2', 'W1'),
-        ('W5', 'W4', 'W3'),
-        ('W9', 'W8', 'W7', 'W6')
-    )
-
-    well_merge_lst = mess_io.reader.merged_wells(AUX_STR)
-
-    assert well_merge_lst == ref_well_merge_lst
+    assert mess_io.reader.merged_wells(AUX_STR, 600) == (
+        ('W1', 'W5'), ('W2', 'W6'))
+    assert mess_io.reader.merged_wells(AUX_STR, 1200) == (
+        ('W1', 'W3', 'W5', 'W6'),)
+    assert mess_io.reader.merged_wells(AUX_STR, 2000) == (
+        ('W1', 'W2', 'W4', 'W5', 'W3'),)
