@@ -5,22 +5,22 @@ import os
 import tempfile
 import numpy
 import automol
-from ioformat import read_text_file
-from ioformat import load_numpy_string_file
+from ioformat import pathtools
 import autorun
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+DAT_PATH = os.path.join(PATH, 'data')
 
 GEO = automol.geom.from_string(
-    read_text_file(['data'], 'c2h5oh.xyz', path=PATH))
-GRAD = load_numpy_string_file(['data'], 'c2h5oh.grad', path=PATH)
-HESS = load_numpy_string_file(['data'], 'c2h5oh.hess', path=PATH)
+    pathtools.read_file(DAT_PATH, 'c2h5oh.xyz'))
+GRAD = pathtools.read_numpy_file(DAT_PATH, 'c2h5oh.grad')
+HESS = pathtools.read_numpy_file(DAT_PATH, 'c2h5oh.hess')
 
 GEOS = (GEO,)
 GRADS = (GRAD,)
 HESSIANS = (HESS,)
-PROJROT_ROT_STR = read_text_file(['data'], 'c2h5oh.prot', path=PATH)
+PROJROT_ROT_STR = pathtools.read_file(DAT_PATH, 'c2h5oh.prot')
 
 
 def test__frequencies():
@@ -48,7 +48,3 @@ def test__frequencies():
         assert numpy.allclose(hrproj_freqs, ref_hrproj_freqs)
         assert not rt_imag_freq
         assert not hr_imag_freq
-
-
-if __name__ == '__main__':
-    test__frequencies()

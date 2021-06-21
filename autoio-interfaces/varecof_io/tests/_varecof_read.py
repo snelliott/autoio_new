@@ -3,14 +3,14 @@
 """
 
 import os
+from ioformat import pathtools
 import varecof_io
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-DATA_PATH = os.path.join(PATH, 'data')
-DATA_NAME = 'divsur.txt'
-with open(os.path.join(DATA_PATH, DATA_NAME), 'r') as datfile:
-    OUT_STR = datfile.read()
+DAT_PATH = os.path.join(PATH, 'data')
+
+OUT_STR = pathtools.read_file(DAT_PATH, 'divsur.txt')
 
 
 def test__divsur_frag_geoms_reader():

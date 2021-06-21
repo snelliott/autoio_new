@@ -2,11 +2,13 @@
 """
 
 import os
-from ioformat import read_text_file
+from ioformat import pathtools
 import onedmin_io.writer
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+DAT_PATH = os.path.join(PATH, 'data')
+
 
 # Input parameters
 RANSEED = 28384920
@@ -34,8 +36,8 @@ def test__input_file():
         target_xyz_name=TARGET_XYZ_NAME, bath_xyz_name=BATH_XYZ_NAME,
         spin_method=1)
 
-    assert onedmin_inp1_str == read_text_file(['data'], 'onedmin1.inp', PATH)
-    assert onedmin_inp2_str == read_text_file(['data'], 'onedmin2.inp', PATH)
+    assert onedmin_inp1_str == pathtools.read_file(DAT_PATH, 'onedmin1.inp')
+    assert onedmin_inp2_str == pathtools.read_file(DAT_PATH, 'onedmin2.inp')
 
     # Test for random seed
     onedmin_inp3_str = onedmin_io.writer.input_file(
@@ -62,4 +64,4 @@ def test__submission_script():
     subscript_str = onedmin_io.writer.submission_script(
         NJOBS, RUN_DIR, EXE_PATH)
 
-    assert subscript_str == read_text_file(['data'], 'subscript.inp', PATH)
+    assert subscript_str == pathtools.read_file(DAT_PATH, 'subscript.inp')

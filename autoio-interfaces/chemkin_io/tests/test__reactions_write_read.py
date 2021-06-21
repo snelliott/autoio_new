@@ -1,8 +1,10 @@
 """ reaction read write testing
 """
+
 import numpy as np
 from chemkin_io.writer.mechanism import reactions_block as writer
 from chemkin_io.parser.reaction import param_dct as parser
+
 
 ARRHENIUS_RXN_PARAM_DCT = {
     (('H', 'O2'), ('OH', 'O'), (None,)): (

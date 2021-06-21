@@ -3,7 +3,7 @@
 
 # import os
 # import autorun
-# from ioformat import read_text_file
+# from ioformat import pathtools
 #
 # PATH = os.path.dirname(os.path.realpath(__file__))
 #
@@ -30,9 +30,9 @@
 #                        pot_file_names=(),
 #                        spc_name='mol')
 #
-#     pot_str = read_text_file(['data', 'inp'], 'libcorrpot64.so', path=PATH)
-#     ref_pot_str = read_text_file(
-#         ['data', 'inp'], 'libcorrpot64.so', path=PATH)
+#     pot_str = pathtools.read_file(DAT_PATH, 'libcorrpot64.so')
+#     ref_pot_str = pathtools.read_file(
+#         DAT_PATH, 'libcorrpot64.so')
 #     assert pot_str == ref_pot_str
 #
 #

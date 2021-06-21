@@ -3,12 +3,14 @@
 
 import os
 import numpy
-from ioformat import read_text_file
+from ioformat import pathtools
 import mess_io
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-INP_STR = read_text_file(['data', 'inp'], 'mess.inp', PATH)
+INP_PATH = os.path.join(PATH, 'data', 'inp')
+
+INP_STR = pathtools.read_file(INP_PATH, 'mess.inp')
 
 
 def test__():

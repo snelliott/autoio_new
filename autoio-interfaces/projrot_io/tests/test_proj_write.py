@@ -4,11 +4,14 @@
 
 import os
 import automol
-from ioformat import read_text_file
+from ioformat import pathtools
 import projrot_io
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+DAT_PATH = os.path.join(PATH, 'data')
+
+
 # methanol
 GEO = (('C', (-4.0048955763, -0.3439866053, -0.0021431734)),
        ('O', (-1.3627056155, -0.3412713280, 0.0239463418)),
@@ -147,9 +150,8 @@ def test_rt_projections():
         coord_proj=CART_PROJ,
         proj_rxn_coord=False)
 
-
-    assert inp1_str == read_text_file(['data'], 'rpht1.inp', PATH)
-    assert inp2_str == read_text_file(['data'], 'rpht2.inp', PATH)
+    assert inp1_str == pathtools.read_file(DAT_PATH, 'rpht1.inp')
+    assert inp2_str == pathtools.read_file(DAT_PATH, 'rpht2.inp')
 
 
 def test_rt_hr_projections():
@@ -169,7 +171,7 @@ def test_rt_hr_projections():
         rotors_str=rotors_str,
         coord_proj=CART_PROJ,
         proj_rxn_coord=False)
-    assert inp_str == read_text_file(['data'], 'rpht_hr.inp', PATH).rstrip()
+    assert inp_str == pathtools.read_file(DAT_PATH, 'rpht_hr.inp').rstrip()
 
 
 def test__rotor_dist_cutoffs():
@@ -185,8 +187,8 @@ def test__rotor_dist_cutoffs():
     rotor_dist2_str = projrot_io.writer.projection_distance_aux(
         dist_cutoff_dct=dist_cutoff_dct)
 
-    assert rotor_dist1_str == read_text_file(['data'], 'rotor_dist1.inp', PATH)
-    assert rotor_dist2_str == read_text_file(['data'], 'rotor_dist2.inp', PATH)
+    assert rotor_dist1_str == pathtools.read_file(DAT_PATH, 'rotor_dist1.inp')
+    assert rotor_dist2_str == pathtools.read_file(DAT_PATH, 'rotor_dist2.inp')
 
 
 def test_sct_rpht_input():
@@ -200,7 +202,7 @@ def test_sct_rpht_input():
         rotors_str='',
         coord_proj=CART_PROJ,
         proj_rxn_coord=True)
-    assert inp_str == read_text_file(['data'], 'rpht_sct.inp', PATH)
+    assert inp_str == pathtools.read_file(DAT_PATH, 'rpht_sct.inp')
 
 
 def test_sct_coord_en():
@@ -210,12 +212,12 @@ def test_sct_coord_en():
     en1_str = projrot_io.writer.rpht_path_coord_en(
         RXN_PATH_COORDS, RXN_PATH_ENERGIES,
         bnd1=(), bnd2=())
-    assert en1_str == read_text_file(['data'], 'rpht_en1.inp', PATH)
+    assert en1_str == pathtools.read_file(DAT_PATH, 'rpht_en1.inp')
 
     en2_str = projrot_io.writer.rpht_path_coord_en(
         RXN_PATH_COORDS, RXN_PATH_ENERGIES,
         bnd1=RCT_DISTS, bnd2=PRD_DISTS)
-    assert en2_str == read_text_file(['data'], 'rpht_en2.inp', PATH)
+    assert en2_str == pathtools.read_file(DAT_PATH, 'rpht_en2.inp')
 
 
 def __bc_mat():
@@ -223,8 +225,8 @@ def __bc_mat():
         test projrot_io.writer.cmatrix
     """
 
-    mat3d_str = read_text_file(['data'], 'mat3d.dat', PATH)
-    mat4d_str = read_text_file(['data'], 'mat4d.dat', PATH)
+    mat3d_str = pathtools.read_file(DAT_PATH, 'mat3d.dat')
+    mat4d_str = pathtools.read_file(DAT_PATH, 'mat4d.dat')
     mat3d = automol.util.highd_mat.from_string(mat3d_str)
     mat4d = automol.util.highd_mat.from_string(mat4d_str)
 
@@ -233,5 +235,3 @@ def __bc_mat():
 
     print(bmat_str)
     print(cmat_str)
-test_rt_projections()
-

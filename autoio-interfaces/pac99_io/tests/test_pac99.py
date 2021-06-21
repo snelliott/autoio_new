@@ -1,12 +1,13 @@
 """ Test pac99_io.reader
 """
-import os
 
-from ioformat import read_text_file
+import os
+from ioformat import pathtools
 import pac99_io
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+DAT_PATH = os.path.join(PATH, 'data')
 
 
 def test__polynomial():
@@ -15,34 +16,34 @@ def test__polynomial():
     """
 
     # Read and Convert C2H4N2O6
-    out_str = read_text_file(['data'], 'C2H4N2O6.c97', PATH)
+    out_str = pathtools.read_file(DAT_PATH, 'C2H4N2O6.c97')
     pac99_poly = pac99_io.reader.nasa_polynomial(out_str)
     assert pac99_poly == (
-        read_text_file(['data'], 'C2H4N2O6.paccpoly', PATH).strip())
+        pathtools.read_file(DAT_PATH, 'C2H4N2O6.paccpoly').rstrip())
 
     name = 'C2H4N2O6'
     atom_dct = {'C': 2, 'H': 4, 'N': 2, 'O': 6}
     ckin_poly = pac99_io.pac2ckin_poly(name, atom_dct, pac99_poly)
-    assert ckin_poly == read_text_file(['data'], 'C2H4N2O6.ckinpoly', PATH)
+    assert ckin_poly == pathtools.read_file(DAT_PATH, 'C2H4N2O6.ckinpoly')
 
     # Read and Convert CO
-    out_str = read_text_file(['data'], 'CO.c97', PATH)
+    out_str = pathtools.read_file(DAT_PATH, 'CO.c97')
     pac99_poly = pac99_io.reader.nasa_polynomial(out_str)
     assert pac99_poly == (
-        read_text_file(['data'], 'CO.paccpoly', PATH)).strip()
+        pathtools.read_file(DAT_PATH, 'CO.paccpoly')).rstrip()
 
     name = 'CO'
     atom_dct = {'C': 1, 'O': 1}
     ckin_poly = pac99_io.pac2ckin_poly(name, atom_dct, pac99_poly)
-    assert ckin_poly == read_text_file(['data'], 'CO.ckinpoly', PATH)
+    assert ckin_poly == pathtools.read_file(DAT_PATH, 'CO.ckinpoly')
 
     # Read and Convert H2
-    out_str = read_text_file(['data'], 'H2.c97', PATH)
+    out_str = pathtools.read_file(DAT_PATH, 'H2.c97')
     pac99_poly = pac99_io.reader.nasa_polynomial(out_str)
     assert pac99_poly == (
-        read_text_file(['data'], 'H2.paccpoly', PATH)).strip()
+        pathtools.read_file(DAT_PATH, 'H2.paccpoly')).rstrip()
 
     name = 'H2'
     atom_dct = {'H': 2}
     ckin_poly = pac99_io.pac2ckin_poly(name, atom_dct, pac99_poly)
-    assert ckin_poly == read_text_file(['data'], 'H2.ckinpoly', PATH)
+    assert ckin_poly == pathtools.read_file(DAT_PATH, 'H2.ckinpoly')
