@@ -9,7 +9,7 @@ import mess_io.reader
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-OUT_STR = read_text_file(['data', 'out'], 'freq.log', PATH)
+OUT_STR = read_text_file(['data', 'out'], 'freq.out', PATH)
 
 
 def test__freqs():
