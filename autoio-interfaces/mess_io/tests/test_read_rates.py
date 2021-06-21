@@ -3,13 +3,15 @@
 
 import os
 import numpy
-from ioformat import read_text_file
+from ioformat import pathtools
 import mess_io.reader
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-KTP_OUT_STR = read_text_file(['data', 'out'], 'rate.out', PATH)
-KE_OUT_STR = read_text_file(['data', 'out'], 'ke.out', PATH)
+OUT_PATH = os.path.join(PATH, 'data', 'out')
+
+KTP_OUT_STR = pathtools.read_file(OUT_PATH, 'rate.out')
+KE_OUT_STR = pathtools.read_file(OUT_PATH, 'ke.out')
 
 # Set the REACTANT and PRODUCT
 REACTANT = 'W1'

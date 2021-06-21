@@ -3,13 +3,15 @@
 
 import os
 import numpy
-from ioformat import read_text_file
+from ioformat import pathtools
 import onedmin_io.reader
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-LJ_OUT_STR = read_text_file(['data'], 'lj.out', PATH)
-ONEDMIN_OUT_STR = read_text_file(['data'], 'onedmin.out', PATH)
+DAT_PATH = os.path.join(PATH, 'data')
+
+LJ_OUT_STR = pathtools.read_file(DAT_PATH, 'lj.out')
+ONEDMIN_OUT_STR = pathtools.read_file(DAT_PATH, 'onedmin.out')
 
 
 def test__lennard_jones():

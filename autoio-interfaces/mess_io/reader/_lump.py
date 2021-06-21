@@ -2,9 +2,10 @@
 """
 
 import numpy
+from phydat import phycon
 
 
-def merged_wells(mess_aux_str, temp):
+def merged_wells(mess_aux_str, pressure, temp):
     """ Parse the auxiliary MESS output file string for all of the groups
         of wells which merged from a Master Equation simulation.
 
@@ -16,16 +17,20 @@ def merged_wells(mess_aux_str, temp):
     # Get the lines
     mess_lines = mess_aux_str.splitlines()
 
-    # Build of merged wells including number of species
-    # Parses number of wells, temperature, line
+    # Parses number of wells and lines they appear on for second loop
+    # Done for each set of wells at each T and P
     merged_well_lines = []
     for i, line in enumerate(mess_lines):
         if 'number of species =' in line:
-            well_temp = float(mess_lines[i-1].strip().split()[-2])
-            if numpy.isclose(temp, well_temp):
+            cond_line = mess_lines[i-1].strip().split()
+            well_pressure = float(cond_line[2]) * phycon.BAR2ATM
+            well_temp = float(cond_line[-2])
+            if (numpy.isclose(pressure, well_pressure) and
+               numpy.isclose(temp, well_temp)):
                 nspc = int(line.strip().split()[-1])
                 merged_well_lines.append((nspc, i))
 
+    # Find all the lines in the block to grab the wells
     merged_well_lst = ()
     for nspc, line_idx in merged_well_lines:
         for idx in range(nspc):

@@ -5,19 +5,21 @@ import os
 import tempfile
 import numpy
 import automol
-from ioformat import read_text_file
+from ioformat import pathtools
 import autorun
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+DAT_PATH = os.path.join(PATH, 'data')
 
 GEO = automol.geom.from_string(
-    read_text_file(['data'], 'c2h5oh.xyz', path=PATH))
-MESS_ROT_STR = read_text_file(['data'], 'c2h5oh.mrot', path=PATH)
+    pathtools.read_file(DAT_PATH, 'c2h5oh.xyz'))
+MESS_ROT_STR = pathtools.read_file(DAT_PATH, 'c2h5oh.mrot')
 
 
 def test__():
-    """ test
+    """ test autorun.mess.torsions
+        test autorun.mess.direct
     """
 
     ref_tors_freqs = (263.39, 320.923)
@@ -31,7 +33,3 @@ def test__():
 
         assert numpy.allclose(tors_freqs, ref_tors_freqs)
         assert numpy.allclose(tors_zpves, ref_tors_zpves)
-
-
-if __name__ == '__main__':
-    test__()

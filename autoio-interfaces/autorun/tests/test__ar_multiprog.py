@@ -5,26 +5,26 @@ import os
 import tempfile
 import numpy
 import automol
-from ioformat import read_text_file
-from ioformat import load_numpy_string_file
+from ioformat import pathtools
 import autorun
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+DAT_PATH = os.path.join(PATH, 'data')
 
 NAME = 'Methane'
 FORMULA = {'C': 1, 'H': 4}
 HFORM0 = -0.02535174495
 ENTHALPYT = 0.
 BREAKT = 1000.
-PF_STR = read_text_file(['data'], 'pf.dat', path=PATH)
+PF_STR = pathtools.read_file(DAT_PATH, 'pf.dat')
 
 GEO = automol.geom.from_string(
-    read_text_file(['data'], 'c2h5oh.xyz', path=PATH))
-GRAD = load_numpy_string_file(['data'], 'c2h5oh.grad', path=PATH)
-HESS = load_numpy_string_file(['data'], 'c2h5oh.hess', path=PATH)
-PROJROT_ROT_STR = read_text_file(['data'], 'c2h5oh.prot', path=PATH)
-MESS_ROT_STR = read_text_file(['data'], 'c2h5oh.mrot', path=PATH)
+    pathtools.read_file(DAT_PATH, 'c2h5oh.xyz'))
+GRAD = pathtools.read_numpy_file(DAT_PATH, 'c2h5oh.grad')
+HESS = pathtools.read_numpy_file(DAT_PATH, 'c2h5oh.hess')
+PROJROT_ROT_STR = pathtools.read_file(DAT_PATH, 'c2h5oh.prot')
+MESS_ROT_STR = pathtools.read_file(DAT_PATH, 'c2h5oh.mrot')
 
 
 def test__thermo():
@@ -45,7 +45,7 @@ def test__thermo():
             enthalpyt=ENTHALPYT, breakt=BREAKT, convert=True)
 
         assert numpy.isclose(hform298, ref_hform298)
-        assert nasa_poly == read_text_file(['data'], 'ch4nasa.ckin', path=PATH)
+        assert nasa_poly == pathtools.read_file(DAT_PATH, 'ch4nasa.ckin')
 
 
 def test__projected_frequencies():

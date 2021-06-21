@@ -12,9 +12,6 @@ from ioformat._format import remove_comment_lines
 from ioformat import pathtools
 from ioformat import phycon
 from ioformat import ptt
-from ioformat._util import read_text_file
-from ioformat._util import write_text_file
-from ioformat._util import load_numpy_string_file
 
 
 __all__ = [
@@ -28,9 +25,5 @@ __all__ = [
     'addchar',
     'pathtools',
     'phycon',
-    'ptt',
-    'read_text_file',
-    'write_text_file',
-    'load_numpy_string_file',
-
+    'ptt'
 ]

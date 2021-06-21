@@ -1,12 +1,16 @@
 """ Test reading files for ThermP
 """
+
 import os
 import numpy
-from ioformat import read_text_file
+from ioformat import pathtools
 import thermp_io
 
+
 PATH = os.path.dirname(os.path.realpath(__file__))
-OUT_STR1 = read_text_file(['data'], 'thermp.out', PATH)
+DAT_PATH = os.path.join(PATH, 'data')
+
+OUT_STR1 = pathtools.read_file(DAT_PATH, 'thermp.out', PATH)
 OUT_STR2 = ''
 
 
@@ -23,7 +27,3 @@ def test__hf298k():
 
     hf298k_2 = thermp_io.reader.hf298k(OUT_STR2)
     assert hf298k_2 is None
-
-
-if __name__ == '__main__':
-    test__hf298k()
