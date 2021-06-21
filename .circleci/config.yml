@@ -24,12 +24,12 @@ jobs:
                     source activate autoio-interfaces-env
                     pytest . -v --disable-pytest-warnings --cov=chemkin_io --pyargs chemkin_io --cov-report=html
                     coverage report
-            # - run:
-            #    name: Test intder_io
-            #    command: |
-            #        cd autoio-interfaces/intder_io
-            #        source activate autoio-interfaces-env
-            #        pytest . -v --disable-pytest-warnings --cov=intder_io --pyargs intder_io --cov-report=html
+            - run:
+               name: Test intder_io
+               command: |
+                   cd autoio-interfaces/intder_io
+                   source activate autoio-interfaces-env
+                   pytest . -v --disable-pytest-warnings --cov=intder_io --pyargs intder_io --cov-report=html
             #        coverage report
             - run:
                 name: Test pac99_io
@@ -102,8 +102,8 @@ jobs:
                     pylint --rcfile=../.pylintrc $(git ls-files '*.py')
             - store_artifacts:
                     path: autoio-interfaces/chemkin_io/htmlcov
-            # - store_artifacts:
-            #         path: autoio-interfaces/intder_io/htmlcov
+            - store_artifacts:
+                    path: autoio-interfaces/intder_io/htmlcov
             - store_artifacts:
                     path: autoio-interfaces/pac99_io/htmlcov
             - store_artifacts:

@@ -89,17 +89,17 @@ def test__compile_correction_potential():
     """
 
     pathtools.write_file(
-        [TMP_PATH], 'mol_corr.f',
-        pathtools.read_file(DAT_PATH, 'mol_corr.f'))
+        pathtools.read_file(DAT_PATH, 'mol_corr.f'),
+        TMP_PATH, 'mol_corr.f')
     pathtools.write_file(
-        [TMP_PATH], 'pot_aux.f',
-        pathtools.read_file(DAT_PATH, 'pot_aux.f'))
+        pathtools.read_file(DAT_PATH, 'pot_aux.f'),
+        TMP_PATH, 'pot_aux.f')
     pathtools.write_file(
-        [TMP_PATH], 'dummy_corr.f',
-        pathtools.read_file(DAT_PATH, 'dummy_corr.f'))
+        pathtools.read_file(DAT_PATH, 'dummy_corr.f'),
+        TMP_PATH, 'dummy_corr.f')
     pathtools.write_file(
-        [TMP_PATH], 'makefile',
-        pathtools.read_file(DAT_PATH, 'makefile'))
+        pathtools.read_file(DAT_PATH, 'makefile'),
+        TMP_PATH, 'makefile')
     varecof_io.writer.corr_potentials.compile_corr_pot(TMP_PATH)
 
     assert os.path.exists(os.path.join(TMP_PATH, 'libcorrpot.so'))
