@@ -121,9 +121,12 @@ def read_numpy_file(path, file_name):
         :rtype: str
     """
 
-    file_str = read_file(path, file_name)
-    file_str_io = _StringIO(file_str)
-    np_arr = numpy.loadtxt(file_str_io)
+    if os.path.exists(os.path.join(path, file_name)):
+        file_str = read_file(path, file_name)
+        file_str_io = _StringIO(file_str)
+        np_arr = numpy.loadtxt(file_str_io)
+    else:
+        np_arr = None
 
     return np_arr
 

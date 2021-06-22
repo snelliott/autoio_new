@@ -10,7 +10,8 @@ OUTPUT_NAMES_AUX = ('mess.aux',)
 
 
 # Specilialized runners
-def well_lumped_input_file(script_str, run_dir, globkey_str, rxn_chan_str,
+def well_lumped_input_file(script_str, run_dir, pressure, temp,
+                           globkey_str, rxn_chan_str,
                            energy_trans_str=None,
                            aux_dct=None,
                            input_name=INPUT_NAME,
@@ -29,8 +30,8 @@ def well_lumped_input_file(script_str, run_dir, globkey_str, rxn_chan_str,
         output_names=output_names)
 
     # Parse lumped wells from aux output; write them into string for new input
-    well_merge_lst = mess_io.reader.merged_wells(output_strs[0])
-    well_lump_str = mess_io.writer.well_lump_scheme(well_merge_lst)
+    well_lump_lst = mess_io.reader.merged_wells(pressure, temp, output_strs[0])
+    well_lump_str = mess_io.writer.well_lump_scheme(well_lump_lst)
 
     # Write new string with the lumped input
     mess_inp_str = mess_io.writer.messrates_inp_str(

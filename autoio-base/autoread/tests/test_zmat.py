@@ -159,7 +159,7 @@ ZMA_VAL5_STR = (
     ' D5=                299.84441753 DEGREE\n')
 
 
-def test_zmat():
+def test__zmat():
     """ test autoread.zmat
     """
 
@@ -257,7 +257,7 @@ def test_zmat():
     assert val_mat is None
 
 
-def test__matrix():
+def test__vmat():
     """ test autoread.zmat.matrix
     """
     start_ptt = (
@@ -414,6 +414,14 @@ def test__matrix():
     assert key_mat is None
     assert name_mat is None
 
+    # symbs, key_mat, name_mat = autoread.vmat.read(
+    #     ZMA5_STR, name_ptt=app.LETTER)
+    # print(key_mat)
+    # print(name_mat)
+    # assert symbs is None
+    # assert key_mat is None
+    # assert name_mat is None
+
 
 def test__setval():
     """ test autoread.zmat.setval
@@ -479,3 +487,5 @@ def _val_mats_similar(val_mat, ref_val_mat):
                 assert ref_val is None
             else:
                 assert numpy.isclose(val, ref_val)
+
+test__vmat()
