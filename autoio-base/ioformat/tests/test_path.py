@@ -1,9 +1,13 @@
 """ test ioformat.pathtools
 """
 
+import os
 import tempfile
 import numpy
 import ioformat
+
+
+TMP_DIR = tempfile.mkdtemp()
 
 
 # Generic/Text file
@@ -16,7 +20,13 @@ FILE_STR = (
     '\n'
     '    1     0.000     0.000     0.997\n'
     '    2     0.000    -0.749    -0.488\n'
-    '    3    -0.000     0.749    -0.488\n')
+    '    3    -0.000     0.749    -0.488\n\n\n')
+FILE2_STR = (
+    'Irrep: 1 Size: 3 x 3\n'
+    '1         2         3\n'
+    '1     0.000     0.000     0.997\n'
+    '2     0.000    -0.749    -0.488\n'
+    '3    -0.000     0.749    -0.488\n')
 
 # NumPy file
 NP_NAME = 'tmp_numpy.dat'
@@ -42,42 +52,70 @@ JSON_DCT = {
     }
 }
 
+NONEXIST_FILE_NAME = 'nofile.dat'
 
-def test__pathtools():
+
+def test__go_to():
     """ test ioformat.pathtools.current_path
         test ioformat.pathtools.prepare_path
         test ioformat.pathtools.go_to
-        test ioformat.pathtools.write_file
+    """
+
+    cur_path = ioformat.pathtools.current_path()
+
+    tmp_path = ioformat.pathtools.prepare_path((cur_path, TMP_DIR), make=False)
+    assert not os.path.exists(tmp_path)
+
+    tmp_path = ioformat.pathtools.prepare_path((cur_path, TMP_DIR), make=True)
+    ioformat.pathtools.go_to(tmp_path)
+    assert os.getcwd() == tmp_path
+    ioformat.pathtools.go_to(cur_path)
+    assert os.getcwd() == cur_path
+
+
+def test__pathtools():
+    """ test ioformat.pathtools.write_file
         test ioformat.pathtools.read_file
-        test ioformat.pathtools.write_numpy_file
+    """
+
+    # Read file and return same
+    ioformat.pathtools.write_file(FILE_STR, TMP_DIR, FILE_NAME)
+    file_str = ioformat.pathtools.read_file(TMP_DIR, FILE_NAME)
+    assert file_str == FILE_STR
+
+    # Reread the file with certain components removed
+    file2_str = ioformat.pathtools.read_file(
+        TMP_DIR, FILE_NAME, remove_comments='#', remove_whitespace=True)
+    assert file2_str == FILE2_STR
+
+    # Read a file from a path that does not exist
+    file3_str = ioformat.pathtools.read_file(TMP_DIR, NONEXIST_FILE_NAME)
+    assert file3_str is None
+
+
+def test__numpy_file():
+    """ test ioformat.pathtools.write_numpy_file
         test ioformat.pathtools.read_numpy_file
-        test ioformat.pathtools.write_json_file
+    """
+
+    ioformat.pathtools.write_numpy_file(NP_ARR, TMP_DIR, NP_NAME)
+    arr = ioformat.pathtools.read_numpy_file(TMP_DIR, NP_NAME)
+    assert numpy.allclose(NP_ARR, arr)
+
+    # Read a file from a path that does not exist
+    arr2 = ioformat.pathtools.read_numpy_file(TMP_DIR, NONEXIST_FILE_NAME)
+    assert arr2 is None
+
+
+def test__json_file():
+    """ test ioformat.pathtools.write_json_file
         test ioformat.pathtools.read_json_file
     """
 
-    # Build tmp dir and paths
-    cur_path = ioformat.pathtools.current_path()
-    tmp_dir = tempfile.mkdtemp()
-    tmp_path = ioformat.pathtools.prepare_path((cur_path, tmp_dir), make=True)
-
-    # Enter tmp dir and write/read text files
-    ioformat.pathtools.go_to(tmp_path)
-    ioformat.pathtools.write_file(FILE_STR, tmp_path, FILE_NAME)
-    ioformat.pathtools.go_to(cur_path)
-    file_str = ioformat.pathtools.read_file(tmp_path, FILE_NAME)
-    assert file_str == FILE_STR
-    ioformat.pathtools.go_to(cur_path)
-
-    # Write/read numpy files
-    ioformat.pathtools.go_to(tmp_path)
-    ioformat.pathtools.write_numpy_file(NP_ARR, tmp_path, NP_NAME)
-    ioformat.pathtools.go_to(cur_path)
-    arr = ioformat.pathtools.read_numpy_file(tmp_path, NP_NAME)
-    assert numpy.allclose(NP_ARR, arr)
-
-    # Enter tmp dir and write/read json files
-    ioformat.pathtools.go_to(tmp_path)
-    ioformat.pathtools.write_json_file(JSON_DCT, tmp_path, JSON_NAME)
-    ioformat.pathtools.go_to(cur_path)
-    dct = ioformat.pathtools.read_json_file(tmp_path, JSON_NAME)
+    ioformat.pathtools.write_json_file(JSON_DCT, TMP_DIR, JSON_NAME)
+    dct = ioformat.pathtools.read_json_file(TMP_DIR, JSON_NAME)
     assert JSON_DCT == dct
+
+    # Read a file from a path that does not exist
+    dct2 = ioformat.pathtools.read_json_file(TMP_DIR, NONEXIST_FILE_NAME)
+    assert dct2 is None
