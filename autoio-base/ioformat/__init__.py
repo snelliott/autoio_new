@@ -4,6 +4,7 @@
 
 from ioformat._format import build_mako_str
 from ioformat._format import indent
+from ioformat._format import add_line
 from ioformat._format import addchar
 from ioformat._format import headlined_sections
 from ioformat._format import remove_whitespace_from_string
@@ -17,6 +18,7 @@ from ioformat import ptt
 __all__ = [
     'build_mako_str',
     'indent',
+    'add_line',
     'addchar',
     'headlined_sections',
     'remove_whitespace_from_string',

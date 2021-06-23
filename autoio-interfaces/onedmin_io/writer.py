@@ -82,11 +82,10 @@ def submission_script(njobs, run_dir, exe_path):
     # Write the string for running all of the job lines
     # job_lines = 'mkdir -p {0}/run1\n'.format(run_dir)
     job_lines = 'cd {0}/run1\n'.format(run_dir)
-    job_lines += 'time $ONEDMINEXE < input.dat > output.dat &\n'
+    job_lines += '$ONEDMINEXE < input.dat > output.dat &\n'
     for i in range(njobs-1):
-        # job_lines += 'mkdir -p ../run{0}\n'.format(str(i+2))
         job_lines += 'cd ../run{0}\n'.format(str(i+2))
-        job_lines += 'time $ONEDMINEXE < input.dat > output.dat &\n'
+        job_lines += '$ONEDMINEXE < input.dat > output.dat &\n'
     job_lines += 'wait\n'
 
     # Set the dictionary for the 1DMin input file

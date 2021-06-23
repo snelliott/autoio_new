@@ -30,7 +30,7 @@ jobs:
                    cd autoio-interfaces/intder_io
                    source activate autoio-interfaces-env
                    pytest . -v --disable-pytest-warnings --cov=intder_io --pyargs intder_io --cov-report=html
-            #        coverage report
+                   coverage report
             - run:
                 name: Test pac99_io
                 command: |
@@ -93,6 +93,7 @@ jobs:
                     cd autoio-interfaces/elstruct
                     source activate autoio-interfaces-env
                     pytest -v --cov=elstruct . --cov-report=html
+                    coverage report
             - run:
                 name: Test autoio-interfaces_pylint
                 command: |
