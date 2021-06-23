@@ -70,7 +70,7 @@ def add_line(string, addline, searchline, position):
         string_lines.insert(linenum+1, addline)
 
     return '\n'.join(string_lines)
-    
+
 
 def addchar(string, char, side='pre'):
     """ Pre- or Post-pends a character to a string.

@@ -487,5 +487,3 @@ def _val_mats_similar(val_mat, ref_val_mat):
                 assert ref_val is None
             else:
                 assert numpy.isclose(val, ref_val)
-
-test__vmat()
