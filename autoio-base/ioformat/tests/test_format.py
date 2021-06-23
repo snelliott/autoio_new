@@ -61,6 +61,7 @@ def test__string_alter():
         test ioformat.remove_whitespace
         test ioformat.remove_trail_whitespace
         test ioformat.remove_comment_lines
+        test ioformat.add_line
     """
 
     head_secs = ioformat.headlined_sections(INI_STR, '=')

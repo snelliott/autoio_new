@@ -59,7 +59,7 @@ def add_line(string, addline, searchline, position):
 
     # Find line with search string
     for i, line in enumerate(string_lines):
-        if searchline in line:
+        if searchline.strip() == line.strip():
             linenum = i
             break
 
