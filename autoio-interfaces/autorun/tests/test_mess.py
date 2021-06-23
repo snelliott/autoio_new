@@ -40,24 +40,3 @@ def test__torsion():
 
         assert numpy.allclose(tors_freqs, ref_tors_freqs)
         assert numpy.allclose(tors_zpves, ref_tors_zpves)
-
-
-def test__lump():
-    """ test autorun.mess.well_lumped_input_file
-    """
-
-    # with tempfile.TemporaryDirectory(dir=PATH) as run_dir:
-    run_dir = tempfile.mkdtemp()
-    print(run_dir)
-    script_str = autorun.SCRIPT_DCT['messrate']
-
-    pressure = 1.01324  # not finding pressure/temp?
-    temp = 600
-    lump_str = autorun.mess.well_lumped_input_file(
-        script_str, run_dir, pressure, temp, MESS_INP_STR,
-        aux_dct=MESS_AUX)
-    print('LUMP_STR')
-    print(lump_str)
-
-
-test__lump()

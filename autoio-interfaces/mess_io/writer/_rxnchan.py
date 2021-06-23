@@ -48,7 +48,8 @@ def species(spc_label, spc_data, zero_ene=None):
 
 
 def well(well_label, well_data,
-         zero_ene=None, edown_str=None, collid_freq_str=None):
+         zero_ene=None, well_cap=None,
+         edown_str=None, collid_freq_str=None):
     """ Writes the string that defines the `Well` section for
         for a given species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -58,6 +59,9 @@ def well(well_label, well_data,
         :param well_data: MESS string with required electronic structure data
         :type well_data: str
         :param zero_ene: elec+zpve energy relative to PES reference
+        :type zero_ene: float
+        :param well_cap: value for the well extension cap keyword
+        :type well_cap: float
         :param edown_str: String for the energy down parameters
         :type edown_str: str
         :param collid_freq_str: String for the collisional freq parameters
@@ -68,9 +72,11 @@ def well(well_label, well_data,
     # Indent the string containing all of data for the well
     well_data = messformat.indent(well_data, 4)
 
-    # Format the precision of the zero energy
+    # Format the precision of the zero energy and well extension cap
     if zero_ene is not None:
         zero_ene = '{0:<8.2f}'.format(zero_ene)
+    if well_cap is not None:
+        well_cap = '{0:<8.2f}'.format(well_cap)
 
     # Indent the energy transfer parameter strings if needed
     if edown_str is not None:
@@ -83,6 +89,7 @@ def well(well_label, well_data,
         'well_label': well_label,
         'well_data': well_data,
         'zero_ene': zero_ene,
+        'well_cap': well_cap,
         'edown_str': edown_str,
         'collid_freq_str': collid_freq_str
     }

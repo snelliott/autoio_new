@@ -369,7 +369,53 @@ def _convert_pressure(pressure, pressure_unit):
     return pressure
 
 
-# Read the labels for all species in the reaction
+# Read the labels for all species and reactions
+def reactions(out_str, read_fake=False, read_self=False, read_rev=True):
+    """ Read the reactions from the output file.
+
+        Ignores 'Capture' reactions
+    """
+
+    # Read all of the reactions out of the file
+    rxns = ()
+    for line in out_str.splitlines():
+        if 'T(K)' in line and '->' in line:
+            rxns += tuple(line.strip().split()[1:])
+
+    # Remove duplcates while preserving order
+    rxns = tuple(n for i, n in enumerate(rxns) if n not in rxns[:i])
+
+    # Remove capture reactions
+    rxns = tuple(rxn for rxn in rxns if rxn != 'Capture')
+
+    # Build list of reaction pairs: rct->prd = (rct, prd)
+    # Filter out reaction as necessary
+    rxn_pairs = ()
+    for rxn in rxns:
+        [rct, prd] = rxn.split('->')
+        if not read_fake:
+            if 'F' in rxn or 'B' in rxn:
+                continue
+        if not read_self:
+            if rct == prd:
+                continue
+        if prd:  # removes rct->  reactions in output
+            rxn_pairs += ((rct, prd),)
+
+    # Remove reverse reactions, if requested
+    if read_rev:
+        sort_rxn_pairs = rxn_pairs
+    else:
+        sort_rxn_pairs = ()
+        for pair in rxn_pairs:
+            rct, prd = pair
+            if (rct, prd) in sort_rxn_pairs or (prd, rct) in sort_rxn_pairs:
+                continue
+            sort_rxn_pairs += ((rct, prd),)
+
+    return sort_rxn_pairs
+
+
 def labels(file_str, read_fake=False, mess_file='out'):
     """ Read the labels out of a MESS file
     """
