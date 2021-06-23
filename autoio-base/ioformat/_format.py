@@ -50,6 +50,28 @@ def indent(string, nspaces):
     return indented_string
 
 
+def add_line(string, addline, searchline, position):
+    """ Add a line to some string at some positin specified by a line
+        currently present in the string.
+    """
+
+    string_lines = string.splitlines()
+
+    # Find line with search string
+    for i, line in enumerate(string_lines):
+        if searchline in line:
+            linenum = i
+            break
+
+    # Add the line
+    if position == 'before':
+        string_lines.insert(linenum, addline)
+    else:
+        string_lines.insert(linenum+1, addline)
+
+    return '\n'.join(string_lines)
+    
+
 def addchar(string, char, side='pre'):
     """ Pre- or Post-pends a character to a string.
 

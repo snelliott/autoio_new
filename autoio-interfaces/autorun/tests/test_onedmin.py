@@ -3,7 +3,7 @@
 
 import os
 import tempfile
-# import numpy
+import numpy
 import autorun.onedmin
 
 
@@ -35,8 +35,12 @@ RANSEEDS = (153214316, 129539275, 174930586)
 
 
 def test__exp6():
-    """ test
+    """ test autorun.onedmin.lennard_jones_params
     """
+
+    ref_lj_sig = (6.462050766831826, 6.503530255285625, 5.7414604006722465,
+                  6.462050766831826, 6.503530255285625, 5.7414604006722465)
+    ref_lj_eps = (19.05864, 18.71206, 27.96192, 19.05864, 18.71206, 27.96192)
 
     script_str = None
     lj_sig, lj_eps = autorun.onedmin.lennard_jones_params(
@@ -44,10 +48,5 @@ def test__exp6():
         TGT_GEO, BATH_GEO, EXP6_THY_INFO, CHARGE, MULT,
         smin=SMIN, smax=SMAX, spin_method=1, ranseeds=RANSEEDS)
 
-    print(lj_sig, lj_eps)
-    # assert numpy.isclose(lj_sig, ref_sig)
-    # assert numpy.isclose(lj_eps, ref_eps)
-
-
-if __name__ == '__main__':
-    test__exp6()
+    assert numpy.allclose(ref_lj_sig, lj_sig)
+    assert numpy.allclose(ref_lj_eps, lj_eps)

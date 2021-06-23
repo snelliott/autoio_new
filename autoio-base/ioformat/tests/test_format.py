@@ -21,6 +21,16 @@ INI_STR = (
     '\n'
     '\n'
 )
+INI_STR2 = (
+    'ChemicalEigenvalueMax                 0.2\n'
+    'ChemicalEigenvalueMin                 1.e-6\n'
+    'CalculationMethod                     direct\n'
+    'EigenvalueOutput			  eigenvalue.out\n'
+    'Model\n'
+    '  EnergyRelaxation\n'
+    '    Exponential\n'
+    '      Factor[1/cm]                   234'
+)
 
 
 def test__string_build():
@@ -95,4 +105,32 @@ def test__string_alter():
         '  PLOG / 0.01  6.0 2.5 105\n'
         '\n'
         '\n'
+    )
+
+    out_str = ioformat.add_line(
+        INI_STR2, 'WellExtension', 'Model', 'before')
+    assert out_str == (
+        'ChemicalEigenvalueMax                 0.2\n'
+        'ChemicalEigenvalueMin                 1.e-6\n'
+        'CalculationMethod                     direct\n'
+        'EigenvalueOutput			  eigenvalue.out\n'
+        'WellExtension\n'
+        'Model\n'
+        '  EnergyRelaxation\n'
+        '    Exponential\n'
+        '      Factor[1/cm]                   234'
+    )
+
+    out_str = ioformat.add_line(
+        INI_STR2, '  LumpingScheme  W1+W2', 'Model', 'after')
+    assert out_str == (
+        'ChemicalEigenvalueMax                 0.2\n'
+        'ChemicalEigenvalueMin                 1.e-6\n'
+        'CalculationMethod                     direct\n'
+        'EigenvalueOutput			  eigenvalue.out\n'
+        'Model\n'
+        '  LumpingScheme  W1+W2\n'
+        '  EnergyRelaxation\n'
+        '    Exponential\n'
+        '      Factor[1/cm]                   234'
     )
