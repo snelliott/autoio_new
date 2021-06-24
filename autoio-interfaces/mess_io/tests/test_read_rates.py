@@ -135,8 +135,8 @@ def test__tp():
                      2000.0, 2200.0, 2400.0, 2600.0, 2800.0, 3000.0)
     ref_out_temps = (500.0, 650.0, 800.0, 950.0, 1100.0, 1250.0, 1400.0,
                      1550.0, 1700.0, 1850.0, 2000.0)
-    ref_inp_press = (0.01, 0.1, 1.0, 10.0, 100.0)
-    ref_out_press = (0.1, 1.0, 10.0, 100.0)
+    ref_inp_press = (0.01, 0.1, 1.0, 10.0, 100.0, 'high')
+    ref_out_press = (0.1, 1.0, 10.0, 100.0, 'high')
 
     inp_temps, inp_tunit = mess_io.reader.rates.temperatures(
         KTP_INP_STR, mess_file='inp')
@@ -152,8 +152,10 @@ def test__tp():
     assert numpy.allclose(ref_out_temps, out_temps)
     assert inp_tunit == out_tunit == 'K'
 
-    assert numpy.allclose(ref_inp_press, inp_press)
-    assert numpy.allclose(ref_out_press, out_press)
+    assert ref_inp_press[-1] == inp_press[-1]
+    assert ref_out_press[-1] == out_press[-1]
+    assert numpy.allclose(ref_inp_press[:-1], inp_press[:-1])
+    assert numpy.allclose(ref_out_press[:-1], out_press[:-1])
     assert inp_punit == out_punit == 'atm'
 
 
@@ -195,7 +197,3 @@ def test__rxns_labels():
         KTP_OUT_STR, read_rev=True)
     assert ref_rxns2 == mess_io.reader.rates.reactions(
         KTP_OUT_STR, read_rev=False)
-
-
-if __name__ == '__main__':
-    test__rxns_labels()
