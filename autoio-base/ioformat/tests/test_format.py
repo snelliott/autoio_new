@@ -58,10 +58,6 @@ def test__string_build():
 
 def test__string_alter():
     """ test ioformat.headlined_sections
-        test ioformat.remove_whitespace
-        test ioformat.remove_trail_whitespace
-        test ioformat.remove_comment_lines
-        test ioformat.add_line
     """
 
     head_secs = ioformat.headlined_sections(INI_STR, '=')
@@ -70,6 +66,13 @@ def test__string_alter():
         'A + D = E        2.00 0.00 0.00  \n\n! From Experiment',
         'E = F            3.00 0.00 0.00  \n  PLOG / 0.01  6.0 2.5 105\n\n'
     ]
+
+
+def test__string_remove():
+    """ test ioformat.remove_whitespace
+        test ioformat.remove_trail_whitespace
+        test ioformat.remove_comment_lines
+    """
 
     out_str = ioformat.remove_whitespace_from_string(INI_STR)
     assert out_str == (
@@ -108,6 +111,11 @@ def test__string_alter():
         '\n'
     )
 
+
+def test__string_add():
+    """ test ioformat.add_line
+    """
+
     out_str = ioformat.add_line(
         INI_STR2, 'WellExtension', 'Model', 'before')
     assert out_str == (
@@ -134,4 +142,24 @@ def test__string_alter():
         '  EnergyRelaxation\n'
         '    Exponential\n'
         '      Factor[1/cm]                   234'
+    )
+
+
+def test__string_change():
+    """ test ioformat.change_line
+    """
+
+    out_str = ioformat.change_line(
+        INI_STR2,
+        '      Factor[1/cm]                   550',
+        '      Factor[1/cm]                   234')
+    assert out_str == (
+        'ChemicalEigenvalueMax                 0.2\n'
+        'ChemicalEigenvalueMin                 1.e-6\n'
+        'CalculationMethod                     direct\n'
+        'EigenvalueOutput			  eigenvalue.out\n'
+        'Model\n'
+        '  EnergyRelaxation\n'
+        '    Exponential\n'
+        '      Factor[1/cm]                   550'
     )
