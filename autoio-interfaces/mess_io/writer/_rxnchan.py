@@ -48,7 +48,8 @@ def species(spc_label, spc_data, zero_ene=None):
 
 
 def well(well_label, well_data,
-         zero_ene=None, edown_str=None, collid_freq_str=None):
+         zero_ene=None, well_cap=None,
+         edown_str=None, collid_freq_str=None):
     """ Writes the string that defines the `Well` section for
         for a given species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -58,6 +59,9 @@ def well(well_label, well_data,
         :param well_data: MESS string with required electronic structure data
         :type well_data: str
         :param zero_ene: elec+zpve energy relative to PES reference
+        :type zero_ene: float
+        :param well_cap: value for the well extension cap keyword
+        :type well_cap: float
         :param edown_str: String for the energy down parameters
         :type edown_str: str
         :param collid_freq_str: String for the collisional freq parameters
@@ -68,9 +72,11 @@ def well(well_label, well_data,
     # Indent the string containing all of data for the well
     well_data = messformat.indent(well_data, 4)
 
-    # Format the precision of the zero energy
+    # Format the precision of the zero energy and well extension cap
     if zero_ene is not None:
         zero_ene = '{0:<8.2f}'.format(zero_ene)
+    if well_cap is not None:
+        well_cap = '{0:<8.2f}'.format(well_cap)
 
     # Indent the energy transfer parameter strings if needed
     if edown_str is not None:
@@ -83,6 +89,7 @@ def well(well_label, well_data,
         'well_label': well_label,
         'well_data': well_data,
         'zero_ene': zero_ene,
+        'well_cap': well_cap,
         'edown_str': edown_str,
         'collid_freq_str': collid_freq_str
     }
@@ -127,53 +134,6 @@ def bimolecular(bimol_label,
         template_file_name='bimolecular.mako',
         template_src_path=RXNCHAN_PATH,
         template_keys=bimol_keys)
-
-
-def barrier(ts_label, reac_label, prod_label, ts_data,
-            zero_ene=None, tunnel=''):
-    """ Writes the string that defines the `Barrier` section for
-        for a given transition state, modeled as a PES saddle point,
-        for fixed transition state theory. MESS input file string built by
-        formatting input information into strings a filling Mako template.
-
-        :param ts_label: label for input TS used by MESS
-        :type ts_label: str
-        :param reac_label: label for reactant connected to TS used by MESS
-        :type reac_label: str
-        :param prod_label: label for product connected to TS used by MESS
-        :type prod_label: str
-        :param ts_data: MESS string with required electronic structure data
-        :type ts_data: str
-        :param zero_ene: elec+zpve energy relative to PES reference
-        :type zero_ene: float
-        :param tunnel: `Tunnel` section MESS-string for TS
-        :type tunnel: str
-        :rtype: str
-    """
-
-    # Indent the string containing all of data for the saddle point
-    ts_data = messformat.indent(ts_data, 2)
-    if tunnel != '':
-        tunnel = messformat.indent(tunnel, 4)
-
-    # Format the precision of the zero energy
-    if zero_ene is not None:
-        zero_ene = '{0:<8.2f}'.format(zero_ene)
-
-    # Create dictionary to fill template
-    ts_sadpt_keys = {
-        'ts_label': ts_label,
-        'reac_label': reac_label,
-        'prod_label': prod_label,
-        'ts_data': ts_data,
-        'zero_ene': zero_ene,
-        'tunnel': tunnel
-    }
-
-    return build_mako_str(
-        template_file_name='barrier.mako',
-        template_src_path=RXNCHAN_PATH,
-        template_keys=ts_sadpt_keys)
 
 
 def ts_sadpt(ts_label, reac_label, prod_label, ts_data,
@@ -324,21 +284,13 @@ def configs_union(mol_data_strs, zero_enes, tunnel_strs=None):
         union_data += union_str
         union_data += zero_ene_str
         if tunnel_strs is not None:
-            union_data += '\n' + tunnel_strs[idx] + '\n'
+            _tunnel_str = '\n{}\nEnd  ! Tunnel\n'.format(tunnel_strs[idx])
+            union_data += messformat.indent(_tunnel_str, 2)
         union_data += '\n\n'
-        union_data += 'End  ! Union1\nEnd  ! Union2\n'
-
-    # Add 'End' statment to each of the data strings
-    # mol_data_strs = [string+'End  ! UnionN' for string in mol_data_strs]
-    # mol_data_strs[-1] += '\n'
+        union_data += 'End  ! Union{}\n'.format(idx+1)
 
     # Concatenate all of the molecule strings
-    # union_data = '\n'.join(mol_data_strs)
     union_data = messformat.indent(union_data, 2)
-
-    # Add the tunneling string (seems tunneling goes for all TSs in union)
-    # if tunnel != '':
-    #     tunnel = messformat.indent(tunnel, 4)
 
     # Create dictionary to fill template
     union_keys = {

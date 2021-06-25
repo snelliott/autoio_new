@@ -4,6 +4,7 @@
   corresponding to a given reaction.
 """
 
+import numpy
 from phydat import phycon
 
 
@@ -35,14 +36,10 @@ def ktp_dct(output_str, reactant, product):
     _ktp_dct = {'high': _highp_kts(out_lines, reaction)}
 
     # Read the pressures and convert them to atm if needed
-    _pressures, pressure_unit = pressures(output_str, mess_file='out')
-    if pressure_unit == 'torr':
-        _pressures = [pressure * phycon.TORR2ATM for pressure in _pressures]
-    elif pressure_unit == 'bar':
-        _pressures = [pressure * phycon.BAR2ATM for pressure in _pressures]
+    _pressures, _ = pressures(output_str, mess_file='out')
 
     # Update the dictionary with the pressure-dependend rate constants
-    for pressure in _pressures:
+    for pressure in (_press for _press in _pressures if _press != 'high'):
         _ktp_dct.update(
             _pdep_kts(out_lines, reaction, pressure)
         )
@@ -106,9 +103,11 @@ def _pdep_kts(out_lines, reaction, pressure):
                 if 'Temperature-Pressure Rate Tables' in out_lines[j]:
                     break
                 if reaction in out_lines[j]:
-                    mess_press = out_lines[j-2].strip().split()[2]
-                    if float(mess_press) == pressure:
-                        pdep_dct[pressure] = _parse_rate_constants(
+                    mess_press = float(out_lines[j-2].strip().split()[2])
+                    mess_punit = out_lines[j-2].strip().split()[3]
+                    if numpy.isclose(mess_press, pressure):
+                        conv_pressure = _convert_pressure(pressure, mess_punit)
+                        pdep_dct[conv_pressure] = _parse_rate_constants(
                             out_lines, j, reaction)
                         break
 
@@ -236,7 +235,7 @@ def _temperatures_input_string(input_str):
     mess_lines = input_str.splitlines()
     for line in mess_lines:
         if 'TemperatureList' in line:
-            temps = [float(val) for val in line.strip().split()[1:]]
+            temps = tuple(float(val) for val in line.strip().split()[1:])
             temp_unit = line.strip().split('[')[1].split(']')[0]
             break
 
@@ -270,7 +269,8 @@ def _temperatures_output_string(output_str):
         if 'Temperature =' in mess_lines[i]:
             tmp = mess_lines[i].strip().split()
             temps.append(float(tmp[2]))
-    temps = tuple(set(temps))
+    temps = list(set(temps))
+    temps.sort()
 
     # Read unit
     for i in range(block_start, len(mess_lines)):
@@ -278,7 +278,7 @@ def _temperatures_output_string(output_str):
             temp_unit = mess_lines[i].strip().split()[3]
             break
 
-    return temps, temp_unit
+    return tuple(temps), temp_unit
 
 
 def _pressures_input_string(input_str):
@@ -343,10 +343,79 @@ def _pressures_output_string(output_str):
     # Append high pressure
     _pressures.append('high')
 
-    return _pressures, pressure_unit
+    return tuple(_pressures), pressure_unit
 
 
-# Read the labels for all species in the reaction
+def _convert_pressure(pressure, pressure_unit):
+    """ Convert a set of pressures using the pressure unit, accounting
+        for high-pressure in list
+
+        :param pressure: pressures to convert
+        :type pressure: tuple(float, str)
+        :param pressure_unit: unit of pressures
+        :type pressure_unit: str
+        :rtype: tuple(float, str)
+    """
+
+    if pressure != 'high':
+        if pressure_unit == 'atm':
+            conv = 1.0
+        elif pressure_unit == 'torr':
+            conv = phycon.TORR2ATM
+        elif pressure_unit == 'bar':
+            conv = phycon.BAR2ATM
+        pressure *= conv
+
+    return pressure
+
+
+# Read the labels for all species and reactions
+def reactions(out_str, read_fake=False, read_self=False, read_rev=True):
+    """ Read the reactions from the output file.
+
+        Ignores 'Capture' reactions
+    """
+
+    # Read all of the reactions out of the file
+    rxns = ()
+    for line in out_str.splitlines():
+        if 'T(K)' in line and '->' in line:
+            rxns += tuple(line.strip().split()[1:])
+
+    # Remove duplcates while preserving order
+    rxns = tuple(n for i, n in enumerate(rxns) if n not in rxns[:i])
+
+    # Remove capture reactions
+    rxns = tuple(rxn for rxn in rxns if rxn != 'Capture')
+
+    # Build list of reaction pairs: rct->prd = (rct, prd)
+    # Filter out reaction as necessary
+    rxn_pairs = ()
+    for rxn in rxns:
+        [rct, prd] = rxn.split('->')
+        if not read_fake:
+            if 'F' in rxn or 'B' in rxn:
+                continue
+        if not read_self:
+            if rct == prd:
+                continue
+        if prd:  # removes rct->  reactions in output
+            rxn_pairs += ((rct, prd),)
+
+    # Remove reverse reactions, if requested
+    if read_rev:
+        sort_rxn_pairs = rxn_pairs
+    else:
+        sort_rxn_pairs = ()
+        for pair in rxn_pairs:
+            rct, prd = pair
+            if (rct, prd) in sort_rxn_pairs or (prd, rct) in sort_rxn_pairs:
+                continue
+            sort_rxn_pairs += ((rct, prd),)
+
+    return sort_rxn_pairs
+
+
 def labels(file_str, read_fake=False, mess_file='out'):
     """ Read the labels out of a MESS file
     """

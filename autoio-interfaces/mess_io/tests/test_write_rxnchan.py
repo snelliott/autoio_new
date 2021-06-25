@@ -2,11 +2,14 @@
 """
 
 import os
-from ioformat import read_text_file
+from ioformat import pathtools
 import mess_io.writer
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+INP_PATH = os.path.join(PATH, 'data', 'inp')
+
+
 SPC1_LABEL = 'Mol1'
 SPC2_LABEL = 'Mol1'
 WELL_LABEL = 'W1'
@@ -64,11 +67,11 @@ def test__species_writer():
 
     spc1_str = mess_io.writer.species(
         SPC1_LABEL, MOL_MESS_STR, zero_ene=None)
-    assert spc1_str == read_text_file(['data', 'inp'], 'spc1.inp', PATH)
+    assert spc1_str == pathtools.read_file(INP_PATH, 'spc1.inp')
 
     spc2_str = mess_io.writer.species(
         SPC2_LABEL, MOL_MESS_STR, zero_ene=ENE)
-    assert spc2_str == read_text_file(['data', 'inp'], 'spc2.inp', PATH)
+    assert spc2_str == pathtools.read_file(INP_PATH, 'spc2.inp')
 
 
 def test__well_writer():
@@ -77,16 +80,16 @@ def test__well_writer():
 
     well1_str = mess_io.writer.well(
         WELL_LABEL, MOL_MESS_STR)
-    assert well1_str == read_text_file(
-        ['data', 'inp'], 'well1.inp', PATH, strip=True)
+    assert well1_str == pathtools.read_file(
+        INP_PATH, 'well1.inp').rstrip()
 
     well2_str = mess_io.writer.well(
         WELL_LABEL, MOL_MESS_STR,
         zero_ene=ENE,
         edown_str=EDOWN_STR,
         collid_freq_str=COLLID_STR)
-    assert well2_str == read_text_file(
-        ['data', 'inp'], 'well2.inp', PATH, strip=True)
+    assert well2_str == pathtools.read_file(
+        INP_PATH, 'well2.inp').rstrip()
 
 
 def test__bimolecular_writer():
@@ -98,26 +101,24 @@ def test__bimolecular_writer():
         SPC1_LABEL, ATOM_MESS_STR,
         SPC2_LABEL, MOL_MESS_STR,
         ENE)
-    assert bimol_str == read_text_file(
-        ['data', 'inp'], 'bimol.inp', PATH, strip=True)
+    assert bimol_str == pathtools.read_file(
+        INP_PATH, 'bimol.inp').rstrip()
 
 
 def test__ts_sadpt_writer():
     """ ts sadpt writer
     """
-    # fix
 
     ts_sadpt1_str = mess_io.writer.ts_sadpt(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR)
-    assert ts_sadpt1_str == read_text_file(
-        ['data', 'inp'], 'ts_sadpt1.inp', PATH, strip=True)
+    assert ts_sadpt1_str == pathtools.read_file(
+        INP_PATH, 'ts_sadpt1.inp').rstrip()
 
     ts_sadpt2_str = mess_io.writer.ts_sadpt(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL, MOL_MESS_STR,
         zero_ene=ENE, tunnel=TUNNEL_STR)
-    print(ts_sadpt2_str)
-    assert ts_sadpt2_str == read_text_file(
-        ['data', 'inp'], 'ts_sadpt2.inp', PATH, strip=True)
+    assert ts_sadpt2_str == pathtools.read_file(
+        INP_PATH, 'ts_sadpt2.inp').rstrip()
 
 
 def test__ts_variational_writer():
@@ -135,13 +136,13 @@ def test__ts_variational_writer():
         TS_LABEL, WELL_LABEL, BIMOL_LABEL,
         var_pt_strings,
         zero_enes=PATH_ENES, tunnel='')
-    assert ts_var1_str == read_text_file(['data', 'inp'], 'ts_var1.inp', PATH)
+    assert ts_var1_str == pathtools.read_file(INP_PATH, 'ts_var1.inp')
 
     ts_var2_str = mess_io.writer.ts_variational(
         TS_LABEL, WELL_LABEL, BIMOL_LABEL,
         var_pt_strings,
         zero_enes=PATH_ENES, tunnel=TUNNEL_STR)
-    assert ts_var2_str == read_text_file(['data', 'inp'], 'ts_var2.inp', PATH)
+    assert ts_var2_str == pathtools.read_file(INP_PATH, 'ts_var2.inp')
 
 
 def test__dummy_writer():
@@ -150,24 +151,25 @@ def test__dummy_writer():
 
     dummy1_str = mess_io.writer.dummy(
         BIMOL_LABEL)
-    assert dummy1_str == read_text_file(['data', 'inp'], 'dummy1.inp', PATH)
+    assert dummy1_str == pathtools.read_file(INP_PATH, 'dummy1.inp')
 
     dummy2_str = mess_io.writer.dummy(
         BIMOL_LABEL, zero_ene=ENE)
-    assert dummy2_str == read_text_file(['data', 'inp'], 'dummy2.inp', PATH)
+    assert dummy2_str == pathtools.read_file(INP_PATH, 'dummy2.inp')
 
 
-def __configs_union_writer():
+def test__configs_union_writer():
     """ tests mess_io.writer.configs_union
     """
 
-    mol_strings = [MOL_MESS_STR for _ in range(3)]
+    mol_strs = [MOL_MESS_STR for _ in range(3)]
+    tunnel_strs = [TUNNEL_STR for _ in range(3)]
     zero_enes = (1.00, 2.00, 3.00)
 
-    union_str = mess_io.writer.configs_union(
-        mol_strings, zero_enes)
-    assert union_str == read_text_file(['data', 'inp'], 'union.inp', PATH)
+    union1_str = mess_io.writer.configs_union(
+        mol_strs, zero_enes)
+    union2_str = mess_io.writer.configs_union(
+        mol_strs, zero_enes, tunnel_strs=tunnel_strs)
 
-
-if __name__ == '__main__':
-    test__ts_sadpt_writer()
+    assert union1_str == pathtools.read_file(INP_PATH, 'union1.inp')
+    assert union2_str == pathtools.read_file(INP_PATH, 'union2.inp')

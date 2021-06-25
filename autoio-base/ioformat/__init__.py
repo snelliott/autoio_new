@@ -4,6 +4,8 @@
 
 from ioformat._format import build_mako_str
 from ioformat._format import indent
+from ioformat._format import add_line
+from ioformat._format import change_line
 from ioformat._format import addchar
 from ioformat._format import headlined_sections
 from ioformat._format import remove_whitespace_from_string
@@ -12,14 +14,13 @@ from ioformat._format import remove_comment_lines
 from ioformat import pathtools
 from ioformat import phycon
 from ioformat import ptt
-from ioformat._util import read_text_file
-from ioformat._util import write_text_file
-from ioformat._util import load_numpy_string_file
 
 
 __all__ = [
     'build_mako_str',
     'indent',
+    'add_line',
+    'change_line',
     'addchar',
     'headlined_sections',
     'remove_whitespace_from_string',
@@ -28,9 +29,5 @@ __all__ = [
     'addchar',
     'pathtools',
     'phycon',
-    'ptt',
-    'read_text_file',
-    'write_text_file',
-    'load_numpy_string_file',
-
+    'ptt'
 ]

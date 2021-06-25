@@ -45,14 +45,6 @@ def rpht_input(geos, grads, hessians,
     # nsteps = len(geos)
     nrotors = rotors_str.count('pivotA')
 
-    # Check input into the function (really fix calls to not have this)
-    if not isinstance(geos, list):
-        geos = [geos]
-    if not isinstance(grads, list):
-        grads = [grads]
-    if not isinstance(hessians, list):
-        hessians = [hessians]
-
     nsteps = len(geos)
     assert nsteps == len(hessians)
     if len(grads) != 0:
@@ -192,7 +184,7 @@ def projection_distance_aux(dist_cutoff_dct=None):
     return dist_str
 
 
-def bmatrix(bmat):
+def bmatrix(bmat):  # pragma: no cover
     """ Write the B-Matrix to a ProjRot style input
     """
 
@@ -203,8 +195,8 @@ def bmatrix(bmat):
     return bmat_str
 
 
-def cmatrix(cmat):
-    """ Write the B-Matrix to a ProjRot style input
+def cmatrix(cmat):  # pragma: no cover
+    """ Write the C-Matrix to a ProjRot style input
     """
 
     _, nd2, nd3, nd4 = cmat.shape

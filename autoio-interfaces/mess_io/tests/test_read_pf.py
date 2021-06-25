@@ -3,12 +3,14 @@
 
 import os
 import numpy
-from ioformat import read_text_file
+from ioformat import pathtools
 import mess_io.reader
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-OUT_STR = read_text_file(['data', 'out'], 'pf.dat1', PATH)
+OUT_PATH = os.path.join(PATH, 'data', 'out')
+
+OUT_STR = pathtools.read_file(OUT_PATH, 'pf.dat1')
 
 
 def test__partition_function():

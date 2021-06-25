@@ -50,6 +50,46 @@ def indent(string, nspaces):
     return indented_string
 
 
+def change_line(string, newline, searchline):
+    """ Search for a line in a string and replace it with a new one.
+    """
+
+    string_lines = string.splitlines()
+
+    # Find line with search string
+    for i, line in enumerate(string_lines):
+        if searchline.strip() == line.strip():
+            linenum = i
+            break
+
+    # Change the line by changing list at index of search string
+    string_lines[linenum] = newline
+
+    return '\n'.join(string_lines)
+
+
+def add_line(string, addline, searchline, position):
+    """ Add a line to some string at some positin specified by a line
+        currently present in the string.
+    """
+
+    string_lines = string.splitlines()
+
+    # Find line with search string
+    for i, line in enumerate(string_lines):
+        if searchline.strip() == line.strip():
+            linenum = i
+            break
+
+    # Add the line
+    if position == 'before':
+        string_lines.insert(linenum, addline)
+    else:
+        string_lines.insert(linenum+1, addline)
+
+    return '\n'.join(string_lines)
+
+
 def addchar(string, char, side='pre'):
     """ Pre- or Post-pends a character to a string.
 

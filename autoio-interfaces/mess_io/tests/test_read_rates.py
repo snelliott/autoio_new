@@ -3,13 +3,20 @@
 
 import os
 import numpy
-from ioformat import read_text_file
+import automol.util.dict_
+from ioformat import pathtools
 import mess_io.reader
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-KTP_OUT_STR = read_text_file(['data', 'out'], 'rate.out', PATH)
-KE_OUT_STR = read_text_file(['data', 'out'], 'ke.out', PATH)
+INP_PATH = os.path.join(PATH, 'data', 'inp')
+OUT_PATH = os.path.join(PATH, 'data', 'out')
+
+KTP_INP_STR = pathtools.read_file(INP_PATH, 'example.inp')
+KTP_OUT_STR = pathtools.read_file(OUT_PATH, 'rate.out')
+KTP_OUT_BAR_STR = pathtools.read_file(OUT_PATH, 'rate.out_bar')
+KTP_OUT_TORR_STR = pathtools.read_file(OUT_PATH, 'rate.out_torr')
+KE_OUT_STR = pathtools.read_file(OUT_PATH, 'ke.out')
 
 # Set the REACTANT and PRODUCT
 REACTANT = 'W1'
@@ -67,6 +74,22 @@ def test__ktp_dct():
         # ref_tk_arr = ktp_dct[pressure]
         assert numpy.allclose(tk_arr, ref_ktp_dct[pressure])
 
+    # Read files that have units that are in bar, torr instead of atm
+    # vals should be same as above; just changed units in output string
+    # for testing
+    ktp_dct_bar = mess_io.reader.rates.ktp_dct(
+        KTP_OUT_BAR_STR, REACTANT, PRODUCT)
+    ktp_dct_torr = mess_io.reader.rates.ktp_dct(
+        KTP_OUT_TORR_STR, REACTANT, PRODUCT)
+
+    tkbarr = automol.util.dict_.value_in_floatkey_dct(
+        ktp_dct_bar, 0.98692, tol=0.01)
+    tktorr = automol.util.dict_.value_in_floatkey_dct(
+        ktp_dct_torr, 0.0013157894736842107, tol=0.00001)
+
+    assert numpy.allclose(ref_ktp_dct[1.0], tkbarr)
+    assert numpy.allclose(ref_ktp_dct[1.0], tktorr)
+
 
 def test__ke_dct():
     """ test mess_io.reader.rates.ke_dct
@@ -103,6 +126,74 @@ def test__ke_dct():
         assert numpy.isclose(ratek, ref_ke_dct[ene])
 
 
-if __name__ == '__main__':
-    test__ktp_dct()
-    test__ke_dct()
+def test__tp():
+    """ test mess_io.reader.rates.pressures
+        test mess_io.reader.rates.temperatures
+    """
+
+    ref_inp_temps = (600.0, 800.0, 1000.0, 1200.0, 1400.0, 1600.0, 1800.0,
+                     2000.0, 2200.0, 2400.0, 2600.0, 2800.0, 3000.0)
+    ref_out_temps = (500.0, 650.0, 800.0, 950.0, 1100.0, 1250.0, 1400.0,
+                     1550.0, 1700.0, 1850.0, 2000.0)
+    ref_inp_press = (0.01, 0.1, 1.0, 10.0, 100.0, 'high')
+    ref_out_press = (0.1, 1.0, 10.0, 100.0, 'high')
+
+    inp_temps, inp_tunit = mess_io.reader.rates.temperatures(
+        KTP_INP_STR, mess_file='inp')
+    out_temps, out_tunit = mess_io.reader.rates.temperatures(
+        KTP_OUT_STR, mess_file='out')
+
+    inp_press, inp_punit = mess_io.reader.rates.pressures(
+        KTP_INP_STR, mess_file='inp')
+    out_press, out_punit = mess_io.reader.rates.pressures(
+        KTP_OUT_STR, mess_file='out')
+
+    assert numpy.allclose(ref_inp_temps, inp_temps)
+    assert numpy.allclose(ref_out_temps, out_temps)
+    assert inp_tunit == out_tunit == 'K'
+
+    assert ref_inp_press[-1] == inp_press[-1]
+    assert ref_out_press[-1] == out_press[-1]
+    assert numpy.allclose(ref_inp_press[:-1], inp_press[:-1])
+    assert numpy.allclose(ref_out_press[:-1], out_press[:-1])
+    assert inp_punit == out_punit == 'atm'
+
+
+def test__rxns_labels():
+    """ test mess_io.reader.rates.reactions
+    """
+
+    ref_rxns1 = (
+        ('W1', 'W2'), ('W1', 'W3'), ('W1', 'W4'), ('W1', 'P1'), ('W1', 'P2'),
+        ('W1', 'P3'), ('W1', 'P4'), ('W1', 'P5'), ('W1', 'P6'), ('W2', 'W1'),
+        ('W2', 'W3'), ('W2', 'W4'), ('W2', 'P1'), ('W2', 'P2'), ('W2', 'P3'),
+        ('W2', 'P4'), ('W2', 'P5'), ('W2', 'P6'), ('W3', 'W1'), ('W3', 'W2'),
+        ('W3', 'W4'), ('W3', 'P1'), ('W3', 'P2'), ('W3', 'P3'), ('W3', 'P4'),
+        ('W3', 'P5'), ('W3', 'P6'), ('W4', 'W1'), ('W4', 'W2'), ('W4', 'W3'),
+        ('W4', 'P1'), ('W4', 'P2'), ('W4', 'P3'), ('W4', 'P4'), ('W4', 'P5'),
+        ('W4', 'P6'), ('P1', 'W1'), ('P1', 'W2'), ('P1', 'W3'), ('P1', 'W4'),
+        ('P1', 'P2'), ('P1', 'P3'), ('P1', 'P4'), ('P1', 'P5'), ('P1', 'P6'),
+        ('P2', 'W1'), ('P2', 'W2'), ('P2', 'W3'), ('P2', 'W4'), ('P2', 'P1'),
+        ('P2', 'P3'), ('P2', 'P4'), ('P2', 'P5'), ('P2', 'P6'), ('P3', 'W1'),
+        ('P3', 'W2'), ('P3', 'W3'), ('P3', 'W4'), ('P3', 'P1'), ('P3', 'P2'),
+        ('P3', 'P4'), ('P3', 'P5'), ('P3', 'P6'), ('P4', 'W1'), ('P4', 'W2'),
+        ('P4', 'W3'), ('P4', 'W4'), ('P4', 'P1'), ('P4', 'P2'), ('P4', 'P3'),
+        ('P4', 'P5'), ('P4', 'P6'), ('P5', 'W1'), ('P5', 'W2'), ('P5', 'W3'),
+        ('P5', 'W4'), ('P5', 'P1'), ('P5', 'P2'), ('P5', 'P3'), ('P5', 'P4'),
+        ('P5', 'P6'), ('P6', 'W1'), ('P6', 'W2'), ('P6', 'W3'), ('P6', 'W4'),
+        ('P6', 'P1'), ('P6', 'P2'), ('P6', 'P3'), ('P6', 'P4'), ('P6', 'P5'))
+    ref_rxns2 = (
+        ('W1', 'W2'), ('W1', 'W3'), ('W1', 'W4'), ('W1', 'P1'), ('W1', 'P2'),
+        ('W1', 'P3'), ('W1', 'P4'), ('W1', 'P5'), ('W1', 'P6'), ('W2', 'W3'),
+        ('W2', 'W4'), ('W2', 'P1'), ('W2', 'P2'), ('W2', 'P3'), ('W2', 'P4'),
+        ('W2', 'P5'), ('W2', 'P6'), ('W3', 'W4'), ('W3', 'P1'), ('W3', 'P2'),
+        ('W3', 'P3'), ('W3', 'P4'), ('W3', 'P5'), ('W3', 'P6'), ('W4', 'P1'),
+        ('W4', 'P2'), ('W4', 'P3'), ('W4', 'P4'), ('W4', 'P5'), ('W4', 'P6'),
+        ('P1', 'P2'), ('P1', 'P3'), ('P1', 'P4'), ('P1', 'P5'), ('P1', 'P6'),
+        ('P2', 'P3'), ('P2', 'P4'), ('P2', 'P5'), ('P2', 'P6'), ('P3', 'P4'),
+        ('P3', 'P5'), ('P3', 'P6'), ('P4', 'P5'), ('P4', 'P6'), ('P5', 'P6'))
+
+    assert ref_rxns1 == mess_io.reader.rates.reactions(
+        KTP_OUT_STR, read_rev=True)
+    assert ref_rxns2 == mess_io.reader.rates.reactions(
+        KTP_OUT_STR, read_rev=False)

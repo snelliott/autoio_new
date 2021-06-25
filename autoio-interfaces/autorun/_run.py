@@ -30,56 +30,9 @@ def from_input_string(script_str, run_dir, input_str,
         :rtype: str
     """
 
-    if not os.path.exists(run_dir):
-        os.makedirs(run_dir)
-
-    with EnterDirectory(run_dir):
-
-        # Write the submit script to the run directory
-        with open(script_name, 'w') as script_obj:
-            script_obj.write(script_str)
-
-        # Make the script executable
-        os.chmod(
-            script_name,
-            mode=(os.stat(script_name).st_mode |
-                  stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
-
-        # Write the input string to the run directory
-        with open(input_name, 'w') as input_obj:
-            input_obj.write(input_str)
-
-        # Write all of the auxiliary input files
-        if aux_dct is not None:
-            for fname, fstring in aux_dct.items():
-                if fstring:
-                    with open(fname, 'w') as aux_obj:
-                        aux_obj.write(fstring)
-
-        # Execute the program
-        try:
-            subprocess.check_call('./{:s}'.format(script_name))
-        except subprocess.CalledProcessError:
-            warnings.warn("Program run failed in {}".format(run_dir))
-        # except subprocess.CalledProcessError as err:
-            # As long as the program wrote an output, continue with a warning
-            # if all(os.path.isfile(name) for name in output_names):
-            #     warnings.warn("Program run failed in {}".format(run_dir))
-            # else:
-            #     raise err
-
-        # Read the output string from the run directory
-        output_strs = ()
-        for output_name in output_names:
-            if os.path.exists(output_name):
-                if os.path.isfile(output_name):
-                    with open(output_name, 'r') as output_obj:
-                        output_str = output_obj.read()
-                else:
-                    output_str = None
-            else:
-                output_str = None
-            output_strs += (output_str,)
+    write_input(run_dir, input_str, aux_dct=aux_dct, input_name=input_name)
+    run_script(script_str, run_dir, script_name=script_name)
+    output_strs = read_output(run_dir, output_names=output_names)
 
     return output_strs
 
@@ -127,60 +80,18 @@ def from_parallel_input_strings(script_str, run_dir, input_strs,
             os.makedirs(sub_run_dir)
         sub_run_dirs += (sub_run_dir,)
 
-    # Write the submission script for all jobs
-    with EnterDirectory(run_dir):
-
-        # Write the submit script to the run directory
-        with open(script_name, 'w') as script_obj:
-            script_obj.write(script_str)
-
-        # Make the script executable
-        os.chmod(
-            script_name,
-            mode=(os.stat(script_name).st_mode |
-                  stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
-
     # Write the inputs in each sub run dir
     for sub_run_dir, input_str in zip(sub_run_dirs, input_strs):
+        write_input(sub_run_dir, input_str,
+                    aux_dct=aux_dct, input_name=input_name)
 
-        with EnterDirectory(sub_run_dir):
-
-            # Write the input string to the run directory
-            with open(input_name, 'w') as input_obj:
-                input_obj.write(input_str)
-
-            # Write all of the auxiliary input files
-            if aux_dct is not None:
-                for fname, fstring in aux_dct.items():
-                    if fstring:
-                        with open(fname, 'w') as aux_obj:
-                            aux_obj.write(fstring)
-
-    # Run the central script which launches all processes
-    with EnterDirectory(run_dir):
-        try:
-            subprocess.check_call('./{:s}'.format(script_name))
-        except subprocess.CalledProcessError:
-            warnings.warn("Program run failed in {}".format(run_dir))
+    # Run the central script which launches all processes from run dir
+    run_script(script_str, run_dir, script_name=script_name)
 
     # Read all of the outputs from all processes
     output_strs_lst = ()
     for sub_run_dir in sub_run_dirs:
-
-        # Read the output from some processes
-        with EnterDirectory(sub_run_dir):
-            output_strs = ()
-            for output_name in output_names:
-                if os.path.exists(output_name):
-                    if os.path.isfile(output_name):
-                        with open(output_name, 'r') as output_obj:
-                            output_str = output_obj.read()
-                    else:
-                        output_str = None
-                else:
-                    output_str = None
-                output_strs += (output_str,)
-
+        output_strs = read_output(sub_run_dir, output_names=output_names)
         output_strs_lst += (output_strs,)
 
     return output_strs_lst
@@ -225,8 +136,7 @@ def read_output(run_dir, output_names=(OUTPUT_NAME,)):
                     output_str = None
             else:
                 output_str = None
-
-        output_strs += (output_str,)
+            output_strs += (output_str,)
 
     return output_strs
 
@@ -238,13 +148,8 @@ def run_script(script_str, run_dir, script_name=SCRIPT_NAME):
     with EnterDirectory(run_dir):
 
         # Write the submit script to the run directory
-        try:
-            os.remove(script_name)
-            with open(script_name, 'w') as script_obj:
-                script_obj.write(script_str)
-        except IOError:
-            with open(script_name, 'w') as script_obj:
-                script_obj.write(script_str)
+        with open(script_name, 'w') as script_obj:
+            script_obj.write(script_str)
 
         # Make the script executable
         os.chmod(
@@ -256,12 +161,13 @@ def run_script(script_str, run_dir, script_name=SCRIPT_NAME):
         try:
             subprocess.check_call('./{:s}'.format(script_name))
         except subprocess.CalledProcessError:
-            # # As long as the program wrote an output, continue with a warning
+            warnings.warn("Program run failed in {}".format(run_dir))
+        # except subprocess.CalledProcessError as err:
+            # As long as the program wrote an output, continue with a warning
             # if all(os.path.isfile(name) for name in output_names):
             #     warnings.warn("Program run failed in {}".format(run_dir))
             # else:
             #     raise err
-            warnings.warn("run failed in {}".format(run_dir))
 
 
 class EnterDirectory():

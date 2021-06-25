@@ -3,11 +3,14 @@ Tests writing the input for a Monte Carlo sampling routine
 """
 
 import os
-from ioformat import read_text_file
+from ioformat import pathtools
 import mess_io.writer
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+INP_PATH = os.path.join(PATH, 'data', 'inp')
+
+
 GEO = (('C', (-4.0048955763, -0.3439866053, -0.0021431734)),
        ('O', (-1.3627056155, -0.3412713280, 0.0239463418)),
        ('H', (-4.7435343957, 1.4733340928, 0.7491098889)),
@@ -63,17 +66,17 @@ def test__flux_mode():
     flux_mode2_str = mess_io.writer.fluxional_mode(
         FLUX_IDX, span=FLUX_SPAN)
 
-    assert flux_mode1_str == read_text_file(
-        ['data', 'inp'], 'flux_mode1.inp', PATH)
-    assert flux_mode2_str == read_text_file(
-        ['data', 'inp'], 'flux_mode2.inp', PATH)
+    assert flux_mode1_str == pathtools.read_file(
+        INP_PATH, 'flux_mode1.inp')
+    assert flux_mode2_str == pathtools.read_file(
+        INP_PATH, 'flux_mode2.inp')
 
 
 def test__species():
     """ test mess_io.writer.mc_species
     """
 
-    flux_mode_str = read_text_file(['data', 'inp'], 'flux_mode1.inp', PATH)
+    flux_mode_str = pathtools.read_file(INP_PATH, 'flux_mode1.inp')
 
     mc_spc1_str = mess_io.writer.mc_species(
         GEO, SYM_FACTOR, ELEC_LEVELS,
@@ -87,8 +90,8 @@ def test__species():
         freqs=FREQS,
         use_cm_shift=USE_CM_SHIFT)
 
-    assert mc_spc1_str == read_text_file(['data', 'inp'], 'mc_spc1.inp', PATH)
-    assert mc_spc2_str == read_text_file(['data', 'inp'], 'mc_spc2.inp', PATH)
+    assert mc_spc1_str == pathtools.read_file(INP_PATH, 'mc_spc1.inp')
+    assert mc_spc2_str == pathtools.read_file(INP_PATH, 'mc_spc2.inp')
 
 
 def test__dat():
@@ -102,11 +105,8 @@ def test__dat():
         grads=GRADS,
         hessians=HESSES)
 
-    print(mc_dat2_str)
-    print(read_text_file(['data', 'inp'], 'mc_dat2.inp', PATH))
-
-    assert mc_dat1_str == read_text_file(['data', 'inp'], 'mc_dat1.inp', PATH)
-    assert mc_dat2_str == read_text_file(['data', 'inp'], 'mc_dat2.inp', PATH)
+    assert mc_dat1_str == pathtools.read_file(INP_PATH, 'mc_dat1.inp')
+    assert mc_dat2_str == pathtools.read_file(INP_PATH, 'mc_dat2.inp')
 
 
 if __name__ == '__main__':

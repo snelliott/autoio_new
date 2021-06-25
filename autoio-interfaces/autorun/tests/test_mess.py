@@ -5,25 +5,34 @@ import os
 import tempfile
 import numpy
 import automol
-from ioformat import read_text_file
+from ioformat import pathtools
 import autorun
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+DAT_PATH = os.path.join(PATH, 'data')
 
 GEO = automol.geom.from_string(
-    read_text_file(['data'], 'c2h5oh.xyz', path=PATH))
-MESS_ROT_STR = read_text_file(['data'], 'c2h5oh.mrot', path=PATH)
+    pathtools.read_file(DAT_PATH, 'c2h5oh.xyz'))
+MESS_ROT_STR = pathtools.read_file(DAT_PATH, 'c2h5oh.mrot')
+
+MESS_INP_STR = pathtools.read_file(DAT_PATH, 'mess_rate.inp')
+MESS_AUX = {
+    'mess_rotd1.dat': pathtools.read_file(DAT_PATH, 'mess_rotd1.dat'),
+    'mess_rotd2.dat': pathtools.read_file(DAT_PATH, 'mess_rotd2.dat')
+}
 
 
-def test__():
-    """ test
+def test__torsion():
+    """ test autorun.mess.torsions
+        test autorun.mess.direct
     """
 
     ref_tors_freqs = (263.39, 320.923)
     ref_tors_zpves = (0.0005850015264154265, 0.0006727675639040085)
 
     with tempfile.TemporaryDirectory(dir=PATH) as run_dir:
+
         script_str = autorun.SCRIPT_DCT['messpf']
 
         tors_freqs, tors_zpves = autorun.mess.torsions(
@@ -31,7 +40,3 @@ def test__():
 
         assert numpy.allclose(tors_freqs, ref_tors_freqs)
         assert numpy.allclose(tors_zpves, ref_tors_zpves)
-
-
-if __name__ == '__main__':
-    test__()
