@@ -74,9 +74,6 @@ def write_input(job_key, geo, charge, mult, method, basis, orb_restricted,
     # set correlated method; check if multiref
     prog_method, prog_reference, prog_basis = fill.program_method_names(
         PROG, method, basis, mult, orb_restricted)
-    # hack for now
-    if mult != 1:
-        prog_method = 'u'+prog_method
 
     # Set the geometry
     geo_str, zmat_val_str, _ = fill.geometry_strings(geo, frozen_coordinates)

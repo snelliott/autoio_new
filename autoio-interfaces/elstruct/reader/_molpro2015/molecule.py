@@ -81,7 +81,7 @@ def opt_zmatrix(output_str):
         start_ptt=app.maybe(app.SPACES).join([
             'geometry', app.escape('='), app.escape('{'), '']),
         entry_start_ptt=app.maybe(','),
-        entry_sep_ptt=',',
+        # entry_sep_ptt=',',  # causes only atom to be grabbed
         last=False,
         case=False)
 
