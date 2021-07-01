@@ -235,7 +235,7 @@ def _test_pipeline(script_str, writer, readers,
 
 
 if __name__ == '__main__':
-    # test__energy()
-    # test__gradient()
+    test__energy()
+    test__gradient()
     test__hessian()
-    # test__optimization()
+    test__optimization()

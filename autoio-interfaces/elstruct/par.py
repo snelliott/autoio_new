@@ -89,11 +89,11 @@ class Method():
                'hf', 'uhf',
                ('R',), ('U', 'R')),
            Program.PSI4: (
-               'hf', 'uhf',
+               'hf', 'hf',
                ('R',), ('U', 'R'))})
     DF_HF = ('df-hf',
              {Program.PSI4: (
-                 'hf', 'uhf',
+                 'hf', 'hf',
                  ('R',), ('U', 'R'))})
 
     class Corr():
@@ -383,12 +383,12 @@ class Method():
             return _mod_name, _has_mod
 
         # Assess what method modifiers exist and remove prefix from name
-        core_name = name
-        core_name, has_ae = _demodify_name(core_name, cls.ModPrefix.ALL_ELEC[1])
-        core_name, has_dkh = _demodify_name(core_name, cls.ModPrefix.REL_DKH[1])
-        core_name, has_pnol = _demodify_name(core_name, cls.ModPrefix.PNOL[1])
-        core_name, has_dboc = _demodify_name(core_name, cls.ModPrefix.DBOC[1])
-        core_name, has_df = _demodify_name(core_name, cls.ModPrefix.DF[1])
+        _core = name
+        _core, has_ae = _demodify_name(_core, cls.ModPrefix.ALL_ELEC[1])
+        _core, has_dkh = _demodify_name(_core, cls.ModPrefix.REL_DKH[1])
+        _core, has_pnol = _demodify_name(_core, cls.ModPrefix.PNOL[1])
+        _core, has_dboc = _demodify_name(_core, cls.ModPrefix.DBOC[1])
+        _core, has_df = _demodify_name(_core, cls.ModPrefix.DF[1])
 
         # Build a dictionary of modifications
         mod_dct = {
@@ -399,7 +399,7 @@ class Method():
             cls.ModPrefix.DF[0]: has_df,
         }
 
-        return core_name, mod_dct
+        return _core, mod_dct
 
 
 def program_methods_info(prog):
