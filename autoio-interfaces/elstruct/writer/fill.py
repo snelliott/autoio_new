@@ -218,6 +218,9 @@ def program_method_names(prog, method, basis, mult, orb_restricted):
         :rtype: (str, str, str)
     """
 
+    # Set the singlet variable used by prog_method
+    singlet = (mult == 1)
+
     # Determine the reference for the given method
     prog_reference = _reference(prog, method, mult, orb_restricted)
 
@@ -228,14 +231,17 @@ def program_method_names(prog, method, basis, mult, orb_restricted):
         if prog in (Program.GAUSSIAN09, Program.GAUSSIAN16):
             prog_method = prog_reference
         else:
-            prog_method = program_method_name(prog, method)
+            prog_method = program_method_name(prog, method, singlet=singlet)
     else:
-        prog_method = program_method_name(prog, method)
+        prog_method = program_method_name(prog, method, singlet=singlet)
+
+    # core_prog_method, mod = elstruct.Method.evaluate_method_type(prog_method)
 
     # Set the basis
     prog_basis = program_basis_name(prog, basis)
 
     return prog_method, prog_reference, prog_basis
+    # return prog_method, prog_reference, prog_basis, mods
 
 
 def _reference(prog, method, mult, orb_restricted):

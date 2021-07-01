@@ -89,11 +89,11 @@ class Method():
                'hf', 'uhf',
                ('R',), ('U', 'R')),
            Program.PSI4: (
-               'hf', 'uhf',
+               'hf', 'hf',
                ('R',), ('U', 'R'))})
     DF_HF = ('df-hf',
              {Program.PSI4: (
-                 'hf', 'uhf',
+                 'hf', 'hf',
                  ('R',), ('U', 'R'))})
 
     class Corr():
@@ -234,6 +234,16 @@ class Method():
                          'b2plypd3', 'b2plypd3',
                          ('R',), ('U',))})
 
+    class ModPrefix():
+        """ Allowed Prefixes for methods
+            (full prefix name, prefix used in method names)
+        """
+        ALL_ELEC = ('all-electron', 'ae-')
+        REL_DKH = ('relativistic-dkh', 'dkh-')
+        DBOC = ('diagonal-Born-Oppenheimer-correction', 'dboc-')
+        PNOL = ('pair-natural-orbital-local', 'pno-l')
+        DF = ('density-fitting', 'df-')
+
     @classmethod
     def contains(cls, name):
         """ Assess if provided method is a part of this class.
@@ -279,8 +289,8 @@ class Method():
 
         return name in multiref_names
 
-    @classmethod
-    def is_casscf(cls, name):
+    @staticmethod
+    def is_casscf(name):
         """ Assess if a method is CASSCF.
 
             :param cls: class object
@@ -346,6 +356,50 @@ class Method():
             :type name: str
         """
         return 'df-' in standard_case(name)
+
+    @classmethod
+    def evaluate_method_type(cls, name):
+        """ Analyze a method name and alter to return the core method
+            and flags signaling if it is modified.
+
+            All modifications presented as 'mod-' as a prefix to the core name
+
+            Ex: ae-ccsd => ccsd, all_electron=True
+
+            :param name: name of method
+            :type name: str
+        """
+
+        def _demodify_name(_name, mod):
+            """ Assess if the electronic structure method modifier exists in
+                the method name and remove it if so.
+            """
+            if mod in _name:
+                _mod_name = _name.replace(mod, '')
+                _has_mod = True
+            else:
+                _mod_name = _name
+                _has_mod = False
+            return _mod_name, _has_mod
+
+        # Assess what method modifiers exist and remove prefix from name
+        _core = name
+        _core, has_ae = _demodify_name(_core, cls.ModPrefix.ALL_ELEC[1])
+        _core, has_dkh = _demodify_name(_core, cls.ModPrefix.REL_DKH[1])
+        _core, has_pnol = _demodify_name(_core, cls.ModPrefix.PNOL[1])
+        _core, has_dboc = _demodify_name(_core, cls.ModPrefix.DBOC[1])
+        _core, has_df = _demodify_name(_core, cls.ModPrefix.DF[1])
+
+        # Build a dictionary of modifications
+        mod_dct = {
+            cls.ModPrefix.ALL_ELEC[0]: has_ae,
+            cls.ModPrefix.REL_DKH[0]: has_dkh,
+            cls.ModPrefix.DBOC[0]: has_dboc,
+            cls.ModPrefix.PNOL[0]: has_pnol,
+            cls.ModPrefix.DF[0]: has_df,
+        }
+
+        return _core, mod_dct
 
 
 def program_methods_info(prog):

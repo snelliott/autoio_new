@@ -38,6 +38,26 @@ OPTION_EVAL_DCT = {
     lambda osp: 'shift={}'.format(*option.values(osp)),
     option.name(Option.Opt.MAXITER_):
     lambda osp: 'maxit={}'.format(*option.values(osp)),
-    elstruct.option.name(elstruct.par.Option.Corr.ALL_ELEC_):
+    elstruct.option.name(Option.Corr.ALL_ELEC_):
     'core',
 }
+
+
+def set_method_and_options(method, mods, corr_options):  # , gen_lines):
+    """ Set corr options based on the method
+    """
+
+    if mods[elstruct.par.Method.ModPrefix.ALL_ELEC[0]]:
+        allelec_opt = elstruct.option.name(Option.Corr.ALL_ELEC_)
+        if allelec_opt not in corr_options:
+            corr_options += (allelec_opt,)
+
+    # if rel:
+    # corr_options, scf_options = ['cwrelativistic'] -> 'expec,rel,darwin
+    # {method;
+    #  expec,rel,darwin,massv}
+    # molpro2 add gen_lines_2: 'dkroll=1'
+    # dkroll=1
+    # {method}
+
+    return method, corr_options, method
