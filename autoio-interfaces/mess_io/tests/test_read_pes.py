@@ -32,9 +32,10 @@ def test__():
         ('B1', 'P2')
     )
 
-    assert set(energy_dct1.keys()) == set(ref_energy_dct1.keys())
-    assert all(numpy.isclose(energy_dct1[key], ref_energy_dct1[key])
-               for key in energy_dct1)
+    ref_keys = tuple(ref_energy_dct1.keys())
+    assert set(energy_dct1.keys()) == set(ref_keys)
+    for key in ref_keys:
+        assert numpy.isclose(energy_dct1[key], ref_energy_dct1[key])
     assert conn_lst1 == ref_conn_lst1
 
     # Test reading the entire PES with fake wells
@@ -61,7 +62,8 @@ def test__():
         ('B1', 'F2')
     )
 
-    assert set(energy_dct2.keys()) == set(ref_energy_dct2.keys())
-    assert all(numpy.isclose(energy_dct2[key], ref_energy_dct2[key])
-               for key in energy_dct2)
+    ref_keys = tuple(ref_energy_dct2.keys())
+    assert set(energy_dct2.keys()) == set(ref_keys)
+    for key in ref_keys:
+        assert numpy.isclose(energy_dct2[key], ref_energy_dct2[key])
     assert conn_lst2 == ref_conn_lst2

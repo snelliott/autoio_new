@@ -120,8 +120,8 @@ def opt_zmatrix(output_str):
             entry_end_ptt=app.one_of_these(['ANGSTROM', 'DEGREE']),
             last=True,
             case=False)
-        opt_val_dct = {name_dct[caps_name]: opt_val_dct[caps_name]
-                       for caps_name in opt_val_dct.keys()}
+        opt_val_dct = {name_dct[name]: val_dct
+                       for name, val_dct in opt_val_dct.items()}
         assert set(opt_val_dct) <= set(val_dct)
         val_dct.update(opt_val_dct)
 

@@ -274,24 +274,22 @@ def _mrci_energy(output_str):
 
 
 # Relativistic methods
-def _dkh_energy(output_str):
-    """ Read the energy from a relativistic calculation using a
-        Douglas-Kroll Hamiltonian.
-    """
-    # SETTING E_DK           =     -1056.62103554  AU                              
-
-
-def _cowan_griffin_energy(output_str):
-    """ Read the energy from a relativistic calculation using a
-        the Cowan-Griffin operator, this includes the Darwin and
-        mass-velocity terms.
-    """
-
-    # Read the NREL and then the REL and add the two
-    # SETTING E_NREL         =     -1053.56240805  AU                              
-    # MASSV            =       -14.84964286 AU
-    # DARWIN           =        11.25455695 AU
-    # EREL             =        -3.59508592 AU
+# def _dkh_energy(output_str):
+#     """ Read the energy from a relativistic calculation using a
+#         Douglas-Kroll Hamiltonian.
+#     """
+#     # SETTING E_DK           =     -1056.62103554  AU
+# def _cowan_griffin_energy(output_str):
+#     """ Read the energy from a relativistic calculation using a
+#         the Cowan-Griffin operator, this includes the Darwin and
+#         mass-velocity terms.
+#     """
+#
+#     # Read the NREL and then the REL and add the two
+#     # SETTING E_NREL         =     -1053.56240805  AU
+#     # MASSV            =       -14.84964286 AU
+#     # DARWIN           =        11.25455695 AU
+#     # EREL             =        -3.59508592 AU
 
 
 def _end_file_energy(output_str):

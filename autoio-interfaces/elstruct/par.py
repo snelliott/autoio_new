@@ -235,7 +235,7 @@ class Method():
                          ('R',), ('U',))})
 
     class ModPrefix():
-        """ Allowed Prefixes for methods 
+        """ Allowed Prefixes for methods
             (full prefix name, prefix used in method names)
         """
         ALL_ELEC = ('all-electron', 'ae-')
@@ -361,7 +361,7 @@ class Method():
     def evaluate_method_type(cls, name):
         """ Analyze a method name and alter to return the core method
             and flags signaling if it is modified.
-            
+
             All modifications presented as 'mod-' as a prefix to the core name
 
             Ex: ae-ccsd => ccsd, all_electron=True

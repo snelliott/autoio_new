@@ -13,11 +13,12 @@ def host_node():
 
         :rtype: str
     """
-    host_node = subprocess.check_output(['hostname'])
-    host_node = host_node.decode('ascii')
-    host_node = host_node.strip()
 
-    return host_node
+    _node = subprocess.check_output(['hostname'])
+    _node = _node.decode('ascii')
+    _node = _node.strip()
+
+    return _node
 
 
 def process_id():
@@ -26,4 +27,3 @@ def process_id():
         :rtype: int
     """
     return os.getpid()
-
