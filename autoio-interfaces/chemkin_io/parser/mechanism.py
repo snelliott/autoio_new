@@ -1,4 +1,4 @@
-""" functions operating on the mechanism string
+""" functions operating on mechanism strings
 """
 
 import autoparse.pattern as app
