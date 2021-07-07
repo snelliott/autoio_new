@@ -179,7 +179,8 @@ def rotor_hindered(group, axis, symmetry, potential,
                    lvl_ene_max=None,
                    therm_pow_max=None,
                    geo=None,
-                   rotor_id=''):
+                   rotor_id='',
+                   potential_form='spline'):
     """ Writes the string that defines the `Rotor` section for a
         single hindered rotor of a species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -202,13 +203,15 @@ def rotor_hindered(group, axis, symmetry, potential,
         :type geo: list
         :param rotor_id: name associated with the rotor
         :type rotor_id: str
+        :param potential_form: expression the potential should be fit to
+        :type potential_form: str
         :rtype: str
     """
 
     # Format the rotor sections
-    rotor_group = messformat.format_rotor_key_defs(group)
-    rotor_axis = messformat.format_rotor_key_defs(axis)
-    rotor_npotential, rotor_potential = messformat.format_rotor_potential(
+    fmtd_group = messformat.format_rotor_key_defs(group)
+    fmtd_axis = messformat.format_rotor_key_defs(axis)
+    npot, fmtd_coords, fmtd_enes = messformat.format_rotor_potential(
         potential)
 
     # Format the geom
@@ -219,11 +222,13 @@ def rotor_hindered(group, axis, symmetry, potential,
 
     # Create dictionary to fill template
     rotor_keys = {
-        'group': rotor_group,
-        'axis': rotor_axis,
+        'group': fmtd_group,
+        'axis': fmtd_axis,
         'symmetry': symmetry,
-        'npotential': rotor_npotential,
-        'potential': rotor_potential,
+        'npotential': npot,
+        'pot_coords': fmtd_coords,
+        'pot_enes': fmtd_enes,
+        'potential_form': potential_form,
         'hmin': hmin,
         'hmax': hmax,
         'lvl_ene_max': lvl_ene_max,
