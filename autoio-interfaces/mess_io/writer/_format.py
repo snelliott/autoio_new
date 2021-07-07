@@ -166,20 +166,23 @@ def format_rotor_potential(potential):
     """
 
     # Get the number of the terms in the potential
-    npotential = len(potential)
+    npot = len(potential)
 
     # Build potentials string
-    potential_str = ''
-    for i, energy in enumerate(potential.values()):
-        if ((i+1) % 6) == 0 and (i+1) != npotential:
-            potential_str += '{0:<8.2f}\n'.format(energy)
+    coord_str, ene_str = '', ''
+    for i, (coord, energy) in enumerate(potential.items()):
+        if ((i+1) % 6) == 0 and (i+1) != npot:
+            coord_str += '{0:<8.2f}\n'.format(coord[0])
+            ene_str += '{0:<8.2f}\n'.format(energy)
         else:
-            potential_str += '{0:<8.2f}'.format(energy)
+            coord_str += '{0:<8.2f}'.format(coord[0])
+            ene_str += '{0:<8.2f}'.format(energy)
 
     # Indent the lines
-    potential_str = indent(potential_str, 4)
+    coord_str = indent(coord_str, 4)
+    ene_str = indent(ene_str, 4)
 
-    return npotential, potential_str
+    return npot, coord_str, ene_str
 
 
 def format_rovib_coups(rovib_coups):
