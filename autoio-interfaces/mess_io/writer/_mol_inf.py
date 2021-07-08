@@ -3,6 +3,7 @@ Writes MESS input for a molecule
 """
 
 import os
+import automol.pot
 from ioformat import build_mako_str
 from ioformat import indent
 from mess_io.writer import _format as messformat
@@ -313,31 +314,34 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
         template_keys=rotor_keys)
 
 
-def mdhr_data(potentials, freqs=None, nrot=0):
+def mdhr_data(pots, freqs=None, nrot=0):
     """ Writes the string for an auxiliary data file for MESS containing
         potentials and vibrational frequencies of a
         multidimensional hindered rotor, up to four dimensions.
 
-        :param potentials: potential values along torsional modes of rotor
-        :type potentials: list(list(float))
+        :param pots: potential values along torsional modes of rotor
+        :type pots: list(list(float))
         :param freqs: vibrational frequenciess along torsional modes of rotor
         :type freqs: list(list(float))
         :rtype: str
     """
 
-    assert potentials, 'Potential has no values'
+    assert pots, 'Potential has no values'
 
-    pot_idxs = list(potentials.keys())
+    # Remap potential so that keys are indices, not vcoord valyes
+    pots_byidx = automol.pot.by_index(pots)
+    pot_idxs = tuple(pots_byidx.keys())
 
     # Get the dimensions of the MDHR
     ndims = len(pot_idxs[0])
     assert ndims in (1, 2, 3, 4), 'Rotor must have dimension 1-4'
 
     # Get the number of terms in each rotor of MDHR
+    # Basically finds number of terms for each position of potential grid,
+    # for (m, n, ...)->dims=(unique vals in pos m, uniquevals in pos n, ...)
     dims = tuple()
     for dim in range(ndims):
         dims += (max((x[dim] for x in pot_idxs))+1,)
-    # dims = pot_idxs[-1]
 
     # Get the number of freqs
     if freqs is not None:
@@ -372,7 +376,7 @@ def mdhr_data(potentials, freqs=None, nrot=0):
 
     # Build the lines for each point on the potential
     dat_str = num_str + freq_str + head_str
-    for idxs, val in potentials.items():
+    for idxs, val in pots_byidx.items():
 
         # Add the idxs for the rotors
         for idx in idxs:
@@ -410,7 +414,7 @@ def umbrella_mode(group, plane, ref_atom, potential,
     # Format the sections
     umbr_group = messformat.format_rotor_key_defs(group)
     umbr_plane = messformat.format_rotor_key_defs(plane)
-    umbr_npotential, umbr_potential = messformat.format_rotor_potential(
+    umbr_npotential, _, umbr_potential = messformat.format_rotor_potential(
         potential)
     ref_atom += 1
 
