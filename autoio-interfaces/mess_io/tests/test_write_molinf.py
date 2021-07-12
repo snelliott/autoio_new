@@ -50,9 +50,9 @@ HMAX = 110
 UMBR_GROUP = (3, 4, 5)
 UMBR_PLANE = (3, 4, 5)
 UMBR_REF = 3
-ONEDPOT = {(0,): 0.00, (1,): 2.91, (2,): 9.06, (3,): 12.63,
-           (4,): 9.97, (5,): 3.51, (6,): 0.03, (7,): 3.49,
-           (8,): 9.96, (9,): 12.63, (10,): 9.08, (11,): 2.93}
+ONEDPOT = {(0.,): 0.00, (30.,): 2.91, (60.,): 9.06, (90.,): 12.63,
+           (120.,): 9.97, (150.,): 3.51, (180.,): 0.03, (210.,): 3.49,
+           (240.,): 9.96, (270.,): 12.63, (300.,): 9.08, (330.,): 2.93}
 
 # MDHR Data
 FLST = (10., 50., 100., 200., 300., 400., 500., 600., 700., 800., 900.)
@@ -271,10 +271,28 @@ def test__rotor_hindered_writer():
         geo=GEO1,
         rotor_id=HR_ID)
 
+    rotor_hind3_str = mess_io.writer.rotor_hindered(
+        HR_GROUP, HR_AXIS, HR_SYMMETRY, ONEDPOT,
+        potential_form='fourier')
+
+    rotor_hind4_str = mess_io.writer.rotor_hindered(
+        HR_GROUP, HR_AXIS, HR_SYMMETRY, ONEDPOT,
+        hmin=HMIN,
+        hmax=HMAX,
+        lvl_ene_max=LVL_ENE_MAX,
+        therm_pow_max=THERM_POW_MAX,
+        geo=GEO1,
+        rotor_id=HR_ID,
+        potential_form='fourier')
+
     assert rotor_hind1_str == pathtools.read_file(
         INP_PATH, 'rotor_hind1.inp')
     assert rotor_hind2_str == pathtools.read_file(
         INP_PATH, 'rotor_hind2.inp')
+    assert rotor_hind3_str == pathtools.read_file(
+        INP_PATH, 'rotor_hind3.inp')
+    assert rotor_hind4_str == pathtools.read_file(
+        INP_PATH, 'rotor_hind4.inp')
 
 
 def test__umbrella_writer():

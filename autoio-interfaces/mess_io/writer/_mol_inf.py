@@ -3,6 +3,7 @@ Writes MESS input for a molecule
 """
 
 import os
+import automol.pot
 from ioformat import build_mako_str
 from ioformat import indent
 from mess_io.writer import _format as messformat
@@ -179,7 +180,8 @@ def rotor_hindered(group, axis, symmetry, potential,
                    lvl_ene_max=None,
                    therm_pow_max=None,
                    geo=None,
-                   rotor_id=''):
+                   rotor_id='',
+                   potential_form='spline'):
     """ Writes the string that defines the `Rotor` section for a
         single hindered rotor of a species for a MESS input file by
         formatting input information into strings a filling Mako template.
@@ -202,13 +204,15 @@ def rotor_hindered(group, axis, symmetry, potential,
         :type geo: list
         :param rotor_id: name associated with the rotor
         :type rotor_id: str
+        :param potential_form: expression the potential should be fit to
+        :type potential_form: str
         :rtype: str
     """
 
     # Format the rotor sections
-    rotor_group = messformat.format_rotor_key_defs(group)
-    rotor_axis = messformat.format_rotor_key_defs(axis)
-    rotor_npotential, rotor_potential = messformat.format_rotor_potential(
+    fmtd_group = messformat.format_rotor_key_defs(group)
+    fmtd_axis = messformat.format_rotor_key_defs(axis)
+    npot, fmtd_coords, fmtd_enes = messformat.format_rotor_potential(
         potential)
 
     # Format the geom
@@ -219,11 +223,13 @@ def rotor_hindered(group, axis, symmetry, potential,
 
     # Create dictionary to fill template
     rotor_keys = {
-        'group': rotor_group,
-        'axis': rotor_axis,
+        'group': fmtd_group,
+        'axis': fmtd_axis,
         'symmetry': symmetry,
-        'npotential': rotor_npotential,
-        'potential': rotor_potential,
+        'npotential': npot,
+        'pot_coords': fmtd_coords,
+        'pot_enes': fmtd_enes,
+        'potential_form': potential_form,
         'hmin': hmin,
         'hmax': hmax,
         'lvl_ene_max': lvl_ene_max,
@@ -308,31 +314,34 @@ def rotor_internal(group, axis, symmetry, grid_size, mass_exp_size,
         template_keys=rotor_keys)
 
 
-def mdhr_data(potentials, freqs=None, nrot=0):
+def mdhr_data(pots, freqs=None, nrot=0):
     """ Writes the string for an auxiliary data file for MESS containing
         potentials and vibrational frequencies of a
         multidimensional hindered rotor, up to four dimensions.
 
-        :param potentials: potential values along torsional modes of rotor
-        :type potentials: list(list(float))
+        :param pots: potential values along torsional modes of rotor
+        :type pots: list(list(float))
         :param freqs: vibrational frequenciess along torsional modes of rotor
         :type freqs: list(list(float))
         :rtype: str
     """
 
-    assert potentials, 'Potential has no values'
+    assert pots, 'Potential has no values'
 
-    pot_idxs = list(potentials.keys())
+    # Remap potential so that keys are indices, not vcoord valyes
+    pots_byidx = automol.pot.by_index(pots)
+    pot_idxs = tuple(pots_byidx.keys())
 
     # Get the dimensions of the MDHR
     ndims = len(pot_idxs[0])
     assert ndims in (1, 2, 3, 4), 'Rotor must have dimension 1-4'
 
     # Get the number of terms in each rotor of MDHR
+    # Basically finds number of terms for each position of potential grid,
+    # for (m, n, ...)->dims=(unique vals in pos m, uniquevals in pos n, ...)
     dims = tuple()
     for dim in range(ndims):
         dims += (max((x[dim] for x in pot_idxs))+1,)
-    # dims = pot_idxs[-1]
 
     # Get the number of freqs
     if freqs is not None:
@@ -367,7 +376,7 @@ def mdhr_data(potentials, freqs=None, nrot=0):
 
     # Build the lines for each point on the potential
     dat_str = num_str + freq_str + head_str
-    for idxs, val in potentials.items():
+    for idxs, val in pots_byidx.items():
 
         # Add the idxs for the rotors
         for idx in idxs:
@@ -405,7 +414,7 @@ def umbrella_mode(group, plane, ref_atom, potential,
     # Format the sections
     umbr_group = messformat.format_rotor_key_defs(group)
     umbr_plane = messformat.format_rotor_key_defs(plane)
-    umbr_npotential, umbr_potential = messformat.format_rotor_potential(
+    umbr_npotential, _, umbr_potential = messformat.format_rotor_potential(
         potential)
     ref_atom += 1
 
