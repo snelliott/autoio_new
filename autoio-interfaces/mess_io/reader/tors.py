@@ -62,6 +62,38 @@ def grid_minimum_frequencies(output_str):
     return tors_freqs
 
 
+def first_point_harmonic_frequencies(output_str):
+    """ Reads the analytic frequencies for each of the
+        hindered rotors from MESS output file string.
+
+        Frequency corresponds to the minimum from the minimum on the grid
+        of the user supplied hindered rotor potential in the input.
+
+        :param output_str: string of lines of MESS output file
+        :type output_str: str
+        :return freqs: frequency for each of the rotors
+        :rtype: list(float)
+    """
+
+    # Pattern for the frequency of a rotor
+    pattern = (app.escape('harmonic  frequency at first point =') +
+               app.one_or_more(app.SPACE) +
+               app.capturing(app.NUMBER) +
+               app.one_or_more(app.SPACE) +
+               app.escape('1/cm'))
+
+    # print('--- mess_io reader tors test ---')
+    # print(output_str)
+
+    # Obtain each frequency from the output string
+    tors_freqs = tuple(float(val)
+                       for val in apf.all_captures(pattern, output_str))
+    
+    # print(tors_freqs)
+
+    return tors_freqs
+
+
 def zero_point_vibrational_energies(output_str):
     """ Reads the zero-point energies for each of the
         hindered rotors from MESS output file string.
