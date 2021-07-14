@@ -200,7 +200,7 @@ def pf_output(fml_str, temps, logq, dq_dt, d2q_dt2, svals=None, cpvals=None):
 
     mess_out_str = 'Natural log of the partition function '
     mess_out_str += 'and its derivatives:\n'
-    mess_out_str += ' T, K            {}'.format(fml_str)
+    mess_out_str += ' T, K            {}\n'.format(fml_str)
     for idx, _ in enumerate(temps):
         mess_out_str += '\n'
         mess_out_str += '{0:>8.3f}    '.format(temps[idx])
